@@ -4,8 +4,8 @@ import { saveAs } from 'file-saver';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
-// LEP APP — Legacy Enterprise Platform v2
-// With AI-Powered Document Generation
+// LEP HUB — Legacy Enterprise Platform v3
+// With AI-Powered Document Generation & Assessment Persistence
 // ═══════════════════════════════════════════════════════════════
 
 // ─── DATA: LEP Framework Structure ─────────────────────────────
@@ -31,9 +31,9 @@ const LEP_PILLARS = [
     tagline: 'Structure creates freedom',
     description: 'Governance structures, policies, and accountability',
     modules: [
-      { id: 'constitution', name: 'Family Constitution', description: 'Create or update your family charter and guiding principles' },
-      { id: 'governance', name: 'Governance Design', description: 'Define councils, committees, roles, and decision-making authority' },
-      { id: 'policies', name: 'Policies & Agreements', description: 'Employment, compensation, conflict resolution, and operating policies' },
+      { id: 'constitution', name: 'Family Constitution', description: 'Create or update your family charter and guiding principles', hasContent: true },
+      { id: 'governance', name: 'Governance Design', description: 'Define councils, committees, roles, and decision-making authority', hasContent: true },
+      { id: 'policies', name: 'Policies & Agreements', description: 'Employment, compensation, conflict resolution, and operating policies', hasContent: true },
     ],
   },
   {
@@ -44,9 +44,9 @@ const LEP_PILLARS = [
     tagline: 'Measure what matters',
     description: 'Business strategy, financial health, and performance',
     modules: [
-      { id: 'strategic-plan', name: 'Strategic Plan', description: 'Family enterprise vision, goals, and strategic priorities' },
-      { id: 'financial-health', name: 'Financial Dashboard', description: 'Key metrics, reporting cadence, and financial transparency' },
-      { id: 'performance', name: 'Performance Review', description: 'Business performance assessment and accountability' },
+      { id: 'strategic-plan', name: 'Strategic Plan', description: 'Family enterprise vision, goals, and strategic priorities', hasContent: true },
+      { id: 'financial-health', name: 'Financial Dashboard', description: 'Key metrics, reporting cadence, and financial transparency', hasContent: true },
+      { id: 'performance', name: 'Performance Review', description: 'Business performance assessment and accountability', hasContent: true },
     ],
   },
   {
@@ -57,9 +57,9 @@ const LEP_PILLARS = [
     tagline: 'Plan for every scenario',
     description: 'Succession planning, contingency, and wealth transfer',
     modules: [
-      { id: 'succession', name: 'Succession Plan', description: 'Leadership pipeline, timeline, criteria, and development' },
-      { id: 'contingency', name: 'Contingency Protocols', description: 'Emergency scenarios, backup plans, and crisis response' },
-      { id: 'estate', name: 'Estate & Wealth Transfer', description: 'Trusts, gifting strategies, and ownership transitions' },
+      { id: 'succession', name: 'Succession Plan', description: 'Leadership pipeline, timeline, criteria, and development', hasContent: true },
+      { id: 'contingency', name: 'Contingency Protocols', description: 'Emergency scenarios, backup plans, and crisis response', hasContent: true },
+      { id: 'estate', name: 'Estate & Wealth Transfer', description: 'Trusts, gifting strategies, and ownership transitions', hasContent: true },
     ],
   },
   {
@@ -70,9 +70,9 @@ const LEP_PILLARS = [
     tagline: 'Build for generations',
     description: 'Next-gen development, philanthropy, and long-term vision',
     modules: [
-      { id: 'nextgen', name: 'Next Gen Program', description: 'Education, onboarding, mentorship, and leadership readiness' },
-      { id: 'philanthropy', name: 'Philanthropy Strategy', description: 'Giving philosophy, foundations, and community impact' },
-      { id: 'vision', name: 'Vision 2050', description: 'Long-term family vision and aspirational goals' },
+      { id: 'nextgen', name: 'Next Gen Program', description: 'Education, onboarding, mentorship, and leadership readiness', hasContent: true },
+      { id: 'philanthropy', name: 'Philanthropy Strategy', description: 'Giving philosophy, foundations, and community impact', hasContent: true },
+      { id: 'vision', name: 'Vision 2050', description: 'Long-term family vision and aspirational goals', hasContent: true },
     ],
   },
 ];
@@ -133,7 +133,7 @@ const ASSESSMENT_QUESTIONS = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// ROOTS MODULE CONTENT
+// MODULE CONTENT FOR ALL PILLARS
 // ═══════════════════════════════════════════════════════════════
 
 const ROOTS_MODULE_CONTENT = {
@@ -388,6 +388,795 @@ const ROOTS_MODULE_CONTENT = {
   },
 };
 
+const ORDER_MODULE_CONTENT = {
+  'constitution': {
+    title: 'Family Constitution',
+    subtitle: 'Create or update your family charter and guiding principles',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'charter-purpose',
+        title: 'Charter Purpose',
+        description: 'Why do you need a family constitution? What will it guide?',
+        exercises: [
+          {
+            id: 'purpose-statement',
+            question: 'What is the primary purpose of your family constitution?',
+            type: 'textarea',
+            placeholder: 'Our family constitution exists to...',
+            helperText: 'Think about governance, decision-making, and family harmony.',
+          },
+          {
+            id: 'scope',
+            question: 'What aspects of family life and business will this constitution cover?',
+            type: 'textarea',
+            placeholder: 'The constitution will address...',
+          },
+        ],
+      },
+      {
+        id: 'principles',
+        title: 'Guiding Principles',
+        description: 'What foundational principles should guide your family?',
+        exercises: [
+          {
+            id: 'principles-list',
+            question: 'List 4-6 core principles for your family constitution',
+            type: 'textarea',
+            placeholder: 'Our core principles are:\n1.\n2.\n3.\netc.',
+            helperText: 'Examples: transparency, meritocracy, stakeholder responsibility, stewardship.',
+          },
+          {
+            id: 'membership-criteria',
+            question: 'Who is considered a member of the family enterprise, and what criteria define membership?',
+            type: 'textarea',
+            placeholder: 'Family members are defined as...',
+          },
+        ],
+      },
+      {
+        id: 'decision-rights',
+        title: 'Decision Rights',
+        description: 'How will key decisions be made?',
+        exercises: [
+          {
+            id: 'decision-framework',
+            question: 'Describe how major decisions (hiring, exits, investments) will be made',
+            type: 'textarea',
+            placeholder: 'For major decisions, we will...',
+            helperText: 'Clarify who has authority, who gets consulted, and what the process is.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Constitution',
+      description: 'A foundational governance document defining your family enterprise principles.',
+    },
+  },
+  'governance': {
+    title: 'Governance Design',
+    subtitle: 'Define councils, committees, roles, and decision-making authority',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'board-design',
+        title: 'Board Structure',
+        description: 'Design your governance board(s) and councils.',
+        exercises: [
+          {
+            id: 'board-type',
+            question: 'What governance structures will you establish (board, family council, advisory board)?',
+            type: 'textarea',
+            placeholder: 'We will have the following bodies...',
+            helperText: 'Example: Board of Directors, Family Council, Investment Committee.',
+          },
+          {
+            id: 'board-composition',
+            question: 'Who should sit on each body, and what are the selection criteria?',
+            type: 'textarea',
+            placeholder: 'Board members will be selected based on...',
+          },
+        ],
+      },
+      {
+        id: 'roles-responsibilities',
+        title: 'Roles & Responsibilities',
+        description: 'Define clear roles and decision authority.',
+        exercises: [
+          {
+            id: 'role-definition',
+            question: 'Define the key roles in your governance structure (CEO, board chair, council chair)',
+            type: 'textarea',
+            placeholder: 'The CEO is responsible for...\nThe Board Chair is responsible for...',
+          },
+          {
+            id: 'authority-limits',
+            question: 'What are the authority limits for each role?',
+            type: 'textarea',
+            placeholder: 'The CEO can make decisions up to...\nThe Board must approve...',
+          },
+        ],
+      },
+      {
+        id: 'meeting-cadence',
+        title: 'Meeting Cadence',
+        description: 'How often will governance bodies meet?',
+        exercises: [
+          {
+            id: 'meeting-schedule',
+            question: 'What is your planned meeting schedule for each governance body?',
+            type: 'select',
+            options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually', 'As-needed'],
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Governance Structure Document',
+      description: 'A formal document defining your governance bodies, roles, and decision authority.',
+    },
+  },
+  'policies': {
+    title: 'Policies & Agreements',
+    subtitle: 'Employment, compensation, conflict resolution, and operating policies',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'employment-policies',
+        title: 'Employment Policies',
+        description: 'Set clear expectations for family members employed in the business.',
+        exercises: [
+          {
+            id: 'employment-criteria',
+            question: 'What are the criteria for hiring family members in the business?',
+            type: 'textarea',
+            placeholder: 'Family members seeking employment must meet...',
+            helperText: 'Example: minimum education, outside work experience, performance standards.',
+          },
+          {
+            id: 'employment-terms',
+            question: 'What are the key employment terms and expectations?',
+            type: 'textarea',
+            placeholder: 'Employment terms include...',
+          },
+        ],
+      },
+      {
+        id: 'compensation',
+        title: 'Compensation Philosophy',
+        description: 'Define your approach to compensation fairness.',
+        exercises: [
+          {
+            id: 'comp-philosophy',
+            question: 'What is your family\'s philosophy on compensation for family employees?',
+            type: 'textarea',
+            placeholder: 'We believe compensation should be...',
+            helperText: 'Market-based? Performance-based? Equal? Consider both fairness and competitiveness.',
+          },
+        ],
+      },
+      {
+        id: 'conflict-resolution',
+        title: 'Conflict Resolution',
+        description: 'How will family conflicts be addressed?',
+        exercises: [
+          {
+            id: 'conflict-process',
+            question: 'Describe your conflict resolution process',
+            type: 'textarea',
+            placeholder: 'When conflicts arise, we will...',
+            helperText: 'Consider: direct conversation, mediation, counseling, arbitration.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Enterprise Policies',
+      description: 'A comprehensive policies document covering employment, compensation, and conflict resolution.',
+    },
+  },
+};
+
+const IMPACT_MODULE_CONTENT = {
+  'strategic-plan': {
+    title: 'Strategic Plan',
+    subtitle: 'Family enterprise vision, goals, and strategic priorities',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'vision-mission',
+        title: 'Vision & Mission',
+        description: 'Define your family enterprise\'s long-term direction.',
+        exercises: [
+          {
+            id: 'vision-statement',
+            question: 'What is your family enterprise\'s vision for the next 10-20 years?',
+            type: 'textarea',
+            placeholder: 'Our vision is...',
+            helperText: 'Paint a picture of what success looks like for your family and business.',
+          },
+          {
+            id: 'mission-statement',
+            question: 'What is your mission — the core purpose of your enterprise?',
+            type: 'textarea',
+            placeholder: 'Our mission is to...',
+          },
+        ],
+      },
+      {
+        id: 'strategic-goals',
+        title: 'Strategic Goals',
+        description: 'Set 3-5 year goals aligned with your vision.',
+        exercises: [
+          {
+            id: 'goals-list',
+            question: 'What are your top 3-5 strategic goals for the next 3-5 years?',
+            type: 'textarea',
+            placeholder: 'Goal 1: \nGoal 2: \nGoal 3: \netc.',
+            helperText: 'Be specific and measurable. Include business, family, and impact goals.',
+          },
+          {
+            id: 'priorities',
+            question: 'What are your top strategic priorities right now?',
+            type: 'textarea',
+            placeholder: 'Our priorities are...',
+          },
+        ],
+      },
+      {
+        id: 'execution',
+        title: 'Execution Plan',
+        description: 'How will you execute your strategy?',
+        exercises: [
+          {
+            id: 'milestones',
+            question: 'What are the key milestones and timeline for your strategic plan?',
+            type: 'textarea',
+            placeholder: 'By [date] we will...\nBy [date] we will...',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Enterprise Strategic Plan',
+      description: 'A 3-5 year strategic plan defining vision, goals, and execution.',
+    },
+  },
+  'financial-health': {
+    title: 'Financial Dashboard',
+    subtitle: 'Key metrics, reporting cadence, and financial transparency',
+    estimatedTime: '60-90 minutes',
+    sections: [
+      {
+        id: 'key-metrics',
+        title: 'Key Metrics',
+        description: 'Define the financial metrics that matter to your family.',
+        exercises: [
+          {
+            id: 'metrics-list',
+            question: 'What are your top 5-7 key financial metrics to track?',
+            type: 'textarea',
+            placeholder: 'Key metrics:\n1. Revenue\n2. EBITDA\n3. etc.',
+            helperText: 'Examples: Revenue, Profit Margin, Cash Flow, ROI, Debt Ratios, Shareholder Value.',
+          },
+          {
+            id: 'targets',
+            question: 'What are your performance targets for each metric?',
+            type: 'textarea',
+            placeholder: 'Revenue target: \nProfit margin target: \netc.',
+          },
+        ],
+      },
+      {
+        id: 'reporting',
+        title: 'Reporting & Transparency',
+        description: 'When and how will financial information be shared?',
+        exercises: [
+          {
+            id: 'reporting-schedule',
+            question: 'What is your financial reporting cadence?',
+            type: 'select',
+            options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
+          },
+          {
+            id: 'transparency-level',
+            question: 'What level of financial transparency will you maintain with family members?',
+            type: 'textarea',
+            placeholder: 'We will share...',
+            helperText: 'Consider: full transparency, summary reports, or selective disclosures.',
+          },
+        ],
+      },
+      {
+        id: 'accountability',
+        title: 'Accountability',
+        description: 'How will you hold the business accountable to financial goals?',
+        exercises: [
+          {
+            id: 'accountability-process',
+            question: 'How will financial performance be reviewed and discussed?',
+            type: 'textarea',
+            placeholder: 'We will review financial performance by...',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Financial Health Dashboard',
+      description: 'A financial framework defining metrics, reporting, and accountability.',
+    },
+  },
+  'performance': {
+    title: 'Performance Review',
+    subtitle: 'Business performance assessment and accountability',
+    estimatedTime: '60-90 minutes',
+    sections: [
+      {
+        id: 'performance-framework',
+        title: 'Performance Framework',
+        description: 'How will you assess business performance?',
+        exercises: [
+          {
+            id: 'assessment-criteria',
+            question: 'What criteria will you use to assess business performance?',
+            type: 'textarea',
+            placeholder: 'We assess performance based on...',
+            helperText: 'Financial results, customer satisfaction, employee retention, market position, etc.',
+          },
+          {
+            id: 'benchmarks',
+            question: 'What industry benchmarks or standards will you use?',
+            type: 'textarea',
+            placeholder: 'We benchmark against...',
+          },
+        ],
+      },
+      {
+        id: 'review-process',
+        title: 'Review Process',
+        description: 'When and how will performance be reviewed?',
+        exercises: [
+          {
+            id: 'review-schedule',
+            question: 'How frequently will performance be formally reviewed?',
+            type: 'select',
+            options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
+          },
+          {
+            id: 'stakeholders',
+            question: 'Who will be involved in the performance review process?',
+            type: 'textarea',
+            placeholder: 'Performance reviews will involve...',
+          },
+        ],
+      },
+      {
+        id: 'consequences',
+        title: 'Accountability & Consequences',
+        description: 'What happens based on performance results?',
+        exercises: [
+          {
+            id: 'accountability-plan',
+            question: 'How will you respond to strong or weak performance?',
+            type: 'textarea',
+            placeholder: 'If performance targets are met, we will...\nIf targets are missed, we will...',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Performance Review Framework',
+      description: 'A system for assessing and holding the business accountable for results.',
+    },
+  },
+};
+
+const CONTINUITY_MODULE_CONTENT = {
+  'succession': {
+    title: 'Succession Plan',
+    subtitle: 'Leadership pipeline, timeline, criteria, and development',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'successors',
+        title: 'Successor Identification',
+        description: 'Who are the potential successors for key positions?',
+        exercises: [
+          {
+            id: 'successor-candidates',
+            question: 'Identify potential successors for key leadership positions',
+            type: 'textarea',
+            placeholder: 'For the CEO position, we are considering...\nFor the CFO position, we are considering...',
+            helperText: 'Name candidates and their current roles.',
+          },
+          {
+            id: 'selection-criteria',
+            question: 'What criteria will be used to select successors?',
+            type: 'textarea',
+            placeholder: 'Successor selection criteria include...',
+            helperText: 'Leadership ability, technical skills, family values alignment, stakeholder support.',
+          },
+        ],
+      },
+      {
+        id: 'development',
+        title: 'Development Plan',
+        description: 'How will you develop the next generation of leaders?',
+        exercises: [
+          {
+            id: 'development-plan',
+            question: 'What development activities will prepare successors for leadership?',
+            type: 'textarea',
+            placeholder: 'Our development plan includes...',
+            helperText: 'Mentoring, education, project assignments, gradual responsibility increase.',
+          },
+          {
+            id: 'timeline',
+            question: 'What is the timeline for the succession transition?',
+            type: 'textarea',
+            placeholder: 'Our succession timeline is...',
+            helperText: 'Consider a 3-5 year transition period with clear milestones.',
+          },
+        ],
+      },
+      {
+        id: 'transition',
+        title: 'Transition Process',
+        description: 'How will the transition actually happen?',
+        exercises: [
+          {
+            id: 'transition-steps',
+            question: 'Describe the succession transition process in detail',
+            type: 'textarea',
+            placeholder: 'The transition will occur in phases:\nPhase 1:...\nPhase 2:...',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Succession Plan',
+      description: 'A detailed plan for leadership transitions including candidates, criteria, and timeline.',
+    },
+  },
+  'contingency': {
+    title: 'Contingency Protocols',
+    subtitle: 'Emergency scenarios, backup plans, and crisis response',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'risk-identification',
+        title: 'Risk Identification',
+        description: 'What scenarios could disrupt your family enterprise?',
+        exercises: [
+          {
+            id: 'key-person-risk',
+            question: 'Who are your key people, and what would happen if they were unavailable?',
+            type: 'textarea',
+            placeholder: 'Key person risks:\n1. [Name] - if unavailable, we would...',
+            helperText: 'Consider CEO, CFO, major customers, key relationships.',
+          },
+          {
+            id: 'scenarios',
+            question: 'What other emergency scenarios should you plan for?',
+            type: 'textarea',
+            placeholder: 'We should plan for:\n1. Economic downturn\n2. Loss of major customer\n3. etc.',
+          },
+        ],
+      },
+      {
+        id: 'protocols',
+        title: 'Crisis Protocols',
+        description: 'How will you respond to emergencies?',
+        exercises: [
+          {
+            id: 'crisis-response',
+            question: 'What is your crisis response process?',
+            type: 'textarea',
+            placeholder: 'In a crisis, we will:\n1. Immediately...\n2. Within 24 hours...\n3. Within a week...',
+            helperText: 'Include communication plan, decision authority, resource allocation.',
+          },
+          {
+            id: 'backup-plans',
+            question: 'What backup plans or redundancies are in place for critical functions?',
+            type: 'textarea',
+            placeholder: 'For critical functions, we have backups for...',
+          },
+        ],
+      },
+      {
+        id: 'communication',
+        title: 'Communication & Recovery',
+        description: 'How will stakeholders be informed and business recovery managed?',
+        exercises: [
+          {
+            id: 'stakeholder-comms',
+            question: 'How will you communicate with family, employees, customers, and lenders during a crisis?',
+            type: 'textarea',
+            placeholder: 'We will communicate with stakeholders by...',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Contingency & Crisis Plan',
+      description: 'A comprehensive plan addressing emergency scenarios and crisis response.',
+    },
+  },
+  'estate': {
+    title: 'Estate & Wealth Transfer',
+    subtitle: 'Trusts, gifting strategies, and ownership transitions',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'wealth-strategy',
+        title: 'Wealth Transfer Strategy',
+        description: 'How will you transfer wealth and ownership across generations?',
+        exercises: [
+          {
+            id: 'transfer-vision',
+            question: 'What is your vision for wealth transfer? Who receives what and when?',
+            type: 'textarea',
+            placeholder: 'Our wealth transfer plan is...',
+            helperText: 'Consider equal vs. unequal distributions, timing, and conditions.',
+          },
+          {
+            id: 'ownership-transition',
+            question: 'How will ownership of the business be transitioned?',
+            type: 'textarea',
+            placeholder: 'Ownership will transition by...',
+            helperText: 'Sale, gifting, trusts, holding companies, gradual transfer.',
+          },
+        ],
+      },
+      {
+        id: 'structures',
+        title: 'Legal & Tax Structures',
+        description: 'What structures will you use?',
+        exercises: [
+          {
+            id: 'trust-structure',
+            question: 'What trust or legal structures will you establish?',
+            type: 'textarea',
+            placeholder: 'We plan to establish...',
+            helperText: 'Revocable trusts, irrevocable trusts, family limited partnerships, holding companies.',
+          },
+          {
+            id: 'tax-strategy',
+            question: 'What is your tax strategy for wealth transfer?',
+            type: 'textarea',
+            placeholder: 'Our tax strategy includes...',
+            helperText: 'Consult with tax advisors. Consider gift tax, estate tax, income tax.',
+          },
+        ],
+      },
+      {
+        id: 'gifting',
+        title: 'Gifting & Distribution',
+        description: 'How and when will distributions occur?',
+        exercises: [
+          {
+            id: 'gifting-plan',
+            question: 'What is your gifting and distribution plan?',
+            type: 'textarea',
+            placeholder: 'We will gift/distribute by...',
+            helperText: 'Annual exclusions, lifetime gifts, testamentary gifts, incentive distributions.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Estate & Wealth Transfer Plan',
+      description: 'A comprehensive plan for transferring wealth, ownership, and legacy.',
+    },
+  },
+};
+
+const LEGACY_MODULE_CONTENT = {
+  'nextgen': {
+    title: 'Next Gen Program',
+    subtitle: 'Education, onboarding, mentorship, and leadership readiness',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'education',
+        title: 'Education Pathway',
+        description: 'What education should next-gen members pursue?',
+        exercises: [
+          {
+            id: 'education-approach',
+            question: 'What educational pathway do you recommend for next-gen family members?',
+            type: 'textarea',
+            placeholder: 'We encourage next gen to...',
+            helperText: 'Consider college, business school, technical training, or industry-specific education.',
+          },
+          {
+            id: 'outside-experience',
+            question: 'Should next-gen members work outside the family business first?',
+            type: 'textarea',
+            placeholder: 'We believe outside experience is...',
+            helperText: 'Benefits and requirements for external work experience.',
+          },
+        ],
+      },
+      {
+        id: 'mentorship',
+        title: 'Mentorship & Development',
+        description: 'How will you mentor and develop the next generation?',
+        exercises: [
+          {
+            id: 'mentorship-program',
+            question: 'What mentorship and development activities will you provide?',
+            type: 'textarea',
+            placeholder: 'Our mentorship program includes...',
+            helperText: 'One-on-one mentoring, peer learning, formal training, project assignments.',
+          },
+          {
+            id: 'onboarding',
+            question: 'How will next-gen members be onboarded to the business?',
+            type: 'textarea',
+            placeholder: 'Onboarding will involve...',
+            helperText: 'Business orientation, family history, governance structure, stakeholder meetings.',
+          },
+        ],
+      },
+      {
+        id: 'readiness',
+        title: 'Readiness Assessment',
+        description: 'How will you assess if someone is ready for leadership?',
+        exercises: [
+          {
+            id: 'readiness-criteria',
+            question: 'What criteria indicate someone is ready for leadership responsibilities?',
+            type: 'textarea',
+            placeholder: 'We assess readiness based on...',
+            helperText: 'Business acumen, values alignment, stakeholder relationships, decision-making ability.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Next Generation Development Program',
+      description: 'A comprehensive program for preparing the next generation for leadership.',
+    },
+  },
+  'philanthropy': {
+    title: 'Philanthropy Strategy',
+    subtitle: 'Giving philosophy, foundations, and community impact',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'giving-philosophy',
+        title: 'Giving Philosophy',
+        description: 'What are your family\'s values around giving?',
+        exercises: [
+          {
+            id: 'mission',
+            question: 'What is your family\'s philanthropic mission or purpose?',
+            type: 'textarea',
+            placeholder: 'Our giving is guided by...',
+            helperText: 'Consider causes that align with family values and interests.',
+          },
+          {
+            id: 'impact-goals',
+            question: 'What specific impact do you want your philanthropy to have?',
+            type: 'textarea',
+            placeholder: 'We aim to impact...',
+            helperText: 'Education, health, poverty, environment, arts, etc.',
+          },
+        ],
+      },
+      {
+        id: 'structure',
+        title: 'Philanthropic Structure',
+        description: 'How will you organize and fund your philanthropy?',
+        exercises: [
+          {
+            id: 'structure-type',
+            question: 'What philanthropic structure will you use?',
+            type: 'select',
+            options: ['Family Foundation', 'Donor-Advised Fund', 'Direct Giving', 'Hybrid Approach'],
+          },
+          {
+            id: 'governance',
+            question: 'How will philanthropy be governed and by whom?',
+            type: 'textarea',
+            placeholder: 'Our philanthropic governance involves...',
+            helperText: 'Family council, foundation board, professional advisors.',
+          },
+        ],
+      },
+      {
+        id: 'engagement',
+        title: 'Family Engagement',
+        description: 'How will family members participate in philanthropy?',
+        exercises: [
+          {
+            id: 'participation',
+            question: 'How will family members be involved in philanthropic decisions?',
+            type: 'textarea',
+            placeholder: 'Family members will be involved through...',
+            helperText: 'Grants committees, site visits, volunteer work, board service.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Philanthropy Strategy',
+      description: 'A comprehensive strategy for family giving and community impact.',
+    },
+  },
+  'vision': {
+    title: 'Vision 2050',
+    subtitle: 'Long-term family vision and aspirational goals',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'aspirational-vision',
+        title: 'Aspirational Vision',
+        description: 'What legacy do you want to build across generations?',
+        exercises: [
+          {
+            id: 'legacy-vision',
+            question: 'Imagine your family in 2050. Describe the legacy you hope to have created.',
+            type: 'textarea',
+            placeholder: 'In 2050, we hope to be known for...',
+            helperText: 'Think across family relationships, business impact, community contribution, values.',
+          },
+          {
+            id: 'generational-goals',
+            question: 'What do you want to accomplish across the next 3-4 generations?',
+            type: 'textarea',
+            placeholder: 'Our multi-generational aspirations are...',
+            helperText: 'Business continuity, wealth building, impact, family harmony, values transmission.',
+          },
+        ],
+      },
+      {
+        id: 'strategic-directions',
+        title: 'Strategic Directions',
+        description: 'What strategic directions support your vision?',
+        exercises: [
+          {
+            id: 'directions',
+            question: 'What are the key strategic directions to realize your 2050 vision?',
+            type: 'textarea',
+            placeholder: 'To achieve our vision, we will:\n1.\n2.\n3.',
+            helperText: 'Business expansion, diversification, international growth, innovation, etc.',
+          },
+        ],
+      },
+      {
+        id: 'measurement',
+        title: 'Vision Measurement',
+        description: 'How will you know if you\'re on track?',
+        exercises: [
+          {
+            id: 'success-metrics',
+            question: 'How will you measure progress toward your 2050 vision?',
+            type: 'textarea',
+            placeholder: 'We will track progress through...',
+            helperText: 'Financial milestones, family engagement, community impact, values metrics.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Vision 2050: Legacy Plan',
+      description: 'A compelling articulation of your family\'s long-term aspirational vision.',
+    },
+  },
+};
+
+// Merge all module content into one object
+const ALL_MODULE_CONTENT = {
+  ...ROOTS_MODULE_CONTENT,
+  ...ORDER_MODULE_CONTENT,
+  ...IMPACT_MODULE_CONTENT,
+  ...CONTINUITY_MODULE_CONTENT,
+  ...LEGACY_MODULE_CONTENT,
+};
+
 // ═══════════════════════════════════════════════════════════════
 // AI DOCUMENT GENERATION
 // ═══════════════════════════════════════════════════════════════
@@ -395,7 +1184,7 @@ const ROOTS_MODULE_CONTENT = {
 const DOCUMENT_PROMPTS = {
   'family-story': `You are a professional family enterprise consultant helping craft a Family Story Document.
 
-Based on the family's responses below, write a polished, narrative document that tells their story in a compelling way. 
+Based on the family's responses below, write a polished, narrative document that tells their story in a compelling way.
 
 Guidelines:
 - Write in third person ("The [Family Name] enterprise began...")
@@ -430,11 +1219,212 @@ Guidelines:
 - Write professionally but accessibly
 - Describe the family structure and branches clearly
 - Note relationship strengths and areas of potential tension diplomatically
-- Describe the informal roles people play (peacemaker, truth-teller, etc.) 
+- Describe the informal roles people play (peacemaker, truth-teller, etc.)
 - Identify patterns that repeat across generations
 - Include observations about communication dynamics
 - Offer brief, constructive insights about how these patterns might inform governance
 - This is a working document, not a final deliverable — it should be useful for further discussion
+
+FAMILY RESPONSES:
+`,
+  'constitution': `You are a professional family enterprise consultant helping create a Family Constitution.
+
+Based on the family's responses below, draft a formal Family Constitution document.
+
+Guidelines:
+- Write in formal, governance-appropriate language
+- Start with "Preamble" explaining the purpose and vision
+- Organize into sections: Purpose, Principles, Membership, Decision Rights
+- Use numbered articles and subsections for clarity
+- Include specific criteria and procedures they outlined
+- Make it feel authoritative but also reflect family values
+- This is a living document they can update over time
+- Keep it to 3-5 pages
+
+FAMILY RESPONSES:
+`,
+  'governance': `You are a professional family enterprise consultant helping design Governance Structures.
+
+Based on the family's responses below, create a Governance Design document.
+
+Guidelines:
+- Start with an overview of the governance philosophy
+- Describe each governance body (board, councils, committees): purpose, composition, authority, meeting frequency
+- Define key roles and their responsibilities
+- Include decision authority matrix showing what decisions require what approvals
+- Explain how these bodies interact and coordinate
+- Make it practical and implementable
+- Include sample job descriptions for key roles
+
+FAMILY RESPONSES:
+`,
+  'policies': `You are a professional family enterprise consultant helping develop Family Enterprise Policies.
+
+Based on the family's responses below, create a comprehensive Policies & Agreements document.
+
+Guidelines:
+- Write in clear, accessible language
+- Organize into sections: Employment Policies, Compensation Philosophy, Conflict Resolution, Other Policies
+- Include specific criteria, processes, and expectations
+- Provide examples where helpful
+- Make policies feel fair, transparent, and consistently applied
+- Indicate which policies require periodic review
+- This is a document that should be shared with all family members
+
+FAMILY RESPONSES:
+`,
+  'strategic-plan': `You are a professional family enterprise consultant helping develop a Strategic Plan.
+
+Based on the family's responses below, create a Strategic Plan document.
+
+Guidelines:
+- Start with Executive Summary
+- Include Vision and Mission statements prominently
+- Describe the current situation (brief situational analysis)
+- Outline 3-5 strategic goals with supporting objectives
+- Include key success factors and critical assumptions
+- Describe implementation timeline and milestones
+- Explain resource needs and investment required
+- Include metrics for tracking progress
+- Make it both aspirational and actionable
+
+FAMILY RESPONSES:
+`,
+  'financial-health': `You are a professional family enterprise consultant helping create a Financial Dashboard framework.
+
+Based on the family's responses below, create a Financial Health & Dashboard document.
+
+Guidelines:
+- Start with overview of financial philosophy and transparency approach
+- Define key metrics with rationale for why each matters
+- Show performance targets and benchmarks
+- Outline reporting schedule and distribution
+- Describe how stakeholders will be informed
+- Include sample dashboard layout (text description)
+- Address financial controls and governance
+- Make it practical and implementable
+
+FAMILY RESPONSES:
+`,
+  'performance': `You are a professional family enterprise consultant helping develop a Performance Review framework.
+
+Based on the family's responses below, create a Business Performance Review System document.
+
+Guidelines:
+- Explain the performance assessment philosophy
+- Define evaluation criteria and measurement methodology
+- Describe the review process and timeline
+- Identify who conducts reviews and who participates
+- Outline what happens based on results (accountability measures)
+- Include performance improvement process for underperformance
+- Make it fair, transparent, and focused on continuous improvement
+- Address both short-term and long-term performance
+
+FAMILY RESPONSES:
+`,
+  'succession': `You are a professional family enterprise consultant helping develop a Succession Plan.
+
+Based on the family's responses below, create a comprehensive Succession Plan document.
+
+Guidelines:
+- Start with overview of succession philosophy
+- Describe the current leadership team and key positions
+- Identify successor candidates with their strengths and development needs
+- Outline selection criteria and decision process
+- Provide detailed development plan for each potential successor
+- Include transition timeline with clear phases
+- Describe mentoring relationships and learning opportunities
+- Address how the business will function during transition
+- Make it realistic and actionable
+
+FAMILY RESPONSES:
+`,
+  'contingency': `You are a professional family enterprise consultant helping develop Contingency & Crisis Protocols.
+
+Based on the family's responses below, create a Contingency Planning document.
+
+Guidelines:
+- Identify key risks and vulnerabilities
+- Describe business continuity for each critical function
+- Address key person succession and emergency coverage
+- Outline crisis response protocols and decision authority
+- Include communication plans for different stakeholder groups
+- Describe resource mobilization for various scenarios
+- Address business recovery and restart procedures
+- Make it practical and regularly testable
+- Keep it to essential information that guides decision-making
+
+FAMILY RESPONSES:
+`,
+  'estate': `You are a professional family enterprise consultant helping develop an Estate & Wealth Transfer Plan.
+
+Based on the family's responses below, create an Estate & Wealth Transfer Planning document.
+
+Guidelines:
+- Explain the wealth transfer philosophy and vision
+- Describe legal and tax structures to be used
+- Outline ownership transition plan and timeline
+- Explain gifting strategy and tax considerations
+- Address trust structures and their purposes
+- Describe distribution schedules and conditions
+- Address communication with family members
+- Include steps for ongoing plan review and updates
+- Note: This is a planning document; implementation requires legal and tax advisors
+- Make it clear but note it requires professional guidance
+
+FAMILY RESPONSES:
+`,
+  'nextgen': `You are a professional family enterprise consultant helping develop a Next Generation Program.
+
+Based on the family's responses below, create a Next Generation Development Program document.
+
+Guidelines:
+- Explain the philosophy for preparing the next generation
+- Describe educational pathway recommendations
+- Outline business onboarding process
+- Detail mentorship and development activities
+- Address outside work experience expectations
+- Include readiness assessment criteria
+- Describe how next-gen members can earn responsibility
+- Make it supportive but also establish high expectations
+- Include timeline for different age and development stages
+- Make it an inspiring document that engages next-gen members
+
+FAMILY RESPONSES:
+`,
+  'philanthropy': `You are a professional family enterprise consultant helping develop a Philanthropy Strategy.
+
+Based on the family's responses below, create a Philanthropy Strategy document.
+
+Guidelines:
+- Start with the family's giving philosophy and mission
+- Describe philanthropic focus areas and impact goals
+- Outline organizational structure (foundation, DAF, direct giving)
+- Explain governance and decision-making process
+- Include grantmaking criteria and process
+- Address family member engagement and participation
+- Describe how impact will be measured
+- Include timeline for grant cycles and funding
+- Make it inspiring but also practical and implementable
+- Address sustainability and long-term funding
+
+FAMILY RESPONSES:
+`,
+  'vision': `You are a professional family enterprise consultant helping develop a Vision 2050 document.
+
+Based on the family's responses below, create a compelling Vision 2050 & Legacy Planning document.
+
+Guidelines:
+- Start with an inspiring vision statement for 2050
+- Paint a vivid picture of the family enterprise they hope to create
+- Outline multi-generational goals across family, business, and community
+- Describe strategic directions to realize the vision
+- Include key milestones and decision points
+- Address how the family will stay united around shared purpose
+- Describe how values will be transmitted to future generations
+- Include metrics and checkpoints for staying on track
+- Make it a document that inspires and guides current and future generations
+- Balance realism with aspiration
 
 FAMILY RESPONSES:
 `,
@@ -443,10 +1433,10 @@ FAMILY RESPONSES:
 async function generateDocumentWithAI(moduleId, data) {
   const prompt = DOCUMENT_PROMPTS[moduleId];
   if (!prompt) throw new Error('No prompt template for this module');
-  
-  // Format the family's responses
+
+  // Format the family's responses based on module type
   let formattedData = '';
-  
+
   if (moduleId === 'family-story') {
     formattedData = `
 ORIGIN STORY:
@@ -505,10 +1495,164 @@ ROLES & PATTERNS:
 - Decision-Maker: ${data['decision-maker'] || 'Not identified'}
 - Repeating Patterns: ${data['patterns'] || 'Not identified'}
 `;
+  } else if (moduleId === 'constitution') {
+    formattedData = `
+CHARTER PURPOSE:
+- Purpose Statement: ${data['purpose-statement'] || 'Not provided'}
+- Scope: ${data['scope'] || 'Not provided'}
+
+GUIDING PRINCIPLES:
+- Core Principles: ${data['principles-list'] || 'Not provided'}
+- Membership Criteria: ${data['membership-criteria'] || 'Not provided'}
+
+DECISION RIGHTS:
+- Decision Framework: ${data['decision-framework'] || 'Not provided'}
+`;
+  } else if (moduleId === 'governance') {
+    formattedData = `
+BOARD STRUCTURE:
+- Board Design: ${data['board-type'] || 'Not provided'}
+- Board Composition: ${data['board-composition'] || 'Not provided'}
+
+ROLES & RESPONSIBILITIES:
+- Role Definitions: ${data['role-definition'] || 'Not provided'}
+- Authority Limits: ${data['authority-limits'] || 'Not provided'}
+
+MEETING CADENCE:
+- Meeting Schedule: ${data['meeting-schedule'] || 'Not provided'}
+`;
+  } else if (moduleId === 'policies') {
+    formattedData = `
+EMPLOYMENT POLICIES:
+- Employment Criteria: ${data['employment-criteria'] || 'Not provided'}
+- Employment Terms: ${data['employment-terms'] || 'Not provided'}
+
+COMPENSATION PHILOSOPHY:
+- Compensation Approach: ${data['comp-philosophy'] || 'Not provided'}
+
+CONFLICT RESOLUTION:
+- Conflict Process: ${data['conflict-process'] || 'Not provided'}
+`;
+  } else if (moduleId === 'strategic-plan') {
+    formattedData = `
+VISION & MISSION:
+- Vision Statement: ${data['vision-statement'] || 'Not provided'}
+- Mission Statement: ${data['mission-statement'] || 'Not provided'}
+
+STRATEGIC GOALS:
+- Goals: ${data['goals-list'] || 'Not provided'}
+- Priorities: ${data['priorities'] || 'Not provided'}
+
+EXECUTION:
+- Milestones: ${data['milestones'] || 'Not provided'}
+`;
+  } else if (moduleId === 'financial-health') {
+    formattedData = `
+KEY METRICS:
+- Metrics List: ${data['metrics-list'] || 'Not provided'}
+- Performance Targets: ${data['targets'] || 'Not provided'}
+
+REPORTING & TRANSPARENCY:
+- Reporting Schedule: ${data['reporting-schedule'] || 'Not provided'}
+- Transparency Level: ${data['transparency-level'] || 'Not provided'}
+
+ACCOUNTABILITY:
+- Accountability Process: ${data['accountability-process'] || 'Not provided'}
+`;
+  } else if (moduleId === 'performance') {
+    formattedData = `
+PERFORMANCE FRAMEWORK:
+- Assessment Criteria: ${data['assessment-criteria'] || 'Not provided'}
+- Industry Benchmarks: ${data['benchmarks'] || 'Not provided'}
+
+REVIEW PROCESS:
+- Review Schedule: ${data['review-schedule'] || 'Not provided'}
+- Review Stakeholders: ${data['stakeholders'] || 'Not provided'}
+
+ACCOUNTABILITY:
+- Accountability Plan: ${data['accountability-plan'] || 'Not provided'}
+`;
+  } else if (moduleId === 'succession') {
+    formattedData = `
+SUCCESSORS:
+- Successor Candidates: ${data['successor-candidates'] || 'Not provided'}
+- Selection Criteria: ${data['selection-criteria'] || 'Not provided'}
+
+DEVELOPMENT:
+- Development Plan: ${data['development-plan'] || 'Not provided'}
+- Timeline: ${data['timeline'] || 'Not provided'}
+
+TRANSITION:
+- Transition Steps: ${data['transition-steps'] || 'Not provided'}
+`;
+  } else if (moduleId === 'contingency') {
+    formattedData = `
+RISK IDENTIFICATION:
+- Key Person Risks: ${data['key-person-risk'] || 'Not provided'}
+- Emergency Scenarios: ${data['scenarios'] || 'Not provided'}
+
+CRISIS PROTOCOLS:
+- Crisis Response: ${data['crisis-response'] || 'Not provided'}
+- Backup Plans: ${data['backup-plans'] || 'Not provided'}
+
+COMMUNICATION:
+- Stakeholder Communication: ${data['stakeholder-comms'] || 'Not provided'}
+`;
+  } else if (moduleId === 'estate') {
+    formattedData = `
+WEALTH STRATEGY:
+- Transfer Vision: ${data['transfer-vision'] || 'Not provided'}
+- Ownership Transition: ${data['ownership-transition'] || 'Not provided'}
+
+LEGAL & TAX STRUCTURES:
+- Trust Structure: ${data['trust-structure'] || 'Not provided'}
+- Tax Strategy: ${data['tax-strategy'] || 'Not provided'}
+
+GIFTING & DISTRIBUTION:
+- Gifting Plan: ${data['gifting-plan'] || 'Not provided'}
+`;
+  } else if (moduleId === 'nextgen') {
+    formattedData = `
+EDUCATION:
+- Education Pathway: ${data['education-approach'] || 'Not provided'}
+- Outside Experience: ${data['outside-experience'] || 'Not provided'}
+
+MENTORSHIP & DEVELOPMENT:
+- Mentorship Program: ${data['mentorship-program'] || 'Not provided'}
+- Onboarding: ${data['onboarding'] || 'Not provided'}
+
+READINESS:
+- Readiness Criteria: ${data['readiness-criteria'] || 'Not provided'}
+`;
+  } else if (moduleId === 'philanthropy') {
+    formattedData = `
+GIVING PHILOSOPHY:
+- Philanthropic Mission: ${data['mission'] || 'Not provided'}
+- Impact Goals: ${data['impact-goals'] || 'Not provided'}
+
+PHILANTHROPIC STRUCTURE:
+- Structure Type: ${data['structure-type'] || 'Not provided'}
+- Governance: ${data['governance'] || 'Not provided'}
+
+FAMILY ENGAGEMENT:
+- Family Participation: ${data['participation'] || 'Not provided'}
+`;
+  } else if (moduleId === 'vision') {
+    formattedData = `
+ASPIRATIONAL VISION:
+- Legacy Vision: ${data['legacy-vision'] || 'Not provided'}
+- Generational Goals: ${data['generational-goals'] || 'Not provided'}
+
+STRATEGIC DIRECTIONS:
+- Strategic Directions: ${data['directions'] || 'Not provided'}
+
+VISION MEASUREMENT:
+- Success Metrics: ${data['success-metrics'] || 'Not provided'}
+`;
   }
-  
+
   const fullPrompt = prompt + formattedData;
-  
+
   // Call Netlify function (which proxies to Claude API)
   const response = await fetch('/.netlify/functions/generate', {
     method: 'POST',
@@ -523,11 +1667,11 @@ ROLES & PATTERNS:
       ],
     }),
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to generate document');
   }
-  
+
   const result = await response.json();
   return result.content[0].text;
 }
@@ -535,7 +1679,7 @@ ROLES & PATTERNS:
 function parseNarrativeToDocx(narrative, title) {
   const lines = narrative.split('\n').filter(line => line.trim());
   const children = [];
-  
+
   // Title
   children.push(
     new Paragraph({
@@ -545,7 +1689,7 @@ function parseNarrativeToDocx(narrative, title) {
       spacing: { after: 400 },
     })
   );
-  
+
   // Date
   children.push(
     new Paragraph({
@@ -560,11 +1704,11 @@ function parseNarrativeToDocx(narrative, title) {
       spacing: { after: 600 },
     })
   );
-  
+
   // Process content
   for (const line of lines) {
     const trimmed = line.trim();
-    
+
     // Check if it's a heading (starts with # or is ALL CAPS or ends with :)
     if (trimmed.startsWith('#')) {
       const headingText = trimmed.replace(/^#+\s*/, '');
@@ -619,7 +1763,7 @@ function parseNarrativeToDocx(narrative, title) {
       // Regular paragraph - handle inline bold/italic
       const runs = [];
       let remaining = trimmed;
-      
+
       // Simple parsing for **bold** and *italic*
       const parts = remaining.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/);
       for (const part of parts) {
@@ -631,7 +1775,7 @@ function parseNarrativeToDocx(narrative, title) {
           runs.push(new TextRun({ text: part }));
         }
       }
-      
+
       children.push(
         new Paragraph({
           children: runs.length ? runs : [new TextRun(trimmed)],
@@ -640,7 +1784,7 @@ function parseNarrativeToDocx(narrative, title) {
       );
     }
   }
-  
+
   // Footer
   children.push(
     new Paragraph({
@@ -653,7 +1797,7 @@ function parseNarrativeToDocx(narrative, title) {
       spacing: { before: 600 },
     })
   );
-  
+
   children.push(
     new Paragraph({
       children: [
@@ -668,7 +1812,7 @@ function parseNarrativeToDocx(narrative, title) {
       spacing: { before: 100 },
     })
   );
-  
+
   return new Document({
     sections: [{
       properties: {},
@@ -680,15 +1824,15 @@ function parseNarrativeToDocx(narrative, title) {
 async function downloadDocument(moduleId, data, title) {
   // Generate narrative with AI
   const narrative = await generateDocumentWithAI(moduleId, data);
-  
+
   // Convert to Word document
   const doc = parseNarrativeToDocx(narrative, title);
-  
+
   // Generate and download
   const blob = await Packer.toBlob(doc);
   const filename = `${title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`;
   saveAs(blob, filename);
-  
+
   return narrative; // Return for preview
 }
 
@@ -702,39 +1846,39 @@ function Nav({ currentView, setCurrentView, user }) {
     <nav className="app-nav">
       <div className="nav-brand">
         <span className="nav-logo">◆</span>
-        <span className="nav-title">LEP</span>
+        <span className="nav-title">LEP Hub</span>
       </div>
-      
+
       <div className="nav-menu">
-        <button 
+        <button
           className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
           onClick={() => setCurrentView('dashboard')}
         >
           <span className="nav-icon">◇</span>
           Dashboard
         </button>
-        <button 
+        <button
           className={`nav-item ${currentView === 'assessment' ? 'active' : ''}`}
           onClick={() => setCurrentView('assessment')}
         >
           <span className="nav-icon">📊</span>
           Assessment
         </button>
-        <button 
+        <button
           className={`nav-item ${currentView === 'pillars' ? 'active' : ''}`}
           onClick={() => setCurrentView('pillars')}
         >
           <span className="nav-icon">🏛️</span>
           Pillars
         </button>
-        <button 
+        <button
           className={`nav-item ${currentView === 'meetings' ? 'active' : ''}`}
           onClick={() => setCurrentView('meetings')}
         >
           <span className="nav-icon">📅</span>
           Meetings
         </button>
-        <button 
+        <button
           className={`nav-item ${currentView === 'vault' ? 'active' : ''}`}
           onClick={() => setCurrentView('vault')}
         >
@@ -742,7 +1886,7 @@ function Nav({ currentView, setCurrentView, user }) {
           Vault
         </button>
       </div>
-      
+
       <div className="nav-user">
         <div className="user-avatar">{user?.initials || 'JP'}</div>
         <div className="user-info">
@@ -754,9 +1898,9 @@ function Nav({ currentView, setCurrentView, user }) {
   );
 }
 
-function Dashboard({ scores, setCurrentView, setActivePillar }) {
+function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, onGenerateLepReport }) {
   const totalScore = scores ? Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5) : null;
-  
+
   return (
     <div className="dashboard">
       <header className="page-header">
@@ -770,15 +1914,15 @@ function Dashboard({ scores, setCurrentView, setActivePillar }) {
           </button>
         )}
       </header>
-      
+
       {scores ? (
         <>
           <div className="score-hero">
             <div className="score-circle">
               <svg viewBox="0 0 120 120">
                 <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" strokeWidth="8" />
-                <circle 
-                  cx="60" cy="60" r="54" fill="none" 
+                <circle
+                  cx="60" cy="60" r="54" fill="none"
                   stroke="url(#scoreGradient)" strokeWidth="8"
                   strokeDasharray={`${totalScore * 3.39} 339`}
                   strokeLinecap="round"
@@ -804,18 +1948,23 @@ function Dashboard({ scores, setCurrentView, setActivePillar }) {
                  totalScore >= 40 ? "Room for growth. Consider working with a peer group." :
                  "Just getting started. The LEP journey will transform your family enterprise."}
               </p>
-              <button className="btn btn-outline" onClick={() => setCurrentView('assessment')}>
-                Retake Assessment
-              </button>
+              <div className="dashboard-actions">
+                <button className="btn btn-outline" onClick={() => setCurrentView('assessment')}>
+                  Retake Assessment
+                </button>
+                <button className="btn btn-primary" onClick={() => onGenerateLepReport(scores)}>
+                  Generate LEP Report
+                </button>
+              </div>
             </div>
           </div>
-          
+
           <div className="pillar-scores">
             <h3>Pillar Breakdown</h3>
             <div className="pillar-grid">
               {LEP_PILLARS.map(pillar => (
-                <div 
-                  key={pillar.id} 
+                <div
+                  key={pillar.id}
                   className="pillar-score-card"
                   style={{'--pillar-color': pillar.color}}
                   onClick={() => { setActivePillar(pillar.id); setCurrentView('pillars'); }}
@@ -843,7 +1992,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar }) {
           </button>
         </div>
       )}
-      
+
       <div className="quick-actions">
         <h3>Quick Actions</h3>
         <div className="action-grid">
@@ -872,17 +2021,30 @@ function Dashboard({ scores, setCurrentView, setActivePillar }) {
 function Assessment({ onComplete }) {
   const [currentPillar, setCurrentPillar] = useState(0);
   const [answers, setAnswers] = useState({});
-  
+
+  useEffect(() => {
+    // Load saved assessment answers
+    const savedAnswers = localStorage.getItem('lep_assessment_answers');
+    if (savedAnswers) {
+      setAnswers(JSON.parse(savedAnswers));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save assessment answers as user progresses
+    localStorage.setItem('lep_assessment_answers', JSON.stringify(answers));
+  }, [answers]);
+
   const pillars = LEP_PILLARS;
   const pillar = pillars[currentPillar];
   const questions = ASSESSMENT_QUESTIONS[pillar.id];
-  
+
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
-  
+
   const pillarComplete = questions.every(q => answers[q.id] !== undefined);
-  
+
   const nextPillar = () => {
     if (currentPillar < pillars.length - 1) {
       setCurrentPillar(currentPillar + 1);
@@ -893,14 +2055,16 @@ function Assessment({ onComplete }) {
         const total = qs.reduce((sum, q) => sum + (answers[q.id] || 0), 0);
         scores[p.id] = Math.round((total / (qs.length * 5)) * 100);
       });
+      // Clear assessment answers after completion
+      localStorage.removeItem('lep_assessment_answers');
       onComplete(scores);
     }
   };
-  
+
   const prevPillar = () => {
     if (currentPillar > 0) setCurrentPillar(currentPillar - 1);
   };
-  
+
   return (
     <div className="assessment">
       <header className="page-header">
@@ -909,11 +2073,11 @@ function Assessment({ onComplete }) {
           <p className="subtitle">Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree)</p>
         </div>
       </header>
-      
+
       <div className="assessment-progress">
         {pillars.map((p, i) => (
-          <div 
-            key={p.id} 
+          <div
+            key={p.id}
             className={`progress-step ${i === currentPillar ? 'active' : ''} ${i < currentPillar ? 'complete' : ''}`}
             style={{'--pillar-color': p.color}}
           >
@@ -922,7 +2086,7 @@ function Assessment({ onComplete }) {
           </div>
         ))}
       </div>
-      
+
       <div className="assessment-card" style={{'--pillar-color': pillar.color}}>
         <div className="assessment-pillar-header">
           <span className="pillar-icon">{pillar.icon}</span>
@@ -931,7 +2095,7 @@ function Assessment({ onComplete }) {
             <p>{pillar.description}</p>
           </div>
         </div>
-        
+
         <div className="questions">
           {questions.map((q, i) => (
             <div key={q.id} className="question">
@@ -954,17 +2118,17 @@ function Assessment({ onComplete }) {
             </div>
           ))}
         </div>
-        
+
         <div className="assessment-nav">
-          <button 
-            className="btn btn-outline" 
+          <button
+            className="btn btn-outline"
             onClick={prevPillar}
             disabled={currentPillar === 0}
           >
             ← Previous
           </button>
-          <button 
-            className="btn btn-primary" 
+          <button
+            className="btn btn-primary"
             onClick={nextPillar}
             disabled={!pillarComplete}
           >
@@ -976,8 +2140,179 @@ function Assessment({ onComplete }) {
   );
 }
 
+function LEPReportGenerator({ scores, onClose, onReportGenerated }) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [reportContent, setReportContent] = useState(null);
+  const [error, setError] = useState(null);
+
+  const generateLepReport = async () => {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      // Create comprehensive assessment prompt
+      const scoreDetails = LEP_PILLARS.map(p => {
+        const pillars = ASSESSMENT_QUESTIONS[p.id];
+        const answersKey = p.id.charAt(0); // 'r', 'o', 'i', 'c', 'l'
+        const allAnswers = Object.entries(ASSESSMENT_QUESTIONS[p.id]).map(([key, question]) => {
+          return { question: question.text, rating: 'Not assessed' };
+        });
+        return `${p.name}: ${scores[p.id]}%`;
+      }).join('\n');
+
+      const prompt = `You are a senior family enterprise consultant. Based on the LEP Assessment results below, write a comprehensive 2-3 page executive report that includes:
+
+1. Executive Summary: Brief overview of the family enterprise's LEP maturity level
+2. Overall Assessment: Interpretation of the ${Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100 overall score
+3. Pillar Analysis: For each pillar, provide:
+   - Current state assessment
+   - Key strengths
+   - Top 2-3 priority areas for improvement
+   - Specific recommendations
+4. Action Plan: 3-5 high-impact next steps for the family enterprise
+5. Closing: Encouraging note about the LEP journey and potential
+
+Make it professional yet accessible. Use clear formatting with headers. Include specific references to their pillar scores and what they mean.
+
+ASSESSMENT RESULTS:
+Overall LEP Score: ${Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100
+
+Pillar Scores:
+${scoreDetails}
+
+PILLAR DETAILS:
+${LEP_PILLARS.map(p => `${p.name} (${p.description}): ${scores[p.id]}%`).join('\n')}`;
+
+      const response = await fetch('/.netlify/functions/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 5000,
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+
+      const result = await response.json();
+      const reportText = result.content[0].text;
+
+      // Convert to DOCX and download
+      const doc = parseNarrativeToDocx(reportText, 'LEP Assessment Report');
+      const blob = await Packer.toBlob(doc);
+      const filename = `LEP_Assessment_Report_${new Date().toISOString().split('T')[0]}.docx`;
+      saveAs(blob, filename);
+
+      // Store in vault
+      const vaultEntry = {
+        id: `report_${Date.now()}`,
+        title: 'LEP Assessment Report',
+        pillar: 'assessment',
+        date: new Date().toISOString(),
+        preview: reportText.split('\n').slice(0, 5).join('\n'),
+        fullContent: reportText,
+      };
+
+      const existingVault = JSON.parse(localStorage.getItem('lep_vault') || '[]');
+      existingVault.unshift(vaultEntry);
+      localStorage.setItem('lep_vault', JSON.stringify(existingVault));
+
+      setReportContent(reportText);
+      onReportGenerated();
+    } catch (err) {
+      console.error('Report generation error:', err);
+      setError('Failed to generate report. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  if (reportContent) {
+    return (
+      <div className="module-workbook">
+        <div className="workbook-header">
+          <button className="btn btn-ghost" onClick={onClose}>← Back</button>
+          <h2>LEP Assessment Report Generated</h2>
+        </div>
+
+        <div className="generation-success">
+          <div className="success-icon">✓</div>
+          <h2>Report Generated & Downloaded!</h2>
+          <p>Your LEP Assessment Report has been saved to your downloads folder and added to your Vault.</p>
+
+          <div className="preview-section">
+            <h3>Report Preview</h3>
+            <div className="document-preview">
+              {reportContent.split('\n').slice(0, 20).map((line, i) => (
+                <p key={i}>{line || <br />}</p>
+              ))}
+              <p><em>... (full report in download) ...</em></p>
+            </div>
+          </div>
+
+          <div className="success-actions">
+            <button className="btn btn-primary" onClick={onClose}>
+              Done — Return to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="module-workbook">
+      <div className="workbook-header">
+        <button className="btn btn-ghost" onClick={onClose}>← Back</button>
+        <h2>Generate LEP Report</h2>
+      </div>
+
+      <div className="generation-prompt">
+        <h2>Generate Your LEP Assessment Report</h2>
+        <p>Your assessment is complete! Generate a comprehensive executive report based on your scores across all five pillars.</p>
+
+        <div className="score-summary">
+          <h3>Your Scores</h3>
+          <div className="score-grid">
+            {LEP_PILLARS.map(pillar => (
+              <div key={pillar.id} className="score-box">
+                <span className="score-icon">{pillar.icon}</span>
+                <span className="score-label">{pillar.name}</span>
+                <span className="score-number">{scores[pillar.id]}%</span>
+              </div>
+            ))}
+          </div>
+          <div className="overall-score">
+            <p>Overall Score: <strong>{Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100</strong></p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        <button
+          className="btn btn-primary btn-lg"
+          onClick={generateLepReport}
+          disabled={isGenerating}
+        >
+          {isGenerating ? '⏳ Generating Report...' : '✨ Generate LEP Report'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMarkComplete }) {
-  const content = ROOTS_MODULE_CONTENT[moduleId];
+  const content = ALL_MODULE_CONTENT[moduleId];
   const [currentSection, setCurrentSection] = useState(0);
   const [responses, setResponses] = useState(savedData || {});
   const [milestones, setMilestones] = useState(savedData?.milestones || []);
@@ -986,7 +2321,7 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPreview, setGeneratedPreview] = useState(null);
   const [error, setError] = useState(null);
-  
+
   if (!content) {
     return (
       <div className="module-workbook">
@@ -1003,23 +2338,23 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
       </div>
     );
   }
-  
+
   const section = content.sections[currentSection];
   const totalSections = content.sections.length;
   const isLastSection = currentSection === totalSections - 1;
-  
+
   const handleResponseChange = (exerciseId, value) => {
     setResponses(prev => ({ ...prev, [exerciseId]: value }));
   };
-  
+
   const getAllData = () => {
     return { ...responses, milestones, values, branches, lastSaved: new Date().toISOString() };
   };
-  
+
   const handleSaveProgress = () => {
     onSave(moduleId, getAllData());
   };
-  
+
   const handleGenerateDocument = async () => {
     setIsGenerating(true);
     setError(null);
@@ -1027,6 +2362,21 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
       const data = getAllData();
       onSave(moduleId, data); // Save first
       const narrative = await downloadDocument(moduleId, data, content.deliverable.title);
+
+      // Store in vault
+      const vaultEntry = {
+        id: `${moduleId}_${Date.now()}`,
+        title: content.deliverable.title,
+        pillar: LEP_PILLARS.find(p => p.modules.some(m => m.id === moduleId))?.id || 'roots',
+        date: new Date().toISOString(),
+        preview: narrative.split('\n').slice(0, 3).join('\n'),
+        fullContent: narrative,
+      };
+
+      const existingVault = JSON.parse(localStorage.getItem('lep_vault') || '[]');
+      existingVault.unshift(vaultEntry);
+      localStorage.setItem('lep_vault', JSON.stringify(existingVault));
+
       setGeneratedPreview(narrative);
       onMarkComplete(moduleId);
     } catch (err) {
@@ -1036,19 +2386,19 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
       setIsGenerating(false);
     }
   };
-  
+
   const addMilestone = () => setMilestones([...milestones, { year: '', title: '', description: '' }]);
   const updateMilestone = (i, field, value) => { const u = [...milestones]; u[i] = { ...u[i], [field]: value }; setMilestones(u); };
   const removeMilestone = (i) => setMilestones(milestones.filter((_, idx) => idx !== i));
-  
+
   const addValue = () => setValues([...values, { name: '', definition: '', behavior: '' }]);
   const updateValue = (i, field, value) => { const u = [...values]; u[i] = { ...u[i], [field]: value }; setValues(u); };
   const removeValue = (i) => setValues(values.filter((_, idx) => idx !== i));
-  
+
   const addBranch = () => setBranches([...branches, { name: '', members: '', roles: '' }]);
   const updateBranch = (i, field, value) => { const u = [...branches]; u[i] = { ...u[i], [field]: value }; setBranches(u); };
   const removeBranch = (i) => setBranches(branches.filter((_, idx) => idx !== i));
-  
+
   const renderExercise = (exercise) => {
     switch (exercise.type) {
       case 'textarea':
@@ -1143,7 +2493,7 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
         return null;
     }
   };
-  
+
   // Show preview if document was generated
   if (generatedPreview) {
     return (
@@ -1152,12 +2502,12 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
           <button className="btn btn-ghost" onClick={onClose}>← Back to Pillars</button>
           <div className="workbook-progress">Document Generated ✓</div>
         </div>
-        
+
         <div className="generation-success">
           <div className="success-icon">✓</div>
           <h2>Document Downloaded!</h2>
-          <p>Your {content.deliverable.title} has been saved to your downloads folder.</p>
-          
+          <p>Your {content.deliverable.title} has been saved to your downloads folder and added to your Vault.</p>
+
           <div className="preview-section">
             <h3>Preview</h3>
             <div className="document-preview">
@@ -1166,7 +2516,7 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
               ))}
             </div>
           </div>
-          
+
           <div className="success-actions">
             <button className="btn btn-outline" onClick={() => setGeneratedPreview(null)}>
               ← Edit Responses
@@ -1179,14 +2529,14 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
       </div>
     );
   }
-  
+
   return (
     <div className="module-workbook">
       <div className="workbook-header">
         <button className="btn btn-ghost" onClick={onClose}>← Back to Pillars</button>
         <div className="workbook-progress">Section {currentSection + 1} of {totalSections}</div>
       </div>
-      
+
       <div className="workbook-title-section">
         <h1>{content.title}</h1>
         <p className="workbook-subtitle">{content.subtitle}</p>
@@ -1195,7 +2545,7 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
           <span className="meta-item">🌄 Deliverable: {content.deliverable.title}</span>
         </div>
       </div>
-      
+
       <div className="section-tabs">
         {content.sections.map((s, i) => (
           <button
@@ -1208,7 +2558,7 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
           </button>
         ))}
       </div>
-      
+
       <div className="workbook-content">
         <div className="section-header">
           <h2>{section.title}</h2>
@@ -1218,13 +2568,13 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
           {section.exercises.map(ex => renderExercise(ex))}
         </div>
       </div>
-      
+
       {error && (
         <div className="error-message">
           {error}
         </div>
       )}
-      
+
       <div className="workbook-nav">
         <button className="btn btn-outline" onClick={() => setCurrentSection(Math.max(0, currentSection - 1))} disabled={currentSection === 0}>
           ← Previous Section
@@ -1233,8 +2583,8 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
         {!isLastSection ? (
           <button className="btn btn-primary" onClick={() => setCurrentSection(currentSection + 1)}>Next Section →</button>
         ) : (
-          <button 
-            className="btn btn-generate" 
+          <button
+            className="btn btn-generate"
             onClick={handleGenerateDocument}
             disabled={isGenerating}
           >
@@ -1249,24 +2599,24 @@ function ModuleWorkbook({ moduleId, moduleData, onClose, onSave, savedData, onMa
 function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleProgress, moduleData, setModuleData }) {
   const [activeModule, setActiveModule] = useState(null);
   const pillar = LEP_PILLARS.find(p => p.id === activePillar) || LEP_PILLARS[0];
-  
+
   const handleModuleClick = (module) => {
-    if (module.hasContent || pillar.id === 'roots') {
+    if (module.hasContent) {
       setActiveModule(module);
     } else {
       setModuleProgress(prev => ({ ...prev, [module.id]: prev[module.id] === 'complete' ? 'not-started' : 'complete' }));
     }
   };
-  
+
   const handleSaveModuleData = (moduleId, data) => {
     setModuleData(prev => ({ ...prev, [moduleId]: data }));
     setModuleProgress(prev => ({ ...prev, [moduleId]: 'in-progress' }));
   };
-  
+
   const handleMarkComplete = (moduleId) => {
     setModuleProgress(prev => ({ ...prev, [moduleId]: 'complete' }));
   };
-  
+
   if (activeModule) {
     return (
       <ModuleWorkbook
@@ -1279,7 +2629,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
       />
     );
   }
-  
+
   return (
     <div className="pillars-view">
       <header className="page-header">
@@ -1288,7 +2638,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
           <p className="subtitle">Work through each pillar at your own pace.</p>
         </div>
       </header>
-      
+
       <div className="pillar-tabs">
         {LEP_PILLARS.map(p => (
           <button
@@ -1302,7 +2652,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
           </button>
         ))}
       </div>
-      
+
       <div className="pillar-content" style={{'--pillar-color': pillar.color}}>
         <div className="pillar-header">
           <div className="pillar-title">
@@ -1314,12 +2664,12 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
           </div>
           <p className="pillar-description">{pillar.description}</p>
         </div>
-        
+
         <div className="modules-list">
           <h3>Modules</h3>
           {pillar.modules.map((module, i) => {
             const status = moduleProgress[module.id] || 'not-started';
-            const hasContent = module.hasContent || pillar.id === 'roots';
+            const hasContent = module.hasContent;
             return (
               <div key={module.id} className={`module-card ${status}`}>
                 <div className="module-number">{i + 1}</div>
@@ -1356,7 +2706,7 @@ function MeetingsView() {
         </div>
         <button className="btn btn-primary">+ Schedule Meeting</button>
       </header>
-      
+
       <div className="meetings-grid">
         <div className="meetings-section">
           <h3>Meeting Types</h3>
@@ -1373,7 +2723,7 @@ function MeetingsView() {
             ))}
           </div>
         </div>
-        
+
         <div className="meetings-section">
           <h3>Committees</h3>
           <div className="committee-list">
@@ -1387,7 +2737,7 @@ function MeetingsView() {
           </div>
         </div>
       </div>
-      
+
       <div className="upcoming-meetings">
         <h3>Upcoming Meetings</h3>
         <div className="empty-state-sm">
@@ -1399,7 +2749,30 @@ function MeetingsView() {
   );
 }
 
-function VaultView() {
+function VaultView({ vaultDocuments }) {
+  const [expandedPillar, setExpandedPillar] = useState(null);
+
+  // Group documents by pillar
+  const documentsByPillar = {};
+  LEP_PILLARS.forEach(p => {
+    documentsByPillar[p.id] = [];
+  });
+  documentsByPillar['assessment'] = [];
+
+  vaultDocuments.forEach(doc => {
+    if (documentsByPillar[doc.pillar]) {
+      documentsByPillar[doc.pillar].push(doc);
+    }
+  });
+
+  const handleDownloadDocument = (doc) => {
+    const doc_instance = parseNarrativeToDocx(doc.fullContent, doc.title);
+    Packer.toBlob(doc_instance).then(blob => {
+      const filename = `${doc.title.replace(/\s+/g, '_')}_${doc.date.split('T')[0]}.docx`;
+      saveAs(blob, filename);
+    });
+  };
+
   return (
     <div className="vault-view">
       <header className="page-header">
@@ -1407,22 +2780,76 @@ function VaultView() {
           <h1>Document Vault</h1>
           <p className="subtitle">All your completed work, organized by pillar.</p>
         </div>
-        <button className="btn btn-primary">+ Upload Document</button>
       </header>
-      
-      <div className="vault-grid">
-        {LEP_PILLARS.map(pillar => (
-          <div key={pillar.id} className="vault-folder" style={{'--pillar-color': pillar.color}}>
-            <div className="folder-header">
-              <span className="folder-icon">{pillar.icon}</span>
-              <h4>{pillar.name}</h4>
+
+      {vaultDocuments.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📁</div>
+          <h2>Your Vault is Empty</h2>
+          <p>Complete modules to generate and store documents in your vault.</p>
+        </div>
+      ) : (
+        <div className="vault-grid">
+          {LEP_PILLARS.map(pillar => {
+            const docs = documentsByPillar[pillar.id] || [];
+            return (
+              <div key={pillar.id} className="vault-folder" style={{'--pillar-color': pillar.color}}>
+                <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === pillar.id ? null : pillar.id)}>
+                  <span className="folder-icon">{pillar.icon}</span>
+                  <h4>{pillar.name}</h4>
+                  <span className="folder-count">{docs.length}</span>
+                </div>
+                {expandedPillar === pillar.id && (
+                  <div className="folder-content">
+                    {docs.length > 0 ? (
+                      <div className="document-list">
+                        {docs.map(doc => (
+                          <div key={doc.id} className="document-item">
+                            <div className="document-info">
+                              <h5>{doc.title}</h5>
+                              <p className="document-date">{new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                              <p className="document-preview">{doc.preview}</p>
+                            </div>
+                            <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>⬇ Download</button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="folder-empty">No documents yet</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {documentsByPillar['assessment'].length > 0 && (
+            <div className="vault-folder" style={{'--pillar-color': '#666666'}}>
+              <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === 'assessment' ? null : 'assessment')}>
+                <span className="folder-icon">📊</span>
+                <h4>Assessment Reports</h4>
+                <span className="folder-count">{documentsByPillar['assessment'].length}</span>
+              </div>
+              {expandedPillar === 'assessment' && (
+                <div className="folder-content">
+                  <div className="document-list">
+                    {documentsByPillar['assessment'].map(doc => (
+                      <div key={doc.id} className="document-item">
+                        <div className="document-info">
+                          <h5>{doc.title}</h5>
+                          <p className="document-date">{new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                          <p className="document-preview">{doc.preview}</p>
+                        </div>
+                        <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>⬇ Download</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="folder-content">
-              <p className="folder-empty">No documents yet</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1433,36 +2860,67 @@ export default function App() {
   const [activePillar, setActivePillar] = useState('roots');
   const [moduleProgress, setModuleProgress] = useState({});
   const [moduleData, setModuleData] = useState({});
-  
+  const [vaultDocuments, setVaultDocuments] = useState([]);
+  const [showLepReportGenerator, setShowLepReportGenerator] = useState(false);
+
   useEffect(() => {
     const savedScores = localStorage.getItem('lep_scores');
     const savedProgress = localStorage.getItem('lep_progress');
     const savedModuleData = localStorage.getItem('lep_module_data');
+    const savedVault = localStorage.getItem('lep_vault');
+
     if (savedScores) setScores(JSON.parse(savedScores));
     if (savedProgress) setModuleProgress(JSON.parse(savedProgress));
     if (savedModuleData) setModuleData(JSON.parse(savedModuleData));
+    if (savedVault) setVaultDocuments(JSON.parse(savedVault));
   }, []);
-  
+
   useEffect(() => { if (scores) localStorage.setItem('lep_scores', JSON.stringify(scores)); }, [scores]);
   useEffect(() => { localStorage.setItem('lep_progress', JSON.stringify(moduleProgress)); }, [moduleProgress]);
   useEffect(() => { localStorage.setItem('lep_module_data', JSON.stringify(moduleData)); }, [moduleData]);
-  
+
   const handleAssessmentComplete = (newScores) => {
     setScores(newScores);
     setCurrentView('dashboard');
   };
-  
+
+  const handleGenerateLepReport = (assessmentScores) => {
+    setShowLepReportGenerator(true);
+  };
+
+  const handleReportGenerated = () => {
+    const savedVault = localStorage.getItem('lep_vault');
+    if (savedVault) {
+      setVaultDocuments(JSON.parse(savedVault));
+    }
+  };
+
   const user = { name: 'Jason Packer', initials: 'JP' };
-  
+
+  if (showLepReportGenerator) {
+    return (
+      <div className="lep-app">
+        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} />
+        <main className="app-main">
+          <LEPReportGenerator
+            scores={scores}
+            onClose={() => setShowLepReportGenerator(false)}
+            onReportGenerated={handleReportGenerated}
+          />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="lep-app">
       <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} />
       <main className="app-main">
-        {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} />}
+        {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
         {currentView === 'assessment' && <Assessment onComplete={handleAssessmentComplete} />}
         {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && <MeetingsView />}
-        {currentView === 'vault' && <VaultView />}
+        {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
       </main>
     </div>
   );
