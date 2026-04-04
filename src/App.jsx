@@ -1182,251 +1182,65 @@ const ALL_MODULE_CONTENT = {
 // ═══════════════════════════════════════════════════════════════
 
 const DOCUMENT_PROMPTS = {
-  'family-story': `You are a professional family enterprise consultant helping craft a Family Story Document.
+  'family-story': `You are a family enterprise consultant. Write a concise Family Story Document based on the responses below. Use third person. Sections: Our Beginning, Key Milestones, What Defines Us. Warm and professional tone. Keep it concise.
 
-Based on the family's responses below, write a polished, narrative document that tells their story in a compelling way.
+RESPONSES:
+`,
+  'core-values': `You are a family enterprise consultant. Create a Family Values Charter from the responses below. Use first person plural ("We believe..."). For each value: name, definition, examples. End with a commitment statement. Keep concise.
 
-Guidelines:
-- Write in third person ("The [Family Name] enterprise began...")
-- Create a flowing narrative, not bullet points
-- Include specific details they provided (names, dates, places)
-- Organize into clear sections: Our Beginning, Key Milestones, The Stories That Define Us
-- Make it feel warm and professional — something they'd be proud to share
-- Keep it to about 2-3 pages worth of content
-- End with a forward-looking statement about carrying the legacy forward
+RESPONSES:
+`,
+  'genogram': `You are a family enterprise consultant. Create a Family System Analysis from the responses below. Describe family structure, relationship dynamics, informal roles, and generational patterns. Professional tone. Keep concise.
+
+RESPONSES:
+`,
+  'constitution': `You are a family enterprise consultant. Draft a Family Constitution from the responses below. Formal language. Sections: Preamble, Purpose, Principles, Membership, Decision Rights. Use numbered articles. Keep concise.
 
 FAMILY RESPONSES:
 `,
-  'core-values': `You are a professional family enterprise consultant helping craft a Family Values Charter.
+  'governance': `You are a family enterprise consultant. Create a Governance Design document from the responses below. Cover governance bodies, roles, decision authority, coordination. Keep concise.
 
-Based on the family's responses below, create a formal Values Charter document.
-
-Guidelines:
-- Write in first person plural ("We believe...", "Our family...")
-- Start with a brief preamble about why values matter to this family
-- For each value, include: the value name, a 2-3 sentence definition, and specific behavioral examples
-- Add a section on "Living Our Values" that incorporates their responses about hiring, decisions, and recognition
-- Make it feel both formal enough to be a governance document and warm enough to reflect family culture
-- End with a commitment statement suitable for family members to sign
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'genogram': `You are a professional family enterprise consultant helping document a Family System Analysis.
+  'policies': `You are a family enterprise consultant. Create a Policies & Agreements document from the responses below. Sections: Employment, Compensation, Conflict Resolution. Keep concise.
 
-Based on the family's responses below, create a narrative document describing their family system.
-
-Guidelines:
-- Write professionally but accessibly
-- Describe the family structure and branches clearly
-- Note relationship strengths and areas of potential tension diplomatically
-- Describe the informal roles people play (peacemaker, truth-teller, etc.)
-- Identify patterns that repeat across generations
-- Include observations about communication dynamics
-- Offer brief, constructive insights about how these patterns might inform governance
-- This is a working document, not a final deliverable — it should be useful for further discussion
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'constitution': `You are a professional family enterprise consultant helping create a Family Constitution.
+  'strategic-plan': `You are a family enterprise consultant. Create a Strategic Plan from the responses below. Include executive summary, goals, objectives, timeline. Keep concise.
 
-Based on the family's responses below, draft a formal Family Constitution document.
-
-Guidelines:
-- Write in formal, governance-appropriate language
-- Start with "Preamble" explaining the purpose and vision
-- Organize into sections: Purpose, Principles, Membership, Decision Rights
-- Use numbered articles and subsections for clarity
-- Include specific criteria and procedures they outlined
-- Make it feel authoritative but also reflect family values
-- This is a living document they can update over time
-- Keep it to 3-5 pages
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'governance': `You are a professional family enterprise consultant helping design Governance Structures.
+  'financial-health': `You are a family enterprise consultant. Create a Financial Health Dashboard document from the responses below. Cover key metrics, targets, reporting schedule. Keep concise.
 
-Based on the family's responses below, create a Governance Design document.
-
-Guidelines:
-- Start with an overview of the governance philosophy
-- Describe each governance body (board, councils, committees): purpose, composition, authority, meeting frequency
-- Define key roles and their responsibilities
-- Include decision authority matrix showing what decisions require what approvals
-- Explain how these bodies interact and coordinate
-- Make it practical and implementable
-- Include sample job descriptions for key roles
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'policies': `You are a professional family enterprise consultant helping develop Family Enterprise Policies.
+  'performance': `You are a family enterprise consultant. Create a Performance Review System document from the responses below. Cover criteria, process, accountability. Keep concise.
 
-Based on the family's responses below, create a comprehensive Policies & Agreements document.
-
-Guidelines:
-- Write in clear, accessible language
-- Organize into sections: Employment Policies, Compensation Philosophy, Conflict Resolution, Other Policies
-- Include specific criteria, processes, and expectations
-- Provide examples where helpful
-- Make policies feel fair, transparent, and consistently applied
-- Indicate which policies require periodic review
-- This is a document that should be shared with all family members
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'strategic-plan': `You are a professional family enterprise consultant helping develop a Strategic Plan.
+  'succession': `You are a family enterprise consultant. Create a Succession Plan from the responses below. Cover candidates, selection criteria, development plan, transition timeline. Keep concise.
 
-Based on the family's responses below, create a Strategic Plan document.
-
-Guidelines:
-- Start with Executive Summary
-- Include Vision and Mission statements prominently
-- Describe the current situation (brief situational analysis)
-- Outline 3-5 strategic goals with supporting objectives
-- Include key success factors and critical assumptions
-- Describe implementation timeline and milestones
-- Explain resource needs and investment required
-- Include metrics for tracking progress
-- Make it both aspirational and actionable
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'financial-health': `You are a professional family enterprise consultant helping create a Financial Dashboard framework.
+  'contingency': `You are a family enterprise consultant. Create a Contingency Plan from the responses below. Cover key risks, crisis protocols, communication plans. Keep concise.
 
-Based on the family's responses below, create a Financial Health & Dashboard document.
-
-Guidelines:
-- Start with overview of financial philosophy and transparency approach
-- Define key metrics with rationale for why each matters
-- Show performance targets and benchmarks
-- Outline reporting schedule and distribution
-- Describe how stakeholders will be informed
-- Include sample dashboard layout (text description)
-- Address financial controls and governance
-- Make it practical and implementable
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'performance': `You are a professional family enterprise consultant helping develop a Performance Review framework.
+  'estate': `You are a family enterprise consultant. Create an Estate & Wealth Transfer Plan from the responses below. Cover transfer vision, legal structures, gifting strategy. Note: requires professional guidance. Keep concise.
 
-Based on the family's responses below, create a Business Performance Review System document.
-
-Guidelines:
-- Explain the performance assessment philosophy
-- Define evaluation criteria and measurement methodology
-- Describe the review process and timeline
-- Identify who conducts reviews and who participates
-- Outline what happens based on results (accountability measures)
-- Include performance improvement process for underperformance
-- Make it fair, transparent, and focused on continuous improvement
-- Address both short-term and long-term performance
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'succession': `You are a professional family enterprise consultant helping develop a Succession Plan.
+  'nextgen': `You are a family enterprise consultant. Create a Next Generation Development Program from the responses below. Cover education, mentorship, onboarding, readiness criteria. Keep concise.
 
-Based on the family's responses below, create a comprehensive Succession Plan document.
-
-Guidelines:
-- Start with overview of succession philosophy
-- Describe the current leadership team and key positions
-- Identify successor candidates with their strengths and development needs
-- Outline selection criteria and decision process
-- Provide detailed development plan for each potential successor
-- Include transition timeline with clear phases
-- Describe mentoring relationships and learning opportunities
-- Address how the business will function during transition
-- Make it realistic and actionable
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'contingency': `You are a professional family enterprise consultant helping develop Contingency & Crisis Protocols.
+  'philanthropy': `You are a family enterprise consultant. Create a Philanthropy Strategy from the responses below. Cover mission, focus areas, structure, governance, family engagement. Keep concise.
 
-Based on the family's responses below, create a Contingency Planning document.
-
-Guidelines:
-- Identify key risks and vulnerabilities
-- Describe business continuity for each critical function
-- Address key person succession and emergency coverage
-- Outline crisis response protocols and decision authority
-- Include communication plans for different stakeholder groups
-- Describe resource mobilization for various scenarios
-- Address business recovery and restart procedures
-- Make it practical and regularly testable
-- Keep it to essential information that guides decision-making
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
-  'estate': `You are a professional family enterprise consultant helping develop an Estate & Wealth Transfer Plan.
+  'vision': `You are a family enterprise consultant. Create a Vision 2050 document from the responses below. Include inspiring vision, multi-generational goals, strategic directions, milestones. Keep concise.
 
-Based on the family's responses below, create an Estate & Wealth Transfer Planning document.
-
-Guidelines:
-- Explain the wealth transfer philosophy and vision
-- Describe legal and tax structures to be used
-- Outline ownership transition plan and timeline
-- Explain gifting strategy and tax considerations
-- Address trust structures and their purposes
-- Describe distribution schedules and conditions
-- Address communication with family members
-- Include steps for ongoing plan review and updates
-- Note: This is a planning document; implementation requires legal and tax advisors
-- Make it clear but note it requires professional guidance
-
-FAMILY RESPONSES:
-`,
-  'nextgen': `You are a professional family enterprise consultant helping develop a Next Generation Program.
-
-Based on the family's responses below, create a Next Generation Development Program document.
-
-Guidelines:
-- Explain the philosophy for preparing the next generation
-- Describe educational pathway recommendations
-- Outline business onboarding process
-- Detail mentorship and development activities
-- Address outside work experience expectations
-- Include readiness assessment criteria
-- Describe how next-gen members can earn responsibility
-- Make it supportive but also establish high expectations
-- Include timeline for different age and development stages
-- Make it an inspiring document that engages next-gen members
-
-FAMILY RESPONSES:
-`,
-  'philanthropy': `You are a professional family enterprise consultant helping develop a Philanthropy Strategy.
-
-Based on the family's responses below, create a Philanthropy Strategy document.
-
-Guidelines:
-- Start with the family's giving philosophy and mission
-- Describe philanthropic focus areas and impact goals
-- Outline organizational structure (foundation, DAF, direct giving)
-- Explain governance and decision-making process
-- Include grantmaking criteria and process
-- Address family member engagement and participation
-- Describe how impact will be measured
-- Include timeline for grant cycles and funding
-- Make it inspiring but also practical and implementable
-- Address sustainability and long-term funding
-
-FAMILY RESPONSES:
-`,
-  'vision': `You are a professional family enterprise consultant helping develop a Vision 2050 document.
-
-Based on the family's responses below, create a compelling Vision 2050 & Legacy Planning document.
-
-Guidelines:
-- Start with an inspiring vision statement for 2050
-- Paint a vivid picture of the family enterprise they hope to create
-- Outline multi-generational goals across family, business, and community
-- Describe strategic directions to realize the vision
-- Include key milestones and decision points
-- Address how the family will stay united around shared purpose
-- Describe how values will be transmitted to future generations
-- Include metrics and checkpoints for staying on track
-- Make it a document that inspires and guides current and future generations
-- Balance realism with aspiration
-
-FAMILY RESPONSES:
+RESPONSES:
 `,
 };
 
@@ -1661,7 +1475,7 @@ VISION MEASUREMENT:
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
+      max_tokens: 800,
       messages: [
         { role: 'user', content: fullPrompt }
       ],
@@ -2159,28 +1973,10 @@ function LEPReportGenerator({ scores, onClose, onReportGenerated }) {
         return `${p.name}: ${scores[p.id]}%`;
       }).join('\n');
 
-      const prompt = `You are a senior family enterprise consultant. Based on the LEP Assessment results below, write a comprehensive 2-3 page executive report that includes:
+      const prompt = `Family enterprise consultant. Write a brief LEP Assessment Report. Sections: Executive Summary, Pillar Analysis (strengths and improvements for each), and 3 Next Steps. Professional tone.
 
-1. Executive Summary: Brief overview of the family enterprise's LEP maturity level
-2. Overall Assessment: Interpretation of the ${Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100 overall score
-3. Pillar Analysis: For each pillar, provide:
-   - Current state assessment
-   - Key strengths
-   - Top 2-3 priority areas for improvement
-   - Specific recommendations
-4. Action Plan: 3-5 high-impact next steps for the family enterprise
-5. Closing: Encouraging note about the LEP journey and potential
-
-Make it professional yet accessible. Use clear formatting with headers. Include specific references to their pillar scores and what they mean.
-
-ASSESSMENT RESULTS:
-Overall LEP Score: ${Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100
-
-Pillar Scores:
-${scoreDetails}
-
-PILLAR DETAILS:
-${LEP_PILLARS.map(p => `${p.name} (${p.description}): ${scores[p.id]}%`).join('\n')}`;
+Overall Score: ${Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5)}/100
+${scoreDetails}`;
 
       const response = await fetch('/.netlify/functions/generate', {
         method: 'POST',
@@ -2189,7 +1985,7 @@ ${LEP_PILLARS.map(p => `${p.name} (${p.description}): ${scores[p.id]}%`).join('\
         },
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
-          max_tokens: 1500,
+          max_tokens: 600,
           messages: [
             { role: 'user', content: prompt }
           ],
