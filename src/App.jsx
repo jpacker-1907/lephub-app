@@ -77,6 +77,70 @@ const LEP_PILLARS = [
   },
 ];
 
+// ─── TRANSITION PATHWAYS ───────────────────────────────────────
+const TRANSITION_PATHWAYS = [
+  {
+    id: 'pe-sale',
+    name: 'Sell to Private Equity',
+    icon: '🏦',
+    color: '#7c3aed',
+    shortDesc: 'Full exit to a private equity firm or strategic buyer',
+    description: 'Evaluate whether a full exit is right for your family. Assess readiness, align family members, understand the emotional and financial implications, and prepare for life after the sale.',
+    considerations: ['Valuation readiness', 'Family alignment on exit', 'Employee & community impact', 'Post-exit identity & purpose', 'Wealth governance after liquidity'],
+    status: 'coming-soon',
+  },
+  {
+    id: 'private-credit',
+    name: 'Private Credit Succession',
+    icon: '🏗️',
+    color: '#0891b2',
+    shortDesc: 'Use debt to fund an internal ownership transition',
+    description: 'Keep the business in the family by using private credit to buy out the senior generation. Assess whether the business can support the debt and whether the next generation is ready to operate under leverage.',
+    considerations: ['Debt capacity & affordability', 'Next-gen operational readiness', 'Senior gen retirement needs', 'Lender relationship management', 'Risk tolerance assessment'],
+    status: 'coming-soon',
+  },
+  {
+    id: 'patient-capital',
+    name: 'Patient Capital / Family Office',
+    icon: '🤝',
+    color: '#2d5a3d',
+    shortDesc: 'Bring in outside capital without giving up full control',
+    description: 'Explore minority investment, growth equity, or family office partnerships that provide liquidity and expertise while preserving family control and culture.',
+    considerations: ['Control vs. capital tradeoffs', 'Governance with outside investors', 'Timeline & exit expectations', 'Cultural alignment', 'Board composition changes'],
+    status: 'coming-soon',
+  },
+  {
+    id: 'esop',
+    name: 'Employee Ownership (ESOP)',
+    icon: '👥',
+    color: '#d97706',
+    shortDesc: 'Transfer ownership to the people who built the business',
+    description: 'Employee Stock Ownership Plans offer tax advantages and a meaningful succession path. Evaluate whether your workforce, culture, and financials support an ESOP transition.',
+    considerations: ['Tax advantages & structure', 'Valuation methodology', 'Employee readiness & culture', 'Ongoing governance requirements', 'Partial vs. full ESOP'],
+    status: 'coming-soon',
+  },
+  {
+    id: 'next-gen',
+    name: 'Next-Gen Takeover',
+    icon: '🌱',
+    color: '#1a3a5c',
+    shortDesc: 'Prepare the next generation to lead',
+    description: 'The most common — and most complex — path. Define employment policies, leadership criteria, board composition, and development plans. Address the hard questions: merit vs. birthright, readiness timelines, and founder transition.',
+    considerations: ['Family employment policy', 'Leadership qualification criteria', 'Board composition & governance', 'Founder role post-transition', 'Sibling/cousin dynamics'],
+    status: 'coming-soon',
+  },
+  {
+    id: 'non-family-exec',
+    name: 'Non-Family Executive',
+    icon: '👔',
+    color: '#dc2626',
+    shortDesc: 'Retain ownership, bring in professional management',
+    description: 'Separate ownership from operations by hiring a non-family CEO or executive team. Define authority boundaries, family council roles, and compensation alignment.',
+    considerations: ['Hiring criteria & search process', 'Authority boundaries & autonomy', 'Family council vs. board roles', 'Compensation & incentive alignment', 'Cultural preservation'],
+    status: 'coming-soon',
+  },
+];
+
 const MEETING_TYPES = [
   { id: 'board', name: 'Board Meeting', frequency: 'Quarterly', icon: '🏛️', pillars: ['impact', 'continuity'] },
   { id: 'shareholder', name: 'Shareholder Meeting', frequency: 'Annual', icon: '📊', pillars: ['impact', 'continuity'] },
@@ -1679,6 +1743,13 @@ function Nav({ currentView, setCurrentView, user }) {
           Assessment
         </button>
         <button
+          className={`nav-item ${currentView === 'transitions' ? 'active' : ''}`}
+          onClick={() => setCurrentView('transitions')}
+        >
+          <span className="nav-icon">🔀</span>
+          Transitions
+        </button>
+        <button
           className={`nav-item ${currentView === 'pillars' ? 'active' : ''}`}
           onClick={() => setCurrentView('pillars')}
         >
@@ -1720,7 +1791,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
       <header className="page-header">
         <div>
           <h1>Welcome back</h1>
-          <p className="subtitle">Here's where your family enterprise stands.</p>
+          <p className="subtitle">Decision infrastructure for your family enterprise transition.</p>
         </div>
         {!scores && (
           <button className="btn btn-primary" onClick={() => setCurrentView('assessment')}>
@@ -1798,18 +1869,27 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
         </>
       ) : (
         <div className="empty-state">
-          <div className="empty-icon">📊</div>
-          <h2>Start Your LEP Journey</h2>
-          <p>Take the assessment to discover where your family enterprise stands across all 5 pillars.</p>
-          <button className="btn btn-primary btn-lg" onClick={() => setCurrentView('assessment')}>
-            Take the LEP Assessment
-          </button>
+          <div className="empty-icon">🔀</div>
+          <h2>Your Family Enterprise Transition Starts Here</h2>
+          <p>Whether you're considering a sale, exploring capital options, or planning a generational handoff — LEP Hub gives you the decision-making tools, frameworks, and community to navigate the most consequential decision your family will ever make.</p>
+          <div className="dashboard-actions" style={{display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px'}}>
+            <button className="btn btn-primary btn-lg" onClick={() => setCurrentView('transitions')}>
+              Explore Transition Pathways
+            </button>
+            <button className="btn btn-outline btn-lg" onClick={() => setCurrentView('assessment')}>
+              Take the LEP Assessment
+            </button>
+          </div>
         </div>
       )}
 
       <div className="quick-actions">
         <h3>Quick Actions</h3>
         <div className="action-grid">
+          <button className="action-card" onClick={() => setCurrentView('transitions')}>
+            <span className="action-icon">🔀</span>
+            <span className="action-label">Transition Pathways</span>
+          </button>
           <button className="action-card" onClick={() => setCurrentView('meetings')}>
             <span className="action-icon">📅</span>
             <span className="action-label">Schedule a Meeting</span>
@@ -2650,6 +2730,170 @@ function VaultView({ vaultDocuments }) {
   );
 }
 
+// ─── TRANSITIONS VIEW ──────────────────────────────────────────
+function TransitionsView({ setCurrentView }) {
+  const [selectedPathway, setSelectedPathway] = useState(null);
+  const [showFamilyVoice, setShowFamilyVoice] = useState(false);
+
+  return (
+    <div className="transitions-view">
+      <header className="page-header">
+        <div>
+          <h1>Family Enterprise Transitions</h1>
+          <p className="subtitle">The decision to sell, hold, or transition your family business is never just financial. Explore every pathway.</p>
+        </div>
+      </header>
+
+      {/* Pre-Exit Readiness Banner */}
+      <div className="transition-banner" style={{background: 'linear-gradient(135deg, #1a3a5c 0%, #2d5a3d 100%)', borderRadius: '12px', padding: '28px 32px', color: 'white', marginBottom: '32px'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'}}>
+          <div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', marginBottom: '8px', color: 'white'}}>Are You Ready for a Transition?</h2>
+            <p style={{opacity: 0.9, fontSize: '0.95rem', maxWidth: '600px', lineHeight: '1.5'}}>
+              Whether PE is knocking, the next generation is stepping up, or you're exploring your options — start with the Family Voice Assessment. Every family member gets heard before any decision is made.
+            </p>
+          </div>
+          <button
+            className="btn"
+            style={{background: 'white', color: '#1a3a5c', fontWeight: '600', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: 'none', whiteSpace: 'nowrap'}}
+            onClick={() => setShowFamilyVoice(true)}
+          >
+            Start Family Voice Assessment →
+          </button>
+        </div>
+      </div>
+
+      {/* Family Voice Assessment Modal */}
+      {showFamilyVoice && (
+        <div style={{background: '#f8fafc', border: '2px solid #2d5a3d', borderRadius: '12px', padding: '32px', marginBottom: '32px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700'}}>🗣️ Family Voice Assessment</h2>
+            <button onClick={() => setShowFamilyVoice(false)} style={{background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer'}}>×</button>
+          </div>
+          <p style={{color: '#64748b', marginBottom: '24px', lineHeight: '1.6'}}>
+            Before any transition decision, every family member needs to be heard. This assessment gives each person space to articulate what the business means to them — not a vote, but a hearing. Complete this individually, then bring the results together as a family.
+          </p>
+          <div style={{display: 'grid', gap: '16px'}}>
+            {[
+              'What does this business mean to you personally?',
+              'What would you lose if the business were sold tomorrow?',
+              'What would you gain?',
+              'What role do you see yourself playing in the family enterprise in 5 years?',
+              'What is your biggest fear about the future of the business?',
+              'What is your biggest hope?',
+              'Do you feel your voice has been heard in decisions about the business?',
+            ].map((question, i) => (
+              <div key={i} style={{background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>
+                  {i + 1}. {question}
+                </label>
+                <textarea
+                  rows="2"
+                  placeholder="Share your thoughts..."
+                  style={{width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit'}}
+                />
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop: '20px', display: 'flex', gap: '12px'}}>
+            <button className="btn btn-primary" style={{padding: '10px 24px'}}>Save My Responses</button>
+            <button className="btn btn-outline" style={{padding: '10px 24px'}} onClick={() => setShowFamilyVoice(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Six Pathways Grid */}
+      <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>Six Pathways Forward</h2>
+      <div className="pathway-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px', marginBottom: '32px'}}>
+        {TRANSITION_PATHWAYS.map(pathway => (
+          <div
+            key={pathway.id}
+            className="pathway-card"
+            style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '24px',
+              border: selectedPathway === pathway.id ? `2px solid ${pathway.color}` : '1px solid #e5e7eb',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: selectedPathway === pathway.id ? `0 4px 12px ${pathway.color}22` : '0 1px 3px rgba(0,0,0,0.05)',
+            }}
+            onClick={() => setSelectedPathway(selectedPathway === pathway.id ? null : pathway.id)}
+          >
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px'}}>
+              <span style={{fontSize: '1.8rem'}}>{pathway.icon}</span>
+              <div>
+                <h3 style={{fontSize: '1rem', fontWeight: '700', color: pathway.color, marginBottom: '2px'}}>{pathway.name}</h3>
+                <p style={{fontSize: '0.82rem', color: '#64748b'}}>{pathway.shortDesc}</p>
+              </div>
+            </div>
+
+            {selectedPathway === pathway.id && (
+              <div style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb'}}>
+                <p style={{fontSize: '0.88rem', color: '#374151', lineHeight: '1.6', marginBottom: '16px'}}>{pathway.description}</p>
+                <h4 style={{fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px'}}>Key Considerations</h4>
+                <ul style={{listStyle: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
+                  {pathway.considerations.map((c, i) => (
+                    <li key={i} style={{
+                      background: `${pathway.color}10`,
+                      color: pathway.color,
+                      padding: '4px 10px',
+                      borderRadius: '100px',
+                      fontSize: '0.78rem',
+                      fontWeight: '500',
+                    }}>{c}</li>
+                  ))}
+                </ul>
+                <button
+                  className="btn"
+                  style={{
+                    marginTop: '16px',
+                    background: pathway.color,
+                    color: 'white',
+                    padding: '8px 20px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    opacity: 0.9,
+                  }}
+                >
+                  Explore This Pathway →
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* The Grief Framework Teaser */}
+      <div style={{background: '#fffbeb', border: '1px solid #f59e0b33', borderRadius: '12px', padding: '28px 32px', marginBottom: '32px'}}>
+        <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '8px', color: '#92400e'}}>🕊️ The Human Side of Transitions</h2>
+        <p style={{fontSize: '0.92rem', color: '#78350f', lineHeight: '1.6', maxWidth: '700px'}}>
+          A family business doesn't have cells, blood, or tissue — but it is a living, breathing entity. When it changes hands, the family grieves. LEP's Seven Stages of Family Enterprise Loss helps families navigate the emotional journey — from rupture through rebuilding — with the same rigor they bring to the financial side.
+        </p>
+        <p style={{fontSize: '0.85rem', color: '#92400e', fontWeight: '600', marginTop: '12px'}}>
+          Built from lived experience. Grounded in family systems therapy. Coming soon to LEP Hub.
+        </p>
+      </div>
+
+      {/* Comparison Tool Teaser */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px 32px', border: '1px solid #e5e7eb'}}>
+        <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '8px', color: '#1a3a5c'}}>📊 Pathway Comparison Tool</h2>
+        <p style={{fontSize: '0.92rem', color: '#64748b', lineHeight: '1.6', maxWidth: '700px'}}>
+          Compare all six pathways side by side — across financial, relational, emotional, and generational dimensions. Not just what the numbers say, but what the family needs. Coming soon.
+        </p>
+        <div style={{display: 'flex', gap: '12px', marginTop: '16px', flexWrap: 'wrap'}}>
+          {['Financial Impact', 'Family Dynamics', 'Identity & Legacy', 'Governance Needs', 'Timeline'].map(dim => (
+            <span key={dim} style={{background: '#f1f5f9', color: '#475569', padding: '6px 14px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '500'}}>{dim}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [scores, setScores] = useState(null);
@@ -2714,6 +2958,7 @@ export default function App() {
       <main className="app-main">
         {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
         {currentView === 'assessment' && <Assessment onComplete={handleAssessmentComplete} />}
+        {currentView === 'transitions' && <TransitionsView setCurrentView={setCurrentView} />}
         {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && <MeetingsView />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
