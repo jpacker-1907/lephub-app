@@ -1660,8 +1660,8 @@ VISION MEASUREMENT:
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1500,
       messages: [
         { role: 'user', content: fullPrompt }
       ],
@@ -2188,8 +2188,8 @@ ${LEP_PILLARS.map(p => `${p.name} (${p.description}): ${scores[p.id]}%`).join('\
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 5000,
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1500,
           messages: [
             { role: 'user', content: prompt }
           ],
