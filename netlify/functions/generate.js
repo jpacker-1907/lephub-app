@@ -1,37 +1,40 @@
 // Netlify Function to proxy Claude API requests
 // This keeps your API key secure on the server side
 
-export default async (request, context) => {
+exports.handler = async function(event, context) {
   // Handle CORS preflight
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 200,
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
-    });
+      body: '',
+    };
   }
 
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
       headers: { 'Content-Type': 'application/json' },
-    });
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
   }
 
   try {
-    const body = await request.json();
-    
+    const body = JSON.parse(event.body);
+
     // Get API key from environment variable
-    const apiKey = Netlify.env.get('ANTHROPIC_API_KEY');
-    
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'API key not configured' }), {
-        status: 500,
+      return {
+        statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-      });
+        body: JSON.stringify({ error: 'API key not configured' }),
+      };
     }
 
     // Forward request to Claude API
@@ -51,18 +54,20 @@ export default async (request, context) => {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
-      status: response.status,
+    return {
+      statusCode: response.status,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       },
-    });
+      body: JSON.stringify(data),
+    };
   } catch (error) {
     console.error('Function error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
+    return {
+      statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-    });
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
   }
 };
