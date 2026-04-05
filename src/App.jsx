@@ -1744,6 +1744,7 @@ function Nav({ currentView, setCurrentView, user, scores }) {
     { id: 'dashboard', icon: '◇', name: 'Home' },
     { id: 'assessment', icon: '◈', name: 'Assessment' },
     { id: 'transitions', icon: '◆', name: 'Transitions' },
+    { id: 'decision-engine', icon: '⚙', name: 'Decision Engine' },
     { id: 'pillars', icon: '▣', name: 'Pillars' },
     { id: 'meetings', icon: '▢', name: 'Meetings' },
     { id: 'vault', icon: '▤', name: 'Vault' },
@@ -3108,7 +3109,7 @@ function TransitionsView({ setCurrentView }) {
           ))}
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-          <button style={{background: 'white', color: '#1e293b', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+          <button onClick={() => setCurrentView('decision-engine')} style={{background: 'white', color: '#1e293b', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
             Begin Decision Process →
           </button>
           <span style={{fontSize: '0.82rem', opacity: 0.6}}>Estimated time: 4–6 weeks with your family</span>
@@ -3237,6 +3238,572 @@ function TransitionsView({ setCurrentView }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// DECISION ENGINE — 6-Phase Interactive Transition Process
+// ═══════════════════════════════════════════════════════════════
+
+const DE_PHASES = [
+  { id: 1, name: 'Readiness', icon: '🔍', desc: 'Are you ready to even have this conversation?' },
+  { id: 2, name: 'Family Voice', icon: '🗣️', desc: 'Every member heard. Not a vote — a hearing.' },
+  { id: 3, name: 'Financial Reality', icon: '📊', desc: 'What the numbers actually say.' },
+  { id: 4, name: 'Pathway Match', icon: '🧬', desc: 'Which paths fit your family?' },
+  { id: 5, name: 'Decision Protocol', icon: '⚖️', desc: 'How your family will decide.' },
+  { id: 6, name: 'Roadmap', icon: '🗺️', desc: 'Your 90-day pre-transition plan.' },
+];
+
+const READINESS_QUESTIONS = [
+  { id: 'r1', text: 'The family has discussed the possibility of a transition openly.', category: 'Emotional' },
+  { id: 'r2', text: 'Key family members agree that now is the right time to explore options.', category: 'Emotional' },
+  { id: 'r3', text: 'We understand the difference between selling a business and transitioning a family enterprise.', category: 'Emotional' },
+  { id: 'r4', text: 'The senior generation has articulated what life after transition looks like for them.', category: 'Emotional' },
+  { id: 'r5', text: 'Our financials are organized, audited, and ready for outside review.', category: 'Financial' },
+  { id: 'r6', text: 'We know the approximate value of the business within a reasonable range.', category: 'Financial' },
+  { id: 'r7', text: 'Key-person dependencies have been identified and documented.', category: 'Financial' },
+  { id: 'r8', text: 'We have or are willing to engage qualified legal, tax, and financial advisors.', category: 'Professional' },
+  { id: 'r9', text: 'The next generation (if involved) has been given a voice in the process.', category: 'Relational' },
+  { id: 'r10', text: 'We are prepared for the process to take 12-24 months.', category: 'Professional' },
+  { id: 'r11', text: 'Family relationships are stable enough to withstand difficult conversations.', category: 'Relational' },
+  { id: 'r12', text: 'There is no active crisis forcing an immediate decision.', category: 'Relational' },
+];
+
+const FAMILY_VOICE_PROMPTS = [
+  { id: 'fv1', text: 'What does this business mean to you personally — beyond the financial?' },
+  { id: 'fv2', text: 'If the business were sold tomorrow, what would you grieve most?' },
+  { id: 'fv3', text: 'What would you gain if the transition happened?' },
+  { id: 'fv4', text: 'What role do you see yourself playing in 5 years — in the family and the enterprise?' },
+  { id: 'fv5', text: 'What is your single biggest fear about this transition?' },
+  { id: 'fv6', text: 'What is your single biggest hope?' },
+  { id: 'fv7', text: 'Have you felt heard in past family business decisions? What would make this time different?' },
+  { id: 'fv8', text: 'Is there anything you\'ve been afraid to say about the business or the family? Say it here.' },
+];
+
+const FINANCIAL_INPUTS = [
+  { id: 'fi1', label: 'Estimated Business Value', type: 'currency', placeholder: '$0', help: 'Rough estimate is fine — formal valuation comes later' },
+  { id: 'fi2', label: 'Annual Revenue', type: 'currency', placeholder: '$0' },
+  { id: 'fi3', label: 'Annual EBITDA', type: 'currency', placeholder: '$0', help: 'Earnings before interest, taxes, depreciation, and amortization' },
+  { id: 'fi4', label: 'Total Debt', type: 'currency', placeholder: '$0' },
+  { id: 'fi5', label: 'Family Members Dependent on Business Income', type: 'number', placeholder: '0' },
+  { id: 'fi6', label: 'Senior Generation Retirement Needs (Annual)', type: 'currency', placeholder: '$0' },
+  { id: 'fi7', label: 'Years Until Desired Transition', type: 'number', placeholder: '0' },
+  { id: 'fi8', label: 'Existing Estate Plan?', type: 'select', options: ['No', 'Basic (wills only)', 'Moderate (trusts + wills)', 'Comprehensive (trusts, FLPs, buy-sell, insurance)'] },
+];
+
+const DECISION_METHODS = [
+  { id: 'consensus', name: 'Full Consensus', desc: 'Everyone must agree. Slowest but strongest buy-in.', icon: '🤝', fit: 'Best for small families (2-4 decision-makers) with strong relationships.' },
+  { id: 'supermajority', name: 'Supermajority (75%)', desc: 'Three-quarters must agree. Protects minority voice.', icon: '⚖️', fit: 'Best for families with 5-8 members and some disagreement.' },
+  { id: 'majority', name: 'Simple Majority', desc: 'Over half decides. Efficient but can leave people behind.', icon: '📊', fit: 'Best for large families or when time pressure exists.' },
+  { id: 'patriarch', name: 'Founder Authority + Input', desc: 'Senior generation decides after hearing all voices.', icon: '👑', fit: 'Best when the founder has strong trust and transition is imminent.' },
+  { id: 'board', name: 'Board/Council Decision', desc: 'Elected or appointed body decides on behalf of the family.', icon: '🏛️', fit: 'Best for 3rd+ generation families with formal governance.' },
+];
+
+function DecisionEngineView({ setCurrentView, scores }) {
+  const [currentPhase, setCurrentPhase] = useState(1);
+  const [engineData, setEngineData] = useState(() => {
+    try { const saved = localStorage.getItem('lep_decision_engine'); return saved ? JSON.parse(saved) : {}; } catch { return {}; }
+  });
+
+  // Auto-save
+  useEffect(() => {
+    localStorage.setItem('lep_decision_engine', JSON.stringify(engineData));
+  }, [engineData]);
+
+  const updateField = (key, value) => setEngineData(prev => ({ ...prev, [key]: value }));
+
+  // Readiness score calculation
+  const readinessScore = (() => {
+    const answers = engineData.readiness || {};
+    const answered = Object.values(answers).filter(v => v !== undefined);
+    if (answered.length === 0) return null;
+    const total = answered.reduce((s, v) => s + v, 0);
+    return Math.round((total / (answered.length * 5)) * 100);
+  })();
+
+  const readinessComplete = Object.keys(engineData.readiness || {}).length === READINESS_QUESTIONS.length;
+  const voiceComplete = (engineData.familyMembers || []).length > 0 && (engineData.familyMembers || []).every(m => m.responses && Object.keys(m.responses).length >= 4);
+  const financialComplete = Object.keys(engineData.financial || {}).length >= 5;
+  const pathwaySelected = !!engineData.selectedPathway;
+  const decisionMethodSelected = !!engineData.decisionMethod;
+
+  const phaseUnlocked = (phase) => {
+    if (phase === 1) return true;
+    if (phase === 2) return readinessComplete;
+    if (phase === 3) return voiceComplete || readinessComplete; // allow skip-ahead if readiness done
+    if (phase === 4) return financialComplete || readinessComplete;
+    if (phase === 5) return pathwaySelected || readinessComplete;
+    if (phase === 6) return decisionMethodSelected || readinessComplete;
+    return false;
+  };
+
+  const phaseComplete = (phase) => {
+    if (phase === 1) return readinessComplete;
+    if (phase === 2) return voiceComplete;
+    if (phase === 3) return financialComplete;
+    if (phase === 4) return pathwaySelected;
+    if (phase === 5) return decisionMethodSelected;
+    if (phase === 6) return !!engineData.roadmapGenerated;
+    return false;
+  };
+
+  return (
+    <div className="decision-engine-view">
+      <header className="page-header">
+        <div>
+          <h1>Decision Engine</h1>
+          <p className="subtitle">Six phases to clarity. No jargon. No pressure.</p>
+        </div>
+        <button className="btn btn-outline" onClick={() => setCurrentView('transitions')} style={{fontSize: '0.85rem'}}>
+          ← Back to Transitions
+        </button>
+      </header>
+
+      {/* Phase Navigation */}
+      <div style={{display: 'flex', gap: '4px', marginBottom: '32px', overflowX: 'auto', paddingBottom: '4px'}}>
+        {DE_PHASES.map(phase => {
+          const unlocked = phaseUnlocked(phase.id);
+          const complete = phaseComplete(phase.id);
+          const active = currentPhase === phase.id;
+          return (
+            <button
+              key={phase.id}
+              onClick={() => unlocked && setCurrentPhase(phase.id)}
+              style={{
+                flex: '1 0 auto', minWidth: '120px', padding: '12px 16px', borderRadius: '10px', border: 'none',
+                background: active ? '#0f172a' : complete ? '#2d5a3d' : unlocked ? 'white' : '#f1f5f9',
+                color: active ? 'white' : complete ? 'white' : unlocked ? '#374151' : '#94a3b8',
+                cursor: unlocked ? 'pointer' : 'default', transition: 'all 0.2s',
+                opacity: unlocked ? 1 : 0.5,
+                boxShadow: active ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+                border: active ? 'none' : '1px solid #e5e7eb',
+              }}
+            >
+              <div style={{fontSize: '1.2rem', marginBottom: '4px'}}>{complete ? '✓' : phase.icon}</div>
+              <div style={{fontSize: '0.75rem', fontWeight: '600'}}>{phase.name}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ─── PHASE 1: READINESS ─── */}
+      {currentPhase === 1 && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🔍 Phase 1: Readiness Assessment</h2>
+            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+              Before any transition conversation, your family needs to know: are we actually ready for this? Rate each statement honestly. There are no wrong answers — only clarity.
+            </p>
+            {readinessScore !== null && (
+              <div style={{marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '12px', background: readinessScore >= 70 ? '#f0fdf4' : readinessScore >= 40 ? '#fffbeb' : '#fef2f2', padding: '8px 16px', borderRadius: '8px', border: `1px solid ${readinessScore >= 70 ? '#2d5a3d33' : readinessScore >= 40 ? '#f59e0b33' : '#dc262633'}`}}>
+                <span style={{fontSize: '1.4rem', fontWeight: '700', color: readinessScore >= 70 ? '#2d5a3d' : readinessScore >= 40 ? '#d97706' : '#dc2626'}}>{readinessScore}</span>
+                <span style={{fontSize: '0.85rem', color: '#475569'}}>
+                  {readinessScore >= 70 ? 'Your family shows strong readiness signals.' : readinessScore >= 40 ? 'Some areas need attention before proceeding.' : 'Significant groundwork needed. That\'s okay — that\'s why you\'re here.'}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {['Emotional', 'Financial', 'Professional', 'Relational'].map(cat => (
+            <div key={cat} style={{marginBottom: '24px'}}>
+              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>{cat} Readiness</h3>
+              {READINESS_QUESTIONS.filter(q => q.category === cat).map(q => (
+                <div key={q.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb'}}>
+                  <p style={{fontSize: '0.9rem', color: '#1e293b', marginBottom: '10px', lineHeight: '1.5'}}>{q.text}</p>
+                  <div style={{display: 'flex', gap: '6px'}}>
+                    {[1,2,3,4,5].map(v => (
+                      <button key={v} onClick={() => updateField('readiness', { ...(engineData.readiness || {}), [q.id]: v })}
+                        style={{
+                          width: '40px', height: '40px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                          fontSize: '0.9rem', fontWeight: '600', transition: 'all 0.15s',
+                          background: (engineData.readiness || {})[q.id] === v ? '#0f172a' : '#f1f5f9',
+                          color: (engineData.readiness || {})[q.id] === v ? 'white' : '#64748b',
+                        }}
+                      >{v}</button>
+                    ))}
+                    <span style={{fontSize: '0.72rem', color: '#94a3b8', alignSelf: 'center', marginLeft: '8px'}}>1 = Not at all → 5 = Absolutely</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          {readinessComplete && (
+            <div style={{textAlign: 'center', padding: '24px 0'}}>
+              <button onClick={() => setCurrentPhase(2)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                Continue to Family Voice →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── PHASE 2: FAMILY VOICE ─── */}
+      {currentPhase === 2 && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🗣️ Phase 2: Family Voice</h2>
+            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+              Before any numbers, strategies, or advisors — every family member gets heard. This isn't a vote. It's a hearing. Add each family member and have them respond individually.
+            </p>
+          </div>
+
+          {/* Add family member */}
+          <div style={{display: 'flex', gap: '8px', marginBottom: '20px'}}>
+            <input
+              type="text"
+              placeholder="Family member name..."
+              id="new-member-name"
+              style={{flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.9rem'}}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                  const members = [...(engineData.familyMembers || []), { name: e.target.value.trim(), responses: {} }];
+                  updateField('familyMembers', members);
+                  e.target.value = '';
+                }
+              }}
+            />
+            <select id="new-member-role" style={{padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.9rem'}}>
+              <option>Role...</option>
+              <option>Founder/Senior Gen</option>
+              <option>Next Gen</option>
+              <option>Spouse</option>
+              <option>In-Law</option>
+              <option>Board Member</option>
+            </select>
+            <button onClick={() => {
+              const nameInput = document.getElementById('new-member-name');
+              const roleInput = document.getElementById('new-member-role');
+              if (nameInput.value.trim()) {
+                const members = [...(engineData.familyMembers || []), { name: nameInput.value.trim(), role: roleInput.value, responses: {} }];
+                updateField('familyMembers', members);
+                nameInput.value = '';
+              }
+            }} style={{background: '#0f172a', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
+              + Add
+            </button>
+          </div>
+
+          {/* Member tabs */}
+          {(engineData.familyMembers || []).length > 0 && (
+            <div>
+              <div style={{display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap'}}>
+                {(engineData.familyMembers || []).map((member, mi) => {
+                  const responseCount = Object.keys(member.responses || {}).length;
+                  return (
+                    <button key={mi}
+                      onClick={() => updateField('activeVoiceMember', mi)}
+                      style={{
+                        padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                        background: engineData.activeVoiceMember === mi ? '#0f172a' : responseCount >= 4 ? '#2d5a3d' : '#f1f5f9',
+                        color: engineData.activeVoiceMember === mi || responseCount >= 4 ? 'white' : '#374151',
+                        fontSize: '0.85rem', fontWeight: '600',
+                      }}
+                    >
+                      {member.name} {responseCount >= 4 ? '✓' : `(${responseCount}/${FAMILY_VOICE_PROMPTS.length})`}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {engineData.activeVoiceMember !== undefined && (engineData.familyMembers || [])[engineData.activeVoiceMember] && (
+                <div>
+                  <h3 style={{fontSize: '1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>
+                    {(engineData.familyMembers || [])[engineData.activeVoiceMember].name}'s Voice
+                    {(engineData.familyMembers || [])[engineData.activeVoiceMember].role && (
+                      <span style={{fontSize: '0.8rem', fontWeight: '400', color: '#64748b', marginLeft: '8px'}}>({(engineData.familyMembers || [])[engineData.activeVoiceMember].role})</span>
+                    )}
+                  </h3>
+                  {FAMILY_VOICE_PROMPTS.map(prompt => (
+                    <div key={prompt.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '10px', border: '1px solid #e5e7eb'}}>
+                      <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '8px', color: '#1a3a5c', lineHeight: '1.5'}}>{prompt.text}</label>
+                      <textarea
+                        rows="3"
+                        placeholder="Share openly — this is confidential to the family..."
+                        value={((engineData.familyMembers || [])[engineData.activeVoiceMember]?.responses || {})[prompt.id] || ''}
+                        onChange={(e) => {
+                          const members = [...(engineData.familyMembers || [])];
+                          if (!members[engineData.activeVoiceMember].responses) members[engineData.activeVoiceMember].responses = {};
+                          members[engineData.activeVoiceMember].responses[prompt.id] = e.target.value;
+                          updateField('familyMembers', members);
+                        }}
+                        style={{width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.5'}}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {voiceComplete && (
+            <div style={{textAlign: 'center', padding: '24px 0'}}>
+              <button onClick={() => setCurrentPhase(3)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                Continue to Financial Reality →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── PHASE 3: FINANCIAL REALITY ─── */}
+      {currentPhase === 3 && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>📊 Phase 3: Financial Reality</h2>
+            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+              Rough numbers are fine — this isn't a formal valuation. The goal is to understand your starting position so the pathway matching can be grounded in reality, not wishful thinking.
+            </p>
+          </div>
+
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px', marginBottom: '24px'}}>
+            {FINANCIAL_INPUTS.map(fi => (
+              <div key={fi.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb'}}>
+                <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '6px', color: '#1a3a5c'}}>{fi.label}</label>
+                {fi.help && <p style={{fontSize: '0.75rem', color: '#94a3b8', marginBottom: '6px'}}>{fi.help}</p>}
+                {fi.type === 'select' ? (
+                  <select
+                    value={(engineData.financial || {})[fi.id] || ''}
+                    onChange={(e) => updateField('financial', { ...(engineData.financial || {}), [fi.id]: e.target.value })}
+                    style={{width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem'}}
+                  >
+                    <option value="">Select...</option>
+                    {fi.options.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    placeholder={fi.placeholder}
+                    value={(engineData.financial || {})[fi.id] || ''}
+                    onChange={(e) => updateField('financial', { ...(engineData.financial || {}), [fi.id]: e.target.value })}
+                    style={{width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem'}}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Financial Health Snapshot */}
+          {financialComplete && (
+            <div style={{background: '#f0fdf4', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #2d5a3d22'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2d5a3d', marginBottom: '12px'}}>Financial Snapshot</h3>
+              <p style={{fontSize: '0.88rem', color: '#374151', lineHeight: '1.6'}}>
+                Based on your inputs, your family enterprise has the financial profile to support multiple transition pathways. The next phase will match you to the options that fit your specific situation.
+              </p>
+              <div style={{marginTop: '16px', textAlign: 'center'}}>
+                <button onClick={() => setCurrentPhase(4)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                  Continue to Pathway Matching →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── PHASE 4: PATHWAY MATCHING ─── */}
+      {currentPhase === 4 && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🧬 Phase 4: Pathway Matching</h2>
+            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+              Based on your readiness, family voice, and financial reality — here are the pathways that fit your family's DNA. Select the one that resonates most. You can always revisit.
+            </p>
+          </div>
+
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+            {TRANSITION_PATHWAYS.map(pathway => {
+              const selected = engineData.selectedPathway === pathway.id;
+              return (
+                <div key={pathway.id}
+                  onClick={() => updateField('selectedPathway', pathway.id)}
+                  style={{
+                    background: selected ? `${pathway.color}08` : 'white',
+                    borderRadius: '12px', padding: '20px', cursor: 'pointer',
+                    border: selected ? `2px solid ${pathway.color}` : '1px solid #e5e7eb',
+                    transition: 'all 0.2s', position: 'relative',
+                  }}
+                >
+                  {selected && <span style={{position: 'absolute', top: '10px', right: '12px', background: pathway.color, color: 'white', fontSize: '0.7rem', padding: '2px 10px', borderRadius: '100px', fontWeight: '600'}}>Selected</span>}
+                  <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
+                    <span style={{fontSize: '1.6rem'}}>{pathway.icon}</span>
+                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: pathway.color}}>{pathway.name}</h3>
+                  </div>
+                  <p style={{fontSize: '0.82rem', color: '#64748b', lineHeight: '1.5'}}>{pathway.shortDesc}</p>
+                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '10px'}}>
+                    {pathway.considerations.slice(0, 3).map((c, i) => (
+                      <span key={i} style={{fontSize: '0.7rem', background: `${pathway.color}10`, color: pathway.color, padding: '2px 8px', borderRadius: '100px'}}>{c}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Why this pathway */}
+          {pathwaySelected && (
+            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>Why does this pathway resonate with your family?</label>
+              <textarea
+                rows="3"
+                placeholder="In your own words..."
+                value={engineData.pathwayReason || ''}
+                onChange={(e) => updateField('pathwayReason', e.target.value)}
+                style={{width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit'}}
+              />
+              <div style={{marginTop: '16px', textAlign: 'center'}}>
+                <button onClick={() => setCurrentPhase(5)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                  Continue to Decision Protocol →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── PHASE 5: DECISION PROTOCOL ─── */}
+      {currentPhase === 5 && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>⚖️ Phase 5: Decision Protocol</h2>
+            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+              Before your family decides *what* to do, you need to agree on *how* you'll decide. This prevents the most common source of conflict in family transitions — not the decision itself, but the process.
+            </p>
+          </div>
+
+          <div style={{display: 'grid', gap: '12px', marginBottom: '24px'}}>
+            {DECISION_METHODS.map(method => {
+              const selected = engineData.decisionMethod === method.id;
+              return (
+                <div key={method.id}
+                  onClick={() => updateField('decisionMethod', method.id)}
+                  style={{
+                    background: selected ? '#0f172a' : 'white',
+                    borderRadius: '12px', padding: '20px', cursor: 'pointer',
+                    border: selected ? '2px solid #0f172a' : '1px solid #e5e7eb',
+                    transition: 'all 0.2s', display: 'flex', alignItems: 'flex-start', gap: '16px',
+                  }}
+                >
+                  <span style={{fontSize: '1.8rem', flexShrink: 0}}>{method.icon}</span>
+                  <div>
+                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: selected ? 'white' : '#1a3a5c', marginBottom: '4px'}}>{method.name}</h3>
+                    <p style={{fontSize: '0.85rem', color: selected ? 'rgba(255,255,255,0.8)' : '#64748b', lineHeight: '1.5', marginBottom: '6px'}}>{method.desc}</p>
+                    <p style={{fontSize: '0.78rem', color: selected ? 'rgba(255,255,255,0.6)' : '#94a3b8', fontStyle: 'italic'}}>{method.fit}</p>
+                  </div>
+                  {selected && <span style={{marginLeft: 'auto', color: '#4ade80', fontSize: '1.2rem', flexShrink: 0}}>✓</span>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Ground rules */}
+          {decisionMethodSelected && (
+            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>Ground Rules — What does your family commit to during this process?</label>
+              <p style={{fontSize: '0.78rem', color: '#94a3b8', marginBottom: '8px'}}>Examples: "No side conversations — everything gets said in the room." "We commit to hearing each other without interrupting." "If we reach an impasse, we'll bring in a facilitator."</p>
+              <textarea
+                rows="4"
+                placeholder="Our family commits to..."
+                value={engineData.groundRules || ''}
+                onChange={(e) => updateField('groundRules', e.target.value)}
+                style={{width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit'}}
+              />
+              <div style={{marginTop: '16px', textAlign: 'center'}}>
+                <button onClick={() => setCurrentPhase(6)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                  Continue to Roadmap →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── PHASE 6: ROADMAP ─── */}
+      {currentPhase === 6 && (() => {
+        const selectedPW = TRANSITION_PATHWAYS.find(p => p.id === engineData.selectedPathway);
+        const selectedDM = DECISION_METHODS.find(m => m.id === engineData.decisionMethod);
+        const memberCount = (engineData.familyMembers || []).length;
+
+        const roadmapItems = [
+          { week: '1-2', title: 'Family Alignment Meeting', desc: `Gather all ${memberCount || 'family'} members. Present the Decision Engine results. Agree on the ${selectedDM?.name || 'decision'} method. Establish ground rules.`, category: 'Family' },
+          { week: '2-3', title: 'Advisor Assembly', desc: `Engage qualified professionals: M&A attorney, tax advisor, wealth planner, and a family business consultant. Brief them on your ${selectedPW?.name || 'chosen pathway'}.`, category: 'Professional' },
+          { week: '3-4', title: 'Formal Valuation', desc: 'Commission an independent business valuation from an accredited appraiser (ASA, ABV, or CVA). This grounds all negotiations in reality.', category: 'Financial' },
+          { week: '4-6', title: 'Estate & Tax Review', desc: 'Review all estate documents with legal counsel. Identify gaps, expired instruments, and tax optimization opportunities specific to your pathway.', category: 'Legal' },
+          { week: '5-7', title: 'Stakeholder Communication', desc: 'Develop messaging for key stakeholders — employees, customers, partners, community. Timing is critical: too early creates anxiety, too late creates distrust.', category: 'Communication' },
+          { week: '6-8', title: 'Successor/Buyer Preparation', desc: selectedPW?.id === 'next-gen' ? 'Formalize the next-gen development plan. Define leadership criteria, timeline, and mentorship structure.'
+            : selectedPW?.id === 'pe-sale' ? 'Prepare the confidential information memorandum (CIM). Identify 3-5 target buyers. Engage an investment banker if deal size warrants.'
+            : selectedPW?.id === 'esop' ? 'Engage an ESOP trustee and legal counsel. Begin the feasibility study. Model the leveraged vs. non-leveraged structure.'
+            : 'Begin detailed planning for your chosen pathway. Identify the key milestones and dependencies.', category: 'Execution' },
+          { week: '8-10', title: 'Family Council Formation', desc: 'Establish the governance structure that will oversee the transition. Define roles, meeting cadence, and decision authority.', category: 'Governance' },
+          { week: '10-12', title: 'Go/No-Go Decision', desc: `Using the ${selectedDM?.name || 'agreed'} method, the family makes its formal decision. If go — execute. If not — revisit Phase 4 with new information.`, category: 'Decision' },
+          { week: '12-13', title: 'Transition Launch', desc: 'Execute the plan. Begin the formal transition process with all advisors aligned, family informed, and governance in place.', category: 'Execution' },
+        ];
+
+        return (
+          <div>
+            <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '12px', padding: '24px', marginBottom: '24px', color: 'white'}}>
+              <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px', color: 'white'}}>🗺️ Phase 6: Your 90-Day Pre-Transition Roadmap</h2>
+              <p style={{fontSize: '0.9rem', opacity: 0.8, lineHeight: '1.6', maxWidth: '650px'}}>
+                This is your family's personalized roadmap — generated from your readiness scores, family voice responses, financial inputs, and chosen pathway ({selectedPW?.name || 'TBD'}).
+              </p>
+            </div>
+
+            {/* Summary cards */}
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px'}}>
+              <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '14px', border: '1px solid #2d5a3d22'}}>
+                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Readiness Score</div>
+                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#2d5a3d'}}>{readinessScore || '—'}/100</div>
+              </div>
+              <div style={{background: '#f0f9ff', borderRadius: '10px', padding: '14px', border: '1px solid #0891b222'}}>
+                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Family Members</div>
+                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#0891b2'}}>{memberCount}</div>
+              </div>
+              <div style={{background: '#faf5ff', borderRadius: '10px', padding: '14px', border: '1px solid #7c3aed22'}}>
+                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Pathway</div>
+                <div style={{fontSize: '1rem', fontWeight: '700', color: '#7c3aed'}}>{selectedPW?.name || '—'}</div>
+              </div>
+              <div style={{background: '#fffbeb', borderRadius: '10px', padding: '14px', border: '1px solid #d9770622'}}>
+                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Decision Method</div>
+                <div style={{fontSize: '1rem', fontWeight: '700', color: '#d97706'}}>{selectedDM?.name || '—'}</div>
+              </div>
+            </div>
+
+            {/* Roadmap timeline */}
+            <div style={{position: 'relative', paddingLeft: '24px', marginBottom: '32px'}}>
+              <div style={{position: 'absolute', left: '10px', top: 0, bottom: 0, width: '2px', background: '#e5e7eb'}} />
+              {roadmapItems.map((item, i) => (
+                <div key={i} style={{position: 'relative', marginBottom: '16px', paddingLeft: '24px'}}>
+                  <div style={{position: 'absolute', left: '-8px', top: '4px', width: '16px', height: '16px', borderRadius: '50%', background: '#0f172a', border: '3px solid white', boxShadow: '0 0 0 1px #e5e7eb'}} />
+                  <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px'}}>
+                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{item.title}</h4>
+                      <span style={{fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600'}}>Week {item.week}</span>
+                    </div>
+                    <p style={{fontSize: '0.85rem', color: '#475569', lineHeight: '1.6'}}>{item.desc}</p>
+                    <span style={{display: 'inline-block', marginTop: '8px', fontSize: '0.7rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '4px'}}>{item.category}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mark complete + export */}
+            <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb', textAlign: 'center'}}>
+              <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>Your family has a plan.</h3>
+              <p style={{fontSize: '0.88rem', color: '#64748b', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto 20px'}}>
+                Save this roadmap, share it with your family and advisors, and begin the most important transition of your family enterprise's history.
+              </p>
+              <div style={{display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <button onClick={() => { updateField('roadmapGenerated', true); }} style={{background: '#2d5a3d', color: 'white', padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
+                  Mark Complete ✓
+                </button>
+                <button onClick={() => setCurrentView('dashboard')} style={{background: 'white', color: '#374151', padding: '12px 28px', borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
+                  Return to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [scores, setScores] = useState(null);
@@ -3302,6 +3869,7 @@ export default function App() {
         {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
         {currentView === 'assessment' && <Assessment onComplete={handleAssessmentComplete} />}
         {currentView === 'transitions' && <TransitionsView setCurrentView={setCurrentView} />}
+        {currentView === 'decision-engine' && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && <MeetingsView />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
