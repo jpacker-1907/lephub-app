@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import './App.css';
@@ -2739,6 +2739,113 @@ const MEETING_TEMPLATES = {
   },
 };
 
+// ─── TRANSCRIPT PARSER ─────────────────────────────────────
+function parseTranscript(transcript, template) {
+  const lines = transcript.split('\n').filter(l => l.trim());
+  const result = { agendaNotes: {}, actionItems: [], issues: [] };
+
+  // Keywords that signal action items
+  const actionPatterns = [
+    /(?:action item|to.?do|task|follow up|need(?:s)? to|will|should|must|assign(?:ed)?|commit(?:ted)?)\s*[:\-]?\s*(.+)/i,
+    /(\w+)\s+(?:will|needs to|should|is going to)\s+(.+?)(?:\s+by\s+(.+))?$/i,
+  ];
+
+  // Keywords that signal issues for the resolution queue
+  const issuePatterns = [
+    /(?:issue|problem|concern|challenge|risk|flag|blocker|conflict)\s*[:\-]?\s*(.+)/i,
+    /(?:we need to (?:address|resolve|fix|discuss))\s+(.+)/i,
+  ];
+
+  // Map agenda items to keywords for smart routing
+  const agendaKeywords = {};
+  if (template) {
+    template.agenda.forEach(item => {
+      const kw = [];
+      const name = item.name.toLowerCase();
+      const desc = item.desc.toLowerCase();
+      if (name.includes('check-in') || name.includes('opening') || name.includes('welcome')) kw.push('check-in', 'feeling', 'grateful', 'gratitude', 'personal', 'welcome');
+      if (name.includes('pulse') || name.includes('scorecard') || name.includes('metric')) kw.push('revenue', 'metric', 'kpi', 'number', 'score', 'ebitda', 'cash', 'profit', 'growth');
+      if (name.includes('priorit') || name.includes('90-day') || name.includes('rock')) kw.push('priority', 'goal', 'milestone', 'progress', 'track', 'quarter', 'initiative', 'on track', 'off track');
+      if (name.includes('headline') || name.includes('update')) kw.push('update', 'news', 'announce', 'headline', 'report', 'development');
+      if (name.includes('resolve') || name.includes('forum') || desc.includes('issue')) kw.push('issue', 'discuss', 'resolve', 'debate', 'disagree', 'concern', 'conflict', 'challenge');
+      if (name.includes('action') || name.includes('accountability')) kw.push('action', 'to-do', 'assign', 'deadline', 'responsible', 'owner', 'accountab');
+      if (name.includes('closing') || name.includes('rating') || name.includes('ritual')) kw.push('closing', 'wrap', 'rating', 'rate', 'appreciate', 'adjourn', 'conclude');
+      if (name.includes('financial') || name.includes('report')) kw.push('financial', 'revenue', 'profit', 'loss', 'budget', 'dividend', 'distribution');
+      if (name.includes('succession') || name.includes('continuity')) kw.push('succession', 'successor', 'transition', 'leadership', 'pipeline', 'retire', 'continuity');
+      if (name.includes('philanthropy') || name.includes('giving')) kw.push('philanthropy', 'giving', 'donation', 'charity', 'foundation', 'impact', 'community');
+      if (name.includes('next-gen') || name.includes('spotlight')) kw.push('next gen', 'younger', 'intern', 'education', 'development', 'mentee', 'learning');
+      if (name.includes('vote') || name.includes('resolution')) kw.push('vote', 'motion', 'resolution', 'approve', 'second', 'quorum', 'ratify');
+      if (name.includes('policy') || name.includes('governance')) kw.push('policy', 'governance', 'bylaw', 'constitution', 'employment', 'compensation');
+      if (name.includes('vision') || name.includes('looking ahead')) kw.push('vision', 'future', 'plan', 'long-term', 'strategy', 'next year', 'five year');
+      if (name.includes('story') || name.includes('legacy')) kw.push('story', 'legacy', 'history', 'founder', 'tradition', 'memory', 'generation');
+      if (name.includes('icebreaker') || name.includes('connection')) kw.push('icebreaker', 'fun', 'game', 'introduce', 'bond', 'connect');
+      if (name.includes('education') || name.includes('case study') || name.includes('speaker')) kw.push('learn', 'education', 'teach', 'speaker', 'case study', 'example', 'lesson', 'guest');
+      agendaKeywords[item.id] = kw;
+    });
+  }
+
+  let currentAgendaItem = template?.agenda?.[0]?.id || null;
+
+  lines.forEach(line => {
+    const lower = line.toLowerCase();
+
+    // Check for agenda section transitions
+    if (template) {
+      let bestMatch = null;
+      let bestScore = 0;
+      Object.entries(agendaKeywords).forEach(([itemId, keywords]) => {
+        const score = keywords.filter(kw => lower.includes(kw)).length;
+        if (score > bestScore) { bestScore = score; bestMatch = itemId; }
+      });
+      if (bestScore >= 2) currentAgendaItem = bestMatch;
+    }
+
+    // Check for action items
+    let isAction = false;
+    for (const pattern of actionPatterns) {
+      const m = line.match(pattern);
+      if (m) {
+        const text = m[2] ? `${m[1]} will ${m[2]}` : m[1];
+        const ownerMatch = text.match(/^(\w+)\s+(?:will|needs|should)/i);
+        result.actionItems.push({
+          id: Date.now() + Math.random(),
+          text: text.trim(),
+          owner: ownerMatch ? ownerMatch[1] : '',
+          due: m[3] || '',
+          done: false,
+        });
+        isAction = true;
+        break;
+      }
+    }
+
+    // Check for issues
+    let isIssue = false;
+    for (const pattern of issuePatterns) {
+      const m = line.match(pattern);
+      if (m) {
+        result.issues.push({
+          id: Date.now() + Math.random(),
+          text: m[1].trim(),
+          priority: lower.includes('urgent') || lower.includes('critical') ? 'high' : lower.includes('minor') || lower.includes('low') ? 'low' : 'medium',
+          date: new Date().toISOString().split('T')[0],
+          resolved: false,
+        });
+        isIssue = true;
+        break;
+      }
+    }
+
+    // Route to agenda section notes
+    if (!isAction && currentAgendaItem) {
+      const existing = result.agendaNotes[currentAgendaItem] || '';
+      result.agendaNotes[currentAgendaItem] = existing ? existing + '\n' + line : line;
+    }
+  });
+
+  return result;
+}
+
 function MeetingsView() {
   const [meetings, setMeetings] = useState(() => {
     try { const s = localStorage.getItem('lep_meetings'); return s ? JSON.parse(s) : []; } catch { return []; }
@@ -2751,9 +2858,142 @@ function MeetingsView() {
   const [newIssue, setNewIssue] = useState('');
   const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
 
+  // Recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [liveText, setLiveText] = useState('');
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [showTranscript, setShowTranscript] = useState(false);
+  const [processingDone, setProcessingDone] = useState(false);
+  const recognitionRef = useRef(null);
+  const timerRef = useRef(null);
+
   // Auto-save
   useEffect(() => { localStorage.setItem('lep_meetings', JSON.stringify(meetings)); }, [meetings]);
   useEffect(() => { localStorage.setItem('lep_issues', JSON.stringify(issuesList)); }, [issuesList]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch(e) {} }
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const startRecording = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { alert('Speech recognition is not supported in this browser. Please use Chrome.'); return; }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      let interim = '';
+      let finalText = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += t + '. ';
+        } else {
+          interim += t;
+        }
+      }
+      if (finalText) {
+        setTranscript(prev => prev + finalText + '\n');
+      }
+      setLiveText(interim);
+    };
+
+    recognition.onerror = (event) => {
+      if (event.error === 'no-speech') return; // Normal — just no audio detected
+      console.error('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed') {
+        alert('Microphone access denied. Please allow microphone access in your browser settings.');
+        stopRecording();
+      }
+    };
+
+    recognition.onend = () => {
+      // Auto-restart if still recording (speech recognition stops after silence)
+      // Use recognitionRef as signal — if it's still set, we're still recording
+      if (recognitionRef.current === recognition) {
+        try { recognition.start(); } catch(e) {}
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+    setIsPaused(false);
+    setRecordingTime(0);
+    setTranscript('');
+    setLiveText('');
+    setProcessingDone(false);
+
+    timerRef.current = setInterval(() => {
+      setRecordingTime(prev => prev + 1);
+    }, 1000);
+  };
+
+  const pauseRecording = () => {
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch(e) {} }
+    setIsPaused(true);
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const resumeRecording = () => {
+    if (recognitionRef.current) { try { recognitionRef.current.start(); } catch(e) {} }
+    setIsPaused(false);
+    timerRef.current = setInterval(() => {
+      setRecordingTime(prev => prev + 1);
+    }, 1000);
+  };
+
+  const stopRecording = () => {
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch(e) {} recognitionRef.current = null; }
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    setIsRecording(false);
+    setIsPaused(false);
+    setLiveText('');
+    setShowTranscript(true);
+  };
+
+  const processTranscript = (meetingId) => {
+    const meeting = meetings.find(m => m.id === meetingId);
+    const tmpl = meeting ? MEETING_TEMPLATES[meeting.type] : null;
+    const parsed = parseTranscript(transcript, tmpl);
+
+    // Merge parsed results into meeting
+    const mergedNotes = { ...(meeting.agendaNotes || {}) };
+    Object.entries(parsed.agendaNotes).forEach(([key, val]) => {
+      mergedNotes[key] = mergedNotes[key] ? mergedNotes[key] + '\n--- From Recording ---\n' + val : val;
+    });
+
+    const mergedActions = [...(meeting.actionItems || []), ...parsed.actionItems];
+
+    updateMeeting(meetingId, {
+      agendaNotes: mergedNotes,
+      actionItems: mergedActions,
+      transcript: (meeting.transcript || '') + '\n' + transcript,
+    });
+
+    // Add issues to the resolution queue
+    if (parsed.issues.length > 0) {
+      setIssuesList(prev => [...prev, ...parsed.issues]);
+    }
+
+    setProcessingDone(true);
+  };
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   // All action items across all meetings
   const allActions = meetings.flatMap(m => (m.actionItems || []).map(a => ({ ...a, meetingId: m.id, meetingName: `${MEETING_TEMPLATES[m.type]?.name || m.type} — ${m.date}` })));
@@ -2909,6 +3149,104 @@ function MeetingsView() {
                 style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: '0.85rem', minWidth: '250px', '::placeholder': {color: 'rgba(255,255,255,0.5)'}}}
               />
             </div>
+          </div>
+
+          {/* ─── MEETING RECORDER ─── */}
+          <div style={{background: isRecording ? '#fef2f2' : '#f0fdf4', borderRadius: '12px', padding: '16px 20px', marginBottom: '16px', border: `2px solid ${isRecording ? '#fca5a5' : '#bbf7d0'}`, transition: 'all 0.3s'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                {isRecording && (
+                  <div style={{width: '12px', height: '12px', borderRadius: '50%', background: isPaused ? '#fbbf24' : '#dc2626', animation: isPaused ? 'none' : 'pulse 1.5s infinite', flexShrink: 0}} />
+                )}
+                <div>
+                  <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '2px'}}>
+                    {isRecording ? (isPaused ? 'Recording Paused' : 'Recording...') : processingDone ? 'Recording Processed' : 'Meeting Recorder'}
+                  </h4>
+                  <p style={{fontSize: '0.75rem', color: '#64748b'}}>
+                    {isRecording ? `${formatTime(recordingTime)} — Speak naturally, we\'ll capture notes and action items.` :
+                     processingDone ? 'Transcript has been processed into your agenda notes, action items, and resolution queue.' :
+                     'Record your meeting to auto-populate agenda notes, action items, and issues.'}
+                  </p>
+                </div>
+              </div>
+              <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                {isRecording && <span style={{fontSize: '1rem', fontFamily: 'monospace', fontWeight: '700', color: '#dc2626', minWidth: '50px'}}>{formatTime(recordingTime)}</span>}
+                {!isRecording && !transcript && (
+                  <button onClick={startRecording}
+                    style={{background: '#dc2626', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                    <span style={{width: '10px', height: '10px', borderRadius: '50%', background: 'white', flexShrink: 0}} /> Start Recording
+                  </button>
+                )}
+                {isRecording && !isPaused && (
+                  <>
+                    <button onClick={pauseRecording}
+                      style={{background: '#fbbf24', color: '#78350f', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      Pause
+                    </button>
+                    <button onClick={stopRecording}
+                      style={{background: '#0f172a', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      Stop
+                    </button>
+                  </>
+                )}
+                {isRecording && isPaused && (
+                  <>
+                    <button onClick={resumeRecording}
+                      style={{background: '#dc2626', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      Resume
+                    </button>
+                    <button onClick={stopRecording}
+                      style={{background: '#0f172a', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      Stop
+                    </button>
+                  </>
+                )}
+                {!isRecording && transcript && !processingDone && (
+                  <>
+                    <button onClick={() => processTranscript(meeting.id)}
+                      style={{background: '#2d5a3d', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                      Process Recording
+                    </button>
+                    <button onClick={() => setShowTranscript(!showTranscript)}
+                      style={{background: 'white', color: '#64748b', padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      {showTranscript ? 'Hide' : 'View'} Transcript
+                    </button>
+                  </>
+                )}
+                {processingDone && (
+                  <button onClick={() => { setTranscript(''); setProcessingDone(false); setShowTranscript(false); setRecordingTime(0); }}
+                    style={{background: 'white', color: '#64748b', padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                    New Recording
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Live transcription preview */}
+            {isRecording && (liveText || transcript) && (
+              <div style={{marginTop: '12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', padding: '10px 14px', maxHeight: '80px', overflow: 'auto', fontSize: '0.82rem', color: '#374151', lineHeight: '1.5'}}>
+                {transcript.split('\n').slice(-3).map((line, i) => (
+                  <div key={i} style={{opacity: 0.7}}>{line}</div>
+                ))}
+                {liveText && <div style={{color: '#dc2626', fontStyle: 'italic'}}>{liveText}</div>}
+              </div>
+            )}
+
+            {/* Full transcript view */}
+            {showTranscript && !isRecording && transcript && (
+              <div style={{marginTop: '12px'}}>
+                <textarea
+                  value={transcript}
+                  onChange={(e) => setTranscript(e.target.value)}
+                  rows="8"
+                  style={{width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '0.82rem', fontFamily: 'inherit', lineHeight: '1.6', resize: 'vertical', background: 'white'}}
+                  placeholder="Transcript will appear here..."
+                />
+                <p style={{fontSize: '0.72rem', color: '#94a3b8', marginTop: '6px'}}>
+                  You can edit the transcript before processing. The system will extract action items, issues, and route notes to the right agenda sections.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Agenda items */}
