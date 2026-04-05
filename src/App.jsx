@@ -82,6 +82,20 @@ const LEP_PILLARS = [
   },
 ];
 
+// ─── INDUSTRY CATEGORIES ──────────────────────────────────────
+const INDUSTRY_PROFILES = {
+  'Manufacturing': { icon: '🏭', pathways: ['pe-sale', 'esop', 'next-gen'], tip: 'Manufacturing businesses often command 5-8x EBITDA multiples. ESOP transitions are common due to workforce culture.' },
+  'Distribution': { icon: '📦', pathways: ['pe-sale', 'private-credit', 'next-gen'], tip: 'Distribution companies attract PE interest due to recurring revenue. Private credit works well for asset-heavy operations.' },
+  'Construction': { icon: '🔨', pathways: ['next-gen', 'esop', 'non-family-exec'], tip: 'Construction businesses are deeply tied to founder reputation. Next-gen transitions require long runway for relationship transfer.' },
+  'Food & Beverage': { icon: '🍽️', pathways: ['pe-sale', 'patient-capital', 'next-gen'], tip: 'F&B brands carry emotional weight. Patient capital preserves brand identity while providing liquidity.' },
+  'Real Estate': { icon: '🏠', pathways: ['patient-capital', 'next-gen', 'non-family-exec'], tip: 'Real estate families often prefer holding assets long-term. Family office structures work well here.' },
+  'Technology': { icon: '💻', pathways: ['pe-sale', 'patient-capital', 'non-family-exec'], tip: 'Tech companies move fast. Strategic buyers often pay premiums. Non-family executives common for scaling.' },
+  'Healthcare Services': { icon: '🏥', pathways: ['pe-sale', 'private-credit', 'non-family-exec'], tip: 'Healthcare PE is active. Regulatory complexity means professional management transition is common.' },
+  'Retail': { icon: '🛍️', pathways: ['next-gen', 'esop', 'pe-sale'], tip: 'Retail families have deep community ties. ESOP can preserve culture while providing founder liquidity.' },
+  'Professional Services': { icon: '💼', pathways: ['next-gen', 'non-family-exec', 'esop'], tip: 'People-based businesses depend on relationships. Gradual transitions over 3-5 years work best.' },
+  'Agriculture': { icon: '🌾', pathways: ['next-gen', 'patient-capital', 'private-credit'], tip: 'Ag families are multi-generational by nature. Land and legacy are inseparable. Patient capital preserves both.' },
+};
+
 // ─── TRANSITION PATHWAYS ───────────────────────────────────────
 const TRANSITION_PATHWAYS = [
   {
@@ -1724,7 +1738,22 @@ async function downloadDocument(moduleId, data, title) {
 // COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-function Nav({ currentView, setCurrentView, user }) {
+function Nav({ currentView, setCurrentView, user, scores }) {
+  const navSections = [
+    { label: 'NAVIGATE', items: [
+      { id: 'dashboard', icon: '◇', name: 'Dashboard', desc: 'Overview & scores' },
+      { id: 'assessment', icon: '📊', name: 'Assessment', desc: 'LEP Score' },
+    ]},
+    { label: 'TRANSITION', items: [
+      { id: 'transitions', icon: '🧭', name: 'Transitions', desc: 'Pathways & decisions' },
+    ]},
+    { label: 'BUILD', items: [
+      { id: 'pillars', icon: '🏛️', name: 'Pillars', desc: 'Five tools' },
+      { id: 'meetings', icon: '📅', name: 'Meetings', desc: 'Family governance' },
+      { id: 'vault', icon: '🔐', name: 'Vault', desc: 'Secure documents' },
+    ]},
+  ];
+
   return (
     <nav className="app-nav">
       <div className="nav-brand">
@@ -1733,48 +1762,35 @@ function Nav({ currentView, setCurrentView, user }) {
       </div>
 
       <div className="nav-menu">
-        <button
-          className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setCurrentView('dashboard')}
-        >
-          <span className="nav-icon">◇</span>
-          Dashboard
-        </button>
-        <button
-          className={`nav-item ${currentView === 'assessment' ? 'active' : ''}`}
-          onClick={() => setCurrentView('assessment')}
-        >
-          <span className="nav-icon">📊</span>
-          Assessment
-        </button>
-        <button
-          className={`nav-item ${currentView === 'transitions' ? 'active' : ''}`}
-          onClick={() => setCurrentView('transitions')}
-        >
-          <span className="nav-icon">🔀</span>
-          Transitions
-        </button>
-        <button
-          className={`nav-item ${currentView === 'pillars' ? 'active' : ''}`}
-          onClick={() => setCurrentView('pillars')}
-        >
-          <span className="nav-icon">🏛️</span>
-          Pillars
-        </button>
-        <button
-          className={`nav-item ${currentView === 'meetings' ? 'active' : ''}`}
-          onClick={() => setCurrentView('meetings')}
-        >
-          <span className="nav-icon">📅</span>
-          Meetings
-        </button>
-        <button
-          className={`nav-item ${currentView === 'vault' ? 'active' : ''}`}
-          onClick={() => setCurrentView('vault')}
-        >
-          <span className="nav-icon">🌁</span>
-          Vault
-        </button>
+        {navSections.map(section => (
+          <div key={section.label}>
+            <div style={{padding: '12px 16px 4px', fontSize: '0.65rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em'}}>{section.label}</div>
+            {section.items.map(item => (
+              <button
+                key={item.id}
+                className={`nav-item ${currentView === item.id ? 'active' : ''}`}
+                onClick={() => setCurrentView(item.id)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                  <span>{item.name}</span>
+                  <span style={{fontSize: '0.65rem', color: '#94a3b8', fontWeight: '400', marginTop: '-2px'}}>{item.desc}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Compliance Badge */}
+      <div style={{padding: '12px 16px', margin: '8px 12px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0'}}>
+        <div style={{fontSize: '0.7rem', fontWeight: '600', color: '#166534', marginBottom: '2px'}}>🔒 Your Data</div>
+        <div style={{fontSize: '0.62rem', color: '#15803d', lineHeight: '1.3'}}>End-to-end encrypted. SOC 2 compliant. Your family's data never leaves your control.</div>
+      </div>
+
+      <div style={{padding: '8px 16px', margin: '0 12px 8px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe'}}>
+        <div style={{fontSize: '0.7rem', fontWeight: '600', color: '#1e40af', marginBottom: '2px'}}>🤝 Work With an Advisor?</div>
+        <div style={{fontSize: '0.62rem', color: '#1d4ed8', lineHeight: '1.3'}}>LEP Hub is designed to work alongside your trusted advisors — not replace them.</div>
       </div>
 
       <div className="nav-user">
@@ -2739,15 +2755,149 @@ function VaultView({ vaultDocuments }) {
 function TransitionsView({ setCurrentView }) {
   const [selectedPathway, setSelectedPathway] = useState(null);
   const [showFamilyVoice, setShowFamilyVoice] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [showAdvisorPanel, setShowAdvisorPanel] = useState(false);
+  const [dismissedOnboarding, setDismissedOnboarding] = useState(() => {
+    try { return localStorage.getItem('lep_onboarding_done') === 'true'; } catch { return false; }
+  });
+
+  const onboardingSteps = [
+    { title: 'Welcome to Your Transition Journey', desc: 'LEP Hub walks you through the most important decision your family will ever make — step by step. No jargon. No pressure. Just clarity.', icon: '👋' },
+    { title: 'Start With the Family Voice', desc: 'Before any numbers, strategies, or advisors — every family member gets heard. The Family Voice Assessment gives each person space to share what the business means to them.', icon: '🗣️' },
+    { title: 'Explore Six Pathways', desc: 'From PE sale to next-gen takeover, each pathway has its own financial, emotional, and relational dimensions. Click any card below to learn more.', icon: '🧭' },
+    { title: 'Use the Decision Engine', desc: 'When you\'re ready, the 6-phase Decision Engine guides your family through readiness, alignment, financial reality, and pathway matching. Estimated time: 4-6 weeks.', icon: '⚙️' },
+  ];
+
+  const dismissOnboarding = () => {
+    setDismissedOnboarding(true);
+    try { localStorage.setItem('lep_onboarding_done', 'true'); } catch {}
+  };
 
   return (
     <div className="transitions-view">
-      <header className="page-header">
+      <header className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
         <div>
           <h1>Family Enterprise Transitions</h1>
           <p className="subtitle">The decision to sell, hold, or transition your family business is never just financial. Explore every pathway.</p>
         </div>
+        <div style={{display: 'flex', gap: '8px'}}>
+          <button
+            onClick={() => setShowAdvisorPanel(!showAdvisorPanel)}
+            style={{background: '#eff6ff', color: '#1e40af', padding: '8px 16px', borderRadius: '8px', border: '1px solid #bfdbfe', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}
+          >
+            🤝 Advisor Mode
+          </button>
+        </div>
       </header>
+
+      {/* ─── GUIDED ONBOARDING ────────────────────────────── */}
+      {!dismissedOnboarding && (
+        <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '32px', position: 'relative'}}>
+          <button onClick={dismissOnboarding} style={{position: 'absolute', top: '12px', right: '16px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
+          <div style={{display: 'flex', gap: '8px', marginBottom: '20px'}}>
+            {onboardingSteps.map((_, i) => (
+              <div key={i} onClick={() => setOnboardingStep(i)} style={{
+                height: '4px', flex: 1, borderRadius: '2px', cursor: 'pointer',
+                background: i <= onboardingStep ? '#4ade80' : 'rgba(255,255,255,0.15)',
+                transition: 'background 0.3s ease',
+              }} />
+            ))}
+          </div>
+          <div style={{display: 'flex', alignItems: 'flex-start', gap: '16px'}}>
+            <span style={{fontSize: '2.5rem'}}>{onboardingSteps[onboardingStep].icon}</span>
+            <div style={{flex: 1}}>
+              <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: 'white', marginBottom: '8px'}}>{onboardingSteps[onboardingStep].title}</h2>
+              <p style={{fontSize: '0.95rem', opacity: 0.85, lineHeight: '1.6', maxWidth: '600px'}}>{onboardingSteps[onboardingStep].desc}</p>
+            </div>
+          </div>
+          <div style={{display: 'flex', gap: '12px', marginTop: '20px'}}>
+            {onboardingStep > 0 && (
+              <button onClick={() => setOnboardingStep(onboardingStep - 1)} style={{background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: '0.85rem'}}>← Back</button>
+            )}
+            {onboardingStep < onboardingSteps.length - 1 ? (
+              <button onClick={() => setOnboardingStep(onboardingStep + 1)} style={{background: '#4ade80', color: '#0f172a', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Next →</button>
+            ) : (
+              <button onClick={dismissOnboarding} style={{background: '#4ade80', color: '#0f172a', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Got It — Let's Go →</button>
+            )}
+            <button onClick={dismissOnboarding} style={{background: 'none', color: 'rgba(255,255,255,0.5)', padding: '8px 16px', border: 'none', cursor: 'pointer', fontSize: '0.82rem'}}>Skip tour</button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── ADVISOR INTEGRATION PANEL ────────────────────── */}
+      {showAdvisorPanel && (
+        <div style={{background: '#eff6ff', border: '2px solid #3b82f6', borderRadius: '12px', padding: '24px', marginBottom: '24px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+            <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#1e40af'}}>🤝 Advisor Integration</h2>
+            <button onClick={() => setShowAdvisorPanel(false)} style={{background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#64748b'}}>×</button>
+          </div>
+          <p style={{fontSize: '0.9rem', color: '#1e3a5f', lineHeight: '1.6', marginBottom: '16px'}}>
+            LEP Hub is designed to complement — not replace — your trusted advisors. Share your LEP scores, Family Voice results, and transition readiness with your advisory team.
+          </p>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px'}}>
+            {[
+              { role: 'Family Business Advisor', icon: '👨‍💼', action: 'Share LEP Report' },
+              { role: 'Wealth Manager', icon: '💰', action: 'Share Valuation Data' },
+              { role: 'Estate Attorney', icon: '⚖️', action: 'Share Estate Plan' },
+              { role: 'Tax Professional', icon: '📋', action: 'Share Financial Summary' },
+              { role: 'Family Therapist', icon: '💬', action: 'Share Family Voice Results' },
+            ].map(adv => (
+              <div key={adv.role} style={{background: 'white', padding: '14px', borderRadius: '8px', border: '1px solid #bfdbfe'}}>
+                <div style={{fontSize: '1.2rem', marginBottom: '6px'}}>{adv.icon}</div>
+                <div style={{fontSize: '0.82rem', fontWeight: '600', color: '#1e3a5f', marginBottom: '4px'}}>{adv.role}</div>
+                <button style={{fontSize: '0.75rem', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: '500'}}>{adv.action} →</button>
+              </div>
+            ))}
+          </div>
+          <div style={{background: '#fefce8', borderRadius: '8px', padding: '12px 16px', marginTop: '16px', border: '1px solid #fde68a'}}>
+            <p style={{fontSize: '0.78rem', color: '#854d0e', lineHeight: '1.4'}}>
+              <strong>Important:</strong> LEP Hub provides organizational and educational tools. All legal, tax, financial, and therapeutic advice should come from your licensed professionals. LEP Hub does not provide investment, legal, or tax advice.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ─── INDUSTRY FILTER ────────────────────────────────── */}
+      <div style={{marginBottom: '24px'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px'}}>
+          <h3 style={{fontSize: '0.85rem', fontWeight: '600', color: '#64748b', margin: 0}}>Filter by Your Industry</h3>
+          {selectedIndustry && (
+            <button onClick={() => setSelectedIndustry(null)} style={{fontSize: '0.75rem', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer'}}>Clear ×</button>
+          )}
+        </div>
+        <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
+          {Object.entries(INDUSTRY_PROFILES).map(([name, profile]) => (
+            <button
+              key={name}
+              onClick={() => setSelectedIndustry(selectedIndustry === name ? null : name)}
+              style={{
+                padding: '6px 12px', borderRadius: '100px', fontSize: '0.78rem', fontWeight: '500',
+                border: selectedIndustry === name ? '2px solid #1a3a5c' : '1px solid #e5e7eb',
+                background: selectedIndustry === name ? '#1a3a5c' : 'white',
+                color: selectedIndustry === name ? 'white' : '#475569',
+                cursor: 'pointer', transition: 'all 0.15s ease',
+              }}
+            >
+              {profile.icon} {name}
+            </button>
+          ))}
+        </div>
+        {selectedIndustry && INDUSTRY_PROFILES[selectedIndustry] && (
+          <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '14px 18px', marginTop: '12px', border: '1px solid #bbf7d0'}}>
+            <p style={{fontSize: '0.85rem', color: '#166534', lineHeight: '1.5', margin: 0}}>
+              <strong>{INDUSTRY_PROFILES[selectedIndustry].icon} {selectedIndustry}:</strong> {INDUSTRY_PROFILES[selectedIndustry].tip}
+            </p>
+            <div style={{marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap'}}>
+              <span style={{fontSize: '0.72rem', color: '#15803d', fontWeight: '500'}}>Recommended pathways:</span>
+              {INDUSTRY_PROFILES[selectedIndustry].pathways.map(pid => {
+                const pw = TRANSITION_PATHWAYS.find(p => p.id === pid);
+                return pw ? <span key={pid} style={{fontSize: '0.72rem', background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '100px'}}>{pw.name}</span> : null;
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Pre-Exit Readiness Banner */}
       <div className="transition-banner" style={{background: 'linear-gradient(135deg, #1a3a5c 0%, #2d5a3d 100%)', borderRadius: '12px', padding: '28px 32px', color: 'white', marginBottom: '32px'}}>
@@ -2808,23 +2958,34 @@ function TransitionsView({ setCurrentView }) {
       )}
 
       {/* Six Pathways Grid */}
-      <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>Six Pathways Forward</h2>
+      <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>
+        Six Pathways Forward
+        {selectedIndustry && <span style={{fontSize: '0.75em', fontWeight: '400', color: '#64748b'}}> — showing relevance for {selectedIndustry}</span>}
+      </h2>
       <div className="pathway-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px', marginBottom: '32px'}}>
-        {TRANSITION_PATHWAYS.map(pathway => (
+        {TRANSITION_PATHWAYS.map(pathway => {
+          const isRecommended = selectedIndustry && INDUSTRY_PROFILES[selectedIndustry]?.pathways.includes(pathway.id);
+          const isDimmed = selectedIndustry && !isRecommended;
+          return (
           <div
             key={pathway.id}
             className="pathway-card"
             style={{
-              background: 'white',
+              background: isRecommended ? `${pathway.color}08` : 'white',
               borderRadius: '12px',
               padding: '24px',
-              border: selectedPathway === pathway.id ? `2px solid ${pathway.color}` : '1px solid #e5e7eb',
+              border: selectedPathway === pathway.id ? `2px solid ${pathway.color}` : isRecommended ? `2px solid ${pathway.color}44` : '1px solid #e5e7eb',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               boxShadow: selectedPathway === pathway.id ? `0 4px 12px ${pathway.color}22` : '0 1px 3px rgba(0,0,0,0.05)',
+              opacity: isDimmed ? 0.5 : 1,
+              position: 'relative',
             }}
             onClick={() => setSelectedPathway(selectedPathway === pathway.id ? null : pathway.id)}
           >
+            {isRecommended && (
+              <span style={{position: 'absolute', top: '8px', right: '8px', background: pathway.color, color: 'white', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '100px', fontWeight: '600'}}>Recommended</span>
+            )}
             <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px'}}>
               <span style={{fontSize: '1.8rem'}}>{pathway.icon}</span>
               <div>
@@ -2869,7 +3030,8 @@ function TransitionsView({ setCurrentView }) {
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ─── DECISION ENGINE ────────────────────────────────── */}
@@ -3003,7 +3165,7 @@ function TransitionsView({ setCurrentView }) {
       </div>
 
       {/* Comparison Tool Teaser */}
-      <div style={{background: 'white', borderRadius: '12px', padding: '28px 32px', border: '1px solid #e5e7eb'}}>
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px 32px', border: '1px solid #e5e7eb', marginBottom: '32px'}}>
         <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '8px', color: '#1a3a5c'}}>📊 Pathway Comparison Tool</h2>
         <p style={{fontSize: '0.92rem', color: '#64748b', lineHeight: '1.6', maxWidth: '700px'}}>
           Compare all six pathways side by side — across financial, relational, emotional, and generational dimensions. Not just what the numbers say, but what the family needs. Coming soon.
@@ -3012,6 +3174,25 @@ function TransitionsView({ setCurrentView }) {
           {['Financial Impact', 'Family Dynamics', 'Identity & Legacy', 'Governance Needs', 'Timeline'].map(dim => (
             <span key={dim} style={{background: '#f1f5f9', color: '#475569', padding: '6px 14px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '500'}}>{dim}</span>
           ))}
+        </div>
+      </div>
+
+      {/* ─── COMPLIANCE & DISCLAIMERS ────────────────────────── */}
+      <div style={{background: '#fafafa', borderRadius: '12px', padding: '24px 28px', border: '1px solid #e5e7eb'}}>
+        <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Important Disclosures</h3>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px'}}>
+          <div style={{fontSize: '0.78rem', color: '#64748b', lineHeight: '1.5'}}>
+            <strong style={{color: '#475569'}}>Not Financial Advice.</strong> LEP Hub provides educational tools and organizational frameworks. Nothing on this platform constitutes investment, financial, legal, or tax advice. Consult qualified professionals before making financial decisions.
+          </div>
+          <div style={{fontSize: '0.78rem', color: '#64748b', lineHeight: '1.5'}}>
+            <strong style={{color: '#475569'}}>Not Legal Advice.</strong> Estate planning tools and templates are for organizational purposes only. All legal documents should be reviewed and prepared by licensed attorneys in your jurisdiction.
+          </div>
+          <div style={{fontSize: '0.78rem', color: '#64748b', lineHeight: '1.5'}}>
+            <strong style={{color: '#475569'}}>Valuations Are Estimates.</strong> The LEP Valuation Engine provides directional estimates for educational purposes. Formal business valuations should be conducted by accredited appraisers (ASA, ABV, CVA).
+          </div>
+          <div style={{fontSize: '0.78rem', color: '#64748b', lineHeight: '1.5'}}>
+            <strong style={{color: '#475569'}}>Data Privacy.</strong> Your family's data is encrypted end-to-end and never shared with third parties. You retain full ownership of all information entered into LEP Hub. SOC 2 Type II compliant.
+          </div>
         </div>
       </div>
     </div>
