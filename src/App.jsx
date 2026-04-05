@@ -13,6 +13,7 @@ const LEP_PILLARS = [
   {
     id: 'roots',
     name: 'ROOTS',
+    toolName: 'The Origin Story',
     icon: '🌳',
     color: '#2d5a3d',
     tagline: 'Know where you come from',
@@ -26,6 +27,7 @@ const LEP_PILLARS = [
   {
     id: 'order',
     name: 'ORDER',
+    toolName: 'The Blueprint',
     icon: '⚙️',
     color: '#1a3a5c',
     tagline: 'Structure creates freedom',
@@ -39,6 +41,7 @@ const LEP_PILLARS = [
   {
     id: 'impact',
     name: 'IMPACT',
+    toolName: 'The Footprint',
     icon: '📈',
     color: '#7c3aed',
     tagline: 'Measure what matters',
@@ -52,6 +55,7 @@ const LEP_PILLARS = [
   {
     id: 'continuity',
     name: 'CONTINUITY',
+    toolName: 'The Handoff',
     icon: '🔄',
     color: '#0891b2',
     tagline: 'Plan for every scenario',
@@ -65,6 +69,7 @@ const LEP_PILLARS = [
   {
     id: 'legacy',
     name: 'LEGACY',
+    toolName: 'The Letter',
     icon: '✦',
     color: '#d97706',
     tagline: 'Build for generations',
@@ -2534,7 +2539,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
           <div className="pillar-title">
             <span className="pillar-icon-lg">{pillar.icon}</span>
             <div>
-              <h2>{pillar.name}</h2>
+              <h2>{pillar.name} <span style={{fontSize: '0.6em', fontWeight: '400', color: pillar.color, opacity: 0.8}}>— {pillar.toolName}</span></h2>
               <p className="pillar-tagline">{pillar.tagline}</p>
             </div>
           </div>
@@ -2865,6 +2870,125 @@ function TransitionsView({ setCurrentView }) {
             )}
           </div>
         ))}
+      </div>
+
+      {/* ─── DECISION ENGINE ────────────────────────────────── */}
+      <div style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', color: 'white'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+          <span style={{fontSize: '2rem'}}>🧭</span>
+          <div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: 'white', marginBottom: '4px'}}>Transition Decision Engine</h2>
+            <p style={{fontSize: '0.88rem', opacity: 0.8}}>A structured process to determine the right pathway for your family</p>
+          </div>
+        </div>
+        <p style={{fontSize: '0.92rem', lineHeight: '1.7', opacity: 0.9, marginBottom: '24px', maxWidth: '750px'}}>
+          Most families get handed a term sheet before they've had a single honest conversation about what they want. The Decision Engine changes that. Six phases — from readiness through roadmap — ensuring every voice is heard and every dimension is weighed before a single advisor enters the room.
+        </p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px'}}>
+          {[
+            { phase: '1', name: 'Readiness Assessment', desc: 'Are you ready to even have this conversation?', icon: '🔍' },
+            { phase: '2', name: 'Family Voice', desc: 'Every member heard. Not a vote — a hearing.', icon: '🗣️' },
+            { phase: '3', name: 'Financial Reality', desc: 'What the numbers actually say — and don\'t.', icon: '📊' },
+            { phase: '4', name: 'Pathway Matching', desc: 'Which paths fit your family\'s unique DNA?', icon: '🧬' },
+            { phase: '5', name: 'Decision Protocol', desc: 'How your family will actually decide.', icon: '⚖️' },
+            { phase: '6', name: 'Pre-Transition Roadmap', desc: 'The 90-day plan before any deal begins.', icon: '🗺️' },
+          ].map(p => (
+            <div key={p.phase} style={{background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
+                <span style={{fontSize: '1.2rem'}}>{p.icon}</span>
+                <span style={{fontSize: '0.75rem', fontWeight: '700', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Phase {p.phase}</span>
+              </div>
+              <h4 style={{fontSize: '0.88rem', fontWeight: '700', marginBottom: '4px', color: 'white'}}>{p.name}</h4>
+              <p style={{fontSize: '0.78rem', opacity: 0.7, lineHeight: '1.4'}}>{p.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
+          <button style={{background: 'white', color: '#1e293b', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+            Begin Decision Process →
+          </button>
+          <span style={{fontSize: '0.82rem', opacity: 0.6}}>Estimated time: 4–6 weeks with your family</span>
+        </div>
+      </div>
+
+      {/* ─── VALUATION ENGINE ────────────────────────────────── */}
+      <div style={{background: 'white', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '2px solid #7c3aed22'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+          <span style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: '2rem', fontWeight: '800'}}>$</span>
+          <div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>LEP Valuation Engine</h2>
+            <p style={{fontSize: '0.88rem', color: '#64748b'}}>The first valuation tool that values the family — not just the business</p>
+          </div>
+        </div>
+        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#374151', marginBottom: '24px', maxWidth: '750px'}}>
+          Traditional valuations miss what matters most. The LEP Valuation Engine combines EBITDA-based business valuation with a proprietary Family Health Multiplier — adjusting enterprise value by -60% to +65% based on your family's strength across all five LEP pillars.
+        </p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+          {[
+            { name: 'Business Valuation', desc: 'Industry multiples, EBITDA, comparable transactions, DCF modeling', icon: '🏢', color: '#1a3a5c' },
+            { name: 'LEP Multiplier', desc: 'Family health score adjusts value based on five pillar assessment', icon: '👨‍👩‍👧‍👦', color: '#2d5a3d' },
+            { name: 'Continuity Risk Index', desc: 'Key-person, succession gap, and governance risk scoring', icon: '⚠️', color: '#dc2626' },
+            { name: 'Family Net Worth', desc: 'Total family picture — business equity, real estate, investments, liquidity', icon: '💎', color: '#7c3aed' },
+            { name: 'Pathway Impact Modeling', desc: 'See how each transition pathway changes your valuation & net worth', icon: '📈', color: '#0891b2' },
+            { name: 'Pattern Intelligence', desc: 'Anonymized benchmarks from LEP\'s family database', icon: '🧠', color: '#d97706' },
+          ].map(mod => (
+            <div key={mod.name} style={{background: '#f8fafc', borderRadius: '10px', padding: '18px', border: '1px solid #e5e7eb'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
+                <span style={{fontSize: '1.3rem'}}>{mod.icon}</span>
+                <h4 style={{fontSize: '0.88rem', fontWeight: '700', color: mod.color}}>{mod.name}</h4>
+              </div>
+              <p style={{fontSize: '0.8rem', color: '#64748b', lineHeight: '1.5'}}>{mod.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{background: '#f5f3ff', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #7c3aed22'}}>
+          <p style={{fontSize: '0.85rem', color: '#5b21b6', lineHeight: '1.6'}}>
+            <strong>Why this changes everything:</strong> A family with a $20M EBITDA business and strong LEP scores could see their adjusted enterprise value increase by $6.5M+ over a family in crisis with identical financials. Buyers, advisors, and families deserve to see the full picture.
+          </p>
+        </div>
+        <button style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+          Start Your Valuation →
+        </button>
+      </div>
+
+      {/* ─── ESTATE PLAN MODULE ────────────────────────────────── */}
+      <div style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '1px solid #2d5a3d22'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+          <span style={{fontSize: '2rem'}}>🏛️</span>
+          <div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>Estate Plan Architecture</h2>
+            <p style={{fontSize: '0.88rem', color: '#64748b'}}>Legal, financial, and relational infrastructure for your transition</p>
+          </div>
+        </div>
+        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#374151', marginBottom: '24px', maxWidth: '750px'}}>
+          Your estate plan isn't just a legal document — it's the architecture that holds your family's transition together. LEP's Estate Plan module helps you inventory what you have, identify what's missing, and have the hard conversations most families avoid.
+        </p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+          {[
+            { name: 'Document Inventory', desc: 'Wills, trusts, buy-sell agreements, insurance policies — know what you have and what\'s expired', icon: '📋' },
+            { name: 'Pathway-Specific Requirements', desc: 'Each transition path has unique legal needs. See exactly what your chosen pathway requires.', icon: '📎' },
+            { name: 'Secure Document Vault', desc: 'Encrypted storage for your most sensitive family enterprise documents', icon: '🔐' },
+            { name: 'Hard Conversations Guide', desc: 'Structured frameworks for the discussions families avoid — incapacity, unequal inheritance, disinheritance', icon: '💬' },
+            { name: 'Pre-Transition Roadmap', desc: 'Timeline-based checklist: what to update, when, and which advisors to involve', icon: '📅' },
+            { name: 'Education Library', desc: 'Plain-language guides on trusts, GRATs, FLPs, QSBs, ESOPs, and more', icon: '📚' },
+          ].map(item => (
+            <div key={item.name} style={{background: 'white', borderRadius: '10px', padding: '18px', border: '1px solid #e5e7eb'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
+                <span style={{fontSize: '1.2rem'}}>{item.icon}</span>
+                <h4 style={{fontSize: '0.88rem', fontWeight: '700', color: '#2d5a3d'}}>{item.name}</h4>
+              </div>
+              <p style={{fontSize: '0.8rem', color: '#64748b', lineHeight: '1.5'}}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{background: '#fff7ed', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', border: '1px solid #f59e0b33'}}>
+          <p style={{fontSize: '0.82rem', color: '#92400e', lineHeight: '1.5'}}>
+            <strong>Important:</strong> LEP Hub provides organizational tools and educational resources — not legal or tax advice. Always work with qualified attorneys and tax professionals for estate planning decisions.
+          </p>
+        </div>
+        <button style={{background: '#2d5a3d', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+          Start Estate Plan Review →
+        </button>
       </div>
 
       {/* The Grief Framework Teaser */}
