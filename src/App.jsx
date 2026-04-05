@@ -1742,6 +1742,7 @@ function Nav({ currentView, setCurrentView, user, scores }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navItems = [
     { id: 'dashboard', icon: '◇', name: 'Home' },
+    { id: 'family-profile', icon: '◎', name: 'Family Profile' },
     { id: 'assessment', icon: '◈', name: 'Assessment' },
     { id: 'transitions', icon: '◆', name: 'Transitions' },
     { id: 'decision-engine', icon: '⚙', name: 'Decision Engine' },
@@ -2846,7 +2847,643 @@ function parseTranscript(transcript, template) {
   return result;
 }
 
-function MeetingsView() {
+function FamilyProfileView({ familyProfile, setFamilyProfile }) {
+  const [activeTab, setActiveTab] = useState('members');
+  const [editingMemberId, setEditingMemberId] = useState(null);
+  const [editingEntityId, setEditingEntityId] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  // Helper to get member by ID
+  const getMember = (id) => familyProfile.members?.find(m => m.id === id);
+  const getEntity = (id) => familyProfile.entities?.find(e => e.id === id);
+
+  // Helper to get member name
+  const getMemberName = (id) => {
+    const member = getMember(id);
+    return member ? `${member.firstName} ${member.lastName}`.trim() || `Member ${id}` : `Member ${id}`;
+  };
+
+  // Update a member
+  const updateMember = (id, updates) => {
+    setFamilyProfile(prev => ({
+      ...prev,
+      members: prev.members.map(m => m.id === id ? { ...m, ...updates } : m)
+    }));
+  };
+
+  // Add a new member
+  const addMember = () => {
+    const newMember = {
+      id: Date.now(),
+      firstName: '',
+      lastName: '',
+      role: '',
+      generation: 1,
+      parentId: null,
+      spouseId: null,
+      birthYear: '',
+      email: '',
+      phone: '',
+      ownershipPct: 0,
+      isActive: true,
+      isBoard: false,
+      tags: [],
+    };
+    setFamilyProfile(prev => ({
+      ...prev,
+      members: [...(prev.members || []), newMember]
+    }));
+  };
+
+  // Delete a member
+  const deleteMember = (id) => {
+    if (confirm('Remove this family member from the profile?')) {
+      setFamilyProfile(prev => ({
+        ...prev,
+        members: prev.members.filter(m => m.id !== id)
+      }));
+      setEditingMemberId(null);
+    }
+  };
+
+  // Update enterprise info
+  const updateEnterprise = (field, value) => {
+    setFamilyProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Add entity
+  const addEntity = () => {
+    const newEntity = {
+      id: Date.now(),
+      name: '',
+      type: 'operating-company',
+      owners: [],
+      description: '',
+      color: '#0f172a'
+    };
+    setFamilyProfile(prev => ({
+      ...prev,
+      entities: [...(prev.entities || []), newEntity]
+    }));
+  };
+
+  // Update entity
+  const updateEntity = (id, updates) => {
+    setFamilyProfile(prev => ({
+      ...prev,
+      entities: prev.entities.map(e => e.id === id ? { ...e, ...updates } : e)
+    }));
+  };
+
+  // Delete entity
+  const deleteEntity = (id) => {
+    if (confirm('Delete this entity?')) {
+      setFamilyProfile(prev => ({
+        ...prev,
+        entities: prev.entities.filter(e => e.id !== id)
+      }));
+      setEditingEntityId(null);
+    }
+  };
+
+  // Entity type colors
+  const entityTypeColors = {
+    'operating-company': '#2d5a3d',
+    'holding-company': '#1a3a5c',
+    'trust': '#7c3aed',
+    'foundation': '#d97706',
+    'llc': '#0891b2',
+    'partnership': '#dc2626',
+    'estate': '#6b21a8',
+  };
+
+  // Role colors
+  const roleColors = {
+    'CEO': '#2d5a3d',
+    'President': '#0891b2',
+    'COO': '#1a3a5c',
+    'CFO': '#0891b2',
+    'Board Chair': '#d97706',
+    'Board Member': '#d97706',
+    'Shareholder': '#7c3aed',
+    'Next-Gen': '#06b6d4',
+    'Spouse': '#64748b',
+    'Partner': '#64748b',
+    'Advisor': '#7c3aed',
+  };
+
+  // Helper to generate genogram layout
+  const getGenogramLayout = () => {
+    const generations = {};
+    const members = familyProfile.members || [];
+
+    members.forEach(member => {
+      const gen = member.generation || 1;
+      if (!generations[gen]) generations[gen] = [];
+      generations[gen].push(member);
+    });
+
+    return generations;
+  };
+
+  // SVG Genogram rendering
+  const renderGenogram = () => {
+    const generations = getGenogramLayout();
+    const members = familyProfile.members || [];
+    const genCount = Object.keys(generations).length;
+    const genLabels = ['G1', 'G2', 'G3', 'G4'];
+
+    if (members.length === 0) {
+      return (
+        <div style={{padding: '40px', textAlign: 'center', color: '#94a3b8'}}>
+          <p>Add family members to see the genogram visualization.</p>
+        </div>
+      );
+    }
+
+    const boxWidth = 120;
+    const boxHeight = 80;
+    const genHeight = 200;
+    const horSpacing = 160;
+    const genSpacing = 180;
+
+    const maxMembersPerGen = Math.max(...Object.values(generations).map(g => g.length));
+    const svgWidth = Math.max(800, maxMembersPerGen * horSpacing + 100);
+    const svgHeight = Math.max(600, genCount * genSpacing + 100);
+
+    return (
+      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #e5e7eb', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
+        {/* Draw spouse lines */}
+        {members.map(member => {
+          if (!member.spouseId || member.id > member.spouseId) return null;
+          const spouse = getMember(member.spouseId);
+          if (!spouse) return null;
+
+          const gen = member.generation || 1;
+          const y = 80 + (gen - 1) * genSpacing;
+          const membersInGen = generations[gen] || [];
+          const x1 = 50 + membersInGen.indexOf(member) * horSpacing + boxWidth / 2;
+          const x2 = 50 + membersInGen.indexOf(spouse) * horSpacing + boxWidth / 2;
+
+          return (
+            <line key={`spouse-${member.id}-${spouse.id}`} x1={x1} y1={y + boxHeight / 2} x2={x2} y2={y + boxHeight / 2}
+              stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />
+          );
+        })}
+
+        {/* Draw parent-child lines */}
+        {members.map(member => {
+          if (!member.parentId) return null;
+          const parent = getMember(member.parentId);
+          if (!parent) return null;
+
+          const parentGen = parent.generation || 1;
+          const childGen = member.generation || 1;
+          const parentY = 80 + (parentGen - 1) * genSpacing;
+          const childY = 80 + (childGen - 1) * genSpacing;
+
+          const parentMembers = generations[parentGen] || [];
+          const childMembers = generations[childGen] || [];
+          const parentX = 50 + parentMembers.indexOf(parent) * horSpacing + boxWidth / 2;
+          const childX = 50 + childMembers.indexOf(member) * horSpacing + boxWidth / 2;
+
+          return (
+            <g key={`parent-${member.id}}`}>
+              <line x1={parentX} y1={parentY + boxHeight} x2={parentX} y2={parentY + boxHeight + (childY - parentY - boxHeight) / 2}
+                stroke="#64748b" strokeWidth="2" />
+              <line x1={parentX} y1={parentY + boxHeight + (childY - parentY - boxHeight) / 2} x2={childX} y2={parentY + boxHeight + (childY - parentY - boxHeight) / 2}
+                stroke="#64748b" strokeWidth="2" />
+              <line x1={childX} y1={parentY + boxHeight + (childY - parentY - boxHeight) / 2} x2={childX} y2={childY}
+                stroke="#64748b" strokeWidth="2" />
+            </g>
+          );
+        })}
+
+        {/* Draw member boxes */}
+        {Object.entries(generations).map(([gen, genMembers]) => {
+          const y = 80 + (parseInt(gen) - 1) * genSpacing;
+          return genMembers.map((member, idx) => {
+            const x = 50 + idx * horSpacing;
+            const bgColor = roleColors[member.role] || '#0f172a';
+            const isManaging = member.tags?.includes('managing');
+            const isPassive = member.tags?.includes('passive');
+            const isNextGen = member.tags?.includes('next-gen');
+            const isAdvisor = member.tags?.includes('advisor');
+            const isInLaw = member.tags?.includes('in-law');
+
+            let color = '#64748b';
+            if (isManaging) color = '#2d5a3d';
+            else if (isPassive) color = '#0891b2';
+            else if (isNextGen) color = '#06b6d4';
+            else if (isInLaw) color = '#94a3b8';
+            else if (isAdvisor) color = '#7c3aed';
+
+            return (
+              <g key={member.id} onClick={() => setSelectedMember(member)} style={{cursor: 'pointer'}}>
+                <rect x={x} y={y} width={boxWidth} height={boxHeight} fill={color} opacity="0.15" stroke={color} strokeWidth="2" rx="6" />
+                <text x={x + boxWidth / 2} y={y + 20} textAnchor="middle" fontSize="12" fontWeight="700" fill="#0f172a">
+                  {member.firstName}
+                </text>
+                <text x={x + boxWidth / 2} y={y + 35} textAnchor="middle" fontSize="11" fill="#64748b">
+                  {member.lastName}
+                </text>
+                <text x={x + boxWidth / 2} y={y + 50} textAnchor="middle" fontSize="10" fill="#94a3b8">
+                  {member.role || 'Role'}
+                </text>
+                {member.ownershipPct > 0 && (
+                  <text x={x + boxWidth / 2} y={y + 65} textAnchor="middle" fontSize="9" fill="#0f172a" fontWeight="600">
+                    {member.ownershipPct}%
+                  </text>
+                )}
+              </g>
+            );
+          });
+        })}
+
+        {/* Generation labels */}
+        {Object.keys(generations).map((gen, idx) => (
+          <text key={`gen-label-${gen}`} x="20" y={100 + (parseInt(gen) - 1) * genSpacing} fontSize="14" fontWeight="700" fill="#64748b">
+            {genLabels[parseInt(gen) - 1]}
+          </text>
+        ))}
+      </svg>
+    );
+  };
+
+  // SVG Ownership Map rendering
+  const renderOwnershipMap = () => {
+    const entities = familyProfile.entities || [];
+    const members = familyProfile.members || [];
+
+    if (entities.length === 0 && members.length === 0) {
+      return (
+        <div style={{padding: '40px', textAlign: 'center', color: '#94a3b8'}}>
+          <p>Add entities and members to see the ownership structure.</p>
+        </div>
+      );
+    }
+
+    const boxWidth = 140;
+    const boxHeight = 60;
+    const entityY = 40;
+    const memberY = 300;
+    const horSpacing = 200;
+    const svgWidth = Math.max(900, Math.max(entities.length, members.length) * horSpacing + 100);
+    const svgHeight = 500;
+
+    return (
+      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #e5e7eb', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
+        {/* Section labels */}
+        <text x="20" y="30" fontSize="12" fontWeight="700" fill="#64748b" textTransform="uppercase">Entities</text>
+        <text x="20" y="290" fontSize="12" fontWeight="700" fill="#64748b" textTransform="uppercase">Members</text>
+
+        {/* Draw ownership lines from entities to members */}
+        {entities.map((entity, entityIdx) => {
+          const entityX = 60 + entityIdx * horSpacing + boxWidth / 2;
+          const entityOwners = entity.owners || [];
+          return entityOwners.map(ownership => {
+            const member = getMember(ownership.memberId);
+            if (!member) return null;
+            const memberIdx = members.indexOf(member);
+            const memberX = 60 + memberIdx * horSpacing + boxWidth / 2;
+            return (
+              <g key={`ownership-${entity.id}-${ownership.memberId}`}>
+                <line x1={entityX} y1={entityY + boxHeight} x2={memberX} y2={memberY}
+                  stroke="#94a3b8" strokeWidth="2" opacity="0.6" />
+                <text x={(entityX + memberX) / 2} y={(entityY + boxHeight + memberY) / 2 - 5} fontSize="11" fill="#64748b" fontWeight="600">
+                  {ownership.pct}%
+                </text>
+              </g>
+            );
+          });
+        })}
+
+        {/* Entity boxes */}
+        {entities.map((entity, idx) => {
+          const x = 60 + idx * horSpacing;
+          const color = entityTypeColors[entity.type] || '#0f172a';
+          return (
+            <rect key={`entity-${entity.id}`} x={x} y={entityY} width={boxWidth} height={boxHeight}
+              fill={color} opacity="0.12" stroke={color} strokeWidth="2" rx="6" onClick={() => setEditingEntityId(entity.id)} style={{cursor: 'pointer'}}
+            >
+              <title>{entity.name}</title>
+            </rect>
+          );
+        })}
+
+        {/* Entity labels */}
+        {entities.map((entity, idx) => {
+          const x = 60 + idx * horSpacing;
+          return (
+            <g key={`entity-label-${entity.id}`}>
+              <text x={x + boxWidth / 2} y={entityY + 25} textAnchor="middle" fontSize="11" fontWeight="700" fill="#0f172a">
+                {entity.name.length > 14 ? entity.name.substring(0, 12) + '...' : entity.name}
+              </text>
+              <text x={x + boxWidth / 2} y={entityY + 42} textAnchor="middle" fontSize="9" fill="#64748b">
+                {entity.type.replace('-', ' ')}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* Member boxes */}
+        {members.map((member, idx) => {
+          const x = 60 + idx * horSpacing;
+          const color = roleColors[member.role] || '#0f172a';
+          return (
+            <rect key={`member-${member.id}`} x={x} y={memberY} width={boxWidth} height={boxHeight}
+              fill={color} opacity="0.12" stroke={color} strokeWidth="2" rx="6"
+            />
+          );
+        })}
+
+        {/* Member labels */}
+        {members.map((member, idx) => {
+          const x = 60 + idx * horSpacing;
+          return (
+            <g key={`member-label-${member.id}`}>
+              <text x={x + boxWidth / 2} y={memberY + 22} textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">
+                {member.firstName}
+              </text>
+              <text x={x + boxWidth / 2} y={memberY + 36} textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">
+                {member.lastName}
+              </text>
+              <text x={x + boxWidth / 2} y={memberY + 50} textAnchor="middle" fontSize="8" fill="#64748b">
+                {member.role || 'Member'}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
+  return (
+    <div className="family-profile-view">
+      <header className="page-header">
+        <div>
+          <h1>Family Profile</h1>
+          <p className="subtitle">Central data hub for family structure, ownership, and governance.</p>
+        </div>
+      </header>
+
+      {/* Tab bar */}
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb', paddingBottom: '0'}}>
+        {[
+          { id: 'members', label: 'Members & Enterprise' },
+          { id: 'genogram', label: 'Family Genogram' },
+          { id: 'ownership', label: 'Ownership & Entities' },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSelectedMember(null); }}
+            style={{
+              padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600',
+              background: 'none', color: activeTab === tab.id ? '#0f172a' : '#94a3b8',
+              borderBottom: activeTab === tab.id ? '2px solid #0f172a' : '2px solid transparent',
+              marginBottom: '-2px', transition: 'all 0.15s',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* TAB 1: Members & Enterprise */}
+      {activeTab === 'members' && (
+        <div>
+          {/* Enterprise Section */}
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', marginBottom: '28px', border: '1px solid #e5e7eb'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '20px'}}>Enterprise Information</h3>
+
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px'}}>
+              {[
+                { key: 'enterpriseName', label: 'Enterprise Name', type: 'text' },
+                { key: 'founded', label: 'Founded', type: 'number' },
+                { key: 'industry', label: 'Industry', type: 'text' },
+                { key: 'headquarters', label: 'Headquarters', type: 'text' },
+                { key: 'annualRevenue', label: 'Annual Revenue', type: 'text' },
+                { key: 'employeeCount', label: 'Employee Count', type: 'number' },
+              ].map(field => (
+                <div key={field.key}>
+                  <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                    {field.label}
+                  </label>
+                  <input
+                    type={field.type}
+                    value={familyProfile[field.key] || ''}
+                    onChange={(e) => updateEnterprise(field.key, e.target.value)}
+                    style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem'}}
+                    placeholder={field.label}
+                  />
+                </div>
+              ))}
+              <div>
+                <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  Generations Involved
+                </label>
+                <input
+                  type="number"
+                  min="1" max="5"
+                  value={familyProfile.generations || 1}
+                  onChange={(e) => updateEnterprise('generations', parseInt(e.target.value))}
+                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem'}}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Members Section */}
+          <div>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a'}}>Family Members ({familyProfile.members?.length || 0})</h3>
+              <button onClick={addMember}
+                style={{background: '#0f172a', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                + Add Member
+              </button>
+            </div>
+
+            <div style={{display: 'grid', gap: '16px'}}>
+              {(familyProfile.members || []).map(member => (
+                <div key={member.id} style={{background: 'white', borderRadius: '12px', padding: '16px', border: '1px solid #e5e7eb'}}>
+                  {editingMemberId === member.id ? (
+                    // Edit mode
+                    <div>
+                      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px'}}>
+                        <input type="text" placeholder="First Name" value={member.firstName} onChange={(e) => updateMember(member.id, {firstName: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <input type="text" placeholder="Last Name" value={member.lastName} onChange={(e) => updateMember(member.id, {lastName: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <select value={member.role} onChange={(e) => updateMember(member.id, {role: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          <option value="">Select Role</option>
+                          {['CEO', 'President', 'COO', 'CFO', 'Board Chair', 'Board Member', 'Shareholder', 'Next-Gen', 'Spouse', 'Partner', 'Advisor', 'Other'].map(role => (
+                            <option key={role} value={role}>{role}</option>
+                          ))}
+                        </select>
+                        <select value={member.generation} onChange={(e) => updateMember(member.id, {generation: parseInt(e.target.value)})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          <option value="">Select Generation</option>
+                          {[1, 2, 3, 4].map(gen => (
+                            <option key={gen} value={gen}>G{gen}</option>
+                          ))}
+                        </select>
+                        <input type="number" placeholder="Birth Year" value={member.birthYear} onChange={(e) => updateMember(member.id, {birthYear: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <input type="email" placeholder="Email" value={member.email} onChange={(e) => updateMember(member.id, {email: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <input type="tel" placeholder="Phone" value={member.phone} onChange={(e) => updateMember(member.id, {phone: e.target.value})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <input type="number" placeholder="Ownership %" min="0" max="100" value={member.ownershipPct} onChange={(e) => updateMember(member.id, {ownershipPct: parseFloat(e.target.value)})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        <select value={member.parentId || ''} onChange={(e) => updateMember(member.id, {parentId: e.target.value ? parseInt(e.target.value) : null})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          <option value="">Select Parent</option>
+                          {familyProfile.members.filter(m => m.id !== member.id && m.generation < member.generation).map(m => (
+                            <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
+                          ))}
+                        </select>
+                        <select value={member.spouseId || ''} onChange={(e) => updateMember(member.id, {spouseId: e.target.value ? parseInt(e.target.value) : null})}
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          <option value="">Select Spouse</option>
+                          {familyProfile.members.filter(m => m.id !== member.id).map(m => (
+                            <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
+                          ))}
+                        </select>
+                        <input type="text" placeholder="Tags (comma-separated)" value={Array.isArray(member.tags) ? member.tags.join(', ') : member.tags}
+                          onChange={(e) => updateMember(member.id, {tags: e.target.value.split(',').map(t => t.trim()).filter(t => t)})}
+                          style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                      </div>
+                      <div style={{display: 'flex', gap: '8px'}}>
+                        <button onClick={() => setEditingMemberId(null)}
+                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          Save
+                        </button>
+                        <button onClick={() => deleteMember(member.id)}
+                          style={{background: '#dc2626', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View mode
+                    <div onClick={() => setEditingMemberId(member.id)} style={{cursor: 'pointer'}}>
+                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                        <div>
+                          <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>
+                            {member.firstName} {member.lastName}
+                          </h4>
+                          <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '8px'}}>
+                            {member.role || 'No role'} • G{member.generation}
+                          </p>
+                          {member.email && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>{member.email}</p>}
+                        </div>
+                        <div style={{textAlign: 'right'}}>
+                          {member.ownershipPct > 0 && <span style={{display: 'inline-block', background: '#f0fdf4', color: '#2d5a3d', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginBottom: '4px'}}>{member.ownershipPct}% owner</span>}
+                          {member.isBoard && <span style={{display: 'inline-block', background: '#fff7ed', color: '#d97706', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginLeft: '4px'}}>Board</span>}
+                        </div>
+                      </div>
+                      {member.tags && member.tags.length > 0 && (
+                        <div style={{marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
+                          {member.tags.map(tag => (
+                            <span key={tag} style={{background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '100px', fontSize: '0.75rem'}}>{tag}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Family Genogram */}
+      {activeTab === 'genogram' && (
+        <div>
+          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e5e7eb'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px'}}>Family Structure & Relationships</h3>
+            {renderGenogram()}
+            {selectedMember && (
+              <div style={{marginTop: '20px', background: '#f8fafc', borderRadius: '8px', padding: '16px', border: '1px solid #e5e7eb'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                  <div>
+                    <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#0f172a'}}>{selectedMember.firstName} {selectedMember.lastName}</h4>
+                    <p style={{fontSize: '0.85rem', color: '#64748b'}}>G{selectedMember.generation} • {selectedMember.role}</p>
+                    {selectedMember.parentId && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>Parent: {getMemberName(selectedMember.parentId)}</p>}
+                    {selectedMember.spouseId && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>Spouse: {getMemberName(selectedMember.spouseId)}</p>}
+                  </div>
+                  <button onClick={() => setSelectedMember(null)} style={{background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Ownership & Entity Map */}
+      {activeTab === 'ownership' && (
+        <div>
+          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e5e7eb', marginBottom: '28px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a'}}>Entities ({familyProfile.entities?.length || 0})</h3>
+              <button onClick={addEntity}
+                style={{background: '#0f172a', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                + Add Entity
+              </button>
+            </div>
+
+            <div style={{display: 'grid', gap: '12px', marginBottom: '20px'}}>
+              {(familyProfile.entities || []).map(entity => (
+                <div key={entity.id} style={{background: '#f8fafc', borderRadius: '8px', padding: '12px', border: `2px solid ${entityTypeColors[entity.type] || '#0f172a'}22`}}>
+                  {editingEntityId === entity.id ? (
+                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px'}}>
+                      <input type="text" placeholder="Entity Name" value={entity.name} onChange={(e) => updateEntity(entity.id, {name: e.target.value})}
+                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                      <select value={entity.type} onChange={(e) => updateEntity(entity.id, {type: e.target.value})}
+                        style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                        <option value="operating-company">Operating Company</option>
+                        <option value="holding-company">Holding Company</option>
+                        <option value="trust">Trust</option>
+                        <option value="foundation">Foundation</option>
+                        <option value="llc">LLC</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="estate">Estate</option>
+                      </select>
+                      <input type="text" placeholder="Description" value={entity.description} onChange={(e) => updateEntity(entity.id, {description: e.target.value})}
+                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                      <div style={{gridColumn: 'span 3', display: 'flex', gap: '8px'}}>
+                        <button onClick={() => setEditingEntityId(null)}
+                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          Save
+                        </button>
+                        <button onClick={() => deleteEntity(entity.id)}
+                          style={{background: '#dc2626', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div onClick={() => setEditingEntityId(entity.id)} style={{cursor: 'pointer'}}>
+                      <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: entityTypeColors[entity.type] || '#0f172a'}}>{entity.name}</h4>
+                      <p style={{fontSize: '0.8rem', color: '#64748b'}}>{entity.type.replace('-', ' ')}{entity.description && ` • ${entity.description}`}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {renderOwnershipMap()}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MeetingsView({ familyProfile }) {
   const [meetings, setMeetings] = useState(() => {
     try { const s = localStorage.getItem('lep_meetings'); return s ? JSON.parse(s) : []; } catch { return []; }
   });
@@ -3144,10 +3781,36 @@ function MeetingsView() {
                 <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: 'white', marginBottom: '4px'}}>{template.icon} {template.name}</h2>
                 <p style={{fontSize: '0.88rem', opacity: 0.8}}>{meeting.date} · {template.duration} · {template.frequency}</p>
               </div>
-              <input type="text" placeholder="Attendees (comma-separated)..." value={meeting.attendees || ''}
-                onChange={(e) => updateMeeting(meeting.id, { attendees: e.target.value })}
-                style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: '0.85rem', minWidth: '250px', '::placeholder': {color: 'rgba(255,255,255,0.5)'}}}
-              />
+              <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.15)', minWidth: '250px'}}>
+                {familyProfile && familyProfile.members && familyProfile.members.length > 0 ? (
+                  familyProfile.members.map(member => {
+                    const attendeeList = meeting.attendees ? meeting.attendees.split(',').map(a => a.trim()).filter(a => a) : [];
+                    const memberName = `${member.firstName} ${member.lastName}`.trim();
+                    const isAttending = attendeeList.includes(String(member.id)) || attendeeList.includes(memberName);
+                    return (
+                      <label key={member.id} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'white', fontSize: '0.85rem', background: isAttending ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '6px', transition: 'all 0.2s'}}>
+                        <input type="checkbox" checked={isAttending} onChange={(e) => {
+                          const attendeeList = meeting.attendees ? meeting.attendees.split(',').map(a => a.trim()).filter(a => a) : [];
+                          const idx = attendeeList.indexOf(String(member.id));
+                          if (e.target.checked && idx === -1) {
+                            attendeeList.push(String(member.id));
+                          } else if (!e.target.checked && idx !== -1) {
+                            attendeeList.splice(idx, 1);
+                          }
+                          updateMeeting(meeting.id, { attendees: attendeeList.join(', ') });
+                        }} style={{cursor: 'pointer'}} />
+                        {member.firstName} {member.lastName}
+                      </label>
+                    );
+                  })
+                ) : (
+                  <input type="text" placeholder="Add family members to profile for quick selection..." value={meeting.attendees || ''}
+                    onChange={(e) => updateMeeting(meeting.id, { attendees: e.target.value })}
+                    style={{padding: '0', border: 'none', background: 'transparent', color: 'white', fontSize: '0.85rem', flex: 1, minWidth: '150px'}}
+                    disabled
+                  />
+                )}
+              </div>
             </div>
           </div>
 
@@ -4926,22 +5589,36 @@ export default function App() {
   const [moduleData, setModuleData] = useState({});
   const [vaultDocuments, setVaultDocuments] = useState([]);
   const [showLepReportGenerator, setShowLepReportGenerator] = useState(false);
+  const [familyProfile, setFamilyProfile] = useState({
+    enterpriseName: '',
+    founded: '',
+    industry: '',
+    headquarters: '',
+    annualRevenue: '',
+    employeeCount: '',
+    generations: 1,
+    members: [],
+    entities: [],
+  });
 
   useEffect(() => {
     const savedScores = localStorage.getItem('lep_scores');
     const savedProgress = localStorage.getItem('lep_progress');
     const savedModuleData = localStorage.getItem('lep_module_data');
     const savedVault = localStorage.getItem('lep_vault');
+    const savedFamilyProfile = localStorage.getItem('lep_family_profile');
 
     if (savedScores) setScores(JSON.parse(savedScores));
     if (savedProgress) setModuleProgress(JSON.parse(savedProgress));
     if (savedModuleData) setModuleData(JSON.parse(savedModuleData));
     if (savedVault) setVaultDocuments(JSON.parse(savedVault));
+    if (savedFamilyProfile) setFamilyProfile(JSON.parse(savedFamilyProfile));
   }, []);
 
   useEffect(() => { if (scores) localStorage.setItem('lep_scores', JSON.stringify(scores)); }, [scores]);
   useEffect(() => { localStorage.setItem('lep_progress', JSON.stringify(moduleProgress)); }, [moduleProgress]);
   useEffect(() => { localStorage.setItem('lep_module_data', JSON.stringify(moduleData)); }, [moduleData]);
+  useEffect(() => { localStorage.setItem('lep_family_profile', JSON.stringify(familyProfile)); }, [familyProfile]);
 
   const handleAssessmentComplete = (newScores) => {
     setScores(newScores);
@@ -4985,7 +5662,8 @@ export default function App() {
         {currentView === 'transitions' && <TransitionsView setCurrentView={setCurrentView} />}
         {currentView === 'decision-engine' && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
-        {currentView === 'meetings' && <MeetingsView />}
+        {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
+        {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
       </main>
     </div>
