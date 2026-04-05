@@ -1743,12 +1743,11 @@ function Nav({ currentView, setCurrentView, user, scores }) {
   const navItems = [
     { id: 'dashboard', icon: '◇', name: 'Home' },
     { id: 'family-profile', icon: '◎', name: 'Family Profile' },
-    { id: 'assessment', icon: '◈', name: 'Assessment' },
-    { id: 'transitions', icon: '◆', name: 'Transitions' },
-    { id: 'decision-engine', icon: '⚙', name: 'Decision Engine' },
-    { id: 'pillars', icon: '▣', name: 'Pillars' },
+    { id: 'lep-journey', icon: '◆', name: 'LEP Journey' },
+    { id: 'family-dynamics', icon: '❤', name: 'Family Dynamics' },
     { id: 'meetings', icon: '▢', name: 'Meetings' },
     { id: 'vault', icon: '▤', name: 'Vault' },
+    { id: 'pillars', icon: '▣', name: 'Pillars' },
   ];
 
   return (
@@ -1835,7 +1834,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           <p className="subtitle">Decision infrastructure for your family enterprise transition.</p>
         </div>
         {!scores && (
-          <button className="btn btn-primary" onClick={() => setCurrentView('assessment')}>
+          <button className="btn btn-primary" onClick={() => setCurrentView('lep-journey')}>
             Take Assessment
           </button>
         )}
@@ -1884,8 +1883,8 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                 </div>
               )}
               <div className="dashboard-actions" style={{marginTop: '16px'}}>
-                <button className="btn btn-primary" onClick={() => setCurrentView('transitions')}>
-                  Explore Transition Pathways
+                <button className="btn btn-primary" onClick={() => setCurrentView('lep-journey')}>
+                  Continue LEP Journey
                 </button>
                 <button className="btn btn-outline" onClick={() => onGenerateLepReport(scores)}>
                   Generate Report
@@ -1943,7 +1942,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           </p>
           <button
             className="btn btn-primary btn-lg"
-            onClick={() => setCurrentView('assessment')}
+            onClick={() => setCurrentView('lep-journey')}
             style={{padding: '16px 48px', fontSize: '1.05rem', borderRadius: '12px', fontWeight: '600', letterSpacing: '0.02em'}}
           >
             Begin
@@ -1957,17 +1956,17 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
 
       <div className="quick-actions">
         <div className="action-grid">
-          <button className="action-card" onClick={() => setCurrentView('transitions')}>
+          <button className="action-card" onClick={() => setCurrentView('lep-journey')}>
             <span className="action-icon">◆</span>
-            <span className="action-label">Transitions</span>
+            <span className="action-label">LEP Journey</span>
+          </button>
+          <button className="action-card" onClick={() => setCurrentView('family-dynamics')}>
+            <span className="action-icon">❤</span>
+            <span className="action-label">Family Dynamics</span>
           </button>
           <button className="action-card" onClick={() => setCurrentView('pillars')}>
             <span className="action-icon">▣</span>
             <span className="action-label">Pillars</span>
-          </button>
-          <button className="action-card" onClick={() => setCurrentView('meetings')}>
-            <span className="action-icon">▢</span>
-            <span className="action-label">Meetings</span>
           </button>
           <button className="action-card" onClick={() => setCurrentView('vault')}>
             <span className="action-icon">▤</span>
@@ -3479,6 +3478,672 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function LEPJourneyView({ onAssessmentComplete, scores, setCurrentView, familyProfile }) {
+  const [phase, setPhase] = useState(() => {
+    if (!scores) return 1;
+    return 1;
+  });
+
+  const phases = [
+    { id: 1, name: 'Assess', subtitle: 'Where are we today?', icon: '◈', desc: 'Take the LEP Assessment to understand your family enterprise health across all six pillars.', unlocked: true },
+    { id: 2, name: 'Explore', subtitle: 'What are our options?', icon: '◆', desc: 'Review transition pathways matched to your assessment results and family situation.', unlocked: !!scores },
+    { id: 3, name: 'Decide', subtitle: 'How do we commit?', icon: '⚙', desc: 'Walk through the Decision Engine to align your family and create a 90-day action plan.', unlocked: !!scores },
+  ];
+
+  return (
+    <div>
+      <header className="page-header">
+        <div>
+          <h1>LEP Journey</h1>
+          <p className="subtitle">Your guided path from awareness to action. Three phases. One family. One future.</p>
+        </div>
+      </header>
+
+      <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '0', marginBottom: '16px'}}>
+          {phases.map((p, i) => (
+            <React.Fragment key={p.id}>
+              <div
+                onClick={() => p.unlocked && setPhase(p.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '10px', cursor: p.unlocked ? 'pointer' : 'default',
+                  opacity: p.unlocked ? 1 : 0.4, flex: 1,
+                }}
+              >
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.85rem', fontWeight: '700', flexShrink: 0,
+                  background: phase === p.id ? '#0f172a' : p.unlocked ? '#e2e8f0' : '#f1f5f9',
+                  color: phase === p.id ? 'white' : p.unlocked ? '#475569' : '#94a3b8',
+                  border: phase === p.id ? '2px solid #0f172a' : '2px solid transparent',
+                  transition: 'all 0.2s',
+                }}>
+                  {p.id}
+                </div>
+                <div>
+                  <div style={{fontSize: '0.88rem', fontWeight: '700', color: phase === p.id ? '#0f172a' : '#64748b'}}>{p.name}</div>
+                  <div style={{fontSize: '0.72rem', color: '#94a3b8'}}>{p.subtitle}</div>
+                </div>
+              </div>
+              {i < phases.length - 1 && (
+                <div style={{flex: '0 0 40px', height: '2px', background: phases[i+1].unlocked ? '#0f172a' : '#e2e8f0', margin: '0 8px', transition: 'background 0.3s'}} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+        <p style={{fontSize: '0.82rem', color: '#64748b', lineHeight: '1.5'}}>{phases.find(p => p.id === phase)?.desc}</p>
+      </div>
+
+      {phase === 1 && <Assessment onComplete={(newScores) => { onAssessmentComplete(newScores); setPhase(2); }} />}
+      {phase === 2 && (scores ? <TransitionsView setCurrentView={(v) => { if (v === 'decision-engine') setPhase(3); else setCurrentView(v); }} /> : (
+        <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+          <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◈</div>
+          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '8px'}}>Complete Phase 1 First</h2>
+          <p>Take the LEP Assessment to unlock Transition Pathways.</p>
+          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
+        </div>
+      ))}
+      {phase === 3 && (scores ? <DecisionEngineView setCurrentView={(v) => { if (v === 'transitions') setPhase(2); else setCurrentView(v); }} scores={scores} /> : (
+        <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+          <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>⚙</div>
+          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '8px'}}>Complete Phase 1 First</h2>
+          <p>Take the LEP Assessment to unlock the Decision Engine.</p>
+          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FamilyDynamicsView({ familyProfile }) {
+  const [activeTab, setActiveTab] = useState('relationships');
+  const [relationshipRatings, setRelationshipRatings] = useState(() => {
+    try { const s = localStorage.getItem('lep_dynamics_relationships'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [communicationStyles, setCommunicationStyles] = useState(() => {
+    try { const s = localStorage.getItem('lep_dynamics_styles'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [styleAssessments, setStyleAssessments] = useState(() => {
+    try { const s = localStorage.getItem('lep_dynamics_style_assessments'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [conflicts, setConflicts] = useState(() => {
+    try { const s = localStorage.getItem('lep_dynamics_conflicts'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [showNewConflict, setShowNewConflict] = useState(false);
+  const [newConflictForm, setNewConflictForm] = useState({
+    description: '',
+    category: 'Values',
+    involved: [],
+    whatsTried: '',
+    desiredResolution: '',
+    status: 'active',
+  });
+
+  useEffect(() => {
+    localStorage.setItem('lep_dynamics_relationships', JSON.stringify(relationshipRatings));
+  }, [relationshipRatings]);
+
+  useEffect(() => {
+    localStorage.setItem('lep_dynamics_styles', JSON.stringify(communicationStyles));
+  }, [communicationStyles]);
+
+  useEffect(() => {
+    localStorage.setItem('lep_dynamics_style_assessments', JSON.stringify(styleAssessments));
+  }, [styleAssessments]);
+
+  useEffect(() => {
+    localStorage.setItem('lep_dynamics_conflicts', JSON.stringify(conflicts));
+  }, [conflicts]);
+
+  const members = familyProfile?.members || [];
+  const getMemberId = (name) => name?.toLowerCase().replace(/\s+/g, '-') || '';
+
+  // Relationship Map Tab
+  const relationshipMapRender = () => {
+    if (members.length === 0) {
+      return (
+        <div style={{textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb'}}>
+          <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◎</div>
+          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#475569', marginBottom: '8px'}}>No Family Members Added</h3>
+          <p style={{fontSize: '0.9rem', color: '#64748b', marginBottom: '16px', maxWidth: '400px'}}>Add family members in Family Profile to start mapping relationships and understanding family dynamics.</p>
+        </div>
+      );
+    }
+
+    const cohesionScores = Object.values(relationshipRatings).filter(v => v);
+    const avgCohesion = cohesionScores.length > 0 ? Math.round((cohesionScores.reduce((a, b) => a + b, 0) / cohesionScores.length / 5) * 100) : 0;
+
+    const colorMap = { 1: '#ef4444', 2: '#f97316', 3: '#eab308', 4: '#86efac', 5: '#22c55e' };
+    const labelMap = { 1: 'Strained', 2: 'Distant', 3: 'Neutral', 4: 'Positive', 5: 'Strong' };
+
+    return (
+      <div>
+        <div style={{background: 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #0284c7'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'space-between'}}>
+            <div>
+              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0c4a6e', marginBottom: '4px'}}>Family Cohesion Score</h3>
+              <p style={{fontSize: '0.85rem', color: '#0369a1'}}>Average relationship quality across all family members</p>
+            </div>
+            <div style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7'}}>{avgCohesion}%</div>
+          </div>
+        </div>
+
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px', marginBottom: '28px', overflowX: 'auto'}}>
+          <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '20px'}}>Relationship Heat Map</h3>
+          <div style={{minWidth: '600px', display: 'inline-block', width: '100%'}}>
+            <div style={{display: 'grid', gridTemplateColumns: `80px repeat(${members.length}, 80px)`, gap: '0px'}}>
+              <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb'}}></div>
+              {members.map(m => (
+                <div key={m.name} style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.name}</div>
+              ))}
+              {members.map(m1 => (
+                <React.Fragment key={m1.name}>
+                  <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m1.name}</div>
+                  {members.map(m2 => {
+                    if (m1.name === m2.name) {
+                      return (
+                        <div key={`${m1.name}-${m2.name}`} style={{padding: '12px', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', background: '#f0f9ff', fontWeight: '600', fontSize: '0.7rem', color: '#64748b'}}>—</div>
+                      );
+                    }
+                    const key = [getMemberId(m1.name), getMemberId(m2.name)].sort().join('_');
+                    const rating = relationshipRatings[key];
+                    return (
+                      <div
+                        key={`${m1.name}-${m2.name}`}
+                        onClick={() => {
+                          const newRating = rating ? (rating === 5 ? 0 : rating + 1) : 1;
+                          if (newRating === 0) {
+                            const updated = {...relationshipRatings};
+                            delete updated[key];
+                            setRelationshipRatings(updated);
+                          } else {
+                            setRelationshipRatings({...relationshipRatings, [key]: newRating});
+                          }
+                        }}
+                        style={{
+                          padding: '12px', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb',
+                          background: rating ? colorMap[rating] : '#f9fafb', cursor: 'pointer', fontWeight: '600', fontSize: '0.75rem',
+                          color: rating ? (rating >= 4 ? 'white' : 'white') : '#9ca3af', transition: 'all 0.2s',
+                          border: rating ? `1px solid ${colorMap[rating]}` : '1px solid #e5e7eb'
+                        }}
+                        title={rating ? labelMap[rating] : 'Click to rate'}
+                      >
+                        {rating || '—'}
+                      </div>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+          <div style={{marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '16px', flexWrap: 'wrap'}}>
+            {Object.entries(colorMap).map(([val, color]) => (
+              <div key={val} style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#64748b'}}>
+                <div style={{width: '20px', height: '20px', background: color, borderRadius: '4px'}}></div>
+                {labelMap[val]}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Communication Styles Tab
+  const communicationStylesRender = () => {
+    if (members.length === 0) {
+      return (
+        <div style={{textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb'}}>
+          <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◎</div>
+          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#475569', marginBottom: '8px'}}>No Family Members Added</h3>
+          <p style={{fontSize: '0.9rem', color: '#64748b'}}>Add family members to assess communication styles.</p>
+        </div>
+      );
+    }
+
+    const styleQuestions = [
+      { id: 1, q: 'When facing a major business decision, I prefer to...', options: [{ text: 'Decide quickly and move on', style: 'Driver' }, { text: 'Gather all data first', style: 'Analyst' }, { text: 'Discuss with everyone involved', style: 'Collaborator' }, { text: 'Consider the emotional impact', style: 'Guardian' }] },
+      { id: 2, q: 'In a family disagreement, I tend to...', options: [{ text: 'State my position directly', style: 'Driver' }, { text: 'Analyze the facts', style: 'Analyst' }, { text: 'Seek compromise', style: 'Collaborator' }, { text: 'Avoid confrontation', style: 'Guardian' }] },
+      { id: 3, q: 'My biggest priority for the enterprise is...', options: [{ text: 'Growth and results', style: 'Driver' }, { text: 'Systems and stability', style: 'Analyst' }, { text: 'Harmony and consensus', style: 'Collaborator' }, { text: 'Legacy and values', style: 'Guardian' }] },
+      { id: 4, q: 'When giving feedback to family members, I...', options: [{ text: 'Am direct and candid', style: 'Driver' }, { text: 'Focus on specifics and evidence', style: 'Analyst' }, { text: 'Frame it positively', style: 'Collaborator' }, { text: 'Wait for the right moment', style: 'Guardian' }] },
+      { id: 5, q: 'I get frustrated when family members...', options: [{ text: 'Move too slowly', style: 'Driver' }, { text: 'Make emotional decisions', style: 'Analyst' }, { text: 'Don\'t listen to everyone', style: 'Collaborator' }, { text: 'Prioritize profits over people', style: 'Guardian' }] },
+      { id: 6, q: 'My communication superpower is...', options: [{ text: 'Getting to the point', style: 'Driver' }, { text: 'Being thorough', style: 'Analyst' }, { text: 'Building bridges', style: 'Collaborator' }, { text: 'Reading the room', style: 'Guardian' }] },
+    ];
+
+    const styleDescriptions = {
+      Driver: { icon: '⚡', desc: 'Results-oriented, decisive, action-focused' },
+      Analyst: { icon: '🔬', desc: 'Data-driven, systematic, thorough' },
+      Collaborator: { icon: '🤝', desc: 'Consensus-builder, inclusive, bridge-maker' },
+      Guardian: { icon: '🛡️', desc: 'Relationship-protector, values-driven, empathetic' },
+    };
+
+    const calculateStyle = (memberId) => {
+      const answers = styleAssessments[memberId] || {};
+      const styleCounts = { Driver: 0, Analyst: 0, Collaborator: 0, Guardian: 0 };
+      Object.values(answers).forEach(style => {
+        styleCounts[style]++;
+      });
+      const dominant = Object.keys(styleCounts).reduce((a, b) => styleCounts[a] > styleCounts[b] ? a : b);
+      return dominant;
+    };
+
+    const styleComposition = {};
+    members.forEach(m => {
+      const style = calculateStyle(getMemberId(m.name));
+      styleComposition[style] = (styleComposition[style] || 0) + 1;
+    });
+
+    const memberStyles = members.map(m => ({ name: m.name, style: calculateStyle(getMemberId(m.name)) }));
+
+    return (
+      <div>
+        <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #e5e7eb'}}>
+          <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Team Composition</h3>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+            {Object.entries(styleDescriptions).map(([style, data]) => (
+              <div key={style} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #e5e7eb', textAlign: 'center'}}>
+                <div style={{fontSize: '1.8rem', marginBottom: '8px'}}>{data.icon}</div>
+                <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '4px'}}>{style}</h4>
+                <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{data.desc}</p>
+                <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#0f172a'}}>{styleComposition[style] || 0}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px', marginBottom: '28px'}}>
+          <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '24px'}}>Individual Assessments</h3>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px'}}>
+            {members.map(m => {
+              const memberId = getMemberId(m.name);
+              const assessmentAnswers = styleAssessments[memberId] || {};
+              const isAssessmentComplete = Object.keys(assessmentAnswers).length === 6;
+              const currentStyle = memberStyles.find(ms => ms.name === m.name)?.style;
+              return (
+                <div key={m.name} style={{background: '#f8fafc', borderRadius: '10px', padding: '20px', border: '1px solid #e5e7eb'}}>
+                  <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '8px'}}>{m.name}</h4>
+                  {isAssessmentComplete ? (
+                    <div>
+                      <div style={{fontSize: '2rem', marginBottom: '8px'}}>{styleDescriptions[currentStyle]?.icon}</div>
+                      <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>{currentStyle}</div>
+                      <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{styleDescriptions[currentStyle]?.desc}</p>
+                      <button
+                        onClick={() => {
+                          const newAssessments = {...styleAssessments};
+                          delete newAssessments[memberId];
+                          setStyleAssessments(newAssessments);
+                        }}
+                        style={{width: '100%', background: 'white', border: '1px solid #e5e7eb', color: '#475569', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600'}}
+                      >
+                        Retake Assessment
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '12px'}}>Complete the assessment</p>
+                      <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                        {styleQuestions.map(q => (
+                          <div key={q.id}>
+                            <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '6px'}}>Q{q.id}</p>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
+                              {q.options.map((opt, idx) => (
+                                <label key={idx} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', padding: '4px 6px', borderRadius: '4px', background: assessmentAnswers[q.id] === opt.style ? '#dbeafe' : 'transparent'}}>
+                                  <input
+                                    type="radio"
+                                    name={`${memberId}-q${q.id}`}
+                                    checked={assessmentAnswers[q.id] === opt.style}
+                                    onChange={() => {
+                                      const newAnswers = {...assessmentAnswers, [q.id]: opt.style};
+                                      setStyleAssessments({...styleAssessments, [memberId]: newAnswers});
+                                    }}
+                                    style={{width: '12px', height: '12px', cursor: 'pointer'}}
+                                  />
+                                  <span style={{color: '#374151'}}>{opt.text.substring(0, 20)}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{background: '#fef3c7', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d', marginBottom: '28px'}}>
+          <p style={{fontSize: '0.85rem', color: '#92400e', lineHeight: '1.6'}}>
+            <strong>Potential Clash Zones:</strong> Driver + Guardian can create tension around speed vs. relationships. Analyst + Collaborator may struggle between data and consensus. The diversity of styles is your family's strength — understanding how each communicates helps prevent unnecessary conflict.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  // Conflict Tracker Tab
+  const conflictTrackerRender = () => {
+    const activeConflicts = conflicts.filter(c => c.status === 'active');
+    const monitoringConflicts = conflicts.filter(c => c.status === 'monitoring');
+    const resolvedConflicts = conflicts.filter(c => c.status === 'resolved');
+
+    const categoryColors = {
+      'Values': '#8b5cf6',
+      'Money/Compensation': '#f59e0b',
+      'Control/Power': '#ef4444',
+      'Recognition': '#06b6d4',
+      'Fairness/Equity': '#10b981',
+      'Succession': '#6366f1',
+      'Communication': '#ec4899',
+      'Boundaries': '#14b8a6',
+    };
+
+    const conflictItem = (conflict) => (
+      <div key={conflict.id} style={{background: 'white', borderRadius: '10px', padding: '16px', border: `2px solid ${categoryColors[conflict.category] || '#e5e7eb'}`, marginBottom: '12px'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px'}}>
+          <div>
+            <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '4px'}}>{conflict.description}</h4>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap'}}>
+              <span style={{background: categoryColors[conflict.category], color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600'}}>{conflict.category}</span>
+              <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{new Date(conflict.dateCreated).toLocaleDateString()}</span>
+            </div>
+          </div>
+          <div style={{display: 'flex', gap: '4px'}}>
+            <button
+              onClick={() => {
+                const updated = conflicts.map(c => c.id === conflict.id ? {...c, status: c.status === 'active' ? 'monitoring' : c.status === 'monitoring' ? 'resolved' : 'active'} : c);
+                setConflicts(updated);
+              }}
+              style={{background: '#f0f9ff', color: '#0284c7', border: '1px solid #0284c7', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600'}}
+            >
+              {conflict.status === 'active' ? 'To Monitor' : conflict.status === 'monitoring' ? 'Resolve' : 'Reopen'}
+            </button>
+            <button
+              onClick={() => setConflicts(conflicts.filter(c => c.id !== conflict.id))}
+              style={{background: '#fee2e2', color: '#dc2626', border: '1px solid #dc2626', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600'}}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+        <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+          <strong>Involved:</strong> {conflict.involved.join(', ') || 'Not specified'}
+        </div>
+        {conflict.whatsTried && (
+          <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+            <strong>What's been tried:</strong> {conflict.whatsTried}
+          </div>
+        )}
+        {conflict.desiredResolution && (
+          <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+            <strong>Desired resolution:</strong> {conflict.desiredResolution}
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <div>
+        {activeConflicts.length > 0 && (
+          <div style={{marginBottom: '28px'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#dc2626', marginBottom: '16px'}}>Active Conflicts ({activeConflicts.length})</h3>
+            {activeConflicts.map(c => conflictItem(c))}
+          </div>
+        )}
+
+        {monitoringConflicts.length > 0 && (
+          <div style={{marginBottom: '28px', opacity: 0.7}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#f59e0b', marginBottom: '16px'}}>Monitoring ({monitoringConflicts.length})</h3>
+            {monitoringConflicts.map(c => conflictItem(c))}
+          </div>
+        )}
+
+        {resolvedConflicts.length > 0 && (
+          <div style={{marginBottom: '28px'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#10b981', marginBottom: '16px'}}>Resolved ({resolvedConflicts.length})</h3>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px'}}>
+              {resolvedConflicts.map(c => (
+                <div key={c.id} style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', border: '1px solid #86efac', opacity: 0.7}}>
+                  <div style={{fontSize: '0.82rem', fontWeight: '700', color: '#166534', marginBottom: '4px'}}>{c.description}</div>
+                  <div style={{fontSize: '0.7rem', color: '#64748b'}}>{new Date(c.dateCreated).toLocaleDateString()}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!showNewConflict ? (
+          <button
+            onClick={() => setShowNewConflict(true)}
+            style={{background: '#0f172a', color: 'white', padding: '12px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '20px'}}
+          >
+            + Log New Conflict
+          </button>
+        ) : (
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb', marginTop: '20px'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Log Conflict</h3>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Description</label>
+              <textarea
+                value={newConflictForm.description}
+                onChange={(e) => setNewConflictForm({...newConflictForm, description: e.target.value})}
+                placeholder="Describe the tension or unresolved issue..."
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '100px', boxSizing: 'border-box'}}
+              />
+            </div>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Category</label>
+              <select
+                value={newConflictForm.category}
+                onChange={(e) => setNewConflictForm({...newConflictForm, category: e.target.value})}
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.9rem', boxSizing: 'border-box'}}
+              >
+                {['Values', 'Money/Compensation', 'Control/Power', 'Recognition', 'Fairness/Equity', 'Succession', 'Communication', 'Boundaries'].map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Who's Involved?</label>
+              <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                {members.map(m => (
+                  <label key={m.name} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '6px 10px', background: newConflictForm.involved.includes(m.name) ? '#dbeafe' : '#f0f9ff', borderRadius: '6px', border: `1px solid ${newConflictForm.involved.includes(m.name) ? '#0284c7' : '#e0f2fe'}`, fontSize: '0.85rem'}}>
+                    <input
+                      type="checkbox"
+                      checked={newConflictForm.involved.includes(m.name)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNewConflictForm({...newConflictForm, involved: [...newConflictForm.involved, m.name]});
+                        } else {
+                          setNewConflictForm({...newConflictForm, involved: newConflictForm.involved.filter(n => n !== m.name)});
+                        }
+                      }}
+                      style={{cursor: 'pointer'}}
+                    />
+                    {m.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>What's Been Tried?</label>
+              <textarea
+                value={newConflictForm.whatsTried}
+                onChange={(e) => setNewConflictForm({...newConflictForm, whatsTried: e.target.value})}
+                placeholder="What approaches or conversations have already happened?"
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
+              />
+            </div>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Desired Resolution</label>
+              <textarea
+                value={newConflictForm.desiredResolution}
+                onChange={(e) => setNewConflictForm({...newConflictForm, desiredResolution: e.target.value})}
+                placeholder="What would resolution look like for this family?"
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
+              />
+            </div>
+            <div style={{display: 'flex', gap: '10px'}}>
+              <button
+                onClick={() => {
+                  setConflicts([...conflicts, {
+                    id: Date.now().toString(),
+                    ...newConflictForm,
+                    dateCreated: new Date().toISOString(),
+                  }]);
+                  setNewConflictForm({description: '', category: 'Values', involved: [], whatsTried: '', desiredResolution: '', status: 'active'});
+                  setShowNewConflict(false);
+                }}
+                style={{background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+              >
+                Log Conflict
+              </button>
+              <button
+                onClick={() => {
+                  setNewConflictForm({description: '', category: 'Values', involved: [], whatsTried: '', desiredResolution: '', status: 'active'});
+                  setShowNewConflict(false);
+                }}
+                style={{background: '#f1f5f9', color: '#475569', padding: '10px 24px', borderRadius: '6px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Alignment Score Tab
+  const alignmentScoreRender = () => {
+    const relationshipScores = Object.values(relationshipRatings).filter(v => v);
+    const relationshipScore = relationshipScores.length > 0 ? Math.round((relationshipScores.reduce((a, b) => a + b, 0) / relationshipScores.length / 5) * 100) : 0;
+
+    const styleDiversity = (() => {
+      const styleComposition = {};
+      members.forEach(m => {
+        const memberId = getMemberId(m.name);
+        const style = (() => {
+          const answers = styleAssessments[memberId] || {};
+          const styleCounts = { Driver: 0, Analyst: 0, Collaborator: 0, Guardian: 0 };
+          Object.values(answers).forEach(st => styleCounts[st]++);
+          return Object.keys(styleCounts).reduce((a, b) => styleCounts[a] > styleCounts[b] ? a : b);
+        })();
+        styleComposition[style] = (styleComposition[style] || 0) + 1;
+      });
+      const uniqueStyles = Object.keys(styleComposition).length;
+      return Math.round((uniqueStyles / 4) * 100);
+    })();
+
+    const conflictLoad = (() => {
+      const activeCount = conflicts.filter(c => c.status === 'active').length;
+      const totalMembers = members.length || 1;
+      const conflictRatio = Math.min(activeCount / (totalMembers * 2), 1);
+      return Math.round((1 - conflictRatio) * 100);
+    })();
+
+    const overallScore = Math.round((relationshipScore * 0.35 + styleDiversity * 0.25 + conflictLoad * 0.4) / 1);
+
+    return (
+      <div>
+        <div style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', borderRadius: '12px', padding: '32px 28px', marginBottom: '28px', border: '1px solid #2d5a3d'}}>
+          <div style={{textAlign: 'center', marginBottom: '24px'}}>
+            <div style={{fontSize: '4rem', fontWeight: '700', color: '#166534', marginBottom: '12px'}}>{overallScore}%</div>
+            <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#1a3a1a', marginBottom: '8px'}}>Family Alignment Score</h2>
+            <p style={{fontSize: '0.9rem', color: '#4b5563', maxWidth: '500px'}}>Your family's overall alignment across relationships, communication compatibility, and conflict resolution capacity.</p>
+          </div>
+        </div>
+
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '28px'}}>
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+            <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Relationship Cohesion</div>
+            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+              <div style={{height: '100%', background: '#059669', width: `${relationshipScore}%`, transition: 'width 0.3s'}}></div>
+            </div>
+            <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#059669', marginBottom: '4px'}}>{relationshipScore}%</div>
+            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Average relationship quality</p>
+          </div>
+
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+            <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Communication Diversity</div>
+            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+              <div style={{height: '100%', background: '#0284c7', width: `${styleDiversity}%`, transition: 'width 0.3s'}}></div>
+            </div>
+            <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '4px'}}>{styleDiversity}%</div>
+            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Diversity of styles present</p>
+          </div>
+
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+            <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Conflict Health</div>
+            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+              <div style={{height: '100%', background: '#f59e0b', width: `${conflictLoad}%`, transition: 'width 0.3s'}}></div>
+            </div>
+            <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#f59e0b', marginBottom: '4px'}}>{conflictLoad}%</div>
+            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Low active conflict count</p>
+          </div>
+        </div>
+
+        <div style={{background: '#fef3c7', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d'}}>
+          <p style={{fontSize: '0.85rem', color: '#92400e', lineHeight: '1.6'}}>
+            <strong>Recommendations:</strong> {
+              relationshipScore < 60 ? "Consider a family retreat or facilitated conversation to strengthen relationships. " : ""
+            }
+            {
+              styleDiversity < 50 ? "Limited communication diversity in your family. Focus on understanding different perspectives. " : ""
+            }
+            {
+              conflictLoad < 50 ? "Your family has significant unresolved tension. Schedule a structured conversation or bring in a facilitator. " : ""
+            }
+            {
+              relationshipScore >= 60 && styleDiversity >= 50 && conflictLoad >= 50 ? "Your family shows strong alignment. Keep building on this foundation through regular check-ins and communication." : ""
+            }
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <header className="page-header">
+        <div>
+          <h1>Family Dynamics</h1>
+          <p className="subtitle">Understand relationships, communication styles, conflicts, and family alignment.</p>
+        </div>
+      </header>
+
+      <div style={{display: 'flex', gap: '12px', borderBottom: '1px solid #e5e7eb', marginBottom: '28px', overflowX: 'auto'}}>
+        {[
+          { id: 'relationships', name: 'Relationships', icon: '◎' },
+          { id: 'communication', name: 'Communication', icon: '💬' },
+          { id: 'conflicts', name: 'Conflicts', icon: '⚡' },
+          { id: 'alignment', name: 'Alignment', icon: '🎯' },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: '12px 16px', borderBottom: activeTab === tab.id ? '3px solid #0f172a' : '3px solid transparent',
+              background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: activeTab === tab.id ? '700' : '500',
+              color: activeTab === tab.id ? '#0f172a' : '#64748b', transition: 'all 0.2s', whiteSpace: 'nowrap'
+            }}
+          >
+            {tab.icon} {tab.name}
+          </button>
+        ))}
+      </div>
+
+      <div>
+        {activeTab === 'relationships' && relationshipMapRender()}
+        {activeTab === 'communication' && communicationStylesRender()}
+        {activeTab === 'conflicts' && conflictTrackerRender()}
+        {activeTab === 'alignment' && alignmentScoreRender()}
+      </div>
     </div>
   );
 }
@@ -5658,9 +6323,8 @@ export default function App() {
       <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} />
       <main className="app-main">
         {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
-        {currentView === 'assessment' && <Assessment onComplete={handleAssessmentComplete} />}
-        {currentView === 'transitions' && <TransitionsView setCurrentView={setCurrentView} />}
-        {currentView === 'decision-engine' && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
+        {(currentView === 'lep-journey' || currentView === 'assessment' || currentView === 'transitions' || currentView === 'decision-engine') && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {currentView === 'family-dynamics' && <FamilyDynamicsView familyProfile={familyProfile} />}
         {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
