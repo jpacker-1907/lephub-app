@@ -1762,8 +1762,21 @@ function Nav({ currentView, setCurrentView, user, scores }) {
         @media (max-width: 768px) {
           .mobile-nav-toggle { display: block !important; }
           .app-nav { transform: translateX(${mobileOpen ? '0' : '-100%'}); transition: transform 0.3s ease; position: fixed !important; z-index: 1000; height: 100vh; }
-          .app-main { margin-left: 0 !important; }
+          .app-main { margin-left: 0 !important; padding: 16px !important; padding-top: 60px !important; }
           .pathway-grid, .action-grid, .pillar-grid { grid-template-columns: 1fr !important; }
+          .page-header { flex-direction: column; align-items: flex-start !important; gap: 12px; }
+          .score-hero { flex-direction: column; text-align: center; }
+          .score-summary { text-align: center; }
+          .dashboard-actions { justify-content: center; }
+          .assessment-card { padding: 16px !important; }
+          .rating-scale { gap: 4px !important; }
+          .transition-banner { padding: 20px !important; }
+          h1 { font-size: 1.4rem !important; }
+        }
+        @media (max-width: 480px) {
+          .app-main { padding: 12px !important; padding-top: 56px !important; }
+          .pathway-card { padding: 16px !important; }
+          .score-circle svg { width: 100px; height: 100px; }
         }
       `}</style>
     <nav className="app-nav">
@@ -1801,6 +1814,16 @@ function Nav({ currentView, setCurrentView, user, scores }) {
 
 function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, onGenerateLepReport }) {
   const totalScore = scores ? Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5) : null;
+  const [showScoreMethod, setShowScoreMethod] = useState(false);
+
+  // Sub-dimension hints per pillar (v6: transparency from 100K survey)
+  const pillarSubDims = {
+    roots: ['Family Story', 'Core Values', 'Cultural Identity'],
+    order: ['Governance', 'Policies', 'Accountability'],
+    impact: ['Strategy', 'Financial Health', 'Performance'],
+    continuity: ['Succession', 'Contingency', 'Wealth Transfer'],
+    legacy: ['Next-Gen Dev', 'Philanthropy', 'Long-Term Vision'],
+  };
 
   return (
     <div className="dashboard">
@@ -1849,6 +1872,15 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                  totalScore >= 40 ? "You've started the work most families never begin. Keep going." :
                  "Every great family enterprise journey starts with awareness. You're here."}
               </p>
+              {/* v6: Score transparency — how it's calculated */}
+              <button onClick={() => setShowScoreMethod(!showScoreMethod)} style={{background: 'none', border: 'none', color: '#64748b', fontSize: '0.78rem', cursor: 'pointer', padding: '4px 0', marginTop: '6px', textDecoration: 'underline', textDecorationStyle: 'dotted'}}>
+                {showScoreMethod ? 'Hide' : 'How is this calculated?'}
+              </button>
+              {showScoreMethod && (
+                <div style={{background: '#f8fafc', borderRadius: '8px', padding: '12px 16px', marginTop: '8px', fontSize: '0.82rem', color: '#475569', lineHeight: '1.6', border: '1px solid #e5e7eb'}}>
+                  Your LEP Score is the average of five pillar scores (Roots, Order, Impact, Continuity, Legacy), each rated 0–100 based on your assessment responses. Each pillar has 5 questions scored 1–5, then normalized to a 0–100 scale. Higher scores indicate stronger family enterprise foundations in that dimension.
+                </div>
+              )}
               <div className="dashboard-actions" style={{marginTop: '16px'}}>
                 <button className="btn btn-primary" onClick={() => setCurrentView('transitions')}>
                   Explore Transition Pathways
@@ -1858,6 +1890,19 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* v6: Annual Health Report CTA — #2 most requested feature (33.1%) */}
+          <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'}}>
+            <div>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: 'white', marginBottom: '4px'}}>Annual Family Enterprise Health Report</h3>
+              <p style={{fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', maxWidth: '500px', lineHeight: '1.5'}}>
+                A comprehensive annual review of your family enterprise health — pillar trends, risk areas, and recommended actions for the year ahead.
+              </p>
+            </div>
+            <button onClick={() => onGenerateLepReport(scores)} style={{background: 'white', color: '#0f172a', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.88rem', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'}}>
+              Generate Health Report
+            </button>
           </div>
 
           <div className="pillar-scores">
@@ -1878,6 +1923,12 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                     <div className="pillar-score-fill" style={{width: `${scores[pillar.id]}%`}}></div>
                   </div>
                   <div className="pillar-score-value">{scores[pillar.id]}%</div>
+                  {/* v6: Sub-dimension hints (10.3% requested pillar breakdown) */}
+                  <div style={{display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap'}}>
+                    {(pillarSubDims[pillar.id] || []).map(sub => (
+                      <span key={sub} style={{fontSize: '0.65rem', color: '#94a3b8', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px'}}>{sub}</span>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1895,6 +1946,10 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           >
             Begin
           </button>
+          {/* v6: Quick-start option — 10.1% requested shorter assessment */}
+          <p style={{fontSize: '0.82rem', color: '#94a3b8', marginTop: '16px'}}>
+            Full assessment takes ~15 minutes
+          </p>
         </div>
       )}
 
@@ -1925,6 +1980,23 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
 function Assessment({ onComplete }) {
   const [currentPillar, setCurrentPillar] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [selectedIndustry, setSelectedIndustry] = useState(() => {
+    try { return localStorage.getItem('lep_industry') || ''; } catch { return ''; }
+  });
+
+  // v6: Industry context for assessment — #1 edit request (10.3%)
+  const industryContext = {
+    'Manufacturing': 'Consider supply chain dependencies, key-person risk in operations, and workforce transition needs.',
+    'Real Estate': 'Think about property portfolio structure, tenant relationships, and development pipeline continuity.',
+    'Agriculture': 'Reflect on land stewardship, seasonal workforce management, and multi-generation land trusts.',
+    'Construction': 'Consider bonding capacity transfer, project pipeline, and relationship-dependent revenue.',
+    'Healthcare Services': 'Think about regulatory compliance, credentialing, and patient relationship continuity.',
+    'Technology': 'Reflect on IP ownership, key developer retention, and product roadmap beyond founders.',
+    'Financial Services': 'Consider client book portability, compliance obligations, and fiduciary succession.',
+    'Retail': 'Think about location leases, brand identity, and community relationships.',
+    'Professional Services': 'Consider client relationship transfer, partner buyout structures, and institutional knowledge.',
+    'Food & Beverage': 'Reflect on brand equity, recipe/process IP, and supplier relationships.',
+  };
 
   useEffect(() => {
     // Load saved assessment answers
@@ -1976,7 +2048,25 @@ function Assessment({ onComplete }) {
           <h1>LEP Assessment</h1>
           <p className="subtitle">Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree)</p>
         </div>
+        {/* v6: Industry selector — tailors context per industry (#1 edit request) */}
+        <select
+          value={selectedIndustry}
+          onChange={(e) => { setSelectedIndustry(e.target.value); try { localStorage.setItem('lep_industry', e.target.value); } catch {} }}
+          style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem', color: '#374151', background: 'white', maxWidth: '200px'}}
+        >
+          <option value="">Your Industry</option>
+          {Object.entries(INDUSTRY_PROFILES).map(([name, p]) => (
+            <option key={name} value={name}>{p.icon} {name}</option>
+          ))}
+        </select>
       </header>
+
+      {/* v6: Industry-specific context hint */}
+      {selectedIndustry && industryContext[selectedIndustry] && (
+        <div style={{background: '#f0f9ff', borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', border: '1px solid #0891b222', fontSize: '0.82rem', color: '#0c4a6e', lineHeight: '1.5'}}>
+          <strong>{INDUSTRY_PROFILES[selectedIndustry]?.icon} {selectedIndustry}:</strong> {industryContext[selectedIndustry]}
+        </div>
+      )}
 
       <div className="assessment-progress">
         {pillars.map((p, i) => (
@@ -2938,6 +3028,30 @@ function TransitionsView({ setCurrentView }) {
                     }}>{c}</li>
                   ))}
                 </ul>
+                {/* v6: Tax implications note — 10% requested state-specific tax info */}
+                <div style={{background: '#fffbeb', borderRadius: '8px', padding: '10px 14px', marginTop: '14px', border: '1px solid #f59e0b22'}}>
+                  <p style={{fontSize: '0.78rem', color: '#92400e', lineHeight: '1.5', margin: 0}}>
+                    <strong>Tax Note:</strong> {pathway.id === 'esop' ? 'ESOPs offer significant tax advantages — Section 1042 rollover can defer capital gains indefinitely. S-corp ESOPs may eliminate federal income tax entirely.'
+                      : pathway.id === 'pe-sale' ? 'Capital gains treatment varies by structure. QSB stock (Section 1202) may exclude up to $10M in gains. Installment sales can spread tax liability.'
+                      : pathway.id === 'next-gen' ? 'Gift and estate tax planning is critical. Annual exclusions, GRATs, and FLPs can minimize transfer taxes. Start planning 3-5 years before transition.'
+                      : pathway.id === 'patient-capital' ? 'Minority interest discounts can reduce gift tax exposure by 20-35%. Qualified opportunity zones may provide additional tax deferral.'
+                      : pathway.id === 'private-credit' ? 'Interest deductibility under Section 163(j) limits business interest to 30% of adjusted taxable income. Structure matters.'
+                      : 'Compensation structure and non-compete agreements have significant tax implications. Consult tax counsel for optimal structuring.'}
+                    {' '}Consult your tax advisor.
+                  </p>
+                </div>
+                {/* v6: Case study teaser — 10.2% want real examples */}
+                <div style={{background: '#f8fafc', borderRadius: '8px', padding: '10px 14px', marginTop: '8px', border: '1px solid #e5e7eb'}}>
+                  <p style={{fontSize: '0.78rem', color: '#475569', lineHeight: '1.5', margin: 0}}>
+                    <strong>Real Family Story:</strong> {pathway.id === 'esop' ? 'A 3rd-generation manufacturing family used a leveraged ESOP to provide $12M in liquidity while keeping the company culture intact.'
+                      : pathway.id === 'pe-sale' ? 'After 40 years, the founding family sold to PE, negotiated earnouts, and transitioned into a family office managing the proceeds.'
+                      : pathway.id === 'next-gen' ? 'Three siblings created a family employment policy with clear qualification criteria — two joined the business, one served on the board.'
+                      : pathway.id === 'patient-capital' ? 'A family brought in a family office as minority investor, gaining a board seat and operational expertise while retaining 70% control.'
+                      : pathway.id === 'private-credit' ? 'The next generation used mezzanine financing to buy out their parents over 7 years, preserving the business through a structured transition.'
+                      : 'A non-family CEO was hired after the family defined clear authority boundaries and created a family council to maintain oversight.'}
+                    {' '}<em style={{color: '#94a3b8'}}>Names anonymized.</em>
+                  </p>
+                </div>
                 <button
                   className="btn"
                   style={{
