@@ -2674,7 +2674,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MEETINGS — Traction-Style Family Governance Meeting System
+// MEETINGS — LEP Governance Meeting System
 // ═══════════════════════════════════════════════════════════════
 
 const MEETING_TEMPLATES = {
@@ -2682,10 +2682,10 @@ const MEETING_TEMPLATES = {
     name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#1a3a5c',
     agenda: [
       { id: 'opening', name: 'Opening & Check-In', duration: '5 min', desc: 'Personal check-in. How is each board member doing — personally and professionally?' },
-      { id: 'scorecard', name: 'Scorecard Review', duration: '10 min', desc: 'Review key metrics: revenue, EBITDA, cash position, succession milestones, LEP scores.' },
-      { id: 'rock-review', name: 'Rock Review (Quarterly Priorities)', duration: '10 min', desc: 'Are the quarterly rocks on track, off track, or done? Red/yellow/green status.' },
+      { id: 'pulse-check', name: 'Pulse Check', duration: '10 min', desc: 'Review key metrics: revenue, EBITDA, cash position, succession milestones, LEP scores.' },
+      { id: 'priorities', name: '90-Day Priorities Review', duration: '10 min', desc: 'Are the quarterly priorities on track, off track, or done? Red/yellow/green status.' },
       { id: 'headlines', name: 'Headlines & Updates', duration: '10 min', desc: 'Good news, bad news, key developments — one headline per person, no discussion yet.' },
-      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '40 min', desc: 'The core of the meeting. Surface the most important issues, discuss openly, resolve with clear action items.' },
+      { id: 'resolve', name: 'Resolve (Identify, Clarify, Act)', duration: '40 min', desc: 'The core of the meeting. Surface the most important issues, clarify openly, resolve with clear action items.' },
       { id: 'action-items', name: 'Action Items & Accountability', duration: '10 min', desc: 'Recap all action items. Who owns what? By when? Read back for confirmation.' },
       { id: 'closing', name: 'Closing & Rating', duration: '5 min', desc: 'Rate this meeting 1-10. What worked? What didn\'t? Cascade any messages.' },
     ],
@@ -2696,7 +2696,7 @@ const MEETING_TEMPLATES = {
       { id: 'opening', name: 'Opening & Gratitude', duration: '5 min', desc: 'Start with something positive. What are we grateful for as a family this month?' },
       { id: 'policy-review', name: 'Policy & Governance Review', duration: '10 min', desc: 'Any policies that need updating? Family employment, compensation, conflict resolution.' },
       { id: 'family-updates', name: 'Family Member Updates', duration: '10 min', desc: 'Each member shares one update — personal or professional. No interruptions.' },
-      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '25 min', desc: 'Family issues on the table. Address them with structure, not emotion.' },
+      { id: 'resolve', name: 'Resolve (Identify, Clarify, Act)', duration: '25 min', desc: 'Family issues on the table. Address them with structure, not emotion.' },
       { id: 'action-items', name: 'Action Items', duration: '5 min', desc: 'Who does what by when. Write it down. Read it back.' },
       { id: 'closing', name: 'Closing & Connection', duration: '5 min', desc: 'End on a positive note. What\'s one thing you appreciate about someone in the room?' },
     ],
@@ -2708,7 +2708,7 @@ const MEETING_TEMPLATES = {
       { id: 'financial-report', name: 'Financial Report', duration: '20 min', desc: 'Annual financials: revenue, profit, distributions, valuation update, debt position.' },
       { id: 'state-of-enterprise', name: 'State of the Enterprise', duration: '20 min', desc: 'CEO/President report. Strategic direction, market position, competitive landscape.' },
       { id: 'succession-update', name: 'Succession & Continuity Update', duration: '15 min', desc: 'Where we stand on leadership pipeline, key-person risk, and transition timeline.' },
-      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '30 min', desc: 'Major ownership issues. Distribution policy changes. Governance amendments. Buy-sell agreements.' },
+      { id: 'resolve', name: 'Resolve (Identify, Clarify, Act)', duration: '30 min', desc: 'Major ownership issues. Distribution policy changes. Governance amendments. Buy-sell agreements.' },
       { id: 'votes', name: 'Formal Votes & Resolutions', duration: '15 min', desc: 'Any motions requiring formal vote. Record results. Document dissents.' },
       { id: 'action-items', name: 'Action Items & Adjournment', duration: '10 min', desc: 'Assign action items. Set next meeting date. Formal adjournment.' },
     ],
@@ -2721,7 +2721,7 @@ const MEETING_TEMPLATES = {
       { id: 'state-of-family', name: 'State of the Family', duration: '20 min', desc: 'How are we doing as a family? Not the business — the family.' },
       { id: 'philanthropy', name: 'Philanthropy & Giving Update', duration: '15 min', desc: 'Where our giving went. Impact stories. Decisions for next year.' },
       { id: 'nextgen', name: 'Next-Gen Spotlight', duration: '20 min', desc: 'Younger family members present or share. Development updates. Education plans.' },
-      { id: 'ids', name: 'Open Forum', duration: '40 min', desc: 'IDS format. Any family member can raise any topic. Everything is on the table.' },
+      { id: 'resolve', name: 'Open Forum', duration: '40 min', desc: 'Resolve format. Any family member can raise any topic. Everything is on the table.' },
       { id: 'vision', name: 'Vision & Looking Ahead', duration: '15 min', desc: 'What does the next year look like? 5 years? What do we want to be known for?' },
       { id: 'closing', name: 'Closing Ritual', duration: '10 min', desc: 'End with a tradition — a reading, a toast, a moment of gratitude, or a family pledge.' },
     ],
@@ -2808,7 +2808,7 @@ function MeetingsView() {
       <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb', paddingBottom: '0'}}>
         {[
           { id: 'meetings', label: 'Meetings', count: meetings.length },
-          { id: 'issues', label: 'Issues List', count: issuesList.filter(i => !i.resolved).length },
+          { id: 'issues', label: 'Resolution Queue', count: issuesList.filter(i => !i.resolved).length },
           { id: 'actions', label: 'Action Items', count: openActions.length },
         ].map(tab => (
           <button key={tab.id} onClick={() => { setActiveTab(tab.id); setActiveMeeting(null); }}
@@ -2926,7 +2926,7 @@ function MeetingsView() {
               </div>
               <textarea
                 rows="2"
-                placeholder={item.id === 'ids' ? 'Issue 1: ...\nIssue 2: ...' : 'Notes...'}
+                placeholder={item.id === 'resolve' ? 'Issue 1: ...\nIssue 2: ...' : 'Notes...'}
                 value={(meeting.agendaNotes || {})[item.id] || ''}
                 onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
                 style={{width: '100%', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
@@ -2993,13 +2993,13 @@ function MeetingsView() {
         </div>
       )}
 
-      {/* ─── ISSUES TAB (IDS — Identify, Discuss, Solve) ─── */}
+      {/* ─── RESOLUTION QUEUE TAB (Identify, Clarify, Act) ─── */}
       {activeTab === 'issues' && (
         <div>
           <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #e5e7eb'}}>
-            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>IDS — Identify, Discuss, Solve</h3>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>Resolve — Identify, Clarify, Act</h3>
             <p style={{fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5', marginBottom: '16px'}}>
-              The master issues list. Any family member can add an issue anytime. Issues get prioritized and resolved in your next meeting using the IDS process: Identify the real issue, Discuss it openly, Solve it with a clear action.
+              The master resolution queue. Any family member can add an issue anytime. Issues get prioritized and resolved in your next meeting using the ICA process: Identify the real issue, Clarify it openly, Act with a clear commitment.
             </p>
             <div style={{display: 'flex', gap: '8px'}}>
               <input type="text" placeholder="Add an issue..." value={newIssue}
@@ -3118,21 +3118,85 @@ function MeetingsView() {
   );
 }
 
+const VAULT_CATEGORIES = [
+  { id: 'financial', name: 'Financial', icon: '💰', color: '#2d5a3d', accepts: ['P&L / Income Statement', 'Balance Sheet', 'Cash Flow Statement', 'Tax Returns', 'Valuation Reports', 'Distribution Records', 'Budget / Forecast'] },
+  { id: 'legal', name: 'Legal & Governance', icon: '⚖️', color: '#7c3aed', accepts: ['Operating Agreement', 'Buy-Sell Agreement', 'Shareholder Agreement', 'Family Constitution', 'Bylaws', 'Trust Documents', 'Estate Plans'] },
+  { id: 'succession', name: 'Succession & Transition', icon: '🔄', color: '#d97706', accepts: ['Succession Plan', 'Leadership Development Plan', 'Transition Timeline', 'Key Person Assessment', 'Exit Strategy', 'Continuity Plan'] },
+  { id: 'family', name: 'Family', icon: '👥', color: '#0891b2', accepts: ['Family Meeting Minutes', 'Family Employment Policy', 'Compensation Policy', 'Conflict Resolution Policy', 'Code of Conduct', 'Family History / Legacy'] },
+  { id: 'reports', name: 'LEP Reports', icon: '📊', color: '#64748b', accepts: ['Assessment Reports', 'Health Reports', 'Decision Engine Output', 'Pillar Analysis'] },
+];
+
+function parseFinancialCSV(text) {
+  const lines = text.trim().split('\n').map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
+  if (lines.length < 2) return null;
+  const headers = lines[0];
+  const rows = lines.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+    return obj;
+  });
+  return { headers, rows };
+}
+
+function analyzeFinancialData(parsed) {
+  if (!parsed || !parsed.rows.length) return null;
+  const numericCols = parsed.headers.filter(h => {
+    return parsed.rows.some(r => {
+      const v = (r[h] || '').replace(/[$,%()]/g, '').trim();
+      return !isNaN(parseFloat(v)) && v !== '';
+    });
+  });
+
+  const analysis = { metrics: [], trends: [], alerts: [] };
+
+  numericCols.forEach(col => {
+    const values = parsed.rows.map(r => {
+      const raw = (r[col] || '').replace(/[$,%()]/g, '').trim();
+      return parseFloat(raw);
+    }).filter(v => !isNaN(v));
+    if (values.length === 0) return;
+    const sum = values.reduce((a, b) => a + b, 0);
+    const avg = sum / values.length;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const latest = values[values.length - 1];
+    const prior = values.length > 1 ? values[values.length - 2] : null;
+    const change = prior ? ((latest - prior) / Math.abs(prior) * 100) : null;
+
+    analysis.metrics.push({ name: col, latest, avg: Math.round(avg * 100) / 100, min, max, change: change ? Math.round(change * 10) / 10 : null, count: values.length });
+
+    if (change !== null) {
+      if (change > 20) analysis.trends.push({ metric: col, direction: 'up', pct: change, note: `${col} increased ${Math.abs(change).toFixed(1)}% — strong positive trend.` });
+      else if (change < -20) analysis.trends.push({ metric: col, direction: 'down', pct: change, note: `${col} declined ${Math.abs(change).toFixed(1)}% — review recommended.` });
+    }
+
+    if (col.toLowerCase().includes('debt') && latest > avg * 1.5) analysis.alerts.push(`${col} is significantly above average — elevated risk.`);
+    if (col.toLowerCase().includes('cash') && latest < avg * 0.5) analysis.alerts.push(`${col} is well below average — liquidity concern.`);
+    if (col.toLowerCase().includes('margin') && latest < 10) analysis.alerts.push(`${col} at ${latest}% — below healthy threshold for most family enterprises.`);
+  });
+
+  return analysis;
+}
+
 function VaultView({ vaultDocuments }) {
   const [expandedPillar, setExpandedPillar] = useState(null);
+  const [activeVaultTab, setActiveVaultTab] = useState('uploaded'); // uploaded | generated | analysis
+  const [uploadedDocs, setUploadedDocs] = useState(() => {
+    try { const s = localStorage.getItem('lep_vault_uploads'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [dragOver, setDragOver] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState(null);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [uploadCategory, setUploadCategory] = useState('financial');
+  const [uploadSubtype, setUploadSubtype] = useState('');
 
-  // Group documents by pillar
+  useEffect(() => { localStorage.setItem('lep_vault_uploads', JSON.stringify(uploadedDocs)); }, [uploadedDocs]);
+
+  // Group documents by pillar (for generated docs)
   const documentsByPillar = {};
-  LEP_PILLARS.forEach(p => {
-    documentsByPillar[p.id] = [];
-  });
+  LEP_PILLARS.forEach(p => { documentsByPillar[p.id] = []; });
   documentsByPillar['assessment'] = [];
-
-  vaultDocuments.forEach(doc => {
-    if (documentsByPillar[doc.pillar]) {
-      documentsByPillar[doc.pillar].push(doc);
-    }
-  });
+  vaultDocuments.forEach(doc => { if (documentsByPillar[doc.pillar]) documentsByPillar[doc.pillar].push(doc); });
 
   const handleDownloadDocument = (doc) => {
     const doc_instance = parseNarrativeToDocx(doc.fullContent, doc.title);
@@ -3142,76 +3206,396 @@ function VaultView({ vaultDocuments }) {
     });
   };
 
+  const handleFileUpload = (files) => {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result;
+        const isCSV = file.name.endsWith('.csv');
+        const isPDF = file.name.endsWith('.pdf');
+        const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+        const isText = file.name.endsWith('.txt') || file.name.endsWith('.md');
+
+        let parsedData = null;
+        let textContent = '';
+
+        if (isCSV || isText) {
+          textContent = content;
+          if (isCSV) parsedData = parseFinancialCSV(content);
+        }
+
+        const doc = {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          size: file.size,
+          type: file.type || (isCSV ? 'text/csv' : isPDF ? 'application/pdf' : isExcel ? 'application/excel' : 'text/plain'),
+          category: uploadCategory,
+          subtype: uploadSubtype || VAULT_CATEGORIES.find(c => c.id === uploadCategory)?.accepts[0] || 'Other',
+          uploadDate: new Date().toISOString(),
+          textContent: textContent.substring(0, 50000),
+          parsedData,
+          hasAnalysis: !!parsedData,
+          ext: file.name.split('.').pop().toLowerCase(),
+        };
+
+        setUploadedDocs(prev => [doc, ...prev]);
+
+        if (parsedData) {
+          setSelectedDoc(doc);
+          setAnalysisResult(analyzeFinancialData(parsedData));
+          setActiveVaultTab('analysis');
+        }
+      };
+
+      if (file.name.endsWith('.csv') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        reader.readAsText(file);
+      } else {
+        reader.readAsArrayBuffer(file);
+        // Store metadata only for binary files
+        const doc = {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          category: uploadCategory,
+          subtype: uploadSubtype || VAULT_CATEGORIES.find(c => c.id === uploadCategory)?.accepts[0] || 'Other',
+          uploadDate: new Date().toISOString(),
+          textContent: '',
+          parsedData: null,
+          hasAnalysis: false,
+          ext: file.name.split('.').pop().toLowerCase(),
+        };
+        setUploadedDocs(prev => [doc, ...prev]);
+      }
+    });
+  };
+
+  const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFileUpload(e.dataTransfer.files); };
+  const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
+  const handleDragLeave = () => { setDragOver(false); };
+
+  const analyzeDoc = (doc) => {
+    setSelectedDoc(doc);
+    if (doc.parsedData) {
+      setAnalysisResult(analyzeFinancialData(doc.parsedData));
+    } else if (doc.textContent) {
+      const parsed = parseFinancialCSV(doc.textContent);
+      if (parsed) setAnalysisResult(analyzeFinancialData(parsed));
+      else setAnalysisResult({ metrics: [], trends: [], alerts: ['Could not parse structured data from this file. Upload a CSV with headers for full analysis.'] });
+    } else {
+      setAnalysisResult({ metrics: [], trends: [], alerts: ['Binary files (PDF, Excel) require server-side parsing. CSV files can be analyzed immediately.'] });
+    }
+    setActiveVaultTab('analysis');
+  };
+
+  const uploadedByCategory = {};
+  VAULT_CATEGORIES.forEach(c => { uploadedByCategory[c.id] = uploadedDocs.filter(d => d.category === c.id); });
+
+  const fileInputRef = React.createRef();
+  const totalDocs = uploadedDocs.length + vaultDocuments.length;
+  const docHealth = totalDocs === 0 ? 0 : Math.min(100, Math.round((totalDocs / 15) * 100));
+
   return (
     <div className="vault-view">
       <header className="page-header">
         <div>
           <h1>Document Vault</h1>
-          <p className="subtitle">All your completed work, organized by pillar.</p>
+          <p className="subtitle">Upload, organize, and analyze your family enterprise documents. Your secure digital filing cabinet.</p>
         </div>
       </header>
 
-      {vaultDocuments.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">📁</div>
-          <h2>Your Vault is Empty</h2>
-          <p>Complete modules to generate and store documents in your vault.</p>
+      {/* Document Health Score */}
+      <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', color: 'white', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap'}}>
+        <div style={{textAlign: 'center', minWidth: '80px'}}>
+          <div style={{fontSize: '2rem', fontWeight: '800', lineHeight: 1}}>{docHealth}%</div>
+          <div style={{fontSize: '0.72rem', opacity: 0.7, marginTop: '4px'}}>Document Health</div>
         </div>
-      ) : (
-        <div className="vault-grid">
-          {LEP_PILLARS.map(pillar => {
-            const docs = documentsByPillar[pillar.id] || [];
+        <div style={{flex: 1, minWidth: '200px'}}>
+          <div style={{height: '8px', background: 'rgba(255,255,255,0.15)', borderRadius: '100px', overflow: 'hidden'}}>
+            <div style={{height: '100%', width: `${docHealth}%`, background: docHealth >= 70 ? '#4ade80' : docHealth >= 40 ? '#fbbf24' : '#f87171', borderRadius: '100px', transition: 'width 0.5s'}} />
+          </div>
+          <p style={{fontSize: '0.78rem', opacity: 0.7, marginTop: '6px'}}>
+            {totalDocs} document{totalDocs !== 1 ? 's' : ''} stored. {docHealth < 40 ? 'Upload key financial and legal documents to improve coverage.' : docHealth < 70 ? 'Good start. Add succession and governance documents for comprehensive coverage.' : 'Strong document coverage across your enterprise.'}
+          </p>
+        </div>
+        <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
+          {VAULT_CATEGORIES.slice(0, 4).map(cat => {
+            const count = (uploadedByCategory[cat.id] || []).length;
             return (
-              <div key={pillar.id} className="vault-folder" style={{'--pillar-color': pillar.color}}>
-                <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === pillar.id ? null : pillar.id)}>
-                  <span className="folder-icon">{pillar.icon}</span>
-                  <h4>{pillar.name}</h4>
-                  <span className="folder-count">{docs.length}</span>
-                </div>
-                {expandedPillar === pillar.id && (
-                  <div className="folder-content">
-                    {docs.length > 0 ? (
+              <div key={cat.id} style={{textAlign: 'center', minWidth: '50px'}}>
+                <div style={{fontSize: '1rem'}}>{cat.icon}</div>
+                <div style={{fontSize: '0.85rem', fontWeight: '700'}}>{count}</div>
+                <div style={{fontSize: '0.6rem', opacity: 0.6}}>{cat.name}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb'}}>
+        {[
+          { id: 'uploaded', label: 'Uploaded Documents', count: uploadedDocs.length },
+          { id: 'generated', label: 'Generated Reports', count: vaultDocuments.length },
+          { id: 'analysis', label: 'Analysis', count: analysisResult ? 1 : 0 },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setActiveVaultTab(tab.id)}
+            style={{padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', background: 'none', color: activeVaultTab === tab.id ? '#0f172a' : '#94a3b8', borderBottom: activeVaultTab === tab.id ? '2px solid #0f172a' : '2px solid transparent', marginBottom: '-2px', transition: 'all 0.15s'}}>
+            {tab.label} {tab.count > 0 && <span style={{background: activeVaultTab === tab.id ? '#0f172a' : '#e5e7eb', color: activeVaultTab === tab.id ? 'white' : '#64748b', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
+          </button>
+        ))}
+      </div>
+
+      {/* ─── UPLOADED DOCUMENTS TAB ─── */}
+      {activeVaultTab === 'uploaded' && (
+        <div>
+          {/* Upload zone */}
+          <div
+            onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              border: `2px dashed ${dragOver ? '#2d5a3d' : '#d1d5db'}`, borderRadius: '12px', padding: '40px', textAlign: 'center', cursor: 'pointer',
+              background: dragOver ? '#f0fdf4' : '#fafafa', transition: 'all 0.2s', marginBottom: '20px',
+            }}>
+            <div style={{fontSize: '2.5rem', marginBottom: '8px'}}>📄</div>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '6px'}}>Drop files here or click to upload</h3>
+            <p style={{fontSize: '0.82rem', color: '#94a3b8'}}>CSV, PDF, Excel, Word, Text — up to 10MB per file</p>
+            <input ref={fileInputRef} type="file" multiple accept=".csv,.pdf,.xlsx,.xls,.doc,.docx,.txt,.md" onChange={(e) => handleFileUpload(e.target.files)} style={{display: 'none'}} />
+          </div>
+
+          {/* Category & subtype selector */}
+          <div style={{display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap'}}>
+            {VAULT_CATEGORIES.map(cat => (
+              <button key={cat.id} onClick={() => { setUploadCategory(cat.id); setUploadSubtype(''); }}
+                style={{padding: '8px 16px', borderRadius: '8px', border: `1px solid ${uploadCategory === cat.id ? cat.color : '#e5e7eb'}`, background: uploadCategory === cat.id ? cat.color + '11' : 'white', color: uploadCategory === cat.id ? cat.color : '#64748b', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.15s'}}>
+                {cat.icon} {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Subtype chips */}
+          {VAULT_CATEGORIES.find(c => c.id === uploadCategory) && (
+            <div style={{display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap'}}>
+              {VAULT_CATEGORIES.find(c => c.id === uploadCategory).accepts.map(sub => (
+                <button key={sub} onClick={() => setUploadSubtype(sub)}
+                  style={{padding: '5px 12px', borderRadius: '100px', border: `1px solid ${uploadSubtype === sub ? '#0f172a' : '#e5e7eb'}`, background: uploadSubtype === sub ? '#0f172a' : 'white', color: uploadSubtype === sub ? 'white' : '#64748b', fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.15s'}}>
+                  {sub}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Uploaded documents by category */}
+          {uploadedDocs.length === 0 ? (
+            <div style={{textAlign: 'center', padding: '40px', color: '#94a3b8'}}>
+              <p style={{fontSize: '1rem', marginBottom: '6px'}}>No documents uploaded yet.</p>
+              <p style={{fontSize: '0.85rem'}}>Start by uploading your financial statements, legal agreements, or governance documents.</p>
+            </div>
+          ) : (
+            <div>
+              {VAULT_CATEGORIES.map(cat => {
+                const docs = uploadedByCategory[cat.id] || [];
+                if (docs.length === 0) return null;
+                return (
+                  <div key={cat.id} style={{marginBottom: '20px'}}>
+                    <h3 style={{fontSize: '0.82rem', fontWeight: '700', color: cat.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                      <span>{cat.icon}</span> {cat.name} <span style={{background: '#e5e7eb', color: '#64748b', fontSize: '0.7rem', padding: '1px 8px', borderRadius: '100px'}}>{docs.length}</span>
+                    </h3>
+                    {docs.map(doc => (
+                      <div key={doc.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.15s'}}>
+                        <span style={{fontSize: '1.3rem'}}>
+                          {doc.ext === 'csv' ? '📊' : doc.ext === 'pdf' ? '📕' : doc.ext === 'xlsx' || doc.ext === 'xls' ? '📗' : doc.ext === 'docx' || doc.ext === 'doc' ? '📘' : '📄'}
+                        </span>
+                        <div style={{flex: 1}}>
+                          <h4 style={{fontSize: '0.9rem', fontWeight: '600', color: '#1a3a5c'}}>{doc.name}</h4>
+                          <div style={{display: 'flex', gap: '12px', marginTop: '2px'}}>
+                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{doc.subtype}</span>
+                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{(doc.size / 1024).toFixed(0)} KB</span>
+                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{new Date(doc.uploadDate).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        {doc.hasAnalysis && (
+                          <button onClick={() => analyzeDoc(doc)}
+                            style={{background: '#2d5a3d', color: 'white', padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
+                            Analyze
+                          </button>
+                        )}
+                        <button onClick={() => setUploadedDocs(prev => prev.filter(d => d.id !== doc.id))}
+                          style={{background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.85rem', padding: '4px 8px'}}>✕</button>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── GENERATED REPORTS TAB ─── */}
+      {activeVaultTab === 'generated' && (
+        <div>
+          {vaultDocuments.length === 0 ? (
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+              <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>📁</div>
+              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '6px'}}>No Generated Reports Yet</h2>
+              <p style={{fontSize: '0.88rem'}}>Complete your Assessment or generate a Health Report to see documents here.</p>
+            </div>
+          ) : (
+            <div className="vault-grid">
+              {LEP_PILLARS.map(pillar => {
+                const docs = documentsByPillar[pillar.id] || [];
+                return (
+                  <div key={pillar.id} className="vault-folder" style={{'--pillar-color': pillar.color}}>
+                    <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === pillar.id ? null : pillar.id)}>
+                      <span className="folder-icon">{pillar.icon}</span>
+                      <h4>{pillar.name}</h4>
+                      <span className="folder-count">{docs.length}</span>
+                    </div>
+                    {expandedPillar === pillar.id && (
+                      <div className="folder-content">
+                        {docs.length > 0 ? (
+                          <div className="document-list">
+                            {docs.map(doc => (
+                              <div key={doc.id} className="document-item">
+                                <div className="document-info">
+                                  <h5>{doc.title}</h5>
+                                  <p className="document-date">{new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                                  <p className="document-preview">{doc.preview}</p>
+                                </div>
+                                <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>Download</button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (<p className="folder-empty">No documents yet</p>)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {documentsByPillar['assessment'].length > 0 && (
+                <div className="vault-folder" style={{'--pillar-color': '#666666'}}>
+                  <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === 'assessment' ? null : 'assessment')}>
+                    <span className="folder-icon">📊</span>
+                    <h4>Assessment Reports</h4>
+                    <span className="folder-count">{documentsByPillar['assessment'].length}</span>
+                  </div>
+                  {expandedPillar === 'assessment' && (
+                    <div className="folder-content">
                       <div className="document-list">
-                        {docs.map(doc => (
+                        {documentsByPillar['assessment'].map(doc => (
                           <div key={doc.id} className="document-item">
                             <div className="document-info">
                               <h5>{doc.title}</h5>
                               <p className="document-date">{new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                               <p className="document-preview">{doc.preview}</p>
                             </div>
-                            <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>⬇ Download</button>
+                            <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>Download</button>
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <p className="folder-empty">No documents yet</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
-          {documentsByPillar['assessment'].length > 0 && (
-            <div className="vault-folder" style={{'--pillar-color': '#666666'}}>
-              <div className="folder-header" onClick={() => setExpandedPillar(expandedPillar === 'assessment' ? null : 'assessment')}>
-                <span className="folder-icon">📊</span>
-                <h4>Assessment Reports</h4>
-                <span className="folder-count">{documentsByPillar['assessment'].length}</span>
-              </div>
-              {expandedPillar === 'assessment' && (
-                <div className="folder-content">
-                  <div className="document-list">
-                    {documentsByPillar['assessment'].map(doc => (
-                      <div key={doc.id} className="document-item">
-                        <div className="document-info">
-                          <h5>{doc.title}</h5>
-                          <p className="document-date">{new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                          <p className="document-preview">{doc.preview}</p>
+      {/* ─── ANALYSIS TAB ─── */}
+      {activeVaultTab === 'analysis' && (
+        <div>
+          {!analysisResult ? (
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+              <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>📈</div>
+              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '6px'}}>No Analysis Yet</h2>
+              <p style={{fontSize: '0.88rem'}}>Upload a CSV financial statement and click "Analyze" to see insights here.</p>
+            </div>
+          ) : (
+            <div>
+              {selectedDoc && (
+                <div style={{background: '#f8fafc', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{fontSize: '1.3rem'}}>📊</span>
+                  <div>
+                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c'}}>Analyzing: {selectedDoc.name}</h3>
+                    <span style={{fontSize: '0.78rem', color: '#94a3b8'}}>{selectedDoc.subtype} — uploaded {new Date(selectedDoc.uploadDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Alerts */}
+              {analysisResult.alerts.length > 0 && (
+                <div style={{marginBottom: '20px'}}>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Alerts</h3>
+                  {analysisResult.alerts.map((alert, i) => (
+                    <div key={i} style={{background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', fontSize: '0.85rem', color: '#991b1b'}}>
+                      {alert}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Metrics */}
+              {analysisResult.metrics.length > 0 && (
+                <div style={{marginBottom: '20px'}}>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Key Metrics</h3>
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px'}}>
+                    {analysisResult.metrics.map((m, i) => (
+                      <div key={i} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #e5e7eb'}}>
+                        <div style={{fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px'}}>{m.name}</div>
+                        <div style={{fontSize: '1.5rem', fontWeight: '800', color: '#0f172a'}}>{typeof m.latest === 'number' ? m.latest.toLocaleString() : m.latest}</div>
+                        <div style={{display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#64748b'}}>
+                          <span>Avg: {m.avg?.toLocaleString()}</span>
+                          {m.change !== null && (
+                            <span style={{color: m.change >= 0 ? '#2d5a3d' : '#dc2626', fontWeight: '600'}}>
+                              {m.change >= 0 ? '+' : ''}{m.change}%
+                            </span>
+                          )}
                         </div>
-                        <button className="btn btn-outline btn-sm" onClick={() => handleDownloadDocument(doc)}>⬇ Download</button>
+                        <div style={{fontSize: '0.7rem', color: '#94a3b8', marginTop: '4px'}}>Range: {m.min?.toLocaleString()} — {m.max?.toLocaleString()} ({m.count} periods)</div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trends */}
+              {analysisResult.trends.length > 0 && (
+                <div style={{marginBottom: '20px'}}>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Trends</h3>
+                  {analysisResult.trends.map((t, i) => (
+                    <div key={i} style={{background: t.direction === 'up' ? '#f0fdf4' : '#fef2f2', border: `1px solid ${t.direction === 'up' ? '#bbf7d0' : '#fecaca'}`, borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', fontSize: '0.85rem', color: t.direction === 'up' ? '#166534' : '#991b1b', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                      <span style={{fontSize: '1.1rem'}}>{t.direction === 'up' ? '📈' : '📉'}</span>
+                      {t.note}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Raw data preview */}
+              {selectedDoc?.parsedData && (
+                <div style={{marginBottom: '20px'}}>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Data Preview (first 10 rows)</h3>
+                  <div style={{overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: '10px'}}>
+                    <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem'}}>
+                      <thead>
+                        <tr style={{background: '#f8fafc'}}>
+                          {selectedDoc.parsedData.headers.map((h, i) => (
+                            <th key={i} style={{padding: '10px 14px', textAlign: 'left', fontWeight: '700', color: '#1a3a5c', borderBottom: '2px solid #e5e7eb', whiteSpace: 'nowrap'}}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedDoc.parsedData.rows.slice(0, 10).map((row, ri) => (
+                          <tr key={ri} style={{background: ri % 2 === 0 ? 'white' : '#fafafa'}}>
+                            {selectedDoc.parsedData.headers.map((h, ci) => (
+                              <td key={ci} style={{padding: '8px 14px', borderBottom: '1px solid #f1f5f9', whiteSpace: 'nowrap'}}>{row[h]}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
