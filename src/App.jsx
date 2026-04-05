@@ -2673,55 +2673,447 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// MEETINGS — Traction-Style Family Governance Meeting System
+// ═══════════════════════════════════════════════════════════════
+
+const MEETING_TEMPLATES = {
+  board: {
+    name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#1a3a5c',
+    agenda: [
+      { id: 'opening', name: 'Opening & Check-In', duration: '5 min', desc: 'Personal check-in. How is each board member doing — personally and professionally?' },
+      { id: 'scorecard', name: 'Scorecard Review', duration: '10 min', desc: 'Review key metrics: revenue, EBITDA, cash position, succession milestones, LEP scores.' },
+      { id: 'rock-review', name: 'Rock Review (Quarterly Priorities)', duration: '10 min', desc: 'Are the quarterly rocks on track, off track, or done? Red/yellow/green status.' },
+      { id: 'headlines', name: 'Headlines & Updates', duration: '10 min', desc: 'Good news, bad news, key developments — one headline per person, no discussion yet.' },
+      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '40 min', desc: 'The core of the meeting. Surface the most important issues, discuss openly, resolve with clear action items.' },
+      { id: 'action-items', name: 'Action Items & Accountability', duration: '10 min', desc: 'Recap all action items. Who owns what? By when? Read back for confirmation.' },
+      { id: 'closing', name: 'Closing & Rating', duration: '5 min', desc: 'Rate this meeting 1-10. What worked? What didn\'t? Cascade any messages.' },
+    ],
+  },
+  'family-council': {
+    name: 'Family Council', icon: '👥', frequency: 'Monthly', duration: '60 min', color: '#2d5a3d',
+    agenda: [
+      { id: 'opening', name: 'Opening & Gratitude', duration: '5 min', desc: 'Start with something positive. What are we grateful for as a family this month?' },
+      { id: 'policy-review', name: 'Policy & Governance Review', duration: '10 min', desc: 'Any policies that need updating? Family employment, compensation, conflict resolution.' },
+      { id: 'family-updates', name: 'Family Member Updates', duration: '10 min', desc: 'Each member shares one update — personal or professional. No interruptions.' },
+      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '25 min', desc: 'Family issues on the table. Address them with structure, not emotion.' },
+      { id: 'action-items', name: 'Action Items', duration: '5 min', desc: 'Who does what by when. Write it down. Read it back.' },
+      { id: 'closing', name: 'Closing & Connection', duration: '5 min', desc: 'End on a positive note. What\'s one thing you appreciate about someone in the room?' },
+    ],
+  },
+  shareholder: {
+    name: 'Shareholder Meeting', icon: '📊', frequency: 'Annual', duration: '120 min', color: '#7c3aed',
+    agenda: [
+      { id: 'call-to-order', name: 'Call to Order & Quorum', duration: '5 min', desc: 'Confirm quorum. Record attendance. Approve prior meeting minutes.' },
+      { id: 'financial-report', name: 'Financial Report', duration: '20 min', desc: 'Annual financials: revenue, profit, distributions, valuation update, debt position.' },
+      { id: 'state-of-enterprise', name: 'State of the Enterprise', duration: '20 min', desc: 'CEO/President report. Strategic direction, market position, competitive landscape.' },
+      { id: 'succession-update', name: 'Succession & Continuity Update', duration: '15 min', desc: 'Where we stand on leadership pipeline, key-person risk, and transition timeline.' },
+      { id: 'ids', name: 'IDS (Identify, Discuss, Solve)', duration: '30 min', desc: 'Major ownership issues. Distribution policy changes. Governance amendments. Buy-sell agreements.' },
+      { id: 'votes', name: 'Formal Votes & Resolutions', duration: '15 min', desc: 'Any motions requiring formal vote. Record results. Document dissents.' },
+      { id: 'action-items', name: 'Action Items & Adjournment', duration: '10 min', desc: 'Assign action items. Set next meeting date. Formal adjournment.' },
+    ],
+  },
+  'family-meeting': {
+    name: 'Family Meeting', icon: '🏠', frequency: 'Annual', duration: '180 min', color: '#d97706',
+    agenda: [
+      { id: 'welcome', name: 'Welcome & Values Recitation', duration: '10 min', desc: 'Read the family mission statement and core values together.' },
+      { id: 'family-story', name: 'Family Story Moment', duration: '15 min', desc: 'A family member shares a story about the enterprise — past, present, or future.' },
+      { id: 'state-of-family', name: 'State of the Family', duration: '20 min', desc: 'How are we doing as a family? Not the business — the family.' },
+      { id: 'philanthropy', name: 'Philanthropy & Giving Update', duration: '15 min', desc: 'Where our giving went. Impact stories. Decisions for next year.' },
+      { id: 'nextgen', name: 'Next-Gen Spotlight', duration: '20 min', desc: 'Younger family members present or share. Development updates. Education plans.' },
+      { id: 'ids', name: 'Open Forum', duration: '40 min', desc: 'IDS format. Any family member can raise any topic. Everything is on the table.' },
+      { id: 'vision', name: 'Vision & Looking Ahead', duration: '15 min', desc: 'What does the next year look like? 5 years? What do we want to be known for?' },
+      { id: 'closing', name: 'Closing Ritual', duration: '10 min', desc: 'End with a tradition — a reading, a toast, a moment of gratitude, or a family pledge.' },
+    ],
+  },
+  nextgen: {
+    name: 'Next-Gen Gathering', icon: '🌱', frequency: 'Semi-Annual', duration: '90 min', color: '#0891b2',
+    agenda: [
+      { id: 'icebreaker', name: 'Icebreaker & Connection', duration: '10 min', desc: 'Fun opening activity. Build relationships between next-gen members.' },
+      { id: 'education', name: 'Education Session', duration: '25 min', desc: 'A topic relevant to next-gen development: financial literacy, governance, leadership, industry knowledge.' },
+      { id: 'guest-speaker', name: 'Guest Speaker or Case Study', duration: '15 min', desc: 'Invite an outside perspective — another family enterprise next-gen, an advisor, or a professor.' },
+      { id: 'discussion', name: 'Open Discussion', duration: '20 min', desc: 'What are you curious about? Worried about? Excited about? Safe space — no senior gen in the room.' },
+      { id: 'development', name: 'Personal Development Check-In', duration: '10 min', desc: 'Each member shares one thing they\'re working on and one way they need support.' },
+      { id: 'closing', name: 'Closing & Next Steps', duration: '10 min', desc: 'Action items. Set the next gathering date. End with energy.' },
+    ],
+  },
+};
+
 function MeetingsView() {
+  const [meetings, setMeetings] = useState(() => {
+    try { const s = localStorage.getItem('lep_meetings'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [activeMeeting, setActiveMeeting] = useState(null);
+  const [showNewMeeting, setShowNewMeeting] = useState(false);
+  const [issuesList, setIssuesList] = useState(() => {
+    try { const s = localStorage.getItem('lep_issues'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [newIssue, setNewIssue] = useState('');
+  const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
+
+  // Auto-save
+  useEffect(() => { localStorage.setItem('lep_meetings', JSON.stringify(meetings)); }, [meetings]);
+  useEffect(() => { localStorage.setItem('lep_issues', JSON.stringify(issuesList)); }, [issuesList]);
+
+  // All action items across all meetings
+  const allActions = meetings.flatMap(m => (m.actionItems || []).map(a => ({ ...a, meetingId: m.id, meetingName: `${MEETING_TEMPLATES[m.type]?.name || m.type} — ${m.date}` })));
+  const openActions = allActions.filter(a => !a.done);
+
+  const createMeeting = (type) => {
+    const template = MEETING_TEMPLATES[type];
+    const meeting = {
+      id: Date.now(),
+      type,
+      date: new Date().toISOString().split('T')[0],
+      status: 'in-progress',
+      attendees: '',
+      agendaNotes: {},
+      actionItems: [],
+      rating: null,
+      minutes: '',
+    };
+    setMeetings(prev => [meeting, ...prev]);
+    setActiveMeeting(meeting.id);
+    setShowNewMeeting(false);
+  };
+
+  const updateMeeting = (id, updates) => {
+    setMeetings(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+  };
+
+  const addActionItem = (meetingId) => {
+    const item = { id: Date.now(), text: '', owner: '', due: '', done: false };
+    setMeetings(prev => prev.map(m => m.id === meetingId ? { ...m, actionItems: [...(m.actionItems || []), item] } : m));
+  };
+
+  const updateActionItem = (meetingId, itemId, updates) => {
+    setMeetings(prev => prev.map(m => m.id === meetingId ? {
+      ...m, actionItems: (m.actionItems || []).map(a => a.id === itemId ? { ...a, ...updates } : a)
+    } : m));
+  };
+
+  const meeting = meetings.find(m => m.id === activeMeeting);
+  const template = meeting ? MEETING_TEMPLATES[meeting.type] : null;
+
   return (
     <div className="meetings-view">
       <header className="page-header">
         <div>
           <h1>Meeting Center</h1>
-          <p className="subtitle">Schedule and track your governance meetings.</p>
+          <p className="subtitle">Structured governance meetings. Agenda. Issues. Action items. Accountability.</p>
         </div>
-        <button className="btn btn-primary">+ Schedule Meeting</button>
       </header>
 
-      <div className="meetings-grid">
-        <div className="meetings-section">
-          <h3>Meeting Types</h3>
-          <div className="meeting-types">
-            {MEETING_TYPES.map(meeting => (
-              <div key={meeting.id} className="meeting-type-card">
-                <span className="meeting-icon">{meeting.icon}</span>
-                <div className="meeting-info">
-                  <h4>{meeting.name}</h4>
-                  <span className="meeting-frequency">{meeting.frequency}</span>
+      {/* Tab bar */}
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb', paddingBottom: '0'}}>
+        {[
+          { id: 'meetings', label: 'Meetings', count: meetings.length },
+          { id: 'issues', label: 'Issues List', count: issuesList.filter(i => !i.resolved).length },
+          { id: 'actions', label: 'Action Items', count: openActions.length },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => { setActiveTab(tab.id); setActiveMeeting(null); }}
+            style={{
+              padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600',
+              background: 'none', color: activeTab === tab.id ? '#0f172a' : '#94a3b8',
+              borderBottom: activeTab === tab.id ? '2px solid #0f172a' : '2px solid transparent',
+              marginBottom: '-2px', transition: 'all 0.15s',
+            }}
+          >
+            {tab.label} {tab.count > 0 && <span style={{background: activeTab === tab.id ? '#0f172a' : '#e5e7eb', color: activeTab === tab.id ? 'white' : '#64748b', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
+          </button>
+        ))}
+      </div>
+
+      {/* ─── MEETINGS TAB ─── */}
+      {activeTab === 'meetings' && !activeMeeting && (
+        <div>
+          {/* New meeting selector */}
+          <div style={{marginBottom: '28px'}}>
+            <button onClick={() => setShowNewMeeting(!showNewMeeting)}
+              style={{background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}>
+              + New Meeting
+            </button>
+          </div>
+
+          {showNewMeeting && (
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '12px', marginBottom: '28px'}}>
+              {Object.entries(MEETING_TEMPLATES).map(([key, tmpl]) => (
+                <div key={key} onClick={() => createMeeting(key)}
+                  style={{background: 'white', borderRadius: '12px', padding: '20px', border: `2px solid ${tmpl.color}22`, cursor: 'pointer', transition: 'all 0.15s', ':hover': {borderColor: tmpl.color}}}
+                >
+                  <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
+                    <span style={{fontSize: '1.5rem'}}>{tmpl.icon}</span>
+                    <div>
+                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: tmpl.color}}>{tmpl.name}</h4>
+                      <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{tmpl.frequency} · {tmpl.duration}</span>
+                    </div>
+                  </div>
+                  <p style={{fontSize: '0.78rem', color: '#64748b'}}>{tmpl.agenda.length} agenda items</p>
                 </div>
-                <button className="btn btn-outline btn-sm">View Template</button>
+              ))}
+            </div>
+          )}
+
+          {/* Meeting history */}
+          {meetings.length === 0 ? (
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+              <p style={{fontSize: '1.1rem', marginBottom: '8px'}}>No meetings yet.</p>
+              <p style={{fontSize: '0.88rem'}}>Click "+ New Meeting" to start your first governance meeting with a structured agenda.</p>
+            </div>
+          ) : (
+            <div>
+              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>Meeting History</h3>
+              {meetings.map(m => {
+                const tmpl = MEETING_TEMPLATES[m.type];
+                const actionCount = (m.actionItems || []).length;
+                const doneCount = (m.actionItems || []).filter(a => a.done).length;
+                return (
+                  <div key={m.id} onClick={() => setActiveMeeting(m.id)}
+                    style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.15s'}}
+                  >
+                    <span style={{fontSize: '1.4rem'}}>{tmpl?.icon || '📋'}</span>
+                    <div style={{flex: 1}}>
+                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{tmpl?.name || m.type}</h4>
+                      <span style={{fontSize: '0.78rem', color: '#94a3b8'}}>{m.date}</span>
+                    </div>
+                    {actionCount > 0 && (
+                      <span style={{fontSize: '0.75rem', background: doneCount === actionCount ? '#f0fdf4' : '#fffbeb', color: doneCount === actionCount ? '#2d5a3d' : '#d97706', padding: '3px 10px', borderRadius: '100px', fontWeight: '600'}}>
+                        {doneCount}/{actionCount} actions
+                      </span>
+                    )}
+                    {m.rating && <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{m.rating}/10</span>}
+                    <span style={{color: '#94a3b8', fontSize: '0.85rem'}}>→</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── ACTIVE MEETING VIEW ─── */}
+      {activeTab === 'meetings' && activeMeeting && meeting && template && (
+        <div>
+          <button onClick={() => setActiveMeeting(null)} style={{background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '16px', padding: 0}}>
+            ← Back to all meetings
+          </button>
+
+          <div style={{background: `linear-gradient(135deg, ${template.color} 0%, ${template.color}dd 100%)`, borderRadius: '12px', padding: '24px', color: 'white', marginBottom: '24px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div>
+                <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: 'white', marginBottom: '4px'}}>{template.icon} {template.name}</h2>
+                <p style={{fontSize: '0.88rem', opacity: 0.8}}>{meeting.date} · {template.duration} · {template.frequency}</p>
               </div>
-            ))}
+              <input type="text" placeholder="Attendees (comma-separated)..." value={meeting.attendees || ''}
+                onChange={(e) => updateMeeting(meeting.id, { attendees: e.target.value })}
+                style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: '0.85rem', minWidth: '250px', '::placeholder': {color: 'rgba(255,255,255,0.5)'}}}
+              />
+            </div>
+          </div>
+
+          {/* Agenda items */}
+          {template.agenda.map((item, idx) => (
+            <div key={item.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                  <span style={{background: template.color, color: 'white', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: '700', flexShrink: 0}}>{idx + 1}</span>
+                  <div>
+                    <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{item.name}</h4>
+                    <p style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px'}}>{item.desc}</p>
+                  </div>
+                </div>
+                <span style={{fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600', whiteSpace: 'nowrap', marginLeft: '12px'}}>{item.duration}</span>
+              </div>
+              <textarea
+                rows="2"
+                placeholder={item.id === 'ids' ? 'Issue 1: ...\nIssue 2: ...' : 'Notes...'}
+                value={(meeting.agendaNotes || {})[item.id] || ''}
+                onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
+                style={{width: '100%', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
+              />
+            </div>
+          ))}
+
+          {/* Action Items section */}
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginTop: '20px', marginBottom: '16px', border: '1px solid #e5e7eb'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c'}}>Action Items</h3>
+              <button onClick={() => addActionItem(meeting.id)}
+                style={{background: '#0f172a', color: 'white', padding: '6px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                + Add
+              </button>
+            </div>
+            {(meeting.actionItems || []).length === 0 ? (
+              <p style={{fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center', padding: '12px 0'}}>No action items yet. Add one above.</p>
+            ) : (
+              <div style={{display: 'grid', gap: '6px'}}>
+                {(meeting.actionItems || []).map(item => (
+                  <div key={item.id} style={{display: 'flex', gap: '8px', alignItems: 'center', background: 'white', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                    <input type="checkbox" checked={item.done}
+                      onChange={(e) => updateActionItem(meeting.id, item.id, { done: e.target.checked })}
+                      style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2d5a3d', flexShrink: 0}}
+                    />
+                    <input type="text" placeholder="Action item..." value={item.text}
+                      onChange={(e) => updateActionItem(meeting.id, item.id, { text: e.target.value })}
+                      style={{flex: 1, padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.85rem', textDecoration: item.done ? 'line-through' : 'none', color: item.done ? '#94a3b8' : '#1e293b'}}
+                    />
+                    <input type="text" placeholder="Owner" value={item.owner}
+                      onChange={(e) => updateActionItem(meeting.id, item.id, { owner: e.target.value })}
+                      style={{width: '100px', padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.82rem'}}
+                    />
+                    <input type="date" value={item.due}
+                      onChange={(e) => updateActionItem(meeting.id, item.id, { due: e.target.value })}
+                      style={{padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.82rem'}}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Meeting rating */}
+          <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap'}}>
+            <span style={{fontSize: '0.88rem', fontWeight: '600', color: '#1a3a5c'}}>Rate this meeting:</span>
+            <div style={{display: 'flex', gap: '4px'}}>
+              {[1,2,3,4,5,6,7,8,9,10].map(v => (
+                <button key={v} onClick={() => updateMeeting(meeting.id, { rating: v })}
+                  style={{
+                    width: '32px', height: '32px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+                    fontSize: '0.82rem', fontWeight: '600',
+                    background: meeting.rating === v ? '#0f172a' : meeting.rating && v <= meeting.rating ? '#0f172a' : '#f1f5f9',
+                    color: meeting.rating && v <= meeting.rating ? 'white' : '#64748b',
+                  }}
+                >{v}</button>
+              ))}
+            </div>
+            {meeting.rating && <span style={{fontSize: '0.82rem', color: meeting.rating >= 8 ? '#2d5a3d' : meeting.rating >= 6 ? '#d97706' : '#dc2626', fontWeight: '600'}}>
+              {meeting.rating >= 8 ? 'Great meeting!' : meeting.rating >= 6 ? 'Good — room to improve.' : 'Below standard — let\'s fix it.'}
+            </span>}
           </div>
         </div>
+      )}
 
-        <div className="meetings-section">
-          <h3>Committees</h3>
-          <div className="committee-list">
-            {COMMITTEE_TYPES.map(committee => (
-              <div key={committee.id} className="committee-card">
-                <span className="committee-icon">{committee.icon}</span>
-                <span className="committee-name">{committee.name}</span>
-                <button className="btn btn-ghost btn-sm">Configure</button>
-              </div>
-            ))}
+      {/* ─── ISSUES TAB (IDS — Identify, Discuss, Solve) ─── */}
+      {activeTab === 'issues' && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #e5e7eb'}}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>IDS — Identify, Discuss, Solve</h3>
+            <p style={{fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5', marginBottom: '16px'}}>
+              The master issues list. Any family member can add an issue anytime. Issues get prioritized and resolved in your next meeting using the IDS process: Identify the real issue, Discuss it openly, Solve it with a clear action.
+            </p>
+            <div style={{display: 'flex', gap: '8px'}}>
+              <input type="text" placeholder="Add an issue..." value={newIssue}
+                onChange={(e) => setNewIssue(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newIssue.trim()) { setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority: 'medium', addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]); setNewIssue(''); }}}
+                style={{flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem'}}
+              />
+              <select id="issue-priority" style={{padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.85rem'}}>
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <button onClick={() => {
+                if (newIssue.trim()) {
+                  const priority = document.getElementById('issue-priority')?.value || 'medium';
+                  setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority, addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]);
+                  setNewIssue('');
+                }
+              }} style={{background: '#0f172a', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
+                + Add
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="upcoming-meetings">
-        <h3>Upcoming Meetings</h3>
-        <div className="empty-state-sm">
-          <p>No meetings scheduled. Create your first meeting to get started.</p>
-          <button className="btn btn-outline">+ Schedule Meeting</button>
+          {/* Open issues */}
+          <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
+            Open Issues ({issuesList.filter(i => !i.resolved).length})
+          </h4>
+          {issuesList.filter(i => !i.resolved).length === 0 ? (
+            <p style={{fontSize: '0.88rem', color: '#94a3b8', textAlign: 'center', padding: '32px 0'}}>No open issues. That's either great news or no one's been honest yet.</p>
+          ) : (
+            issuesList.filter(i => !i.resolved).map(issue => (
+              <div key={issue.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px'}}>
+                <span style={{
+                  width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0,
+                  background: issue.priority === 'high' ? '#dc2626' : issue.priority === 'medium' ? '#d97706' : '#94a3b8',
+                }} />
+                <span style={{flex: 1, fontSize: '0.88rem', color: '#1e293b'}}>{issue.text}</span>
+                <span style={{fontSize: '0.72rem', color: '#94a3b8'}}>{issue.date}</span>
+                <button onClick={() => setIssuesList(prev => prev.map(i => i.id === issue.id ? { ...i, resolved: true } : i))}
+                  style={{background: '#f0fdf4', color: '#2d5a3d', padding: '4px 12px', borderRadius: '6px', border: '1px solid #2d5a3d33', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
+                  Resolve
+                </button>
+              </div>
+            ))
+          )}
+
+          {/* Resolved issues */}
+          {issuesList.filter(i => i.resolved).length > 0 && (
+            <div style={{marginTop: '24px'}}>
+              <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
+                Resolved ({issuesList.filter(i => i.resolved).length})
+              </h4>
+              {issuesList.filter(i => i.resolved).map(issue => (
+                <div key={issue.id} style={{background: '#fafafa', borderRadius: '8px', padding: '10px 14px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                  <span style={{color: '#2d5a3d', fontSize: '0.85rem'}}>✓</span>
+                  <span style={{flex: 1, fontSize: '0.82rem', color: '#94a3b8', textDecoration: 'line-through'}}>{issue.text}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      )}
+
+      {/* ─── ACTION ITEMS TAB ─── */}
+      {activeTab === 'actions' && (
+        <div>
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #e5e7eb'}}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>Action Items — All Meetings</h3>
+            <p style={{fontSize: '0.85rem', color: '#64748b'}}>
+              Every action item from every meeting, in one place. {openActions.length} open, {allActions.length - openActions.length} completed.
+            </p>
+          </div>
+
+          {openActions.length === 0 && allActions.length === 0 ? (
+            <p style={{fontSize: '0.88rem', color: '#94a3b8', textAlign: 'center', padding: '40px 0'}}>No action items yet. They'll appear here as you run meetings.</p>
+          ) : (
+            <div>
+              {openActions.length > 0 && (
+                <div style={{marginBottom: '24px'}}>
+                  <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Open ({openActions.length})</h4>
+                  {openActions.map(item => (
+                    <div key={`${item.meetingId}-${item.id}`} style={{background: 'white', borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                      <input type="checkbox" checked={false}
+                        onChange={() => updateActionItem(item.meetingId, item.id, { done: true })}
+                        style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2d5a3d', flexShrink: 0}}
+                      />
+                      <div style={{flex: 1}}>
+                        <span style={{fontSize: '0.88rem', color: '#1e293b'}}>{item.text || '(no description)'}</span>
+                        <div style={{fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px'}}>{item.meetingName}</div>
+                      </div>
+                      {item.owner && <span style={{fontSize: '0.78rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#475569'}}>{item.owner}</span>}
+                      {item.due && <span style={{fontSize: '0.78rem', color: new Date(item.due) < new Date() ? '#dc2626' : '#94a3b8', fontWeight: new Date(item.due) < new Date() ? '600' : '400'}}>{item.due}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {allActions.filter(a => a.done).length > 0 && (
+                <div>
+                  <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#2d5a3d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Completed ({allActions.filter(a => a.done).length})</h4>
+                  {allActions.filter(a => a.done).map(item => (
+                    <div key={`${item.meetingId}-${item.id}`} style={{background: '#fafafa', borderRadius: '6px', padding: '8px 14px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                      <span style={{color: '#2d5a3d'}}>✓</span>
+                      <span style={{fontSize: '0.82rem', color: '#94a3b8', textDecoration: 'line-through', flex: 1}}>{item.text}</span>
+                      {item.owner && <span style={{fontSize: '0.72rem', color: '#94a3b8'}}>{item.owner}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
