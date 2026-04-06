@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
+import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
@@ -24,32 +25,21 @@ function AuthScreen({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
-      const user = users.find(u => u.email === email.toLowerCase().trim());
-      if (!user) {
-        setError('No account found with that email. Sign up to get started.');
-        setLoading(false);
-        return;
-      }
-      if (user.password !== password) {
-        setError('Incorrect password. Try again or reset your password.');
-        setLoading(false);
-        return;
-      }
-      user.lastLogin = new Date().toISOString();
-      localStorage.setItem('lep_users', JSON.stringify(users));
-      localStorage.setItem('lep_current_user', JSON.stringify({ id: user.id, email: user.email, name: user.name, orgName: user.orgName, role: user.role, initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase() }));
+    try {
+      const { user } = await auth.signIn({ email, password });
       onLogin(user);
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
     if (!name.trim() || !email.trim() || !password) {
@@ -61,36 +51,27 @@ function AuthScreen({ onLogin }) {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
-      if (users.find(u => u.email === email.toLowerCase().trim())) {
-        setError('An account with that email already exists. Try logging in.');
-        setLoading(false);
-        return;
-      }
-      const newUser = {
-        id: 'user_' + Date.now(),
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
-        password,
-        orgName: orgName.trim() || '',
-        role,
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        tier: 'free', // free | pro | enterprise
-      };
-      users.push(newUser);
-      localStorage.setItem('lep_users', JSON.stringify(users));
-      localStorage.setItem('lep_current_user', JSON.stringify({ id: newUser.id, email: newUser.email, name: newUser.name, orgName: newUser.orgName, role: newUser.role, tier: newUser.tier, initials: newUser.name.split(' ').map(n => n[0]).join('').toUpperCase() }));
-      onLogin(newUser);
+    try {
+      const { user } = await auth.signUp({ email, password, name: name.trim(), orgName: orgName.trim(), role });
+      onLogin(user);
+    } catch (err) {
+      setError(err.message || 'Signup failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setResetSent(true); setLoading(false); }, 800);
+    try {
+      await auth.resetPassword(email);
+      setResetSent(true);
+    } catch (err) {
+      setError(err.message || 'Failed to send reset email.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -5499,12 +5480,29 @@ function VaultView({ vaultDocuments }) {
 }
 
 // ─── SETTINGS VIEW ──────────────────────────────────────────
-function SettingsView({ currentUser, onLogout }) {
+function SettingsView({ currentUser, onLogout, onTierChange }) {
+  const [upgrading, setUpgrading] = useState(false);
   const TIERS = [
     { id: 'free', name: 'Explorer', price: 'Free', features: ['LEP Assessment', 'LEP Score & Dashboard', 'Family Profile (Basic)', '1 Family Member'], color: '#64748b', current: currentUser?.tier === 'free' },
     { id: 'pro', name: 'Pro', price: '$99/mo', features: ['Everything in Explorer', 'Full LEP Journey (3 Phases)', 'Family Dynamics Module', 'Valuation Engine', 'Document Vault', 'Up to 10 Family Members', 'Meeting Recorder & Notes', 'Priority Support'], color: '#2d5a3d', current: currentUser?.tier === 'pro', recommended: true },
     { id: 'enterprise', name: 'Enterprise', price: '$499/mo', features: ['Everything in Pro', 'Unlimited Family Members', 'Advisor Portal Access', 'Multi-Entity Management', 'Custom Reporting', 'White-Glove Onboarding', 'Dedicated Account Manager', 'API Access'], color: '#1a3a5c', current: currentUser?.tier === 'enterprise' },
   ];
+
+  const handleUpgrade = async (tierId) => {
+    setUpgrading(true);
+    try {
+      const result = await payments.checkout(tierId, currentUser?.email, currentUser?.id);
+      if (result?.simulated) {
+        // localStorage mode — instant upgrade
+        if (onTierChange) onTierChange(tierId);
+      }
+      // If Stripe is configured, user gets redirected to Stripe Checkout
+    } catch (err) {
+      alert('Upgrade failed: ' + (err.message || 'Please try again.'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
 
   return (
     <div style={{maxWidth: '900px'}}>
@@ -5534,12 +5532,32 @@ function SettingsView({ currentUser, onLogout }) {
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                 {tier.features.map((f, i) => <li key={i} style={{fontSize: '0.82rem', color: '#475569', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '8px'}}><span style={{color: tier.color, flexShrink: 0}}>✓</span>{f}</li>)}
               </ul>
-              <button style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#f1f5f9' : tier.color, color: tier.current ? '#64748b' : 'white', border: 'none'}} disabled={tier.current}>
-                {tier.current ? 'Current Plan' : 'Upgrade'}
+              <button onClick={() => !tier.current && handleUpgrade(tier.id)} style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#f1f5f9' : tier.color, color: tier.current ? '#64748b' : 'white', border: 'none', opacity: upgrading ? 0.6 : 1}} disabled={tier.current || upgrading}>
+                {tier.current ? 'Current Plan' : upgrading ? 'Processing...' : `Upgrade to ${tier.name}`}
               </button>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Platform Status */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '16px'}}>Platform</h3>
+        <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: hasSupabase ? '#22c55e' : '#f59e0b'}} />
+            <span style={{fontSize: '0.85rem', color: '#475569'}}>{hasSupabase ? 'Cloud database active' : 'Local storage (upgrade to cloud by adding Supabase)'}</span>
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: hasStripe ? '#22c55e' : '#f59e0b'}} />
+            <span style={{fontSize: '0.85rem', color: '#475569'}}>{hasStripe ? 'Payments active' : 'Payments ready (add Stripe keys to activate)'}</span>
+          </div>
+        </div>
+        {currentUser?.tier !== 'free' && (
+          <button onClick={() => payments.openPortal()} style={{marginTop: '16px', padding: '8px 16px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
+            Manage Subscription
+          </button>
+        )}
       </div>
 
       {/* Danger Zone */}
@@ -6533,19 +6551,32 @@ export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('lep_current_user');
-      if (saved) setCurrentUser(JSON.parse(saved));
-    } catch {}
-    setAuthChecked(true);
+    auth.getCurrentUser().then(user => {
+      if (user) setCurrentUser(user);
+      setAuthChecked(true);
+    }).catch(() => setAuthChecked(true));
+
+    // Check for Stripe checkout return
+    const checkoutResult = payments.checkReturnFromCheckout();
+    if (checkoutResult?.success) {
+      // Update tier after successful checkout
+      auth.getCurrentUser().then(user => {
+        if (user) setCurrentUser({ ...user, tier: checkoutResult.tier });
+      });
+    }
   }, []);
 
   const handleLogin = (user) => {
-    setCurrentUser({ id: user.id, email: user.email, name: user.name, orgName: user.orgName, role: user.role, tier: user.tier || 'free', initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase() });
+    setCurrentUser({
+      id: user.id, email: user.email, name: user.name,
+      orgName: user.orgName || user.org_name, role: user.role,
+      tier: user.tier || 'free',
+      initials: user.initials || user.name?.split(' ').map(n => n[0]).join('').toUpperCase()
+    });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('lep_current_user');
+  const handleLogout = async () => {
+    await auth.signOut();
     setCurrentUser(null);
   };
 
@@ -6644,7 +6675,12 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
-        {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} />}
+        {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
+          const updated = { ...currentUser, tier };
+          setCurrentUser(updated);
+          localStorage.setItem('lep_current_user', JSON.stringify(updated));
+          if (hasSupabase) db.updateProfile(currentUser.id, { tier });
+        }} />}
       </main>
     </div>
   );
