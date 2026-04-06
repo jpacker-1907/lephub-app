@@ -4,9 +4,221 @@ import { saveAs } from 'file-saver';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
-// LEP HUB — Legacy Enterprise Platform v3
-// With AI-Powered Document Generation & Assessment Persistence
+// LEP HUB — Legacy Enterprise Platform v13
+// Auth System + Commercialization Infrastructure
 // ═══════════════════════════════════════════════════════════════
+
+// ─── AUTH SYSTEM ──────────────────────────────────────────────
+// Phase 1: Client-side auth with localStorage (production will use Supabase)
+// This provides the full UX flow while we wire up the backend
+
+function AuthScreen({ onLogin }) {
+  const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [orgName, setOrgName] = useState('');
+  const [role, setRole] = useState('owner');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
+      const user = users.find(u => u.email === email.toLowerCase().trim());
+      if (!user) {
+        setError('No account found with that email. Sign up to get started.');
+        setLoading(false);
+        return;
+      }
+      if (user.password !== password) {
+        setError('Incorrect password. Try again or reset your password.');
+        setLoading(false);
+        return;
+      }
+      user.lastLogin = new Date().toISOString();
+      localStorage.setItem('lep_users', JSON.stringify(users));
+      localStorage.setItem('lep_current_user', JSON.stringify({ id: user.id, email: user.email, name: user.name, orgName: user.orgName, role: user.role, initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase() }));
+      onLogin(user);
+      setLoading(false);
+    }, 600);
+  };
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    setError('');
+    if (!name.trim() || !email.trim() || !password) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
+      if (users.find(u => u.email === email.toLowerCase().trim())) {
+        setError('An account with that email already exists. Try logging in.');
+        setLoading(false);
+        return;
+      }
+      const newUser = {
+        id: 'user_' + Date.now(),
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        password,
+        orgName: orgName.trim() || '',
+        role,
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        tier: 'free', // free | pro | enterprise
+      };
+      users.push(newUser);
+      localStorage.setItem('lep_users', JSON.stringify(users));
+      localStorage.setItem('lep_current_user', JSON.stringify({ id: newUser.id, email: newUser.email, name: newUser.name, orgName: newUser.orgName, role: newUser.role, tier: newUser.tier, initials: newUser.name.split(' ').map(n => n[0]).join('').toUpperCase() }));
+      onLogin(newUser);
+      setLoading(false);
+    }, 600);
+  };
+
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => { setResetSent(true); setLoading(false); }, 800);
+  };
+
+  return (
+    <div style={{minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #0a0f1c 0%, #1a2744 50%, #2d5a3d 100%)'}}>
+      {/* Left panel — brand */}
+      <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', color: 'white', maxWidth: '560px'}}>
+        <div style={{marginBottom: '48px'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px'}}>
+            <span style={{fontSize: '32px', color: '#c9a962'}}>◆</span>
+            <span style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px'}}>LEP Hub</span>
+          </div>
+          <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2.8rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '20px'}}>
+            The platform for families who build to last.
+          </h1>
+          <p style={{fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '420px'}}>
+            LEP Hub helps multigenerational family enterprises navigate succession, governance, and transition — together. One framework. Every generation.
+          </p>
+        </div>
+        <div style={{display: 'flex', gap: '32px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)'}}>
+          <div><strong style={{color: 'rgba(255,255,255,0.8)', fontSize: '1.4rem', display: 'block'}}>6</strong>Pillars</div>
+          <div><strong style={{color: 'rgba(255,255,255,0.8)', fontSize: '1.4rem', display: 'block'}}>3</strong>Phases</div>
+          <div><strong style={{color: 'rgba(255,255,255,0.8)', fontSize: '1.4rem', display: 'block'}}>1</strong>Family</div>
+        </div>
+      </div>
+
+      {/* Right panel — auth form */}
+      <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px'}}>
+        <div style={{width: '100%', maxWidth: '420px', background: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'}}>
+
+          {mode === 'forgot' ? (
+            <>
+              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#0a0f1c', marginBottom: '8px'}}>Reset password</h2>
+              {resetSent ? (
+                <div style={{textAlign: 'center', padding: '24px 0'}}>
+                  <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>✉️</div>
+                  <p style={{color: '#475569', marginBottom: '20px'}}>If an account exists for <strong>{email}</strong>, we've sent password reset instructions.</p>
+                  <button onClick={() => { setMode('login'); setResetSent(false); }} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem'}}>Back to login</button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword}>
+                  <p style={{color: '#64748b', fontSize: '0.9rem', marginBottom: '24px'}}>Enter your email and we'll send reset instructions.</p>
+                  <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '20px', outline: 'none'}} />
+                  <button type="submit" disabled={loading} style={{width: '100%', padding: '12px', background: 'linear-gradient(135deg, #2d5a3d, #4a7c5d)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1}}>{loading ? 'Sending...' : 'Send Reset Link'}</button>
+                  <p style={{textAlign: 'center', marginTop: '16px', fontSize: '0.85rem', color: '#64748b'}}>
+                    <button type="button" onClick={() => setMode('login')} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem'}}>Back to login</button>
+                  </p>
+                </form>
+              )}
+            </>
+          ) : (
+            <>
+              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#0a0f1c', marginBottom: '4px'}}>
+                {mode === 'login' ? 'Welcome back' : 'Start your LEP journey'}
+              </h2>
+              <p style={{color: '#64748b', fontSize: '0.88rem', marginBottom: '28px'}}>
+                {mode === 'login' ? 'Sign in to continue building your family enterprise legacy.' : 'Create your account to begin your family enterprise assessment.'}
+              </p>
+
+              {error && <div style={{background: '#fef2f2', color: '#dc2626', padding: '10px 14px', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '16px', border: '1px solid #fee2e2'}}>{error}</div>}
+
+              <form onSubmit={mode === 'login' ? handleLogin : handleSignup}>
+                {mode === 'signup' && (
+                  <>
+                    <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Full Name *</label>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Jason Packer" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+
+                    <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Family Enterprise Name</label>
+                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g., The Packer Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+
+                    <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Your Role</label>
+                    <select value={role} onChange={e => setRole(e.target.value)} style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none', background: 'white'}}>
+                      <option value="owner">Current Owner / Patriarch / Matriarch</option>
+                      <option value="next-gen">Next Generation Leader</option>
+                      <option value="family-member">Family Member / Stakeholder</option>
+                      <option value="advisor">Family Business Advisor</option>
+                      <option value="board">Board Member / Trustee</option>
+                    </select>
+                  </>
+                )}
+
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Email *</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Password *</label>
+                <div style={{position: 'relative', marginBottom: mode === 'login' ? '8px' : '16px'}}>
+                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder={mode === 'login' ? 'Enter your password' : 'Min. 8 characters'} style={{width: '100%', padding: '11px 14px', paddingRight: '44px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', outline: 'none'}} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.8rem'}}>{showPassword ? 'Hide' : 'Show'}</button>
+                </div>
+
+                {mode === 'login' && (
+                  <p style={{textAlign: 'right', marginBottom: '20px'}}>
+                    <button type="button" onClick={() => setMode('forgot')} style={{background: 'none', border: 'none', color: '#2d5a3d', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer'}}>Forgot password?</button>
+                  </p>
+                )}
+
+                {mode === 'signup' && (
+                  <p style={{fontSize: '0.78rem', color: '#94a3b8', marginBottom: '20px'}}>By creating an account, you agree to LEP Hub's Terms of Service and Privacy Policy.</p>
+                )}
+
+                <button type="submit" disabled={loading} style={{width: '100%', padding: '13px', background: 'linear-gradient(135deg, #2d5a3d, #4a7c5d)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(45,90,61,0.25)'}}>
+                  {loading ? (mode === 'login' ? 'Signing in...' : 'Creating account...') : (mode === 'login' ? 'Sign In' : 'Create Account')}
+                </button>
+              </form>
+
+              <div style={{textAlign: 'center', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #f1f5f9'}}>
+                <p style={{fontSize: '0.88rem', color: '#64748b'}}>
+                  {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+                  <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem'}}>
+                    {mode === 'login' ? 'Start free' : 'Sign in'}
+                  </button>
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Responsive */}
+      <style>{`
+        @media (max-width: 900px) {
+          .auth-screen > div:first-child { display: none !important; }
+          .auth-screen > div:last-child { flex: 1 !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 // ─── DATA: LEP Framework Structure ─────────────────────────────
 const LEP_PILLARS = [
@@ -1738,8 +1950,9 @@ async function downloadDocument(moduleId, data, title) {
 // COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-function Nav({ currentView, setCurrentView, user, scores }) {
+function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const navItems = [
     { id: 'dashboard', icon: '◇', name: 'Home' },
     { id: 'family-profile', icon: '◎', name: 'Family Profile' },
@@ -1801,12 +2014,24 @@ function Nav({ currentView, setCurrentView, user, scores }) {
 
       <div style={{flex: 1}} />
 
-      <div className="nav-user">
+      <div className="nav-user" style={{position: 'relative', cursor: 'pointer'}} onClick={() => setShowUserMenu(!showUserMenu)}>
         <div className="user-avatar">{user?.initials || 'JP'}</div>
         <div className="user-info">
-          <span className="user-name">{user?.name || 'Jason Packer'}</span>
-          <span className="user-role">Founder</span>
+          <span className="user-name">{user?.name || 'User'}</span>
+          <span className="user-role">{currentUser?.tier === 'enterprise' ? 'Enterprise' : currentUser?.tier === 'pro' ? 'Pro' : 'Free Plan'}</span>
         </div>
+        <span style={{color: '#64748b', fontSize: '0.7rem', marginLeft: 'auto'}}>▾</span>
+
+        {showUserMenu && (
+          <div style={{position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#1a2744', borderRadius: '10px', padding: '6px', marginBottom: '8px', boxShadow: '0 -4px 20px rgba(0,0,0,0.4)', zIndex: 200}}>
+            <button onClick={(e) => { e.stopPropagation(); setCurrentView('settings'); setShowUserMenu(false); setMobileOpen(false); }} style={{width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#e2e8f0', fontSize: '0.85rem', textAlign: 'left', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'}}>
+              ⚙ Settings
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); if (onLogout) onLogout(); }} style={{width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#f87171', fontSize: '0.85rem', textAlign: 'left', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'}}>
+              ↪ Sign Out
+            </button>
+          </div>
+        )}
       </div>
     </nav>
     </>
@@ -5273,6 +5498,62 @@ function VaultView({ vaultDocuments }) {
   );
 }
 
+// ─── SETTINGS VIEW ──────────────────────────────────────────
+function SettingsView({ currentUser, onLogout }) {
+  const TIERS = [
+    { id: 'free', name: 'Explorer', price: 'Free', features: ['LEP Assessment', 'LEP Score & Dashboard', 'Family Profile (Basic)', '1 Family Member'], color: '#64748b', current: currentUser?.tier === 'free' },
+    { id: 'pro', name: 'Pro', price: '$99/mo', features: ['Everything in Explorer', 'Full LEP Journey (3 Phases)', 'Family Dynamics Module', 'Valuation Engine', 'Document Vault', 'Up to 10 Family Members', 'Meeting Recorder & Notes', 'Priority Support'], color: '#2d5a3d', current: currentUser?.tier === 'pro', recommended: true },
+    { id: 'enterprise', name: 'Enterprise', price: '$499/mo', features: ['Everything in Pro', 'Unlimited Family Members', 'Advisor Portal Access', 'Multi-Entity Management', 'Custom Reporting', 'White-Glove Onboarding', 'Dedicated Account Manager', 'API Access'], color: '#1a3a5c', current: currentUser?.tier === 'enterprise' },
+  ];
+
+  return (
+    <div style={{maxWidth: '900px'}}>
+      <div className="page-header"><div><h1>Settings</h1><p className="subtitle">Manage your account, team, and subscription.</p></div></div>
+
+      {/* Account Info */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '20px'}}>Account</h3>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Name</span><span style={{fontWeight: 500}}>{currentUser?.name}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Email</span><span style={{fontWeight: 500}}>{currentUser?.email}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Enterprise</span><span style={{fontWeight: 500}}>{currentUser?.orgName || 'Not set'}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Role</span><span style={{fontWeight: 500, textTransform: 'capitalize'}}>{currentUser?.role?.replace('-', ' ') || 'Owner'}</span></div>
+        </div>
+      </div>
+
+      {/* Subscription Tiers */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '6px'}}>Subscription</h3>
+        <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '24px'}}>Choose the plan that fits your family enterprise.</p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+          {TIERS.map(tier => (
+            <div key={tier.id} style={{border: tier.current ? `2px solid ${tier.color}` : '1.5px solid #e2e8f0', borderRadius: '12px', padding: '24px', position: 'relative', background: tier.current ? `${tier.color}08` : 'white'}}>
+              {tier.recommended && <div style={{position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: '#2d5a3d', color: 'white', fontSize: '0.7rem', fontWeight: 700, padding: '3px 12px', borderRadius: '10px', letterSpacing: '0.5px'}}>RECOMMENDED</div>}
+              <h4 style={{fontSize: '1.1rem', fontWeight: 700, color: tier.color, marginBottom: '4px'}}>{tier.name}</h4>
+              <div style={{fontSize: '1.6rem', fontWeight: 700, color: '#0a0f1c', marginBottom: '16px'}}>{tier.price}</div>
+              <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
+                {tier.features.map((f, i) => <li key={i} style={{fontSize: '0.82rem', color: '#475569', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '8px'}}><span style={{color: tier.color, flexShrink: 0}}>✓</span>{f}</li>)}
+              </ul>
+              <button style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#f1f5f9' : tier.color, color: tier.current ? '#64748b' : 'white', border: 'none'}} disabled={tier.current}>
+                {tier.current ? 'Current Plan' : 'Upgrade'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', borderLeft: '3px solid #f87171'}}>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#dc2626', marginBottom: '12px'}}>Danger Zone</h3>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+          <div><p style={{fontWeight: 500, marginBottom: '2px'}}>Sign out of LEP Hub</p><p style={{fontSize: '0.82rem', color: '#94a3b8'}}>You can sign back in at any time.</p></div>
+          <button onClick={onLogout} style={{padding: '8px 20px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer'}}>Sign Out</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── TRANSITIONS VIEW ──────────────────────────────────────────
 function TransitionsView({ setCurrentView }) {
   const [selectedPathway, setSelectedPathway] = useState(null);
@@ -6247,6 +6528,40 @@ function DecisionEngineView({ setCurrentView, scores }) {
 }
 
 export default function App() {
+  // ─── AUTH STATE ─────────────────────────────────────────────
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('lep_current_user');
+      if (saved) setCurrentUser(JSON.parse(saved));
+    } catch {}
+    setAuthChecked(true);
+  }, []);
+
+  const handleLogin = (user) => {
+    setCurrentUser({ id: user.id, email: user.email, name: user.name, orgName: user.orgName, role: user.role, tier: user.tier || 'free', initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase() });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('lep_current_user');
+    setCurrentUser(null);
+  };
+
+  if (!authChecked) {
+    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0f1c'}}><div style={{color: '#c9a962', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>◆ LEP Hub</div></div>;
+  }
+
+  if (!currentUser) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
+
+  return <AppShell currentUser={currentUser} onLogout={handleLogout} />;
+}
+
+// ─── APP SHELL (post-auth) ────────────────────────────────────
+function AppShell({ currentUser, onLogout }) {
   const [currentView, setCurrentView] = useState('dashboard');
   const [scores, setScores] = useState(null);
   const [activePillar, setActivePillar] = useState('roots');
@@ -6301,12 +6616,12 @@ export default function App() {
     }
   };
 
-  const user = { name: 'Jason Packer', initials: 'JP' };
+  const user = { name: currentUser.name, initials: currentUser.initials || currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase() };
 
   if (showLepReportGenerator) {
     return (
       <div className="lep-app">
-        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} />
+        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} />
         <main className="app-main">
           <LEPReportGenerator
             scores={scores}
@@ -6320,7 +6635,7 @@ export default function App() {
 
   return (
     <div className="lep-app">
-      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} />
+      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} />
       <main className="app-main">
         {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
         {(currentView === 'lep-journey' || currentView === 'assessment' || currentView === 'transitions' || currentView === 'decision-engine') && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
@@ -6329,6 +6644,7 @@ export default function App() {
         {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
+        {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} />}
       </main>
     </div>
   );
