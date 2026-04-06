@@ -63,7 +63,10 @@ export const auth = {
           created_at: new Date().toISOString(),
         });
       }
-      return { user: data.user, session: data.session };
+      // Return normalized user object (Supabase puts custom fields in user_metadata)
+      const u = data.user;
+      const initials = name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+      return { user: { id: u.id, email: u.email, name, orgName, role, tier: 'free', initials }, session: data.session };
     }
 
     // localStorage fallback
@@ -96,7 +99,20 @@ export const auth = {
     if (hasSupabase) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      return { user: data.user, session: data.session };
+      // Fetch profile for normalized user object
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      if (profile) {
+        const initials = profile.name ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+        return { user: { id: profile.id, email: profile.email, name: profile.name, orgName: profile.org_name, role: profile.role, tier: profile.tier || 'free', initials }, session: data.session };
+      }
+      // Fallback to user_metadata if profile not found
+      const meta = data.user.user_metadata || {};
+      const initials = meta.name ? meta.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+      return { user: { id: data.user.id, email: data.user.email, name: meta.name || '', orgName: meta.orgName || '', role: meta.role || 'owner', tier: 'free', initials }, session: data.session };
     }
 
     // localStorage fallback

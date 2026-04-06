@@ -6647,7 +6647,7 @@ function AppShell({ currentUser, onLogout }) {
     }
   };
 
-  const user = { name: currentUser.name, initials: currentUser.initials || currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase() };
+  const user = { name: currentUser.name || '', initials: currentUser.initials || (currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U') };
 
   if (showLepReportGenerator) {
     return (
