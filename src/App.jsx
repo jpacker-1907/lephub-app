@@ -5,7 +5,7 @@ import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
-// LEP HUB — Legacy Enterprise Platform v13
+// LEP HUB — Legacy Enterprise Platform v15
 // Auth System + Commercialization Infrastructure
 // ═══════════════════════════════════════════════════════════════
 
@@ -204,73 +204,73 @@ function AuthScreen({ onLogin }) {
 // ─── DATA: LEP Framework Structure ─────────────────────────────
 const LEP_PILLARS = [
   {
-    id: 'roots',
-    name: 'ROOTS',
-    toolName: 'The Origin Story',
-    icon: '🌳',
+    id: 'purpose-identity',
+    name: 'PURPOSE & IDENTITY',
+    toolName: 'The Foundation',
+    icon: '🌟',
     color: '#2d5a3d',
-    tagline: 'Know where you come from',
-    description: 'Family history, core values, and shared identity',
+    tagline: 'Know why you are together',
+    description: 'Shared purpose, family values, and the narrative that binds generations',
     modules: [
-      { id: 'family-story', name: 'Family Story', description: 'Document your origin story, key moments, and legacy milestones', hasContent: true },
-      { id: 'core-values', name: 'Core Values', description: 'Define and ratify the values that guide your family enterprise', hasContent: true },
-      { id: 'genogram', name: 'Family Genogram', description: 'Map your family system, relationships, and patterns', hasContent: true },
+      { id: 'shared-purpose', name: 'Shared Purpose, Values & Family Narrative', description: 'Articulate the why of being an enterprise family — values, mission, founding story, stewardship mindset, and generational recommitment', hasContent: true },
     ],
   },
   {
-    id: 'order',
-    name: 'ORDER',
-    toolName: 'The Blueprint',
-    icon: '⚙️',
+    id: 'family-system',
+    name: 'FAMILY SYSTEM',
+    toolName: 'The Relationships',
+    icon: '👨‍👩‍👧‍👦',
     color: '#1a3a5c',
-    tagline: 'Structure creates freedom',
-    description: 'Governance structures, policies, and accountability',
+    tagline: 'Strengthen the family behind the business',
+    description: 'Family dynamics, communication, transitions, and next-generation development',
     modules: [
-      { id: 'constitution', name: 'Family Constitution', description: 'Create or update your family charter and guiding principles', hasContent: true },
-      { id: 'governance', name: 'Governance Design', description: 'Define councils, committees, roles, and decision-making authority', hasContent: true },
-      { id: 'policies', name: 'Policies & Agreements', description: 'Employment, compensation, conflict resolution, and operating policies', hasContent: true },
+      { id: 'family-dynamics', name: 'Family Dynamics & Relationships', description: 'Map relational health, patterns, alliances, and the family genogram — understanding the family as a system', hasContent: true },
+      { id: 'communication', name: 'Communication & Family Meetings', description: 'Build structured dialogue — family meetings, shareholder communication, cross-generational conversation, and difficult topics', hasContent: true },
+      { id: 'transitions', name: 'Family Transitions & Integration', description: 'Navigate entry and exit — next-gen onboarding, married-ins, divorce, departure, and re-transitions', hasContent: true },
+      { id: 'nextgen-dev', name: 'Next-Generation Development', description: 'Prepare rising generations through exposure, education, mentorship, and leadership readiness', hasContent: true },
     ],
   },
   {
-    id: 'impact',
-    name: 'IMPACT',
-    toolName: 'The Footprint',
-    icon: '📈',
+    id: 'ownership-governance',
+    name: 'OWNERSHIP & GOVERNANCE',
+    toolName: 'The Structure',
+    icon: '⚖️',
     color: '#7c3aed',
-    tagline: 'Measure what matters',
-    description: 'Business strategy, financial health, and performance',
+    tagline: 'Build the architecture of trust',
+    description: 'Ownership clarity, governance design, and decision-making frameworks',
     modules: [
-      { id: 'strategic-plan', name: 'Strategic Plan', description: 'Family enterprise vision, goals, and strategic priorities', hasContent: true },
-      { id: 'financial-health', name: 'Financial Dashboard', description: 'Key metrics, reporting cadence, and financial transparency', hasContent: true },
-      { id: 'performance', name: 'Performance Review', description: 'Business performance assessment and accountability', hasContent: true },
+      { id: 'ownership', name: 'Ownership Structure & Rights', description: 'Define who owns what, transfer mechanisms, control transition, liquidity, and exit rights', hasContent: true },
+      { id: 'governance', name: 'Governance Architecture', description: 'Design the board, family council, family constitution, and evolving governance structures', hasContent: true },
+      { id: 'decisions', name: 'Decision-Making & Conflict Resolution', description: 'Map decision rights, build resolution mechanisms, and break destructive family patterns', hasContent: true },
     ],
   },
   {
-    id: 'continuity',
-    name: 'CONTINUITY',
-    toolName: 'The Handoff',
-    icon: '🔄',
+    id: 'business-operations',
+    name: 'BUSINESS & OPERATIONS',
+    toolName: 'The Enterprise',
+    icon: '🏢',
     color: '#0891b2',
-    tagline: 'Plan for every scenario',
-    description: 'Succession planning, contingency, and wealth transfer',
+    tagline: 'Run the business like a business',
+    description: 'Roles, compensation, and professionalizing the family enterprise',
     modules: [
-      { id: 'succession', name: 'Succession Plan', description: 'Leadership pipeline, timeline, criteria, and development', hasContent: true },
-      { id: 'contingency', name: 'Contingency Protocols', description: 'Emergency scenarios, backup plans, and crisis response', hasContent: true },
-      { id: 'estate', name: 'Estate & Wealth Transfer', description: 'Trusts, gifting strategies, and ownership transitions', hasContent: true },
+      { id: 'roles', name: 'Roles, Responsibilities & Family Employment', description: 'Clarify who does what across family, business, and ownership — with formal employment policies', hasContent: true },
+      { id: 'compensation', name: 'Compensation & Benefits', description: 'Define how family members are paid, distribution policies, and transparency practices', hasContent: true },
+      { id: 'professionalize', name: 'Non-Family Leadership & Professionalizing', description: 'Engage non-family talent and transition from founder-led to professionally managed', hasContent: true },
     ],
   },
   {
-    id: 'legacy',
-    name: 'LEGACY',
-    toolName: 'The Letter',
-    icon: '✦',
+    id: 'strategy-legacy',
+    name: 'STRATEGY & LEGACY',
+    toolName: 'The Future',
+    icon: '🚀',
     color: '#d97706',
-    tagline: 'Build for generations',
-    description: 'Next-gen development, philanthropy, and long-term vision',
+    tagline: 'Build for generations to come',
+    description: 'Succession, strategy, estate planning, and philanthropy',
     modules: [
-      { id: 'nextgen', name: 'Next Gen Program', description: 'Education, onboarding, mentorship, and leadership readiness', hasContent: true },
-      { id: 'philanthropy', name: 'Philanthropy Strategy', description: 'Giving philosophy, foundations, and community impact', hasContent: true },
-      { id: 'vision', name: 'Vision 2050', description: 'Long-term family vision and aspirational goals', hasContent: true },
+      { id: 'succession', name: 'Succession Planning', description: 'Plan intentional transitions of leadership, ownership, and authority across generations', hasContent: true },
+      { id: 'strategy', name: 'Family Enterprise Strategy', description: 'Set ownership-level strategic direction — growth, risk, capital allocation, and family-business balance', hasContent: true },
+      { id: 'estate', name: 'Estate Planning & Wealth Transfer', description: 'Align wealth transfer structures with family values and succession plans', hasContent: true },
+      { id: 'philanthropy', name: 'Philanthropy & Social Impact', description: 'Connect family giving to enterprise values and next-generation engagement', hasContent: true },
     ],
   },
 ];
@@ -354,11 +354,11 @@ const TRANSITION_PATHWAYS = [
 ];
 
 const MEETING_TYPES = [
-  { id: 'board', name: 'Board Meeting', frequency: 'Quarterly', icon: '🏛️', pillars: ['impact', 'continuity'] },
-  { id: 'shareholder', name: 'Shareholder Meeting', frequency: 'Annual', icon: '📊', pillars: ['impact', 'continuity'] },
-  { id: 'family-council', name: 'Family Council', frequency: 'Monthly', icon: '👥', pillars: ['order', 'roots'] },
-  { id: 'family-meeting', name: 'Family Meeting', frequency: 'Annual', icon: '🏠', pillars: ['roots', 'legacy'] },
-  { id: 'nextgen', name: 'Next Gen Gathering', frequency: 'Semi-annual', icon: '🌱', pillars: ['legacy'] },
+  { id: 'board', name: 'Board Meeting', frequency: 'Quarterly', icon: '🏛️', pillars: ['business-operations', 'strategy-legacy'] },
+  { id: 'shareholder', name: 'Shareholder Meeting', frequency: 'Annual', icon: '📊', pillars: ['business-operations', 'strategy-legacy'] },
+  { id: 'family-council', name: 'Family Council', frequency: 'Monthly', icon: '👥', pillars: ['family-system', 'purpose-identity'] },
+  { id: 'family-meeting', name: 'Family Meeting', frequency: 'Annual', icon: '🏠', pillars: ['purpose-identity', 'strategy-legacy'] },
+  { id: 'nextgen', name: 'Next Gen Gathering', frequency: 'Semi-annual', icon: '🌱', pillars: ['strategy-legacy'] },
 ];
 
 const COMMITTEE_TYPES = [
@@ -371,1086 +371,1527 @@ const COMMITTEE_TYPES = [
 
 // ─── ASSESSMENT QUESTIONS ──────────────────────────────────────
 const ASSESSMENT_QUESTIONS = {
-  roots: [
-    { id: 'r1', text: 'Our family has a documented history and origin story that all members know.' },
-    { id: 'r2', text: 'We have clearly defined and written core values that guide our decisions.' },
-    { id: 'r3', text: 'Family members understand how they fit into the larger family system.' },
-    { id: 'r4', text: 'We regularly share stories and traditions that reinforce our identity.' },
-    { id: 'r5', text: 'New family members (spouses, etc.) are formally onboarded to our family culture.' },
+  'purpose-identity': [
+    { id: 'sp1', text: 'Our family has articulated a shared set of values that actively guide business decisions.' },
+    { id: 'sp2', text: 'There is a documented family narrative or founding story known and embraced across generations.' },
+    { id: 'sp3', text: 'Family members genuinely enjoy working together and choose to be in enterprise together.' },
+    { id: 'sp4', text: 'Each generation has explicitly recommitted to the family enterprise rather than assuming continuity.' },
+    { id: 'sp5', text: 'The family views itself as stewards of a legacy for future generations, not just owners of a current asset.' },
+    { id: 'sp6', text: 'There is constructive, thoughtful conflict on issues of concern rather than avoidance.' },
+    { id: 'sp7', text: 'The family has a written purpose or mission statement that goes beyond financial returns.' },
+    { id: 'sp8', text: 'The shared purpose is a living conversation revisited regularly, not a static document.' },
+    { id: 'sp9', text: 'The family has a process for evolving its narrative as new generations bring their own perspectives.' },
+    { id: 'sp10', text: 'The family\'s stated values align with how decisions are actually made in the enterprise.' },
   ],
-  order: [
-    { id: 'o1', text: 'We have a written family constitution or charter.' },
-    { id: 'o2', text: 'Roles and responsibilities are clearly defined for family members in the business.' },
-    { id: 'o3', text: 'We have formal governance structures (board, councils, committees).' },
-    { id: 'o4', text: 'There are clear policies for employment, compensation, and conflict resolution.' },
-    { id: 'o5', text: 'Decision-making authority is documented and understood by all.' },
+  'family-dynamics': [
+    { id: 'fd1', text: 'The family has completed a genogram that maps relational dynamics, not just family structure.' },
+    { id: 'fd2', text: 'The family can identify recurring patterns in how they relate (avoidance, dominance, triangulation, alliance).' },
+    { id: 'fd3', text: 'There are no unresolved conflicts or emotional cutoffs between family members affecting business.' },
+    { id: 'fd4', text: 'The family understands how its relational history shapes current business behavior.' },
+    { id: 'fd5', text: 'Intergenerational patterns (secrecy, authoritarianism, distrust) have been identified and are being addressed.' },
+    { id: 'fd6', text: 'All family members feel they can be authentic in family business settings.' },
+    { id: 'fd7', text: 'The family has worked with a therapist, facilitator, or advisor who understands family systems.' },
+    { id: 'fd8', text: 'The emotional health of the family is treated as a priority alongside the financial health of the business.' },
+    { id: 'fd9', text: 'Relationships between branches are actively maintained as the family grows.' },
+    { id: 'fd10', text: 'Family members are encouraged to develop their own identities, even when differing from tradition.' },
   ],
-  impact: [
-    { id: 'i1', text: 'We have a written strategic plan for the family enterprise.' },
-    { id: 'i2', text: 'Financial performance is regularly reviewed with appropriate stakeholders.' },
-    { id: 'i3', text: 'Key metrics are tracked and reported on a consistent schedule.' },
-    { id: 'i4', text: 'Business performance is benchmarked against industry standards.' },
-    { id: 'i5', text: 'There is accountability for achieving strategic goals.' },
+  'communication': [
+    { id: 'cm1', text: 'The family holds regular, structured family meetings with defined agendas.' },
+    { id: 'cm2', text: 'There is a formal communication rhythm for the ownership group about business performance.' },
+    { id: 'cm3', text: 'Senior and next generation have structured dialogue opportunities beyond casual conversation.' },
+    { id: 'cm4', text: 'The family has a way to surface difficult topics before they become crises.' },
+    { id: 'cm5', text: 'There is a process for hard conversations rather than avoidance until things explode.' },
+    { id: 'cm6', text: 'All family members, including those not in the business, are kept appropriately informed.' },
+    { id: 'cm7', text: 'There is alignment on how the family communicates about the enterprise externally.' },
+    { id: 'cm8', text: 'Family meetings address relational and emotional topics, not only business matters.' },
+    { id: 'cm9', text: 'Meeting outcomes are documented with clear action items, owners, and deadlines.' },
+    { id: 'cm10', text: 'There is a mechanism for raising issues between formal meetings.' },
   ],
-  continuity: [
-    { id: 'c1', text: 'We have a written succession plan for key leadership positions.' },
-    { id: 'c2', text: 'Potential successors have been identified and are being developed.' },
-    { id: 'c3', text: 'Contingency plans exist for unexpected events (death, disability, divorce).' },
-    { id: 'c4', text: 'Estate and wealth transfer plans are documented and communicated.' },
-    { id: 'c5', text: 'Ownership transition timelines and criteria are clear.' },
+  'transitions': [
+    { id: 'tr1', text: 'The family has explicitly aligned on the long-term future of the enterprise (keep, grow, or sell).' },
+    { id: 'tr2', text: 'The family has defined the scope of entry for each transitioning member (ownership, operating, or both).' },
+    { id: 'tr3', text: 'There is a formal role design with real accountability for incoming family members.' },
+    { id: 'tr4', text: 'Incoming members receive a structured introduction to the family\'s values and operating culture.' },
+    { id: 'tr5', text: 'There is a formal education and development path with milestones for transitioning members.' },
+    { id: 'tr6', text: 'Incoming members have structured exposure to ownership, governance, and shareholder activities.' },
+    { id: 'tr7', text: 'The family has addressed the leadership succession question — family or non-family leader.' },
+    { id: 'tr8', text: 'There is a written family employment and shareholder entry policy.' },
+    { id: 'tr9', text: 'The senior generation has emotionally processed what this transition means for their identity.' },
+    { id: 'tr10', text: 'The incoming generation feels genuinely welcomed, not merely tolerated.' },
+    { id: 'tr11', text: 'The family has considered the systemic impact of transitions on all family members.' },
+    { id: 'tr12', text: 'There is a dedicated process for onboarding married-ins and spouses into the family enterprise.' },
+    { id: 'tr13', text: 'Outside work experience is a requirement or strong recommendation before joining the family business.' },
+    { id: 'tr14', text: 'There is a transition governance committee with defined authority and evaluation cadence.' },
+    { id: 'tr15', text: 'Transitions have been communicated to non-family leadership to preserve confidence.' },
+    { id: 'tr16', text: 'The family has a pathway for re-transitions (reentry, exit, or reversal).' },
   ],
-  legacy: [
-    { id: 'l1', text: 'Next generation members have a clear development pathway.' },
-    { id: 'l2', text: 'We have a defined approach to family philanthropy.' },
-    { id: 'l3', text: 'There is a long-term vision (10+ years) for the family enterprise.' },
-    { id: 'l4', text: 'Younger family members are engaged and excited about the future.' },
-    { id: 'l5', text: 'We actively prepare the next generation for leadership and ownership.' },
+  'nextgen-dev': [
+    { id: 'nd1', text: 'The family has a structured approach to exposing the rising generation to the business from an early age.' },
+    { id: 'nd2', text: 'Outside work experience is required or strongly encouraged before joining the family business.' },
+    { id: 'nd3', text: 'There is a formal education path building financial literacy, governance understanding, and industry knowledge.' },
+    { id: 'nd4', text: 'Mentoring relationships are in place with both family and non-family mentors.' },
+    { id: 'nd5', text: 'The next generation has opportunities to participate in governance (junior advisory board, family council).' },
+    { id: 'nd6', text: 'The family has discussed and communicated what readiness looks like for next-gen entry.' },
+    { id: 'nd7', text: 'Next-gen members are developing leadership skills and confidence independent of the family name.' },
+    { id: 'nd8', text: 'There is support for those who choose not to join the business, without stigma or loss of standing.' },
+    { id: 'nd9', text: 'The family has addressed emotional preparation — legacy expectations, navigating family dynamics, and building independent confidence.' },
+  ],
+  'ownership': [
+    { id: 'ow1', text: 'The family has mapped the current ownership structure in detail (who holds what, what type, what control).' },
+    { id: 'ow2', text: 'The senior generation has explicitly communicated their intent for ownership transfer — to whom, when, and how.' },
+    { id: 'ow3', text: 'The family has addressed the emotional barriers to ownership transfer (fear of losing control, trust).' },
+    { id: 'ow4', text: 'The family has defined what ownership means — rights, responsibilities, and expectations.' },
+    { id: 'ow5', text: 'There is a transfer mechanism that reflects family values, not just tax efficiency.' },
+    { id: 'ow6', text: 'Control transition is happening progressively with defined milestones.' },
+    { id: 'ow7', text: 'The family has liquidity and exit mechanisms for shareholders who want out.' },
+    { id: 'ow8', text: 'There are redemption policies and an agreed valuation methodology.' },
+    { id: 'ow9', text: 'Everything is documented in shareholder agreements and buy-sell agreements.' },
+    { id: 'ow10', text: 'The next generation feels trusted and included in ownership conversations.' },
+    { id: 'ow11', text: 'The family has considered how the ownership structure affects non-operating family members and fairness.' },
+    { id: 'ow12', text: 'Informal promises about future ownership are acknowledged and either formalized or explicitly addressed.' },
+  ],
+  'governance': [
+    { id: 'gv1', text: 'The family enterprise has a functioning board (advisory, fiduciary, or independent).' },
+    { id: 'gv2', text: 'The board includes independent non-family members who bring outside perspective.' },
+    { id: 'gv3', text: 'There is a family council or assembly that gives the family a voice separate from the business.' },
+    { id: 'gv4', text: 'The family has developed a constitution or governance charter.' },
+    { id: 'gv5', text: 'Governance structures are appropriate for the current generation and complexity of the enterprise.' },
+    { id: 'gv6', text: 'There is a plan for how governance will evolve as the family grows and ownership disperses.' },
+    { id: 'gv7', text: 'The family understands the difference between board, family council, and management roles.' },
+    { id: 'gv8', text: 'Governance meetings are held regularly with documented outcomes and follow-through.' },
+    { id: 'gv9', text: 'The board conducts regular self-evaluations of its effectiveness and composition.' },
+    { id: 'gv10', text: 'The governance structure has been tested by a real disagreement or crisis — and held.' },
+  ],
+  'decisions': [
+    { id: 'dc1', text: 'The family clearly understands how decisions are actually made today (not just how they think they are).' },
+    { id: 'dc2', text: 'The family has examined their genogram for relational patterns that influence decision-making.' },
+    { id: 'dc3', text: 'Decision rights are formally defined — who decides what at each level (ownership, board, management, family).' },
+    { id: 'dc4', text: 'There is a documented decision-making process for each governing body (voting, quorum, escalation).' },
+    { id: 'dc5', text: 'Every family member feels their voice is heard, especially those who historically defer or stay quiet.' },
+    { id: 'dc6', text: 'There is a mechanism for recognizing and surfacing conflict early, before positions harden.' },
+    { id: 'dc7', text: 'There are pre-agreed conflict resolution mechanisms in place (internal facilitation, mediation, arbitration).' },
+    { id: 'dc8', text: 'The family has identified and committed to breaking destructive decision-making patterns.' },
+    { id: 'dc9', text: 'There is an escalation path for when a governing body cannot reach a decision.' },
+    { id: 'dc10', text: 'Nuclear option provisions (buyout, forced sale) are defined in advance as a safety mechanism.' },
+  ],
+  'roles': [
+    { id: 'ro1', text: 'Every family member can clearly articulate their role in the family, the business, and the ownership group.' },
+    { id: 'ro2', text: 'There is a written family employment policy defining who can work in the business and under what conditions.' },
+    { id: 'ro3', text: 'Family employees are held to the same performance standards as non-family employees.' },
+    { id: 'ro4', text: 'There is a formal process for evaluating family member performance, separate from family dynamics.' },
+    { id: 'ro5', text: 'Roles are based on qualifications and business need, not family position and expectation.' },
+    { id: 'ro6', text: 'Each family member in the business has a defined reporting line and accountability structure.' },
+    { id: 'ro7', text: 'The family has addressed what happens when a family member in the business is underperforming.' },
+    { id: 'ro8', text: 'There is clarity about roles for family members who are owners but not employees.' },
+    { id: 'ro9', text: 'There is a clear policy for whether and how spouses or in-laws can work in the family business.' },
+    { id: 'ro10', text: 'There is a predefined process for addressing underperformance that everyone knows about in advance.' },
+  ],
+  'compensation': [
+    { id: 'co1', text: 'The family has articulated a compensation philosophy — how family members in the business are paid relative to market.' },
+    { id: 'co2', text: 'Family member salaries are benchmarked against comparable non-family roles in the industry.' },
+    { id: 'co3', text: 'There is a clear and fair distribution policy for shareholders who do not work in the business.' },
+    { id: 'co4', text: 'The family has addressed the interaction between compensation (for workers) and distributions (for owners).' },
+    { id: 'co5', text: 'There is transparency about compensation within the family rather than suspicion and resentment.' },
+    { id: 'co6', text: 'The family has addressed compensation for in-laws who work in the business.' },
+    { id: 'co7', text: 'Board fees and governance compensation are defined and appropriate.' },
+    { id: 'co8', text: 'The compensation structure is documented rather than informal with different assumptions.' },
+    { id: 'co9', text: 'Family member compensation has been reviewed or benchmarked by an independent third party.' },
+    { id: 'co10', text: 'The family has addressed non-cash perquisites — who gets them, on what basis, and is it transparent.' },
+  ],
+  'professionalize': [
+    { id: 'pr1', text: 'The family enterprise has non-family executives in senior leadership roles.' },
+    { id: 'pr2', text: 'Non-family leaders feel valued, empowered, and confident in their future with the company.' },
+    { id: 'pr3', text: 'The family has addressed how the business will transition from founder-led to professionally managed.' },
+    { id: 'pr4', text: 'There are formal HR practices that apply equally to family and non-family employees.' },
+    { id: 'pr5', text: 'There is no risk of losing key non-family talent due to uncertainty about succession or direction.' },
+    { id: 'pr6', text: 'The business has implemented professional financial reporting and strategic planning processes.' },
+    { id: 'pr7', text: 'Non-family leaders have a voice in strategic decisions appropriate to their role.' },
+    { id: 'pr8', text: 'There is a path for non-family leaders to ascend to CEO or top roles if they are the best candidate.' },
+    { id: 'pr9', text: 'Non-family leaders are given appropriate transparency about succession plans affecting their roles.' },
+  ],
+  'succession': [
+    { id: 'su1', text: 'The family has identified who will succeed the current leader — and it is explicit, not assumed.' },
+    { id: 'su2', text: 'There is a documented succession plan with a timeline and milestones.' },
+    { id: 'su3', text: 'Potential successors are being actively developed through defined roles, mentoring, and stretch assignments.' },
+    { id: 'su4', text: 'The family has addressed succession at the board and governance level, not just the CEO seat.' },
+    { id: 'su5', text: 'The outgoing leader has emotionally processed what succession means for their identity and role.' },
+    { id: 'su6', text: 'The incoming leader feels prepared and supported, not just appointed.' },
+    { id: 'su7', text: 'There is a contingency plan if the intended successor cannot or will not serve.' },
+    { id: 'su8', text: 'There is openness to a non-family CEO if no family member is the right choice.' },
+    { id: 'su9', text: 'The succession timeline is realistic given the ages, health, and readiness of those involved.' },
+    { id: 'su10', text: 'The family has planned for emergency succession — what happens if the current leader cannot serve tomorrow.' },
+  ],
+  'strategy': [
+    { id: 'st1', text: 'The ownership group has collectively defined a strategic direction — growth, stability, or exit.' },
+    { id: 'st2', text: 'There is alignment among owners on risk tolerance and willingness to invest for the future.' },
+    { id: 'st3', text: 'The family has separated business strategy (management\'s job) from enterprise strategy (owners\' job).' },
+    { id: 'st4', text: 'There is a capital allocation framework balancing reinvestment with distributions.' },
+    { id: 'st5', text: 'The family has discussed diversification — staying in the current industry vs. expanding.' },
+    { id: 'st6', text: 'When family needs and business needs conflict, there is a structured way to navigate the tension.' },
+    { id: 'st7', text: 'The ownership group has discussed the long-term vision — where the enterprise should be in 10 years.' },
+    { id: 'st8', text: 'Strategic decisions are made with input from all relevant stakeholders, not dominated by one voice.' },
+    { id: 'st9', text: 'The family has a process for resolving strategic deadlock when owners fundamentally disagree.' },
+    { id: 'st10', text: 'If significant assets exist outside the business, there is a coordinated total wealth strategy.' },
+  ],
+  'estate': [
+    { id: 'es1', text: 'The family has a current estate plan that reflects the current ownership structure and succession plan.' },
+    { id: 'es2', text: 'The estate plan has been reviewed recently and the family\'s situation has not changed since.' },
+    { id: 'es3', text: 'The family has had explicit conversations about how wealth and ownership transfer at death.' },
+    { id: 'es4', text: 'Estate planning structures are aligned with family values, not just tax optimization.' },
+    { id: 'es5', text: 'There is a gifting strategy or ownership transfer program already underway.' },
+    { id: 'es6', text: 'The family has addressed the emotional barriers to estate planning — avoidance and fear of mortality.' },
+    { id: 'es7', text: 'All relevant family members understand the estate plan and how it affects them.' },
+    { id: 'es8', text: 'Next-gen family members are involved in estate planning conversations at an appropriate level.' },
+    { id: 'es9', text: 'The plan addresses equalization for heirs with different levels of involvement in the business.' },
+    { id: 'es10', text: 'The family has discussed the difference between equal and equitable distribution and made a conscious choice.' },
+  ],
+  'philanthropy': [
+    { id: 'ph1', text: 'The family has a shared approach to philanthropy rather than only giving individually.' },
+    { id: 'ph2', text: 'There is a family foundation, donor-advised fund, or other structured giving vehicle.' },
+    { id: 'ph3', text: 'The family has connected its philanthropic mission to its enterprise values and narrative.' },
+    { id: 'ph4', text: 'Philanthropy is used as an engagement pathway for next-generation family members.' },
+    { id: 'ph5', text: 'The family discusses social impact and community responsibility as part of its enterprise identity.' },
+    { id: 'ph6', text: 'The family has considered how the business itself creates social impact beyond check-writing.' },
+    { id: 'ph7', text: 'There is a governance structure for philanthropic decisions — who decides where the money goes.' },
+    { id: 'ph8', text: 'Philanthropy has been a source of alignment and shared purpose rather than disagreement.' },
+    { id: 'ph9', text: 'The family uses philanthropic activities as a development opportunity for next-gen governance skills.' },
   ],
 };
 
 // ═══════════════════════════════════════════════════════════════
-// MODULE CONTENT FOR ALL PILLARS
+// MODULE CONTENT FOR ALL AREAS
 // ═══════════════════════════════════════════════════════════════
 
-const ROOTS_MODULE_CONTENT = {
-  'family-story': {
-    title: 'Family Story',
-    subtitle: 'Document your origin story, key moments, and legacy milestones',
-    estimatedTime: '60-90 minutes',
+const SHARED_PURPOSE_MODULE_CONTENT = {
+  'shared-purpose': {
+    title: 'Shared Purpose, Values & Family Narrative',
+    subtitle: 'Articulate the why of being an enterprise family — values, mission, founding story, stewardship mindset, and generational recommitment',
+    estimatedTime: '120-150 minutes',
     sections: [
       {
-        id: 'origin',
-        title: 'Origin Story',
-        description: 'Every family enterprise has a founding story. Capture yours.',
+        id: 'purpose-discovery',
+        title: 'Purpose Discovery',
+        description: 'What brings this family together?',
         exercises: [
           {
-            id: 'founder-story',
-            question: 'Who founded the family enterprise, and what year did it begin?',
+            id: 'founding-story',
+            question: 'Tell the founding story — who started it, when, and what problem were they solving?',
             type: 'textarea',
-            placeholder: 'Describe the founder(s) and the founding moment...',
-            helperText: 'Include names, dates, and the circumstances that led to starting the business.',
+            placeholder: 'Our family enterprise began when...',
+            helperText: 'Include founder background, the problem or opportunity, early challenges overcome.',
           },
           {
-            id: 'why-started',
-            question: 'What problem were they trying to solve or opportunity were they pursuing?',
+            id: 'why-together',
+            question: 'Why do we choose to work together? What value does the family enterprise create?',
             type: 'textarea',
-            placeholder: 'What drove the founding decision...',
-          },
-          {
-            id: 'early-struggles',
-            question: 'What were the biggest challenges in the early years?',
-            type: 'textarea',
-            placeholder: 'Describe the obstacles overcome...',
-          },
-          {
-            id: 'first-success',
-            question: 'What was the first major milestone or success?',
-            type: 'textarea',
-            placeholder: 'The breakthrough moment...',
-          },
-        ],
-      },
-      {
-        id: 'milestones',
-        title: 'Key Milestones',
-        description: 'Map the critical moments that shaped your family enterprise.',
-        exercises: [
-          {
-            id: 'milestone-list',
-            question: 'List 5-10 defining moments in your family enterprise history',
-            type: 'milestone-builder',
-            helperText: 'Include expansions, crises overcome, leadership transitions, major deals, etc.',
-          },
-        ],
-      },
-      {
-        id: 'legacy-stories',
-        title: 'Stories We Tell',
-        description: 'The stories passed down become the culture. Which ones matter most?',
-        exercises: [
-          {
-            id: 'hero-story',
-            question: 'What\'s a story about a family member that exemplifies who we are?',
-            type: 'textarea',
-            placeholder: 'The story of...',
-            helperText: 'This could be about sacrifice, integrity, innovation, or resilience.',
-          },
-          {
-            id: 'crisis-story',
-            question: 'What\'s a story about a time the family enterprise almost failed?',
-            type: 'textarea',
-            placeholder: 'The time we almost...',
-            helperText: 'How the family came together in crisis.',
-          },
-          {
-            id: 'values-story',
-            question: 'What\'s a story that captures our core values in action?',
-            type: 'textarea',
-            placeholder: 'This story shows what we stand for...',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Family Story Document',
-      description: 'A written narrative capturing your origin, milestones, and defining stories.',
-    },
-  },
-  'core-values': {
-    title: 'Core Values',
-    subtitle: 'Define and ratify the values that guide your family enterprise',
-    estimatedTime: '90-120 minutes',
-    sections: [
-      {
-        id: 'current-values',
-        title: 'Values Discovery',
-        description: 'Before defining new values, understand what\'s already guiding you.',
-        exercises: [
-          {
-            id: 'implicit-values',
-            question: 'What values have guided your family enterprise, even if unwritten?',
-            type: 'textarea',
-            placeholder: 'The values we\'ve always operated by...',
-            helperText: 'Think about what the founders would say matters most.',
-          },
-          {
-            id: 'non-negotiables',
-            question: 'What behaviors would cause someone to be asked to leave the business?',
-            type: 'textarea',
-            placeholder: 'We would never tolerate...',
-            helperText: 'The inverse of your values reveals what truly matters.',
-          },
-          {
-            id: 'proud-moments',
-            question: 'When have you been most proud of how the family handled something?',
-            type: 'textarea',
-            placeholder: 'The moment we showed who we really are...',
+            placeholder: 'We work together to...',
+            helperText: 'Financial value, family cohesion, community impact, legacy, stewardship.',
           },
         ],
       },
       {
         id: 'values-definition',
-        title: 'Values Definition',
-        description: 'Name and define 3-5 core values for your family enterprise.',
+        title: 'Core Values Definition',
+        description: 'What principles guide us?',
         exercises: [
           {
-            id: 'values-list',
-            question: 'Define your family enterprise core values',
-            type: 'values-builder',
-            helperText: 'Each value needs a name, definition, and behavioral example.',
+            id: 'core-values',
+            question: 'Define 4-6 core values that guide the family enterprise',
+            type: 'textarea',
+            placeholder: 'Our core values are:\n1.\n2.\n3.',
+            helperText: 'Examples: integrity, stewardship, innovation, family first, community responsibility.',
+          },
+          {
+            id: 'values-in-practice',
+            question: 'Give examples of these values in action within your family or business',
+            type: 'textarea',
+            placeholder: 'An example of [value] in action is...',
           },
         ],
       },
       {
-        id: 'values-in-action',
-        title: 'Values in Action',
-        description: 'Values only matter if they\'re used. Define how.',
+        id: 'stewardship',
+        title: 'Stewardship & Generational Thinking',
+        description: 'How do we view our responsibility to future generations?',
         exercises: [
           {
-            id: 'hiring-values',
-            question: 'How will these values influence who we hire?',
+            id: 'stewardship-approach',
+            question: 'Do we view ourselves as stewards of a legacy or owners of an asset to be exploited?',
             type: 'textarea',
-            placeholder: 'When evaluating candidates, we look for...',
+            placeholder: 'We see our role as stewards who...',
+            helperText: 'Consider your long-term vision, impact on future generations, responsibility to stakeholders.',
           },
           {
-            id: 'decision-values',
-            question: 'How will these values guide difficult decisions?',
+            id: 'recommitment',
+            question: 'How can each generation actively recommit to the family enterprise, rather than assuming continuity?',
             type: 'textarea',
-            placeholder: 'When we\'re unsure what to do, we ask ourselves...',
-          },
-          {
-            id: 'values-recognition',
-            question: 'How will we recognize and celebrate values-driven behavior?',
-            type: 'textarea',
-            placeholder: 'We will acknowledge values in action by...',
+            placeholder: 'Each generation should...',
+            helperText: 'Regular conversations, explicit choice, intentional involvement.',
           },
         ],
       },
     ],
     deliverable: {
-      title: 'Family Values Charter',
-      description: 'A ratified document listing your 3-5 core values with definitions.',
-    },
-  },
-  'genogram': {
-    title: 'Family Genogram',
-    subtitle: 'Map your family system, relationships, and patterns',
-    estimatedTime: '60-90 minutes',
-    sections: [
-      {
-        id: 'family-mapping',
-        title: 'Family Map',
-        description: 'Create a visual map of your family system.',
-        exercises: [
-          {
-            id: 'generations',
-            question: 'How many generations are currently involved or connected to the enterprise?',
-            type: 'select',
-            options: ['2 generations', '3 generations', '4 generations', '5+ generations'],
-          },
-          {
-            id: 'family-branches',
-            question: 'List each branch of the family',
-            type: 'branch-builder',
-            helperText: 'Include the branch name, key members, and their roles.',
-          },
-        ],
-      },
-      {
-        id: 'relationships',
-        title: 'Relationship Patterns',
-        description: 'Understand the dynamics that shape your family system.',
-        exercises: [
-          {
-            id: 'strong-bonds',
-            question: 'Which family relationships are particularly strong?',
-            type: 'textarea',
-            placeholder: 'The strongest bonds are between...',
-            helperText: 'These alliances influence how decisions get made.',
-          },
-          {
-            id: 'tension-areas',
-            question: 'Where are there tensions or conflicts in the family system?',
-            type: 'textarea',
-            placeholder: 'There has historically been tension around...',
-            helperText: 'Being honest about these patterns is essential.',
-          },
-          {
-            id: 'triangles',
-            question: 'Are there "triangles" where two people communicate through a third?',
-            type: 'textarea',
-            placeholder: 'Communication sometimes goes through...',
-            helperText: 'Triangulation is common in family systems.',
-          },
-        ],
-      },
-      {
-        id: 'roles-patterns',
-        title: 'Roles & Patterns',
-        description: 'Every family assigns informal roles. Name them.',
-        exercises: [
-          {
-            id: 'peacemaker',
-            question: 'Who plays the "peacemaker" role in the family?',
-            type: 'textarea',
-            placeholder: 'The person who smooths things over is...',
-          },
-          {
-            id: 'truth-teller',
-            question: 'Who plays the "truth teller" role?',
-            type: 'textarea',
-            placeholder: 'The person who says what others won\'t is...',
-          },
-          {
-            id: 'decision-maker',
-            question: 'Who is the de facto decision-maker, regardless of formal titles?',
-            type: 'textarea',
-            placeholder: 'The person whose opinion ultimately matters most is...',
-          },
-          {
-            id: 'patterns',
-            question: 'What patterns repeat across generations?',
-            type: 'textarea',
-            placeholder: 'We see recurring themes of...',
-            helperText: 'Patterns might include conflict avoidance, entrepreneurship, etc.',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Family Genogram',
-      description: 'A documented map of your family system including branches and patterns.',
+      title: 'Family Purpose & Values Statement',
+      description: 'A document articulating your shared purpose, core values, and stewardship philosophy.',
     },
   },
 };
 
-const ORDER_MODULE_CONTENT = {
-  'constitution': {
-    title: 'Family Constitution',
-    subtitle: 'Create or update your family charter and guiding principles',
-    estimatedTime: '90-120 minutes',
+const FAMILY_DYNAMICS_MODULE_CONTENT = {
+  'family-dynamics': {
+    title: 'Family Dynamics & Relationships',
+    subtitle: 'Map relational health, patterns, alliances, and the family genogram — understanding the family as a system',
+    estimatedTime: '120-150 minutes',
     sections: [
       {
-        id: 'charter-purpose',
-        title: 'Charter Purpose',
-        description: 'Why do you need a family constitution? What will it guide?',
+        id: 'genogram-mapping',
+        title: 'Family Genogram',
+        description: 'Create a visual and relational map of your family system.',
         exercises: [
           {
-            id: 'purpose-statement',
-            question: 'What is the primary purpose of your family constitution?',
+            id: 'family-structure',
+            question: 'Map your family structure — how many generations, branches, and family members?',
             type: 'textarea',
-            placeholder: 'Our family constitution exists to...',
-            helperText: 'Think about governance, decision-making, and family harmony.',
-          },
-          {
-            id: 'scope',
-            question: 'What aspects of family life and business will this constitution cover?',
-            type: 'textarea',
-            placeholder: 'The constitution will address...',
+            placeholder: 'Our family includes [# generations], with branches including...',
+            helperText: 'Include all adult family members and their primary relationships.',
           },
         ],
       },
       {
-        id: 'principles',
-        title: 'Guiding Principles',
-        description: 'What foundational principles should guide your family?',
+        id: 'relationship-patterns',
+        title: 'Relationship Patterns & Dynamics',
+        description: 'Understand the patterns that shape how your family operates.',
         exercises: [
           {
-            id: 'principles-list',
-            question: 'List 4-6 core principles for your family constitution',
+            id: 'strong-bonds',
+            question: 'Which relationships are particularly strong? What makes them strong?',
             type: 'textarea',
-            placeholder: 'Our core principles are:\n1.\n2.\n3.\netc.',
-            helperText: 'Examples: transparency, meritocracy, stakeholder responsibility, stewardship.',
+            placeholder: 'Strong relationships include...',
+            helperText: 'Trust, shared values, frequent communication, mutual support.',
           },
           {
-            id: 'membership-criteria',
-            question: 'Who is considered a member of the family enterprise, and what criteria define membership?',
+            id: 'tensions',
+            question: 'Where are there tensions, conflicts, or unresolved issues?',
             type: 'textarea',
-            placeholder: 'Family members are defined as...',
+            placeholder: 'Areas of tension include...',
+            helperText: 'Be honest. This is private information for your family only.',
+          },
+          {
+            id: 'patterns',
+            question: 'What patterns repeat? (Triangulation, alliances, avoidance, dominance)',
+            type: 'textarea',
+            placeholder: 'We notice patterns of...',
+            helperText: 'Example: When conflict arises, people align in predictable ways.',
+          },
+          {
+            id: 'generational-patterns',
+            question: 'What patterns repeat across generations?',
+            type: 'textarea',
+            placeholder: 'We see recurring themes of...',
+            helperText: 'Entrepreneurship, conflict avoidance, secrecy, authoritarianism, etc.',
           },
         ],
       },
       {
-        id: 'decision-rights',
-        title: 'Decision Rights',
-        description: 'How will key decisions be made?',
+        id: 'emotional-health',
+        title: 'Emotional Health & Safety',
+        description: 'Is the family psychologically safe and emotionally healthy?',
         exercises: [
           {
-            id: 'decision-framework',
-            question: 'Describe how major decisions (hiring, exits, investments) will be made',
+            id: 'safety',
+            question: 'Do all family members feel emotionally safe? Can people be authentic?',
             type: 'textarea',
-            placeholder: 'For major decisions, we will...',
-            helperText: 'Clarify who has authority, who gets consulted, and what the process is.',
+            placeholder: 'Family members feel safe when...',
+            helperText: 'Psychological safety, freedom to disagree, no fear of judgment or retaliation.',
+          },
+          {
+            id: 'cutoffs',
+            question: 'Are there any emotional cutoffs or serious rifts affecting the business?',
+            type: 'textarea',
+            placeholder: 'There are unresolved issues between...',
+            helperText: 'Previous divorces, conflicts, estrangements that affect today.',
           },
         ],
       },
     ],
     deliverable: {
-      title: 'Family Constitution',
-      description: 'A foundational governance document defining your family enterprise principles.',
+      title: 'Family Dynamics Assessment',
+      description: 'A documented analysis of family relationships, patterns, and emotional health.',
     },
   },
-  'governance': {
-    title: 'Governance Design',
-    subtitle: 'Define councils, committees, roles, and decision-making authority',
+};
+
+const COMMUNICATION_MODULE_CONTENT = {
+  'communication': {
+    title: 'Communication & Family Meetings',
+    subtitle: 'Build structured dialogue — family meetings, shareholder communication, cross-generational conversation, and difficult topics',
     estimatedTime: '90-120 minutes',
     sections: [
       {
-        id: 'board-design',
-        title: 'Board Structure',
-        description: 'Design your governance board(s) and councils.',
+        id: 'meeting-structures',
+        title: 'Formal Meeting Structures',
+        description: 'Design regular, structured conversation forums.',
         exercises: [
           {
-            id: 'board-type',
-            question: 'What governance structures will you establish (board, family council, advisory board)?',
+            id: 'meeting-types',
+            question: 'What meeting forums will you establish? (Family meetings, shareholder meetings, family council)',
             type: 'textarea',
-            placeholder: 'We will have the following bodies...',
-            helperText: 'Example: Board of Directors, Family Council, Investment Committee.',
+            placeholder: 'We will hold the following meetings:\n1. Family Meeting - [frequency]\n2.',
+            helperText: 'Consider family meetings, board meetings, owner meetings, council meetings.',
           },
           {
-            id: 'board-composition',
-            question: 'Who should sit on each body, and what are the selection criteria?',
-            type: 'textarea',
-            placeholder: 'Board members will be selected based on...',
-          },
-        ],
-      },
-      {
-        id: 'roles-responsibilities',
-        title: 'Roles & Responsibilities',
-        description: 'Define clear roles and decision authority.',
-        exercises: [
-          {
-            id: 'role-definition',
-            question: 'Define the key roles in your governance structure (CEO, board chair, council chair)',
-            type: 'textarea',
-            placeholder: 'The CEO is responsible for...\nThe Board Chair is responsible for...',
-          },
-          {
-            id: 'authority-limits',
-            question: 'What are the authority limits for each role?',
-            type: 'textarea',
-            placeholder: 'The CEO can make decisions up to...\nThe Board must approve...',
-          },
-        ],
-      },
-      {
-        id: 'meeting-cadence',
-        title: 'Meeting Cadence',
-        description: 'How often will governance bodies meet?',
-        exercises: [
-          {
-            id: 'meeting-schedule',
-            question: 'What is your planned meeting schedule for each governance body?',
+            id: 'meeting-cadence',
+            question: 'How frequently will each meeting occur?',
             type: 'select',
             options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually', 'As-needed'],
           },
         ],
       },
-    ],
-    deliverable: {
-      title: 'Governance Structure Document',
-      description: 'A formal document defining your governance bodies, roles, and decision authority.',
-    },
-  },
-  'policies': {
-    title: 'Policies & Agreements',
-    subtitle: 'Employment, compensation, conflict resolution, and operating policies',
-    estimatedTime: '120-150 minutes',
-    sections: [
       {
-        id: 'employment-policies',
-        title: 'Employment Policies',
-        description: 'Set clear expectations for family members employed in the business.',
+        id: 'agenda-and-process',
+        title: 'Agenda & Process Design',
+        description: 'How will meetings be structured?',
         exercises: [
           {
-            id: 'employment-criteria',
-            question: 'What are the criteria for hiring family members in the business?',
+            id: 'agenda-structure',
+            question: 'What will family meetings cover? Business? Relationships? Values?',
             type: 'textarea',
-            placeholder: 'Family members seeking employment must meet...',
-            helperText: 'Example: minimum education, outside work experience, performance standards.',
+            placeholder: 'Family meeting agendas will include...',
+            helperText: 'Both business updates AND relational/emotional topics are important.',
           },
           {
-            id: 'employment-terms',
-            question: 'What are the key employment terms and expectations?',
+            id: 'facilitation',
+            question: 'Who will facilitate family meetings? An insider or external facilitator?',
             type: 'textarea',
-            placeholder: 'Employment terms include...',
+            placeholder: 'Family meetings will be facilitated by...',
+            helperText: 'Consider benefits of external facilitator for objectivity, especially in early years.',
           },
         ],
       },
       {
-        id: 'compensation',
-        title: 'Compensation Philosophy',
-        description: 'Define your approach to compensation fairness.',
+        id: 'difficult-topics',
+        title: 'Surfacing Difficult Topics',
+        description: 'How will hard conversations happen?',
         exercises: [
           {
-            id: 'comp-philosophy',
-            question: 'What is your family\'s philosophy on compensation for family employees?',
+            id: 'difficult-process',
+            question: 'How will the family surface and discuss difficult or sensitive topics?',
             type: 'textarea',
-            placeholder: 'We believe compensation should be...',
-            helperText: 'Market-based? Performance-based? Equal? Consider both fairness and competitiveness.',
+            placeholder: 'For difficult topics, we will...',
+            helperText: 'Create psychological safety, one-on-one pre-conversations, facilitated sessions.',
+          },
+          {
+            id: 'between-meetings',
+            question: 'How will family members raise issues or concerns between formal meetings?',
+            type: 'textarea',
+            placeholder: 'Between meetings, family members can...',
+            helperText: 'One-on-one conversations, council representative, emergency meeting process.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Communication Plan',
+      description: 'A framework for regular, structured family communication and difficult conversations.',
+    },
+  },
+};
+
+const TRANSITIONS_MODULE_CONTENT = {
+  'transitions': {
+    title: 'Family Transitions & Integration',
+    subtitle: 'Navigate entry and exit — next-gen onboarding, married-ins, divorce, departure, and re-transitions',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'transition-scope',
+        title: 'Scope of Entry & Exit',
+        description: 'What does transition mean for your family?',
+        exercises: [
+          {
+            id: 'long-term-vision',
+            question: 'What is the family\'s explicit long-term vision? Keep it, grow it, or eventually sell?',
+            type: 'textarea',
+            placeholder: 'Our family intends to...',
+            helperText: 'This affects who we bring in and how we develop them.',
+          },
+          {
+            id: 'ownership-vs-operating',
+            question: 'For each family member entering, define their scope: ownership, operations, or both?',
+            type: 'textarea',
+            placeholder: '[Family Member] will have scope of...',
+            helperText: 'Not all family members need operating roles; some may be pure owners.',
+          },
+        ],
+      },
+      {
+        id: 'entry-process',
+        title: 'Formal Entry Process',
+        description: 'How will family members properly join?',
+        exercises: [
+          {
+            id: 'entry-criteria',
+            question: 'What criteria must be met to enter the business? (Education, outside work, values alignment)',
+            type: 'textarea',
+            placeholder: 'To enter the business, family members must...',
+            helperText: 'Outside work experience highly recommended. Educational requirements. Values fit.',
+          },
+          {
+            id: 'role-design',
+            question: 'How will roles be designed? Based on qualifications or family position?',
+            type: 'textarea',
+            placeholder: 'Roles will be designed based on...',
+            helperText: 'Roles should match business need and individual capability, not birthright.',
+          },
+          {
+            id: 'onboarding',
+            question: 'What does a formal onboarding process look like?',
+            type: 'textarea',
+            placeholder: 'New family members will be onboarded through...',
+            helperText: 'Family history, governance orientation, stakeholder meetings, apprenticeship period.',
+          },
+        ],
+      },
+      {
+        id: 'development-and-readiness',
+        title: 'Development & Readiness Assessment',
+        description: 'How will you develop and assess readiness?',
+        exercises: [
+          {
+            id: 'education-path',
+            question: 'What education and development path is expected?',
+            type: 'textarea',
+            placeholder: 'Family members should have...',
+            helperText: 'Finance literacy, governance understanding, industry knowledge, leadership skills.',
+          },
+          {
+            id: 'readiness-milestones',
+            question: 'What milestones indicate readiness for increased responsibility?',
+            type: 'textarea',
+            placeholder: 'Readiness milestones include...',
+            helperText: 'Time in role, peer feedback, mentor evaluation, demonstrated competence.',
+          },
+        ],
+      },
+      {
+        id: 'married-ins-and-exit',
+        title: 'Married-Ins, Divorce & Exit',
+        description: 'How will you handle these sensitive transitions?',
+        exercises: [
+          {
+            id: 'married-ins',
+            question: 'How will married-ins be integrated? What rights and roles do they have?',
+            type: 'textarea',
+            placeholder: 'Married-ins will be...',
+            helperText: 'Equal treatment or different treatment? What if marriage ends?',
+          },
+          {
+            id: 'exit-process',
+            question: 'If someone leaves (voluntarily or otherwise), what is the process?',
+            type: 'textarea',
+            placeholder: 'Exit process includes...',
+            helperText: 'Ownership redemption, role transition, knowledge transfer, relationship preservation.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Transition & Integration Policy',
+      description: 'A comprehensive policy for entry, development, and exit of family members.',
+    },
+  },
+};
+
+const NEXTGEN_DEV_MODULE_CONTENT = {
+  'nextgen-dev': {
+    title: 'Next-Generation Development',
+    subtitle: 'Prepare rising generations through exposure, education, mentorship, and leadership readiness',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'early-exposure',
+        title: 'Early Exposure & Family Business Education',
+        description: 'How will next-gen learn about the enterprise?',
+        exercises: [
+          {
+            id: 'exposure-activities',
+            question: 'What activities will expose next-gen to the business from early on?',
+            type: 'textarea',
+            placeholder: 'Next-gen exposure includes...',
+            helperText: 'Family business events, facility tours, stakeholder meetings, summer work.',
+          },
+          {
+            id: 'business-education',
+            question: 'What formal education is recommended or required?',
+            type: 'textarea',
+            placeholder: 'We encourage next-gen to pursue...',
+            helperText: 'Business school, accounting, engineering, or industry-specific education.',
+          },
+        ],
+      },
+      {
+        id: 'outside-work',
+        title: 'Outside Work Experience',
+        description: 'Is outside experience required?',
+        exercises: [
+          {
+            id: 'outside-requirement',
+            question: 'Should next-gen work outside the family business first? For how long?',
+            type: 'textarea',
+            placeholder: 'Outside work experience is...',
+            helperText: 'Highly recommended 3-5 years to build skills, networks, and credibility independent of family name.',
+          },
+        ],
+      },
+      {
+        id: 'mentorship-and-governance',
+        title: 'Mentorship & Governance Participation',
+        description: 'How will next-gen be mentored and involved in governance?',
+        exercises: [
+          {
+            id: 'mentoring-structure',
+            question: 'What mentoring relationships will be established?',
+            type: 'textarea',
+            placeholder: 'Mentoring will include...',
+            helperText: 'Family mentors AND external mentors. One-on-one and peer group mentoring.',
+          },
+          {
+            id: 'governance-participation',
+            question: 'How will next-gen participate in governance early on?',
+            type: 'textarea',
+            placeholder: 'Next-gen will participate through...',
+            helperText: 'Junior advisory board, family council participation, observation rights, committee service.',
+          },
+        ],
+      },
+      {
+        id: 'emotional-preparation',
+        title: 'Emotional & Psychological Preparation',
+        description: 'How will you prepare next-gen for family dynamics?',
+        exercises: [
+          {
+            id: 'family-dynamics-prep',
+            question: 'How will next-gen understand and navigate family dynamics?',
+            type: 'textarea',
+            placeholder: 'We help next-gen navigate dynamics by...',
+            helperText: 'Open conversations, family therapy, external coaching, mentoring.',
+          },
+          {
+            id: 'legacy-expectations',
+            question: 'How will you help next-gen develop their own identity separate from family legacy?',
+            type: 'textarea',
+            placeholder: 'We support individual identity by...',
+            helperText: 'Encouraging independent thought, supporting divergent paths, building confidence.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Next-Generation Development Program',
+      description: 'A comprehensive program for exposing, educating, and developing next-gen leaders.',
+    },
+  },
+};
+
+const OWNERSHIP_MODULE_CONTENT = {
+  'ownership': {
+    title: 'Ownership Structure & Rights',
+    subtitle: 'Define who owns what, transfer mechanisms, control transition, liquidity, and exit rights',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'current-structure',
+        title: 'Current Ownership Mapping',
+        description: 'What is the actual ownership structure today?',
+        exercises: [
+          {
+            id: 'ownership-map',
+            question: 'Map current ownership: who owns what percentage, what type of equity, with what rights?',
+            type: 'textarea',
+            placeholder: '[Family Member]: [%] ownership, [type], [specific rights]',
+            helperText: 'Voting vs. non-voting, preferred vs. common, with what control and veto rights.',
+          },
+          {
+            id: 'implicit-promises',
+            question: 'Are there any informal promises or expectations about future ownership that need to be addressed?',
+            type: 'textarea',
+            placeholder: 'Informal expectations include...',
+            helperText: 'Often a source of conflict if not surfaced and explicitly addressed.',
+          },
+        ],
+      },
+      {
+        id: 'transfer-mechanism',
+        title: 'Ownership Transfer Mechanism',
+        description: 'How will ownership be transferred?',
+        exercises: [
+          {
+            id: 'transfer-intent',
+            question: 'What is the senior generation\'s explicit intent for ownership transfer? To whom, when, and how?',
+            type: 'textarea',
+            placeholder: 'Our intent for ownership transfer is...',
+            helperText: 'Name intended recipients and approximate timeline.',
+          },
+          {
+            id: 'transfer-method',
+            question: 'What method will be used? Gifting, sale, trust transfer, gradual shift?',
+            type: 'textarea',
+            placeholder: 'Ownership will transfer through...',
+            helperText: 'Gifting, buy-sell, put/call options, gradualization of control.',
+          },
+        ],
+      },
+      {
+        id: 'control-transition',
+        title: 'Control Transition',
+        description: 'How will operating control shift?',
+        exercises: [
+          {
+            id: 'control-plan',
+            question: 'How will operating control progressively transition to the next generation?',
+            type: 'textarea',
+            placeholder: 'Control will transition through...',
+            helperText: 'Defined milestones, veto rights retained, increasing operational authority.',
+          },
+          {
+            id: 'emotional-barriers',
+            question: 'What emotional barriers exist to ownership transfer? (Fear of losing control, trust issues)',
+            type: 'textarea',
+            placeholder: 'Emotional barriers include...',
+            helperText: 'Acknowledging these is the first step to addressing them.',
+          },
+        ],
+      },
+      {
+        id: 'liquidity-and-exit',
+        title: 'Liquidity & Exit Rights',
+        description: 'What happens if a shareholder wants out?',
+        exercises: [
+          {
+            id: 'liquidity-mechanism',
+            question: 'What liquidity mechanisms exist for shareholders who want to exit?',
+            type: 'textarea',
+            placeholder: 'Liquidity options include...',
+            helperText: 'Redemption policy, put rights, dividend policy, forced sale mechanism.',
+          },
+          {
+            id: 'valuation',
+            question: 'How will the business be valued for these transactions?',
+            type: 'textarea',
+            placeholder: 'Valuation method is...',
+            helperText: 'Fair market value, formula approach, appraiser determination, negotiated.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Ownership Structure & Transfer Plan',
+      description: 'A detailed map of ownership today and a plan for intentional transfer across generations.',
+    },
+  },
+};
+
+const GOVERNANCE_MODULE_CONTENT = {
+  'governance': {
+    title: 'Governance Architecture',
+    subtitle: 'Design the board, family council, family constitution, and evolving governance structures',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'governance-bodies',
+        title: 'Governance Bodies',
+        description: 'What governance structures will you establish?',
+        exercises: [
+          {
+            id: 'board-design',
+            question: 'Will you have a board? What type (fiduciary, advisory, family council)?',
+            type: 'textarea',
+            placeholder: 'Our governance will include...',
+            helperText: 'Fiduciary board (legal responsibility), Advisory board (advice only), Family council (family focus).',
+          },
+          {
+            id: 'composition',
+            question: 'Who will serve on each body? Family, non-family, inside, outside?',
+            type: 'textarea',
+            placeholder: 'Board composition will be...',
+            helperText: 'Independent directors bring outside perspective and credibility.',
+          },
+        ],
+      },
+      {
+        id: 'family-council',
+        title: 'Family Council Structure',
+        description: 'How will the family have voice separate from the business?',
+        exercises: [
+          {
+            id: 'council-role',
+            question: 'What will the family council be responsible for?',
+            type: 'textarea',
+            placeholder: 'Family council will handle...',
+            helperText: 'Family policies, values, next-gen education, conflict resolution, philanthropy.',
+          },
+          {
+            id: 'council-composition',
+            question: 'Who will be on the family council and how will they be selected?',
+            type: 'textarea',
+            placeholder: 'Family council will consist of...',
+            helperText: 'All adult family members or elected representatives.',
+          },
+        ],
+      },
+      {
+        id: 'constitution',
+        title: 'Family Constitution',
+        description: 'Will you document governance principles?',
+        exercises: [
+          {
+            id: 'constitution-content',
+            question: 'What should be included in a family constitution?',
+            type: 'textarea',
+            placeholder: 'Constitution will address...',
+            helperText: 'Vision, values, family policies, ownership principles, governance structure, conflict resolution.',
+          },
+        ],
+      },
+      {
+        id: 'evolution',
+        title: 'Governance Evolution',
+        description: 'How will governance change as the family grows?',
+        exercises: [
+          {
+            id: 'complexity-planning',
+            question: 'How will governance structure change as ownership disperses and family grows?',
+            type: 'textarea',
+            placeholder: 'As family/ownership grows, governance will evolve to...',
+            helperText: 'From founder-led to board-led, from few owners to many, from one generation to several.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Governance Architecture',
+      description: 'A comprehensive governance structure including board design, family council, and constitution.',
+    },
+  },
+};
+
+const DECISIONS_MODULE_CONTENT = {
+  'decisions': {
+    title: 'Decision-Making & Conflict Resolution',
+    subtitle: 'Map decision rights, build resolution mechanisms, and break destructive family patterns',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'decision-mapping',
+        title: 'Decision Rights Mapping',
+        description: 'Who decides what?',
+        exercises: [
+          {
+            id: 'current-reality',
+            question: 'How are major decisions actually made today? Who has real power?',
+            type: 'textarea',
+            placeholder: 'Currently, decisions are made by...',
+            helperText: 'Often different from formal structures. Be honest about informal power.',
+          },
+          {
+            id: 'decision-levels',
+            question: 'Define decision rights by level: ownership decisions, board decisions, management decisions, family decisions',
+            type: 'textarea',
+            placeholder: 'Ownership (who owns decides): ...\nBoard (board decides): ...',
+            helperText: 'Strategic direction, major investments, CEO hiring, family policies, asset sales.',
+          },
+        ],
+      },
+      {
+        id: 'patterns-and-dysfunction',
+        title: 'Family Patterns & Decision Dysfunction',
+        description: 'What destructive patterns affect decisions?',
+        exercises: [
+          {
+            id: 'dysfunctional-patterns',
+            question: 'What patterns show up in family decision-making? (Dominance, avoidance, triangulation, alliances)',
+            type: 'textarea',
+            placeholder: 'Destructive patterns include...',
+            helperText: 'One person dominates. Some voices never heard. Decisions made in private then announced.',
+          },
+          {
+            id: 'genogram-influence',
+            question: 'How do family genogram patterns (relationships, history, roles) influence decisions?',
+            type: 'textarea',
+            placeholder: 'Relational patterns influence decisions when...',
+            helperText: 'Example: If there\'s mistrust of a family member, their ideas are dismissed.',
+          },
+          {
+            id: 'breaking-patterns',
+            question: 'What will you commit to change about decision-making patterns?',
+            type: 'textarea',
+            placeholder: 'We will break patterns by...',
+            helperText: 'Structured processes, external facilitation, psychological safety, formal voice mechanisms.',
           },
         ],
       },
       {
         id: 'conflict-resolution',
-        title: 'Conflict Resolution',
-        description: 'How will family conflicts be addressed?',
+        title: 'Conflict Resolution Mechanisms',
+        description: 'How will disagreements be handled?',
         exercises: [
           {
-            id: 'conflict-process',
-            question: 'Describe your conflict resolution process',
+            id: 'early-surfacing',
+            question: 'How will you identify and surface conflicts early before they harden?',
             type: 'textarea',
-            placeholder: 'When conflicts arise, we will...',
-            helperText: 'Consider: direct conversation, mediation, counseling, arbitration.',
+            placeholder: 'Early surfacing will happen through...',
+            helperText: 'Regular family meetings, open feedback, trust, safe forum for disagreement.',
+          },
+          {
+            id: 'resolution-process',
+            question: 'What is your conflict resolution process? (Direct conversation, mediation, arbitration, voting)',
+            type: 'textarea',
+            placeholder: 'Conflict resolution will follow...',
+            helperText: 'Step 1: Direct conversation. Step 2: Facilitation. Step 3: Arbitration.',
+          },
+          {
+            id: 'nuclear_option',
+            question: 'What is the "nuclear option" if fundamental disagreement occurs? (Buyout, forced sale, dissolution)',
+            type: 'textarea',
+            placeholder: 'If irresolvable conflict occurs, we will...',
+            helperText: 'Buyout, put/call options, forced sale to third party.',
           },
         ],
       },
     ],
     deliverable: {
-      title: 'Family Enterprise Policies',
-      description: 'A comprehensive policies document covering employment, compensation, and conflict resolution.',
+      title: 'Decision-Making & Conflict Resolution Framework',
+      description: 'A clear map of decision rights and a proven process for resolving conflicts.',
     },
   },
 };
 
-const IMPACT_MODULE_CONTENT = {
-  'strategic-plan': {
-    title: 'Strategic Plan',
-    subtitle: 'Family enterprise vision, goals, and strategic priorities',
+const ROLES_MODULE_CONTENT = {
+  'roles': {
+    title: 'Roles, Responsibilities & Family Employment',
+    subtitle: 'Clarify who does what across family, business, and ownership — with formal employment policies',
     estimatedTime: '90-120 minutes',
     sections: [
       {
-        id: 'vision-mission',
-        title: 'Vision & Mission',
-        description: 'Define your family enterprise\'s long-term direction.',
+        id: 'role-clarity',
+        title: 'Role Clarity',
+        description: 'Does everyone know what role they play?',
         exercises: [
           {
-            id: 'vision-statement',
-            question: 'What is your family enterprise\'s vision for the next 10-20 years?',
+            id: 'three-circles',
+            question: 'For each family member, define their role in the family, business, and ownership circles',
             type: 'textarea',
-            placeholder: 'Our vision is...',
-            helperText: 'Paint a picture of what success looks like for your family and business.',
-          },
-          {
-            id: 'mission-statement',
-            question: 'What is your mission — the core purpose of your enterprise?',
-            type: 'textarea',
-            placeholder: 'Our mission is to...',
+            placeholder: '[Family Member] - Family: [role], Business: [role/position], Ownership: [role]',
+            helperText: 'Not all family members need to be in all circles.',
           },
         ],
       },
       {
-        id: 'strategic-goals',
-        title: 'Strategic Goals',
-        description: 'Set 3-5 year goals aligned with your vision.',
+        id: 'employment-policy',
+        title: 'Family Employment Policy',
+        description: 'What are the rules for family working in the business?',
         exercises: [
           {
-            id: 'goals-list',
-            question: 'What are your top 3-5 strategic goals for the next 3-5 years?',
+            id: 'employment-criteria',
+            question: 'What criteria must be met to be employed in the family business?',
             type: 'textarea',
-            placeholder: 'Goal 1: \nGoal 2: \nGoal 3: \netc.',
-            helperText: 'Be specific and measurable. Include business, family, and impact goals.',
+            placeholder: 'Employment criteria include...',
+            helperText: 'Education, outside work experience, interview process, values alignment.',
           },
           {
-            id: 'priorities',
-            question: 'What are your top strategic priorities right now?',
+            id: 'performance-standards',
+            question: 'Will family employees be held to the same performance standards as non-family?',
             type: 'textarea',
-            placeholder: 'Our priorities are...',
+            placeholder: 'Performance standards will be...',
+            helperText: 'Yes, and documented. This builds credibility with non-family staff.',
+          },
+          {
+            id: 'reporting',
+            question: 'What are reporting relationships? Can a family member report to another family member?',
+            type: 'textarea',
+            placeholder: 'Reporting relationships will be...',
+            helperText: 'Consider conflicts and perception issues.',
           },
         ],
       },
       {
-        id: 'execution',
-        title: 'Execution Plan',
-        description: 'How will you execute your strategy?',
+        id: 'in_laws_and_spouses',
+        title: 'In-Laws & Spouses',
+        description: 'What policy for spouses and married-ins working in the business?',
         exercises: [
           {
-            id: 'milestones',
-            question: 'What are the key milestones and timeline for your strategic plan?',
+            id: 'married_in_policy',
+            question: 'Can spouses and married-ins work in the business? Under what conditions?',
             type: 'textarea',
-            placeholder: 'By [date] we will...\nBy [date] we will...',
+            placeholder: 'In-law employment policy is...',
+            helperText: 'Same standards, special approval, business need requirement.',
+          },
+        ],
+      },
+      {
+        id: 'underperformance',
+        title: 'Addressing Underperformance',
+        description: 'What happens if a family member is underperforming?',
+        exercises: [
+          {
+            id: 'underperformance_process',
+            question: 'What is the process for addressing underperformance? Can they be fired?',
+            type: 'textarea',
+            placeholder: 'Underperformance process includes...',
+            helperText: 'Clear expectations, feedback, improvement plan, then termination if needed.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Family Employment & Roles Policy',
+      description: 'A clear policy defining roles, employment criteria, and expectations for family in the business.',
+    },
+  },
+};
+
+const COMPENSATION_MODULE_CONTENT = {
+  'compensation': {
+    title: 'Compensation & Benefits',
+    subtitle: 'Define how family members are paid, distribution policies, and transparency practices',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'compensation-philosophy',
+        title: 'Compensation Philosophy',
+        description: 'What principles guide family member compensation?',
+        exercises: [
+          {
+            id: 'philosophy',
+            question: 'What is your philosophy on family member compensation?',
+            type: 'textarea',
+            placeholder: 'Our compensation philosophy is...',
+            helperText: 'Market-based? Equal? Performance-based? Needs-based?',
+          },
+          {
+            id: 'benchmarking',
+            question: 'Will family member salaries be benchmarked against market rates for their role?',
+            type: 'textarea',
+            placeholder: 'Benchmarking will be...',
+            helperText: 'Highly recommended to ensure credibility with non-family staff.',
+          },
+        ],
+      },
+      {
+        id: 'distribution-policy',
+        title: 'Distribution Policy',
+        description: 'How are profits distributed to shareholders?',
+        exercises: [
+          {
+            id: 'distribution_philosophy',
+            question: 'What is your approach to distributing profits to shareholders?',
+            type: 'textarea',
+            placeholder: 'Distribution approach is...',
+            helperText: 'Dividend policy, discretionary, tied to performance, reinvestment vs. payout.',
+          },
+          {
+            id: 'fairness_for_non_working',
+            question: 'How do you ensure fairness between family members who work in the business vs. those who don\'t?',
+            type: 'textarea',
+            placeholder: 'We ensure fairness by...',
+            helperText: 'Equal distributions, separate compensation for work, transparency.',
+          },
+        ],
+      },
+      {
+        id: 'transparency',
+        title: 'Compensation Transparency',
+        description: 'Will compensation be transparent?',
+        exercises: [
+          {
+            id: 'transparency_level',
+            question: 'What level of compensation transparency will exist within the family?',
+            type: 'textarea',
+            placeholder: 'Transparency will include...',
+            helperText: 'No transparency, summary only, or full disclosure. More transparency = more trust.',
+          },
+        ],
+      },
+      {
+        id: 'benefits_and_perks',
+        title: 'Benefits & Perquisites',
+        description: 'How will benefits and perks be handled?',
+        exercises: [
+          {
+            id: 'perks',
+            question: 'Are there company perks (cars, housing, club memberships)? Who gets them and why?',
+            type: 'textarea',
+            placeholder: 'Perquisites include...',
+            helperText: 'Document who gets what to avoid resentment.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Compensation & Distribution Policy',
+      description: 'A transparent policy governing compensation for working family members and distributions to all shareholders.',
+    },
+  },
+};
+
+const PROFESSIONALIZE_MODULE_CONTENT = {
+  'professionalize': {
+    title: 'Non-Family Leadership & Professionalizing',
+    subtitle: 'Engage non-family talent and transition from founder-led to professionally managed',
+    estimatedTime: '90-120 minutes',
+    sections: [
+      {
+        id: 'non_family_leadership',
+        title: 'Non-Family Executive Strategy',
+        description: 'How will you engage professional non-family leaders?',
+        exercises: [
+          {
+            id: 'current_structure',
+            question: 'What non-family executives currently lead the business?',
+            type: 'textarea',
+            placeholder: 'Current non-family leadership includes...',
+            helperText: 'CEO, CFO, COO, department heads.',
+          },
+          {
+            id: 'succession_path',
+            question: 'Is there a path for the next non-family CEO? What would need to happen?',
+            type: 'textarea',
+            placeholder: 'A non-family CEO could take over if...',
+            helperText: 'Succession readiness, family alignment, board support.',
+          },
+        ],
+      },
+      {
+        id: 'talent_retention',
+        title: 'Talent Retention & Engagement',
+        description: 'How will you retain key non-family talent?',
+        exercises: [
+          {
+            id: 'retention_risks',
+            question: 'What risks do non-family leaders face that could cause them to leave?',
+            type: 'textarea',
+            placeholder: 'Retention risks include...',
+            helperText: 'Uncertainty about succession, family interference, limited advancement.',
+          },
+          {
+            id: 'retention_strategy',
+            question: 'What will you do to make non-family leaders feel secure and valued?',
+            type: 'textarea',
+            placeholder: 'Retention strategy includes...',
+            helperText: 'Clear path forward, transparency, autonomy, competitive pay, equity plans.',
+          },
+        ],
+      },
+      {
+        id: 'professional_practices',
+        title: 'Professional Business Practices',
+        description: 'How will you professionalize the business?',
+        exercises: [
+          {
+            id: 'practices',
+            question: 'What professional practices need to be implemented? (Financial reporting, strategic planning, HR)',
+            type: 'textarea',
+            placeholder: 'Professionalization will include...',
+            helperText: 'FP&A, strategic planning, formal HR, board governance, external audit.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Professional Leadership & Transition Plan',
+      description: 'A strategy for engaging professional leadership and transitioning the business from founder-led to professionally managed.',
+    },
+  },
+};
+
+const SUCCESSION_MODULE_CONTENT = {
+  'succession': {
+    title: 'Succession Planning',
+    subtitle: 'Plan intentional transitions of leadership, ownership, and authority across generations',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'successor_identification',
+        title: 'Successor Identification',
+        description: 'Who will lead next?',
+        exercises: [
+          {
+            id: 'next_leader',
+            question: 'Who is the intended successor for the CEO role? Is this explicit or assumed?',
+            type: 'textarea',
+            placeholder: 'Our intended CEO successor is...',
+            helperText: 'Be explicit. Don\'t assume. The lack of clarity creates huge problems.',
+          },
+          {
+            id: 'family_vs_nonfamily',
+            question: 'Is your preference for a family member or would a non-family CEO be acceptable?',
+            type: 'textarea',
+            placeholder: 'Our preference is...',
+            helperText: 'Be honest. What matters most: family legacy or business continuity?',
+          },
+          {
+            id: 'selection_criteria',
+            question: 'What criteria will be used to select the successor?',
+            type: 'textarea',
+            placeholder: 'Selection criteria include...',
+            helperText: 'Business acumen, values alignment, stakeholder relationships, leadership ability, age/readiness.',
+          },
+        ],
+      },
+      {
+        id: 'development_plan',
+        title: 'Successor Development',
+        description: 'How will the successor be prepared?',
+        exercises: [
+          {
+            id: 'development_activities',
+            question: 'What development activities are planned for the successor?',
+            type: 'textarea',
+            placeholder: 'Successor development includes...',
+            helperText: 'Mentoring, stretch assignments, executive education, exposure to stakeholders.',
+          },
+          {
+            id: 'timeline',
+            question: 'What is the realistic timeline for transition? (3-5 years is typical)',
+            type: 'textarea',
+            placeholder: 'Our transition timeline is...',
+            helperText: 'Gradual transitions work better than sudden changes.',
+          },
+        ],
+      },
+      {
+        id: 'emotional_transition',
+        title: 'Emotional & Identity Transition',
+        description: 'What does succession mean for the current leader?',
+        exercises: [
+          {
+            id: 'current_leader_process',
+            question: 'Has the current leader emotionally processed what succession means for their identity and role?',
+            type: 'textarea',
+            placeholder: 'The current leader will need to...',
+            helperText: 'Find new meaning beyond the CEO role. Define post-succession involvement.',
+          },
+          {
+            id: 'incoming_leader_readiness',
+            question: 'Is the incoming leader fully prepared and supported emotionally?',
+            type: 'textarea',
+            placeholder: 'The incoming leader needs...',
+            helperText: 'Confidence, family support, credibility with non-family staff.',
+          },
+        ],
+      },
+      {
+        id: 'contingency',
+        title: 'Contingency Planning',
+        description: 'What if the plan changes?',
+        exercises: [
+          {
+            id: 'contingency_plans',
+            question: 'What is your contingency plan if the intended successor cannot or will not serve?',
+            type: 'textarea',
+            placeholder: 'Backup successors are...',
+            helperText: 'Have a backup. Have an external search option.',
+          },
+          {
+            id: 'emergency_succession',
+            question: 'Do you have an emergency succession plan if something happens to the current leader tomorrow?',
+            type: 'textarea',
+            placeholder: 'Emergency succession would involve...',
+            helperText: 'Interim leadership, temporary decision authority, then formal search.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Leadership Succession Plan',
+      description: 'A detailed plan for intentional leadership transition including successor development and contingency planning.',
+    },
+  },
+};
+
+const STRATEGY_MODULE_CONTENT = {
+  'strategy': {
+    title: 'Family Enterprise Strategy',
+    subtitle: 'Set ownership-level strategic direction — growth, risk, capital allocation, and family-business balance',
+    estimatedTime: '120-150 minutes',
+    sections: [
+      {
+        id: 'strategic_direction',
+        title: 'Strategic Direction',
+        description: 'What is the ownership\'s vision for the business?',
+        exercises: [
+          {
+            id: 'growth_vs_stability',
+            question: 'Is the family\'s intent to grow the business, maintain stability, or eventually exit?',
+            type: 'textarea',
+            placeholder: 'Our strategic intent is to...',
+            helperText: 'Aggressive growth, steady state, harvest, or build-to-sell.',
+          },
+          {
+            id: 'ten_year_vision',
+            question: 'Where should the enterprise be in 10 years?',
+            type: 'textarea',
+            placeholder: 'In 10 years, we want to be...',
+            helperText: 'Size, markets, products, family involvement.',
+          },
+        ],
+      },
+      {
+        id: 'risk_and_capital',
+        title: 'Risk Tolerance & Capital Allocation',
+        description: 'How much risk and investment are you willing to take?',
+        exercises: [
+          {
+            id: 'risk_tolerance',
+            question: 'What is the family\'s risk tolerance? Conservative, moderate, or aggressive?',
+            type: 'textarea',
+            placeholder: 'Our risk tolerance is...',
+            helperText: 'This affects investment decisions, market expansion, leverage.',
+          },
+          {
+            id: 'capital_allocation',
+            question: 'How should profits be allocated? Reinvestment vs. distributions?',
+            type: 'textarea',
+            placeholder: 'Capital allocation will be...',
+            helperText: 'Growth investments, debt paydown, shareholder distributions.',
+          },
+        ],
+      },
+      {
+        id: 'family_business_tension',
+        title: 'Family vs. Business Needs',
+        description: 'When they conflict, how will you decide?',
+        exercises: [
+          {
+            id: 'conflict_framework',
+            question: 'When family needs and business needs conflict, what framework will guide decisions?',
+            type: 'textarea',
+            placeholder: 'We will navigate conflicts by...',
+            helperText: 'Example: If a family member wants a distribution but business needs investment.',
+          },
+        ],
+      },
+      {
+        id: 'strategic_decisions',
+        title: 'Strategic Decision-Making',
+        description: 'Who makes strategic decisions?',
+        exercises: [
+          {
+            id: 'decision_process',
+            question: 'What is the process for making major strategic decisions?',
+            type: 'textarea',
+            placeholder: 'Strategic decisions will be made by...',
+            helperText: 'Ownership group, board, management. Who initiates, advises, decides?',
           },
         ],
       },
     ],
     deliverable: {
       title: 'Family Enterprise Strategic Plan',
-      description: 'A 3-5 year strategic plan defining vision, goals, and execution.',
-    },
-  },
-  'financial-health': {
-    title: 'Financial Dashboard',
-    subtitle: 'Key metrics, reporting cadence, and financial transparency',
-    estimatedTime: '60-90 minutes',
-    sections: [
-      {
-        id: 'key-metrics',
-        title: 'Key Metrics',
-        description: 'Define the financial metrics that matter to your family.',
-        exercises: [
-          {
-            id: 'metrics-list',
-            question: 'What are your top 5-7 key financial metrics to track?',
-            type: 'textarea',
-            placeholder: 'Key metrics:\n1. Revenue\n2. EBITDA\n3. etc.',
-            helperText: 'Examples: Revenue, Profit Margin, Cash Flow, ROI, Debt Ratios, Shareholder Value.',
-          },
-          {
-            id: 'targets',
-            question: 'What are your performance targets for each metric?',
-            type: 'textarea',
-            placeholder: 'Revenue target: \nProfit margin target: \netc.',
-          },
-        ],
-      },
-      {
-        id: 'reporting',
-        title: 'Reporting & Transparency',
-        description: 'When and how will financial information be shared?',
-        exercises: [
-          {
-            id: 'reporting-schedule',
-            question: 'What is your financial reporting cadence?',
-            type: 'select',
-            options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
-          },
-          {
-            id: 'transparency-level',
-            question: 'What level of financial transparency will you maintain with family members?',
-            type: 'textarea',
-            placeholder: 'We will share...',
-            helperText: 'Consider: full transparency, summary reports, or selective disclosures.',
-          },
-        ],
-      },
-      {
-        id: 'accountability',
-        title: 'Accountability',
-        description: 'How will you hold the business accountable to financial goals?',
-        exercises: [
-          {
-            id: 'accountability-process',
-            question: 'How will financial performance be reviewed and discussed?',
-            type: 'textarea',
-            placeholder: 'We will review financial performance by...',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Financial Health Dashboard',
-      description: 'A financial framework defining metrics, reporting, and accountability.',
-    },
-  },
-  'performance': {
-    title: 'Performance Review',
-    subtitle: 'Business performance assessment and accountability',
-    estimatedTime: '60-90 minutes',
-    sections: [
-      {
-        id: 'performance-framework',
-        title: 'Performance Framework',
-        description: 'How will you assess business performance?',
-        exercises: [
-          {
-            id: 'assessment-criteria',
-            question: 'What criteria will you use to assess business performance?',
-            type: 'textarea',
-            placeholder: 'We assess performance based on...',
-            helperText: 'Financial results, customer satisfaction, employee retention, market position, etc.',
-          },
-          {
-            id: 'benchmarks',
-            question: 'What industry benchmarks or standards will you use?',
-            type: 'textarea',
-            placeholder: 'We benchmark against...',
-          },
-        ],
-      },
-      {
-        id: 'review-process',
-        title: 'Review Process',
-        description: 'When and how will performance be reviewed?',
-        exercises: [
-          {
-            id: 'review-schedule',
-            question: 'How frequently will performance be formally reviewed?',
-            type: 'select',
-            options: ['Monthly', 'Quarterly', 'Semi-annually', 'Annually'],
-          },
-          {
-            id: 'stakeholders',
-            question: 'Who will be involved in the performance review process?',
-            type: 'textarea',
-            placeholder: 'Performance reviews will involve...',
-          },
-        ],
-      },
-      {
-        id: 'consequences',
-        title: 'Accountability & Consequences',
-        description: 'What happens based on performance results?',
-        exercises: [
-          {
-            id: 'accountability-plan',
-            question: 'How will you respond to strong or weak performance?',
-            type: 'textarea',
-            placeholder: 'If performance targets are met, we will...\nIf targets are missed, we will...',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Performance Review Framework',
-      description: 'A system for assessing and holding the business accountable for results.',
+      description: 'A document articulating the ownership\'s strategic vision, risk tolerance, and decision process.',
     },
   },
 };
 
-const CONTINUITY_MODULE_CONTENT = {
-  'succession': {
-    title: 'Succession Plan',
-    subtitle: 'Leadership pipeline, timeline, criteria, and development',
-    estimatedTime: '90-120 minutes',
-    sections: [
-      {
-        id: 'successors',
-        title: 'Successor Identification',
-        description: 'Who are the potential successors for key positions?',
-        exercises: [
-          {
-            id: 'successor-candidates',
-            question: 'Identify potential successors for key leadership positions',
-            type: 'textarea',
-            placeholder: 'For the CEO position, we are considering...\nFor the CFO position, we are considering...',
-            helperText: 'Name candidates and their current roles.',
-          },
-          {
-            id: 'selection-criteria',
-            question: 'What criteria will be used to select successors?',
-            type: 'textarea',
-            placeholder: 'Successor selection criteria include...',
-            helperText: 'Leadership ability, technical skills, family values alignment, stakeholder support.',
-          },
-        ],
-      },
-      {
-        id: 'development',
-        title: 'Development Plan',
-        description: 'How will you develop the next generation of leaders?',
-        exercises: [
-          {
-            id: 'development-plan',
-            question: 'What development activities will prepare successors for leadership?',
-            type: 'textarea',
-            placeholder: 'Our development plan includes...',
-            helperText: 'Mentoring, education, project assignments, gradual responsibility increase.',
-          },
-          {
-            id: 'timeline',
-            question: 'What is the timeline for the succession transition?',
-            type: 'textarea',
-            placeholder: 'Our succession timeline is...',
-            helperText: 'Consider a 3-5 year transition period with clear milestones.',
-          },
-        ],
-      },
-      {
-        id: 'transition',
-        title: 'Transition Process',
-        description: 'How will the transition actually happen?',
-        exercises: [
-          {
-            id: 'transition-steps',
-            question: 'Describe the succession transition process in detail',
-            type: 'textarea',
-            placeholder: 'The transition will occur in phases:\nPhase 1:...\nPhase 2:...',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Succession Plan',
-      description: 'A detailed plan for leadership transitions including candidates, criteria, and timeline.',
-    },
-  },
-  'contingency': {
-    title: 'Contingency Protocols',
-    subtitle: 'Emergency scenarios, backup plans, and crisis response',
-    estimatedTime: '90-120 minutes',
-    sections: [
-      {
-        id: 'risk-identification',
-        title: 'Risk Identification',
-        description: 'What scenarios could disrupt your family enterprise?',
-        exercises: [
-          {
-            id: 'key-person-risk',
-            question: 'Who are your key people, and what would happen if they were unavailable?',
-            type: 'textarea',
-            placeholder: 'Key person risks:\n1. [Name] - if unavailable, we would...',
-            helperText: 'Consider CEO, CFO, major customers, key relationships.',
-          },
-          {
-            id: 'scenarios',
-            question: 'What other emergency scenarios should you plan for?',
-            type: 'textarea',
-            placeholder: 'We should plan for:\n1. Economic downturn\n2. Loss of major customer\n3. etc.',
-          },
-        ],
-      },
-      {
-        id: 'protocols',
-        title: 'Crisis Protocols',
-        description: 'How will you respond to emergencies?',
-        exercises: [
-          {
-            id: 'crisis-response',
-            question: 'What is your crisis response process?',
-            type: 'textarea',
-            placeholder: 'In a crisis, we will:\n1. Immediately...\n2. Within 24 hours...\n3. Within a week...',
-            helperText: 'Include communication plan, decision authority, resource allocation.',
-          },
-          {
-            id: 'backup-plans',
-            question: 'What backup plans or redundancies are in place for critical functions?',
-            type: 'textarea',
-            placeholder: 'For critical functions, we have backups for...',
-          },
-        ],
-      },
-      {
-        id: 'communication',
-        title: 'Communication & Recovery',
-        description: 'How will stakeholders be informed and business recovery managed?',
-        exercises: [
-          {
-            id: 'stakeholder-comms',
-            question: 'How will you communicate with family, employees, customers, and lenders during a crisis?',
-            type: 'textarea',
-            placeholder: 'We will communicate with stakeholders by...',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Contingency & Crisis Plan',
-      description: 'A comprehensive plan addressing emergency scenarios and crisis response.',
-    },
-  },
+const ESTATE_MODULE_CONTENT = {
   'estate': {
-    title: 'Estate & Wealth Transfer',
-    subtitle: 'Trusts, gifting strategies, and ownership transitions',
-    estimatedTime: '90-120 minutes',
+    title: 'Estate Planning & Wealth Transfer',
+    subtitle: 'Align wealth transfer structures with family values and succession plans',
+    estimatedTime: '120-150 minutes',
     sections: [
       {
-        id: 'wealth-strategy',
-        title: 'Wealth Transfer Strategy',
-        description: 'How will you transfer wealth and ownership across generations?',
+        id: 'wealth_transfer_vision',
+        title: 'Wealth Transfer Vision',
+        description: 'What is the family\'s vision for wealth transfer?',
         exercises: [
           {
-            id: 'transfer-vision',
-            question: 'What is your vision for wealth transfer? Who receives what and when?',
+            id: 'transfer_vision',
+            question: 'Describe your vision for wealth transfer across generations. To whom, when, how much?',
             type: 'textarea',
-            placeholder: 'Our wealth transfer plan is...',
-            helperText: 'Consider equal vs. unequal distributions, timing, and conditions.',
+            placeholder: 'Our wealth transfer vision is...',
+            helperText: 'Consider equal vs. unequal, business vs. liquid assets, timing.',
           },
           {
-            id: 'ownership-transition',
-            question: 'How will ownership of the business be transitioned?',
+            id: 'emotional_barriers',
+            question: 'What emotional barriers exist around estate planning and mortality?',
             type: 'textarea',
-            placeholder: 'Ownership will transition by...',
-            helperText: 'Sale, gifting, trusts, holding companies, gradual transfer.',
+            placeholder: 'Emotional barriers include...',
+            helperText: 'Fear, avoidance, guilt, concerns about preparedness of heirs.',
           },
         ],
       },
       {
-        id: 'structures',
+        id: 'legal_structures',
         title: 'Legal & Tax Structures',
         description: 'What structures will you use?',
         exercises: [
           {
-            id: 'trust-structure',
-            question: 'What trust or legal structures will you establish?',
+            id: 'structures',
+            question: 'What legal structures are planned? (Trusts, holding companies, partnerships, foundations)',
             type: 'textarea',
-            placeholder: 'We plan to establish...',
-            helperText: 'Revocable trusts, irrevocable trusts, family limited partnerships, holding companies.',
+            placeholder: 'Our estate structures will include...',
+            helperText: 'Revocable trust, irrevocable trusts, FLP, C-corp, family partnership.',
           },
           {
-            id: 'tax-strategy',
-            question: 'What is your tax strategy for wealth transfer?',
+            id: 'advisor_team',
+            question: 'Who is on your advisor team? (Attorney, CPA, financial advisor)',
             type: 'textarea',
-            placeholder: 'Our tax strategy includes...',
-            helperText: 'Consult with tax advisors. Consider gift tax, estate tax, income tax.',
+            placeholder: 'Our advisor team includes...',
+            helperText: 'Coordinate across advisors to align estate and business plans.',
           },
         ],
       },
       {
-        id: 'gifting',
-        title: 'Gifting & Distribution',
-        description: 'How and when will distributions occur?',
+        id: 'gifting_strategy',
+        title: 'Gifting & Transfer Strategy',
+        description: 'How will transfer happen?',
         exercises: [
           {
-            id: 'gifting-plan',
-            question: 'What is your gifting and distribution plan?',
+            id: 'gifting_plan',
+            question: 'Will you use annual gifts, lifetime gifts, or testamentary transfers?',
             type: 'textarea',
-            placeholder: 'We will gift/distribute by...',
-            helperText: 'Annual exclusions, lifetime gifts, testamentary gifts, incentive distributions.',
+            placeholder: 'Our gifting strategy is...',
+            helperText: 'Annual exclusions, lifetime gift tax exemption, discount strategies.',
+          },
+          {
+            id: 'equalization',
+            question: 'How will you handle equalization for heirs with different involvement in the business?',
+            type: 'textarea',
+            placeholder: 'We will address equalization by...',
+            helperText: 'Some heirs get business, others get liquid assets of equal value.',
+          },
+        ],
+      },
+      {
+        id: 'family_alignment',
+        title: 'Family Alignment & Transparency',
+        description: 'Have you communicated the plan?',
+        exercises: [
+          {
+            id: 'communication',
+            question: 'Do heirs understand the estate plan and how it affects them?',
+            type: 'textarea',
+            placeholder: 'Communication about the plan includes...',
+            helperText: 'Consider family meeting where plan is explained.',
           },
         ],
       },
     ],
     deliverable: {
-      title: 'Estate & Wealth Transfer Plan',
-      description: 'A comprehensive plan for transferring wealth, ownership, and legacy.',
+      title: 'Estate Planning & Wealth Transfer Strategy',
+      description: 'A comprehensive plan for transferring wealth and business across generations aligned with family values.',
     },
   },
 };
 
-const LEGACY_MODULE_CONTENT = {
-  'nextgen': {
-    title: 'Next Gen Program',
-    subtitle: 'Education, onboarding, mentorship, and leadership readiness',
-    estimatedTime: '90-120 minutes',
-    sections: [
-      {
-        id: 'education',
-        title: 'Education Pathway',
-        description: 'What education should next-gen members pursue?',
-        exercises: [
-          {
-            id: 'education-approach',
-            question: 'What educational pathway do you recommend for next-gen family members?',
-            type: 'textarea',
-            placeholder: 'We encourage next gen to...',
-            helperText: 'Consider college, business school, technical training, or industry-specific education.',
-          },
-          {
-            id: 'outside-experience',
-            question: 'Should next-gen members work outside the family business first?',
-            type: 'textarea',
-            placeholder: 'We believe outside experience is...',
-            helperText: 'Benefits and requirements for external work experience.',
-          },
-        ],
-      },
-      {
-        id: 'mentorship',
-        title: 'Mentorship & Development',
-        description: 'How will you mentor and develop the next generation?',
-        exercises: [
-          {
-            id: 'mentorship-program',
-            question: 'What mentorship and development activities will you provide?',
-            type: 'textarea',
-            placeholder: 'Our mentorship program includes...',
-            helperText: 'One-on-one mentoring, peer learning, formal training, project assignments.',
-          },
-          {
-            id: 'onboarding',
-            question: 'How will next-gen members be onboarded to the business?',
-            type: 'textarea',
-            placeholder: 'Onboarding will involve...',
-            helperText: 'Business orientation, family history, governance structure, stakeholder meetings.',
-          },
-        ],
-      },
-      {
-        id: 'readiness',
-        title: 'Readiness Assessment',
-        description: 'How will you assess if someone is ready for leadership?',
-        exercises: [
-          {
-            id: 'readiness-criteria',
-            question: 'What criteria indicate someone is ready for leadership responsibilities?',
-            type: 'textarea',
-            placeholder: 'We assess readiness based on...',
-            helperText: 'Business acumen, values alignment, stakeholder relationships, decision-making ability.',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Next Generation Development Program',
-      description: 'A comprehensive program for preparing the next generation for leadership.',
-    },
-  },
+const PHILANTHROPY_MODULE_CONTENT = {
   'philanthropy': {
-    title: 'Philanthropy Strategy',
-    subtitle: 'Giving philosophy, foundations, and community impact',
+    title: 'Philanthropy & Social Impact',
+    subtitle: 'Connect family giving to enterprise values and next-generation engagement',
     estimatedTime: '90-120 minutes',
     sections: [
       {
-        id: 'giving-philosophy',
+        id: 'giving_philosophy',
         title: 'Giving Philosophy',
-        description: 'What are your family\'s values around giving?',
+        description: 'What guides your family\'s philanthropy?',
         exercises: [
           {
             id: 'mission',
             question: 'What is your family\'s philanthropic mission or purpose?',
             type: 'textarea',
-            placeholder: 'Our giving is guided by...',
-            helperText: 'Consider causes that align with family values and interests.',
+            placeholder: 'Our philanthropic mission is...',
+            helperText: 'Aligned with family values and enterprise identity.',
           },
           {
-            id: 'impact-goals',
-            question: 'What specific impact do you want your philanthropy to have?',
+            id: 'causes',
+            question: 'What causes or impact areas matter most to your family?',
             type: 'textarea',
-            placeholder: 'We aim to impact...',
-            helperText: 'Education, health, poverty, environment, arts, etc.',
+            placeholder: 'We focus on...',
+            helperText: 'Education, health, poverty, environment, arts, workforce development.',
           },
         ],
       },
       {
-        id: 'structure',
-        title: 'Philanthropic Structure',
-        description: 'How will you organize and fund your philanthropy?',
+        id: 'structure_and_governance',
+        title: 'Structure & Governance',
+        description: 'How will philanthropy be organized?',
         exercises: [
           {
-            id: 'structure-type',
-            question: 'What philanthropic structure will you use?',
+            id: 'structure',
+            question: 'What philanthropic vehicle will you use?',
             type: 'select',
-            options: ['Family Foundation', 'Donor-Advised Fund', 'Direct Giving', 'Hybrid Approach'],
+            options: ['Family Foundation', 'Donor-Advised Fund', 'Direct Giving', 'Social Enterprise'],
           },
           {
             id: 'governance',
-            question: 'How will philanthropy be governed and by whom?',
+            question: 'Who will govern philanthropic decisions?',
             type: 'textarea',
-            placeholder: 'Our philanthropic governance involves...',
-            helperText: 'Family council, foundation board, professional advisors.',
+            placeholder: 'Governance will involve...',
+            helperText: 'Family foundation board, grants committee, professional staff.',
           },
         ],
       },
       {
-        id: 'engagement',
-        title: 'Family Engagement',
-        description: 'How will family members participate in philanthropy?',
+        id: 'next_gen_engagement',
+        title: 'Next-Gen Engagement',
+        description: 'How will philanthropy develop the next generation?',
         exercises: [
           {
-            id: 'participation',
-            question: 'How will family members be involved in philanthropic decisions?',
+            id: 'engagement',
+            question: 'How will next-gen family members be involved in philanthropic decisions?',
             type: 'textarea',
-            placeholder: 'Family members will be involved through...',
-            helperText: 'Grants committees, site visits, volunteer work, board service.',
+            placeholder: 'Next-gen will be involved through...',
+            helperText: 'Committee service, site visits, grantee meetings, voting.',
+          },
+        ],
+      },
+      {
+        id: 'impact_measurement',
+        title: 'Impact & Alignment',
+        description: 'How will you measure impact and ensure alignment with values?',
+        exercises: [
+          {
+            id: 'impact',
+            question: 'How will you measure philanthropic impact?',
+            type: 'textarea',
+            placeholder: 'Impact measurement includes...',
+            helperText: 'Grants awarded, lives impacted, community outcomes.',
+          },
+          {
+            id: 'business_alignment',
+            question: 'How does family philanthropy connect to the enterprise and its values?',
+            type: 'textarea',
+            placeholder: 'Alignment is reflected in...',
+            helperText: 'Community where business operates, values reflected in giving.',
           },
         ],
       },
     ],
     deliverable: {
       title: 'Family Philanthropy Strategy',
-      description: 'A comprehensive strategy for family giving and community impact.',
-    },
-  },
-  'vision': {
-    title: 'Vision 2050',
-    subtitle: 'Long-term family vision and aspirational goals',
-    estimatedTime: '90-120 minutes',
-    sections: [
-      {
-        id: 'aspirational-vision',
-        title: 'Aspirational Vision',
-        description: 'What legacy do you want to build across generations?',
-        exercises: [
-          {
-            id: 'legacy-vision',
-            question: 'Imagine your family in 2050. Describe the legacy you hope to have created.',
-            type: 'textarea',
-            placeholder: 'In 2050, we hope to be known for...',
-            helperText: 'Think across family relationships, business impact, community contribution, values.',
-          },
-          {
-            id: 'generational-goals',
-            question: 'What do you want to accomplish across the next 3-4 generations?',
-            type: 'textarea',
-            placeholder: 'Our multi-generational aspirations are...',
-            helperText: 'Business continuity, wealth building, impact, family harmony, values transmission.',
-          },
-        ],
-      },
-      {
-        id: 'strategic-directions',
-        title: 'Strategic Directions',
-        description: 'What strategic directions support your vision?',
-        exercises: [
-          {
-            id: 'directions',
-            question: 'What are the key strategic directions to realize your 2050 vision?',
-            type: 'textarea',
-            placeholder: 'To achieve our vision, we will:\n1.\n2.\n3.',
-            helperText: 'Business expansion, diversification, international growth, innovation, etc.',
-          },
-        ],
-      },
-      {
-        id: 'measurement',
-        title: 'Vision Measurement',
-        description: 'How will you know if you\'re on track?',
-        exercises: [
-          {
-            id: 'success-metrics',
-            question: 'How will you measure progress toward your 2050 vision?',
-            type: 'textarea',
-            placeholder: 'We will track progress through...',
-            helperText: 'Financial milestones, family engagement, community impact, values metrics.',
-          },
-        ],
-      },
-    ],
-    deliverable: {
-      title: 'Vision 2050: Legacy Plan',
-      description: 'A compelling articulation of your family\'s long-term aspirational vision.',
+      description: 'A comprehensive approach to family giving aligned with values and next-generation engagement.',
     },
   },
 };
 
 // Merge all module content into one object
 const ALL_MODULE_CONTENT = {
-  ...ROOTS_MODULE_CONTENT,
-  ...ORDER_MODULE_CONTENT,
-  ...IMPACT_MODULE_CONTENT,
-  ...CONTINUITY_MODULE_CONTENT,
-  ...LEGACY_MODULE_CONTENT,
+  ...SHARED_PURPOSE_MODULE_CONTENT,
+  ...FAMILY_DYNAMICS_MODULE_CONTENT,
+  ...COMMUNICATION_MODULE_CONTENT,
+  ...TRANSITIONS_MODULE_CONTENT,
+  ...NEXTGEN_DEV_MODULE_CONTENT,
+  ...OWNERSHIP_MODULE_CONTENT,
+  ...GOVERNANCE_MODULE_CONTENT,
+  ...DECISIONS_MODULE_CONTENT,
+  ...ROLES_MODULE_CONTENT,
+  ...COMPENSATION_MODULE_CONTENT,
+  ...PROFESSIONALIZE_MODULE_CONTENT,
+  ...SUCCESSION_MODULE_CONTENT,
+  ...STRATEGY_MODULE_CONTENT,
+  ...ESTATE_MODULE_CONTENT,
+  ...PHILANTHROPY_MODULE_CONTENT,
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -1458,63 +1899,63 @@ const ALL_MODULE_CONTENT = {
 // ═══════════════════════════════════════════════════════════════
 
 const DOCUMENT_PROMPTS = {
-  'family-story': `You are a family enterprise consultant. Write a concise Family Story Document based on the responses below. Use third person. Sections: Our Beginning, Key Milestones, What Defines Us. Warm and professional tone. Keep it concise.
+  'shared-purpose': `You are a family enterprise consultant. Create a Family Purpose & Values Statement from the responses below. Include founding story, core values with definitions and examples, and stewardship philosophy. Use first person plural. Keep concise.
 
 RESPONSES:
 `,
-  'core-values': `You are a family enterprise consultant. Create a Family Values Charter from the responses below. Use first person plural ("We believe..."). For each value: name, definition, examples. End with a commitment statement. Keep concise.
+  'family-dynamics': `You are a family enterprise consultant. Create a Family Dynamics Assessment from the responses below. Describe family structure, relationship patterns, emotional dynamics, and generational patterns. Professional, compassionate tone. Keep concise.
 
 RESPONSES:
 `,
-  'genogram': `You are a family enterprise consultant. Create a Family System Analysis from the responses below. Describe family structure, relationship dynamics, informal roles, and generational patterns. Professional tone. Keep concise.
+  'communication': `You are a family enterprise consultant. Create a Family Communication Plan from the responses below. Cover meeting structures, agendas, facilitation, and process for difficult conversations. Keep concise.
 
 RESPONSES:
 `,
-  'constitution': `You are a family enterprise consultant. Draft a Family Constitution from the responses below. Formal language. Sections: Preamble, Purpose, Principles, Membership, Decision Rights. Use numbered articles. Keep concise.
-
-FAMILY RESPONSES:
-`,
-  'governance': `You are a family enterprise consultant. Create a Governance Design document from the responses below. Cover governance bodies, roles, decision authority, coordination. Keep concise.
+  'transitions': `You are a family enterprise consultant. Create a Family Transition & Integration Policy from the responses below. Cover entry criteria, onboarding, development, assessment, and exit processes. Keep concise.
 
 RESPONSES:
 `,
-  'policies': `You are a family enterprise consultant. Create a Policies & Agreements document from the responses below. Sections: Employment, Compensation, Conflict Resolution. Keep concise.
+  'nextgen-dev': `You are a family enterprise consultant. Create a Next Generation Development Program from the responses below. Cover education, outside experience, mentorship, and governance participation. Keep concise.
 
 RESPONSES:
 `,
-  'strategic-plan': `You are a family enterprise consultant. Create a Strategic Plan from the responses below. Include executive summary, goals, objectives, timeline. Keep concise.
+  'ownership': `You are a family enterprise consultant. Create an Ownership Structure & Transfer Plan from the responses below. Cover current ownership, transfer intent, mechanisms, and control transition. Keep concise.
 
 RESPONSES:
 `,
-  'financial-health': `You are a family enterprise consultant. Create a Financial Health Dashboard document from the responses below. Cover key metrics, targets, reporting schedule. Keep concise.
+  'governance': `You are a family enterprise consultant. Create a Family Governance Architecture document from the responses below. Cover governance bodies, family council, composition, constitution, and evolution planning. Keep concise.
 
 RESPONSES:
 `,
-  'performance': `You are a family enterprise consultant. Create a Performance Review System document from the responses below. Cover criteria, process, accountability. Keep concise.
+  'decisions': `You are a family enterprise consultant. Create a Decision-Making & Conflict Resolution Framework from the responses below. Cover decision rights mapping, family patterns, conflict resolution processes, and nuclear options. Keep concise.
 
 RESPONSES:
 `,
-  'succession': `You are a family enterprise consultant. Create a Succession Plan from the responses below. Cover candidates, selection criteria, development plan, transition timeline. Keep concise.
+  'roles': `You are a family enterprise consultant. Create a Family Employment & Roles Policy from the responses below. Cover role clarity, employment criteria, performance standards, and underperformance process. Keep concise.
 
 RESPONSES:
 `,
-  'contingency': `You are a family enterprise consultant. Create a Contingency Plan from the responses below. Cover key risks, crisis protocols, communication plans. Keep concise.
+  'compensation': `You are a family enterprise consultant. Create a Compensation & Distribution Policy from the responses below. Cover compensation philosophy, benchmarking, distribution approach, and transparency. Keep concise.
 
 RESPONSES:
 `,
-  'estate': `You are a family enterprise consultant. Create an Estate & Wealth Transfer Plan from the responses below. Cover transfer vision, legal structures, gifting strategy. Note: requires professional guidance. Keep concise.
+  'professionalize': `You are a family enterprise consultant. Create a Professional Leadership & Transition Plan from the responses below. Cover non-family executives, talent retention, and professionalization strategies. Keep concise.
 
 RESPONSES:
 `,
-  'nextgen': `You are a family enterprise consultant. Create a Next Generation Development Program from the responses below. Cover education, mentorship, onboarding, readiness criteria. Keep concise.
+  'succession': `You are a family enterprise consultant. Create a Leadership Succession Plan from the responses below. Cover successor identification, selection criteria, development plan, emotional transition, and contingency planning. Keep concise.
 
 RESPONSES:
 `,
-  'philanthropy': `You are a family enterprise consultant. Create a Philanthropy Strategy from the responses below. Cover mission, focus areas, structure, governance, family engagement. Keep concise.
+  'strategy': `You are a family enterprise consultant. Create a Family Enterprise Strategic Plan from the responses below. Cover strategic direction, risk tolerance, capital allocation, and decision-making process. Keep concise.
 
 RESPONSES:
 `,
-  'vision': `You are a family enterprise consultant. Create a Vision 2050 document from the responses below. Include inspiring vision, multi-generational goals, strategic directions, milestones. Keep concise.
+  'estate': `You are a family enterprise consultant. Create an Estate Planning & Wealth Transfer Strategy from the responses below. Cover transfer vision, legal structures, gifting strategy, and family alignment. Note: requires professional guidance. Keep concise.
+
+RESPONSES:
+`,
+  'philanthropy': `You are a family enterprise consultant. Create a Family Philanthropy Strategy from the responses below. Cover giving philosophy, causes, structure, governance, next-gen engagement, and impact measurement. Keep concise.
 
 RESPONSES:
 `,
@@ -1527,217 +1968,248 @@ async function generateDocumentWithAI(moduleId, data) {
   // Format the family's responses based on module type
   let formattedData = '';
 
-  if (moduleId === 'family-story') {
+  if (moduleId === 'shared-purpose') {
     formattedData = `
-ORIGIN STORY:
-- Founder: ${data['founder-story'] || 'Not provided'}
-- Why Started: ${data['why-started'] || 'Not provided'}
-- Early Struggles: ${data['early-struggles'] || 'Not provided'}
-- First Success: ${data['first-success'] || 'Not provided'}
+FOUNDING STORY:
+- Story: ${data['founding-story'] || 'Not provided'}
+- Why Together: ${data['why-together'] || 'Not provided'}
 
-KEY MILESTONES:
-${(data.milestones || []).map(m => `- ${m.year}: ${m.title} — ${m.description}`).join('\n') || 'None provided'}
+CORE VALUES:
+- Values: ${data['core-values'] || 'Not provided'}
+- In Practice: ${data['values-in-practice'] || 'Not provided'}
 
-STORIES WE TELL:
-- Hero Story: ${data['hero-story'] || 'Not provided'}
-- Crisis Story: ${data['crisis-story'] || 'Not provided'}
-- Values Story: ${data['values-story'] || 'Not provided'}
+STEWARDSHIP:
+- Stewardship Approach: ${data['stewardship-approach'] || 'Not provided'}
+- Generational Recommitment: ${data['recommitment'] || 'Not provided'}
 `;
-  } else if (moduleId === 'core-values') {
-    formattedData = `
-VALUES DISCOVERY:
-- Implicit Values: ${data['implicit-values'] || 'Not provided'}
-- Non-Negotiables: ${data['non-negotiables'] || 'Not provided'}
-- Proud Moments: ${data['proud-moments'] || 'Not provided'}
-
-DEFINED VALUES:
-${(data.values || []).map((v, i) => `
-Value ${i + 1}: ${v.name || 'Unnamed'}
-Definition: ${v.definition || 'Not defined'}
-Behavior: ${v.behavior || 'Not specified'}
-`).join('\n') || 'None defined'}
-
-VALUES IN ACTION:
-- Hiring: ${data['hiring-values'] || 'Not provided'}
-- Decision-Making: ${data['decision-values'] || 'Not provided'}
-- Recognition: ${data['values-recognition'] || 'Not provided'}
-`;
-  } else if (moduleId === 'genogram') {
+  } else if (moduleId === 'family-dynamics') {
     formattedData = `
 FAMILY STRUCTURE:
-- Generations: ${data['generations'] || 'Not specified'}
+- Family Structure: ${data['family-structure'] || 'Not provided'}
 
-FAMILY BRANCHES:
-${(data.branches || []).map((b, i) => `
-Branch ${i + 1}: ${b.name || 'Unnamed'}
-Members: ${b.members || 'Not listed'}
-Roles: ${b.roles || 'Not specified'}
-`).join('\n') || 'None defined'}
-
-RELATIONSHIP PATTERNS:
+RELATIONSHIPS:
 - Strong Bonds: ${data['strong-bonds'] || 'Not provided'}
-- Tension Areas: ${data['tension-areas'] || 'Not provided'}
-- Communication Triangles: ${data['triangles'] || 'Not provided'}
+- Tensions: ${data['tensions'] || 'Not provided'}
+- Patterns: ${data['patterns'] || 'Not provided'}
+- Generational Patterns: ${data['generational-patterns'] || 'Not provided'}
 
-ROLES & PATTERNS:
-- Peacemaker: ${data['peacemaker'] || 'Not identified'}
-- Truth-Teller: ${data['truth-teller'] || 'Not identified'}
-- Decision-Maker: ${data['decision-maker'] || 'Not identified'}
-- Repeating Patterns: ${data['patterns'] || 'Not identified'}
+EMOTIONAL HEALTH:
+- Safety: ${data['safety'] || 'Not provided'}
+- Cutoffs: ${data['cutoffs'] || 'Not provided'}
 `;
-  } else if (moduleId === 'constitution') {
+  } else if (moduleId === 'communication') {
     formattedData = `
-CHARTER PURPOSE:
-- Purpose Statement: ${data['purpose-statement'] || 'Not provided'}
-- Scope: ${data['scope'] || 'Not provided'}
+MEETING STRUCTURES:
+- Meeting Types: ${data['meeting-types'] || 'Not provided'}
+- Meeting Cadence: ${data['meeting-cadence'] || 'Not provided'}
 
-GUIDING PRINCIPLES:
-- Core Principles: ${data['principles-list'] || 'Not provided'}
-- Membership Criteria: ${data['membership-criteria'] || 'Not provided'}
+AGENDA & PROCESS:
+- Agenda Structure: ${data['agenda-structure'] || 'Not provided'}
+- Facilitation: ${data['facilitation'] || 'Not provided'}
 
-DECISION RIGHTS:
-- Decision Framework: ${data['decision-framework'] || 'Not provided'}
+DIFFICULT TOPICS:
+- Difficult Process: ${data['difficult-process'] || 'Not provided'}
+- Between-Meeting Process: ${data['between-meetings'] || 'Not provided'}
+`;
+  } else if (moduleId === 'transitions') {
+    formattedData = `
+SCOPE:
+- Long-Term Vision: ${data['long-term-vision'] || 'Not provided'}
+- Scope of Entry: ${data['ownership-vs-operating'] || 'Not provided'}
+
+ENTRY PROCESS:
+- Entry Criteria: ${data['entry-criteria'] || 'Not provided'}
+- Role Design: ${data['role-design'] || 'Not provided'}
+- Onboarding: ${data['onboarding'] || 'Not provided'}
+
+DEVELOPMENT:
+- Education Path: ${data['education-path'] || 'Not provided'}
+- Readiness Milestones: ${data['readiness-milestones'] || 'Not provided'}
+
+EXIT & SPECIAL CASES:
+- Married-Ins: ${data['married-ins'] || 'Not provided'}
+- Exit Process: ${data['exit-process'] || 'Not provided'}
+`;
+  } else if (moduleId === 'nextgen-dev') {
+    formattedData = `
+EARLY EXPOSURE:
+- Exposure Activities: ${data['exposure-activities'] || 'Not provided'}
+- Business Education: ${data['business-education'] || 'Not provided'}
+
+OUTSIDE WORK:
+- Outside Experience: ${data['outside-requirement'] || 'Not provided'}
+
+MENTORSHIP & GOVERNANCE:
+- Mentoring Structure: ${data['mentoring-structure'] || 'Not provided'}
+- Governance Participation: ${data['governance-participation'] || 'Not provided'}
+
+EMOTIONAL PREPARATION:
+- Family Dynamics: ${data['family-dynamics-prep'] || 'Not provided'}
+- Identity Development: ${data['legacy-expectations'] || 'Not provided'}
+`;
+  } else if (moduleId === 'ownership') {
+    formattedData = `
+CURRENT STRUCTURE:
+- Ownership Map: ${data['ownership-map'] || 'Not provided'}
+- Implicit Promises: ${data['implicit-promises'] || 'Not provided'}
+
+TRANSFER MECHANISM:
+- Transfer Intent: ${data['transfer-intent'] || 'Not provided'}
+- Transfer Method: ${data['transfer-method'] || 'Not provided'}
+
+CONTROL TRANSITION:
+- Control Plan: ${data['control-plan'] || 'Not provided'}
+- Emotional Barriers: ${data['emotional-barriers'] || 'Not provided'}
+
+LIQUIDITY & EXIT:
+- Liquidity Mechanisms: ${data['liquidity-mechanism'] || 'Not provided'}
+- Valuation Method: ${data['valuation'] || 'Not provided'}
 `;
   } else if (moduleId === 'governance') {
     formattedData = `
-BOARD STRUCTURE:
-- Board Design: ${data['board-type'] || 'Not provided'}
-- Board Composition: ${data['board-composition'] || 'Not provided'}
+GOVERNANCE BODIES:
+- Board Design: ${data['board-design'] || 'Not provided'}
+- Composition: ${data['composition'] || 'Not provided'}
 
-ROLES & RESPONSIBILITIES:
-- Role Definitions: ${data['role-definition'] || 'Not provided'}
-- Authority Limits: ${data['authority-limits'] || 'Not provided'}
+FAMILY COUNCIL:
+- Council Role: ${data['council-role'] || 'Not provided'}
+- Council Composition: ${data['council-composition'] || 'Not provided'}
 
-MEETING CADENCE:
-- Meeting Schedule: ${data['meeting-schedule'] || 'Not provided'}
+CONSTITUTION:
+- Constitution Content: ${data['constitution-content'] || 'Not provided'}
+
+EVOLUTION:
+- Governance Evolution: ${data['complexity-planning'] || 'Not provided'}
 `;
-  } else if (moduleId === 'policies') {
+  } else if (moduleId === 'decisions') {
     formattedData = `
-EMPLOYMENT POLICIES:
-- Employment Criteria: ${data['employment-criteria'] || 'Not provided'}
-- Employment Terms: ${data['employment-terms'] || 'Not provided'}
+DECISION MAPPING:
+- Current Reality: ${data['current-reality'] || 'Not provided'}
+- Decision Levels: ${data['decision-levels'] || 'Not provided'}
 
-COMPENSATION PHILOSOPHY:
-- Compensation Approach: ${data['comp-philosophy'] || 'Not provided'}
+PATTERNS & DYSFUNCTION:
+- Dysfunctional Patterns: ${data['dysfunctional-patterns'] || 'Not provided'}
+- Genogram Influence: ${data['genogram-influence'] || 'Not provided'}
+- Breaking Patterns: ${data['breaking-patterns'] || 'Not provided'}
 
 CONFLICT RESOLUTION:
-- Conflict Process: ${data['conflict-process'] || 'Not provided'}
+- Early Surfacing: ${data['early-surfacing'] || 'Not provided'}
+- Resolution Process: ${data['resolution-process'] || 'Not provided'}
+- Nuclear Option: ${data['nuclear_option'] || 'Not provided'}
 `;
-  } else if (moduleId === 'strategic-plan') {
+  } else if (moduleId === 'roles') {
     formattedData = `
-VISION & MISSION:
-- Vision Statement: ${data['vision-statement'] || 'Not provided'}
-- Mission Statement: ${data['mission-statement'] || 'Not provided'}
+ROLE CLARITY:
+- Three Circles: ${data['three-circles'] || 'Not provided'}
 
-STRATEGIC GOALS:
-- Goals: ${data['goals-list'] || 'Not provided'}
-- Priorities: ${data['priorities'] || 'Not provided'}
+EMPLOYMENT POLICY:
+- Employment Criteria: ${data['employment-criteria'] || 'Not provided'}
+- Performance Standards: ${data['performance-standards'] || 'Not provided'}
+- Reporting: ${data['reporting'] || 'Not provided'}
 
-EXECUTION:
-- Milestones: ${data['milestones'] || 'Not provided'}
+IN-LAWS & SPOUSES:
+- Married-In Policy: ${data['married_in_policy'] || 'Not provided'}
+
+UNDERPERFORMANCE:
+- Underperformance Process: ${data['underperformance_process'] || 'Not provided'}
 `;
-  } else if (moduleId === 'financial-health') {
+  } else if (moduleId === 'compensation') {
     formattedData = `
-KEY METRICS:
-- Metrics List: ${data['metrics-list'] || 'Not provided'}
-- Performance Targets: ${data['targets'] || 'Not provided'}
+PHILOSOPHY:
+- Compensation Philosophy: ${data['philosophy'] || 'Not provided'}
+- Benchmarking: ${data['benchmarking'] || 'Not provided'}
 
-REPORTING & TRANSPARENCY:
-- Reporting Schedule: ${data['reporting-schedule'] || 'Not provided'}
-- Transparency Level: ${data['transparency-level'] || 'Not provided'}
+DISTRIBUTION:
+- Distribution Approach: ${data['distribution_philosophy'] || 'Not provided'}
+- Fairness: ${data['fairness_for_non_working'] || 'Not provided'}
 
-ACCOUNTABILITY:
-- Accountability Process: ${data['accountability-process'] || 'Not provided'}
+TRANSPARENCY:
+- Transparency Level: ${data['transparency_level'] || 'Not provided'}
+
+BENEFITS:
+- Perks: ${data['perks'] || 'Not provided'}
 `;
-  } else if (moduleId === 'performance') {
+  } else if (moduleId === 'professionalize') {
     formattedData = `
-PERFORMANCE FRAMEWORK:
-- Assessment Criteria: ${data['assessment-criteria'] || 'Not provided'}
-- Industry Benchmarks: ${data['benchmarks'] || 'Not provided'}
+NON-FAMILY LEADERSHIP:
+- Current Structure: ${data['current_structure'] || 'Not provided'}
+- Non-Family CEO Path: ${data['succession_path'] || 'Not provided'}
 
-REVIEW PROCESS:
-- Review Schedule: ${data['review-schedule'] || 'Not provided'}
-- Review Stakeholders: ${data['stakeholders'] || 'Not provided'}
+TALENT RETENTION:
+- Retention Risks: ${data['retention_risks'] || 'Not provided'}
+- Retention Strategy: ${data['retention_strategy'] || 'Not provided'}
 
-ACCOUNTABILITY:
-- Accountability Plan: ${data['accountability-plan'] || 'Not provided'}
+PROFESSIONAL PRACTICES:
+- Professionalization: ${data['practices'] || 'Not provided'}
 `;
   } else if (moduleId === 'succession') {
     formattedData = `
-SUCCESSORS:
-- Successor Candidates: ${data['successor-candidates'] || 'Not provided'}
-- Selection Criteria: ${data['selection-criteria'] || 'Not provided'}
+SUCCESSOR IDENTIFICATION:
+- Intended Successor: ${data['next_leader'] || 'Not provided'}
+- Family vs. Non-Family: ${data['family_vs_nonfamily'] || 'Not provided'}
+- Selection Criteria: ${data['selection_criteria'] || 'Not provided'}
 
 DEVELOPMENT:
-- Development Plan: ${data['development-plan'] || 'Not provided'}
+- Development Activities: ${data['development_activities'] || 'Not provided'}
 - Timeline: ${data['timeline'] || 'Not provided'}
 
-TRANSITION:
-- Transition Steps: ${data['transition-steps'] || 'Not provided'}
+EMOTIONAL TRANSITION:
+- Current Leader: ${data['current_leader_process'] || 'Not provided'}
+- Incoming Leader: ${data['incoming_leader_readiness'] || 'Not provided'}
+
+CONTINGENCY:
+- Contingency Plans: ${data['contingency_plans'] || 'Not provided'}
+- Emergency Succession: ${data['emergency_succession'] || 'Not provided'}
 `;
-  } else if (moduleId === 'contingency') {
+  } else if (moduleId === 'strategy') {
     formattedData = `
-RISK IDENTIFICATION:
-- Key Person Risks: ${data['key-person-risk'] || 'Not provided'}
-- Emergency Scenarios: ${data['scenarios'] || 'Not provided'}
+STRATEGIC DIRECTION:
+- Growth Intent: ${data['growth_vs_stability'] || 'Not provided'}
+- 10-Year Vision: ${data['ten_year_vision'] || 'Not provided'}
 
-CRISIS PROTOCOLS:
-- Crisis Response: ${data['crisis-response'] || 'Not provided'}
-- Backup Plans: ${data['backup-plans'] || 'Not provided'}
+RISK & CAPITAL:
+- Risk Tolerance: ${data['risk_tolerance'] || 'Not provided'}
+- Capital Allocation: ${data['capital_allocation'] || 'Not provided'}
 
-COMMUNICATION:
-- Stakeholder Communication: ${data['stakeholder-comms'] || 'Not provided'}
+FAMILY VS BUSINESS:
+- Conflict Framework: ${data['conflict_framework'] || 'Not provided'}
+
+STRATEGIC DECISIONS:
+- Decision Process: ${data['decision_process'] || 'Not provided'}
 `;
   } else if (moduleId === 'estate') {
     formattedData = `
-WEALTH STRATEGY:
-- Transfer Vision: ${data['transfer-vision'] || 'Not provided'}
-- Ownership Transition: ${data['ownership-transition'] || 'Not provided'}
+WEALTH TRANSFER VISION:
+- Transfer Vision: ${data['transfer_vision'] || 'Not provided'}
+- Emotional Barriers: ${data['emotional_barriers'] || 'Not provided'}
 
 LEGAL & TAX STRUCTURES:
-- Trust Structure: ${data['trust-structure'] || 'Not provided'}
-- Tax Strategy: ${data['tax-strategy'] || 'Not provided'}
+- Structures: ${data['structures'] || 'Not provided'}
+- Advisor Team: ${data['advisor_team'] || 'Not provided'}
 
-GIFTING & DISTRIBUTION:
-- Gifting Plan: ${data['gifting-plan'] || 'Not provided'}
-`;
-  } else if (moduleId === 'nextgen') {
-    formattedData = `
-EDUCATION:
-- Education Pathway: ${data['education-approach'] || 'Not provided'}
-- Outside Experience: ${data['outside-experience'] || 'Not provided'}
+GIFTING STRATEGY:
+- Gifting Plan: ${data['gifting_plan'] || 'Not provided'}
+- Equalization: ${data['equalization'] || 'Not provided'}
 
-MENTORSHIP & DEVELOPMENT:
-- Mentorship Program: ${data['mentorship-program'] || 'Not provided'}
-- Onboarding: ${data['onboarding'] || 'Not provided'}
-
-READINESS:
-- Readiness Criteria: ${data['readiness-criteria'] || 'Not provided'}
+FAMILY ALIGNMENT:
+- Communication: ${data['communication'] || 'Not provided'}
 `;
   } else if (moduleId === 'philanthropy') {
     formattedData = `
 GIVING PHILOSOPHY:
 - Philanthropic Mission: ${data['mission'] || 'Not provided'}
-- Impact Goals: ${data['impact-goals'] || 'Not provided'}
+- Causes: ${data['causes'] || 'Not provided'}
 
-PHILANTHROPIC STRUCTURE:
-- Structure Type: ${data['structure-type'] || 'Not provided'}
+STRUCTURE & GOVERNANCE:
+- Structure: ${data['structure'] || 'Not provided'}
 - Governance: ${data['governance'] || 'Not provided'}
 
-FAMILY ENGAGEMENT:
-- Family Participation: ${data['participation'] || 'Not provided'}
-`;
-  } else if (moduleId === 'vision') {
-    formattedData = `
-ASPIRATIONAL VISION:
-- Legacy Vision: ${data['legacy-vision'] || 'Not provided'}
-- Generational Goals: ${data['generational-goals'] || 'Not provided'}
+NEXT-GEN ENGAGEMENT:
+- Engagement: ${data['engagement'] || 'Not provided'}
 
-STRATEGIC DIRECTIONS:
-- Strategic Directions: ${data['directions'] || 'Not provided'}
-
-VISION MEASUREMENT:
-- Success Metrics: ${data['success-metrics'] || 'Not provided'}
+IMPACT & ALIGNMENT:
+- Impact Measurement: ${data['impact'] || 'Not provided'}
+- Business Alignment: ${data['business_alignment'] || 'Not provided'}
 `;
   }
 
@@ -2023,13 +2495,13 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
   const totalScore = scores ? Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5) : null;
   const [showScoreMethod, setShowScoreMethod] = useState(false);
 
-  // Sub-dimension hints per pillar (v6: transparency from 100K survey)
+  // Sub-dimension hints per category
   const pillarSubDims = {
-    roots: ['Family Story', 'Core Values', 'Cultural Identity'],
-    order: ['Governance', 'Policies', 'Accountability'],
-    impact: ['Strategy', 'Financial Health', 'Performance'],
-    continuity: ['Succession', 'Contingency', 'Wealth Transfer'],
-    legacy: ['Next-Gen Dev', 'Philanthropy', 'Long-Term Vision'],
+    'purpose-identity': ['Shared Purpose, Values & Narrative'],
+    'family-system': ['Family Dynamics', 'Communication', 'Transitions', 'Next-Gen Dev'],
+    'ownership-governance': ['Ownership', 'Governance', 'Decision-Making'],
+    'business-operations': ['Roles & Employment', 'Compensation', 'Professionalization'],
+    'strategy-legacy': ['Succession', 'Strategy', 'Estate Planning', 'Philanthropy'],
   };
 
   return (
