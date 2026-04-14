@@ -5,50 +5,13 @@ import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
-// STRIDE — Member Portal v21
+// THE STRIDE WAY — Member Portal v23
 // Auth System + Session Management + Family Enterprise Tools
 // ═══════════════════════════════════════════════════════════════
 
 // ─── STRIDE PINWHEEL LOGO ────────────────────────────────────
 function StrideLogo({ size = 40 }) {
-  // Two interlocking rosettes — coral (bottom-left) and teal (top-right)
-  // Thick radiating wedge spokes forming dense sunburst pattern
-  const spokeCount = 18;
-  const coralCenter = { x: 28, y: 60 };
-  const tealCenter = { x: 56, y: 26 };
-  const radius = 28;
-  const innerRadius = 7;
-  const spokeHalfAngle = Math.PI / spokeCount * 0.75; // thick wedges
-
-  const makeSpokes = (cx, cy, r) => {
-    const paths = [];
-    for (let i = 0; i < spokeCount; i++) {
-      const angle = (i / spokeCount) * Math.PI * 2;
-      const x1 = cx + Math.cos(angle - spokeHalfAngle) * innerRadius;
-      const y1 = cy + Math.sin(angle - spokeHalfAngle) * innerRadius;
-      const x2 = cx + Math.cos(angle - spokeHalfAngle * 0.3) * r;
-      const y2 = cy + Math.sin(angle - spokeHalfAngle * 0.3) * r;
-      const x3 = cx + Math.cos(angle + spokeHalfAngle * 0.3) * r;
-      const y3 = cy + Math.sin(angle + spokeHalfAngle * 0.3) * r;
-      const x4 = cx + Math.cos(angle + spokeHalfAngle) * innerRadius;
-      const y4 = cy + Math.sin(angle + spokeHalfAngle) * innerRadius;
-      paths.push(`M${x1},${y1} L${x2},${y2} L${x3},${y3} L${x4},${y4}Z`);
-    }
-    return paths.join(' ');
-  };
-
-  return (
-    <svg width={size} height={size} viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Coral rosette — bottom-left */}
-      <path d={makeSpokes(coralCenter.x, coralCenter.y, radius)} fill="#E05B6F"/>
-      <circle cx={coralCenter.x} cy={coralCenter.y} r={7} fill="#E05B6F"/>
-      <circle cx={coralCenter.x} cy={coralCenter.y} r={3.5} fill="white"/>
-      {/* Teal rosette — top-right */}
-      <path d={makeSpokes(tealCenter.x, tealCenter.y, radius)} fill="#4AABB3"/>
-      <circle cx={tealCenter.x} cy={tealCenter.y} r={7} fill="#4AABB3"/>
-      <circle cx={tealCenter.x} cy={tealCenter.y} r={3.5} fill="#2B4C6F"/>
-    </svg>
-  );
+  return <img src="/stride-logo.png" alt="Stride" width={size} height={size} style={{objectFit: 'contain'}} />;
 }
 
 // ─── AUTH SYSTEM ──────────────────────────────────────────────
@@ -123,13 +86,16 @@ function AuthScreen({ onLogin }) {
         <div style={{marginBottom: '48px'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px'}}>
             <StrideLogo size={56} />
-            <span style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px'}}>Stride</span>
+            <div>
+              <div style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px', lineHeight: 1}}>Stride</div>
+              <div style={{fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginTop: '2px'}}>The STRIDE Way</div>
+            </div>
           </div>
           <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2.8rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '20px'}}>
             All your family enterprise work. In one place.
           </h1>
           <p style={{fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '420px'}}>
-            Stride is your member portal for navigating family enterprise challenges together — succession planning, governance, and family dynamics.
+            The STRIDE Way is your member portal for navigating family enterprise challenges together — succession planning, governance, and family dynamics.
           </p>
         </div>
         <div style={{display: 'flex', gap: '32px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)'}}>
@@ -2604,7 +2570,10 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
     <nav className="app-nav">
       <div className="nav-brand">
         <StrideLogo size={32} />
-        <span className="nav-title">Stride</span>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+          <span className="nav-title" style={{lineHeight: 1.1}}>Stride</span>
+          <span style={{fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7A8BA0'}}>The STRIDE Way</span>
+        </div>
       </div>
 
       <div className="nav-menu" style={{marginTop: '8px'}}>
@@ -2666,7 +2635,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
     <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
       <header style={{marginBottom: '32px'}}>
         <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Welcome back</h1>
-        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Your family enterprise work, all in one place.</p>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>The STRIDE Way — your family enterprise work, all in one place.</p>
       </header>
 
       {/* Peer Group Card */}
@@ -8135,7 +8104,7 @@ export default function App() {
   };
 
   if (!authChecked) {
-    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{display: 'flex', alignItems: 'center', gap: '12px'}}><StrideLogo size={48} /><span style={{color: 'white', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>Stride</span></div></div>;
+    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{display: 'flex', alignItems: 'center', gap: '12px'}}><StrideLogo size={48} /><div><div style={{color: 'white', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif", lineHeight: 1}}>Stride</div><div style={{fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginTop: '2px'}}>The STRIDE Way</div></div></div></div>;
   }
 
   if (!currentUser) {
