@@ -2510,7 +2510,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           <p className="subtitle">Decision infrastructure for your family enterprise transition.</p>
         </div>
         {!scores && (
-          <button className="btn btn-primary" onClick={() => setCurrentView('lep-journey')}>
+          <button className="btn btn-primary" onClick={() => setCurrentView('learn')}>
             Take Assessment
           </button>
         )}
@@ -2559,7 +2559,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                 </div>
               )}
               <div className="dashboard-actions" style={{marginTop: '16px'}}>
-                <button className="btn btn-primary" onClick={() => setCurrentView('lep-journey')}>
+                <button className="btn btn-primary" onClick={() => setCurrentView('learn')}>
                   Continue LEP Journey
                 </button>
                 <button className="btn btn-outline" onClick={() => onGenerateLepReport(scores)}>
@@ -2590,7 +2590,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
                   key={pillar.id}
                   className="pillar-score-card"
                   style={{'--pillar-color': pillar.color}}
-                  onClick={() => { setActivePillar(pillar.id); setCurrentView('pillars'); }}
+                  onClick={() => { setActivePillar(pillar.id); setCurrentView('learn'); }}
                 >
                   <div className="pillar-score-header">
                     <span className="pillar-icon">{pillar.icon}</span>
@@ -2618,7 +2618,7 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           </p>
           <button
             className="btn btn-primary btn-lg"
-            onClick={() => setCurrentView('lep-journey')}
+            onClick={() => setCurrentView('learn')}
             style={{padding: '16px 48px', fontSize: '1.05rem', borderRadius: '12px', fontWeight: '600', letterSpacing: '0.02em'}}
           >
             Begin
