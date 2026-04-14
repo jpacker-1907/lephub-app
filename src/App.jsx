@@ -5,9 +5,25 @@ import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
-// STRIDE — Member Portal v18
+// STRIDE — Member Portal v21
 // Auth System + Session Management + Family Enterprise Tools
 // ═══════════════════════════════════════════════════════════════
+
+// ─── STRIDE PINWHEEL LOGO ────────────────────────────────────
+function StrideLogo({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Top-right petal — coral */}
+      <path d="M50 50 C50 28, 60 10, 78 10 C78 32, 68 48, 50 50Z" fill="#E05B6F"/>
+      {/* Bottom-right petal — teal */}
+      <path d="M50 50 C72 50, 90 60, 90 78 C68 78, 52 68, 50 50Z" fill="#5AAFB5"/>
+      {/* Bottom-left petal — coral light */}
+      <path d="M50 50 C50 72, 40 90, 22 90 C22 68, 32 52, 50 50Z" fill="#E05B6F" opacity="0.7"/>
+      {/* Top-left petal — teal light */}
+      <path d="M50 50 C28 50, 10 40, 10 22 C32 22, 48 32, 50 50Z" fill="#5AAFB5" opacity="0.7"/>
+    </svg>
+  );
+}
 
 // ─── AUTH SYSTEM ──────────────────────────────────────────────
 // Phase 1: Client-side auth with localStorage (production will use Supabase)
@@ -80,7 +96,7 @@ function AuthScreen({ onLogin }) {
       <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', color: 'white', maxWidth: '560px'}}>
         <div style={{marginBottom: '48px'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px'}}>
-            <span style={{fontSize: '32px', color: '#c9a962'}}>◇</span>
+            <StrideLogo size={44} />
             <span style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px'}}>Stride</span>
           </div>
           <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2.8rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '20px'}}>
@@ -216,6 +232,7 @@ const LEP_PILLARS = [
     description: 'Shared purpose, family values, and the narrative that binds generations',
     modules: [
       { id: 'shared-purpose', name: 'Shared Purpose, Values & Family Narrative', description: 'Articulate the why of being an enterprise family — values, mission, founding story, stewardship mindset, and generational recommitment', hasContent: true },
+      { id: 'vision-board', name: 'Family Enterprise Vision Board', description: 'Create a visual representation of your family enterprise\'s future — exploring legacy, values, roles, and aspirations through guided reflection', hasContent: true },
     ],
   },
   {
@@ -637,6 +654,111 @@ const SHARED_PURPOSE_MODULE_CONTENT = {
     deliverable: {
       title: 'Family Purpose & Values Statement',
       description: 'A document articulating your shared purpose, core values, and stewardship philosophy.',
+    },
+  },
+};
+
+const VISION_BOARD_MODULE_CONTENT = {
+  'vision-board': {
+    title: 'Family Enterprise Vision Board',
+    subtitle: 'A guided reflection adapted from career counseling research (Waalkes et al., 2019) for family enterprise. Prepare for the in-person workshop by exploring your aspirations.',
+    estimatedTime: '45-60 minutes',
+    sections: [
+      {
+        id: 'pre-reflection',
+        title: 'Vision Board Pre-Reflection',
+        description: 'Complete before the workshop session. These reflections will guide your image selection and board creation.',
+        exercises: [
+          {
+            id: 'enterprise-future',
+            question: 'Imagine your family enterprise 10 years from now. What does it look like? What has changed? What stayed the same?',
+            type: 'textarea',
+            placeholder: 'In 10 years, our family enterprise will...',
+            helperText: 'Think about size, markets, leadership, culture, and family involvement.',
+          },
+          {
+            id: 'personal-role',
+            question: 'What role do you see yourself playing in the family enterprise\'s future? How has your role evolved?',
+            type: 'textarea',
+            placeholder: 'I see myself as...',
+            helperText: 'Consider leadership, ownership, mentorship, stewardship, or a new path entirely.',
+          },
+          {
+            id: 'legacy-values',
+            question: 'What values from your family legacy do you most want to carry forward? What would you like to change?',
+            type: 'textarea',
+            placeholder: 'The values I want to preserve are... I would change...',
+            helperText: 'Be honest about what serves the family and what might need to evolve.',
+          },
+        ],
+      },
+      {
+        id: 'vision-themes',
+        title: 'Vision Themes',
+        description: 'Identify the key themes that will anchor your vision board.',
+        exercises: [
+          {
+            id: 'family-strengths',
+            question: 'What are your family enterprise\'s greatest strengths? What makes you unique?',
+            type: 'textarea',
+            placeholder: 'Our greatest strengths include...',
+            helperText: 'Relationships, reputation, expertise, values, resilience, community ties.',
+          },
+          {
+            id: 'aspirations',
+            question: 'List 3-5 aspirations for your family enterprise that feel bold but achievable.',
+            type: 'textarea',
+            placeholder: '1.\n2.\n3.',
+            helperText: 'Think beyond financial — relationships, impact, innovation, next-gen readiness.',
+          },
+          {
+            id: 'barriers',
+            question: 'What barriers or fears stand between where you are and where you want to be?',
+            type: 'textarea',
+            placeholder: 'The biggest barriers we face are...',
+            helperText: 'Family dynamics, market changes, succession uncertainty, communication gaps.',
+          },
+        ],
+      },
+      {
+        id: 'post-workshop',
+        title: 'Post-Workshop Reflection',
+        description: 'Complete after the vision board workshop. Capture insights while they\'re fresh.',
+        exercises: [
+          {
+            id: 'board-summary',
+            question: 'Describe your completed vision board. What images, words, and themes emerged?',
+            type: 'textarea',
+            placeholder: 'My vision board features...',
+            helperText: 'Document what you created so you can revisit these themes over time.',
+          },
+          {
+            id: 'surprises',
+            question: 'What surprised you during the process? Did anything emerge that you didn\'t expect?',
+            type: 'textarea',
+            placeholder: 'I was surprised by...',
+            helperText: 'The creative process often reveals unconscious priorities and desires.',
+          },
+          {
+            id: 'next-steps',
+            question: 'What is one concrete step you can take this month to move toward the vision on your board?',
+            type: 'textarea',
+            placeholder: 'This month, I will...',
+            helperText: 'Start small. One conversation, one decision, one action.',
+          },
+          {
+            id: 'share-with-family',
+            question: 'What from your vision board would you like to share with your family? What would you keep private for now?',
+            type: 'textarea',
+            placeholder: 'I want to share... I want to keep private...',
+            helperText: 'Not everything needs to be shared right away. You control the pace of disclosure.',
+          },
+        ],
+      },
+    ],
+    deliverable: {
+      title: 'Vision Board Reflection Summary',
+      description: 'A written companion to your physical vision board — capturing the themes, aspirations, and next steps for your family enterprise future.',
     },
   },
 };
@@ -1881,6 +2003,7 @@ const PHILANTHROPY_MODULE_CONTENT = {
 // Merge all module content into one object
 const ALL_MODULE_CONTENT = {
   ...SHARED_PURPOSE_MODULE_CONTENT,
+  ...VISION_BOARD_MODULE_CONTENT,
   ...FAMILY_DYNAMICS_MODULE_CONTENT,
   ...COMMUNICATION_MODULE_CONTENT,
   ...TRANSITIONS_MODULE_CONTENT,
@@ -1903,6 +2026,10 @@ const ALL_MODULE_CONTENT = {
 
 const DOCUMENT_PROMPTS = {
   'shared-purpose': `You are a family enterprise consultant. Create a Family Purpose & Values Statement from the responses below. Include founding story, core values with definitions and examples, and stewardship philosophy. Use first person plural. Keep concise.
+
+RESPONSES:
+`,
+  'vision-board': `You are a family enterprise consultant. Create a Vision Board Reflection Summary from the responses below. Capture the themes, aspirations, and insights from the vision board exercise. Connect personal aspirations to family enterprise strategy. Highlight surprises and next steps. Warm, encouraging tone. Keep concise.
 
 RESPONSES:
 `,
@@ -2410,7 +2537,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navItems = [
-    { id: 'dashboard', icon: '◇', name: 'Home' },
+    { id: 'dashboard', icon: '🏠', name: 'Home' },
     { id: 'sessions', icon: '📅', name: 'Sessions' },
     { id: 'workbook', icon: '📝', name: 'My Workbook' },
     { id: 'my-family', icon: '❤', name: 'My Family' },
@@ -2450,7 +2577,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
       `}</style>
     <nav className="app-nav">
       <div className="nav-brand">
-        <span className="nav-logo">◇</span>
+        <StrideLogo size={32} />
         <span className="nav-title">Stride</span>
       </div>
 
@@ -7982,7 +8109,7 @@ export default function App() {
   };
 
   if (!authChecked) {
-    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{color: '#c9a962', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>◇ Stride</div></div>;
+    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{display: 'flex', alignItems: 'center', gap: '12px'}}><StrideLogo size={48} /><span style={{color: 'white', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>Stride</span></div></div>;
   }
 
   if (!currentUser) {
@@ -8052,6 +8179,19 @@ function getDefaultSessions() {
       facilitator: null,
       prepRequired: false,
       prepWork: null,
+      recording: false,
+      takeaways: false,
+    },
+    {
+      id: 's7',
+      type: 'workshop',
+      title: 'Workshop: Family Enterprise Vision Board',
+      description: 'A two-part facilitated workshop using vision board techniques adapted from career counseling research (Waalkes et al., 2019). Create a visual representation of your family enterprise\'s future — exploring legacy, values, roles, and aspirations. Materials provided.',
+      date: new Date(now.getTime() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      time: '10:00 AM - 12:00 PM ET',
+      facilitator: 'Jason Packer',
+      prepRequired: true,
+      prepWork: 'Complete the "Vision Board Pre-Reflection" exercise in your Workbook under Purpose & Identity. Bring: magazines/printed images, scissors, glue sticks, and a poster board. Think about your family enterprise 10 years from now — what does it look like? What role do you play?',
       recording: false,
       takeaways: false,
     },
