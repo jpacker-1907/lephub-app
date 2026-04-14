@@ -11,16 +11,40 @@ import './App.css';
 
 // ─── STRIDE PINWHEEL LOGO ────────────────────────────────────
 function StrideLogo({ size = 40 }) {
+  // Two interlocking rosettes — coral (bottom-left) and teal (top-right)
+  // Each rosette is a circle of radiating wedge spokes
+  const spokeCount = 20;
+  const coralCenter = { x: 30, y: 62 };
+  const tealCenter = { x: 58, y: 30 };
+  const radius = 30;
+  const innerRadius = 4;
+  const spokeWidth = 0.14; // radians half-width of each spoke
+
+  const makeSpokes = (cx, cy, r) => {
+    const paths = [];
+    for (let i = 0; i < spokeCount; i++) {
+      const angle = (i / spokeCount) * Math.PI * 2;
+      const x1 = cx + Math.cos(angle - spokeWidth) * innerRadius;
+      const y1 = cy + Math.sin(angle - spokeWidth) * innerRadius;
+      const x2 = cx + Math.cos(angle) * r;
+      const y2 = cy + Math.sin(angle) * r;
+      const x3 = cx + Math.cos(angle + spokeWidth) * innerRadius;
+      const y3 = cy + Math.sin(angle + spokeWidth) * innerRadius;
+      paths.push(`M${x1},${y1} L${x2},${y2} L${x3},${y3}Z`);
+    }
+    return paths.join(' ');
+  };
+
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Top-right petal — coral */}
-      <path d="M50 50 C50 28, 60 10, 78 10 C78 32, 68 48, 50 50Z" fill="#E05B6F"/>
-      {/* Bottom-right petal — teal */}
-      <path d="M50 50 C72 50, 90 60, 90 78 C68 78, 52 68, 50 50Z" fill="#5AAFB5"/>
-      {/* Bottom-left petal — coral light */}
-      <path d="M50 50 C50 72, 40 90, 22 90 C22 68, 32 52, 50 50Z" fill="#E05B6F" opacity="0.7"/>
-      {/* Top-left petal — teal light */}
-      <path d="M50 50 C28 50, 10 40, 10 22 C32 22, 48 32, 50 50Z" fill="#5AAFB5" opacity="0.7"/>
+    <svg width={size} height={size} viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Coral rosette — bottom-left */}
+      <path d={makeSpokes(coralCenter.x, coralCenter.y, radius)} fill="#E05B6F"/>
+      <circle cx={coralCenter.x} cy={coralCenter.y} r={5.5} fill="#E05B6F"/>
+      <circle cx={coralCenter.x} cy={coralCenter.y} r={2.8} fill="white"/>
+      {/* Teal rosette — top-right */}
+      <path d={makeSpokes(tealCenter.x, tealCenter.y, radius)} fill="#4AABB3"/>
+      <circle cx={tealCenter.x} cy={tealCenter.y} r={5.5} fill="#4AABB3"/>
+      <circle cx={tealCenter.x} cy={tealCenter.y} r={2.8} fill="#2B4C6F"/>
     </svg>
   );
 }
