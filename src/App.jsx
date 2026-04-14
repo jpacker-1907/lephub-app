@@ -2525,17 +2525,18 @@ async function downloadDocument(moduleId, data, title) {
 // COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser }) {
+function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser, isMember }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const navItems = [
-    { id: 'dashboard', icon: '🏠', name: 'Home' },
-    { id: 'sessions', icon: '📅', name: 'Sessions' },
-    { id: 'workbook', icon: '📝', name: 'My Workbook' },
-    { id: 'my-family', icon: '❤', name: 'My Family' },
-    { id: 'community', icon: '💬', name: 'Community' },
-    { id: 'membership', icon: '⭐', name: 'Membership' },
+  const allNavItems = [
+    { id: 'dashboard', icon: '🏠', name: 'Home', memberOnly: true },
+    { id: 'sessions', icon: '📅', name: 'Sessions', memberOnly: true },
+    { id: 'workbook', icon: '📝', name: 'My Workbook', memberOnly: true },
+    { id: 'my-family', icon: '❤', name: 'My Family', memberOnly: true },
+    { id: 'community', icon: '💬', name: 'Community', memberOnly: true },
+    { id: 'membership', icon: '⭐', name: 'Membership', memberOnly: false },
   ];
+  const navItems = isMember ? allNavItems : allNavItems.filter(item => !item.memberOnly);
 
   return (
     <>
@@ -7392,13 +7393,12 @@ function WorkbookView() {
 // MEMBERSHIP VIEW
 // ═══════════════════════════════════════════════════════════════
 
-function MembershipView({ currentUser }) {
+function MembershipView({ currentUser, isMember, membershipStatus: externalStatus, onMembershipChange }) {
   const [selectedTier, setSelectedTier] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [membershipStatus, setMembershipStatus] = useState(() => {
-    const saved = localStorage.getItem('stride_membership_status');
-    return saved ? JSON.parse(saved) : null;
+    return externalStatus || null;
   });
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
@@ -7506,43 +7506,100 @@ function MembershipView({ currentUser }) {
     localStorage.setItem('stride_membership_status', JSON.stringify(status));
     setMembershipStatus(status);
     setSubmitted(true);
+    if (onMembershipChange) onMembershipChange(status);
   };
 
   if (membershipStatus) {
+    const currentTier = tiers.find(t => t.id === membershipStatus.tier);
+    const isPending = membershipStatus.status === 'pending_review';
+    const memberSince = localStorage.getItem('stride_member_since') || membershipStatus.appliedAt;
+    const renewalDate = new Date(memberSince);
+    renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+
     return (
       <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
         <header style={{marginBottom: '32px'}}>
-          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Stride Membership</h1>
-          <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Your membership status</p>
+          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>My Membership</h1>
+          <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Manage your Stride membership and account settings</p>
         </header>
 
-        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px', maxWidth: '600px'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px'}}>
-            <div style={{fontSize: '3rem'}}>✅</div>
-            <div>
-              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>Application Received</h2>
-              <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>Thank you for applying to Stride.</p>
-            </div>
-          </div>
-
+        {isPending && (
           <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '20px', marginBottom: '24px', borderLeft: '4px solid #E05B6F'}}>
             <p style={{color: '#C44A5C', fontSize: '0.9rem', margin: 0}}>
-              <strong>Jason Packer will personally review your application and reach out within 48 hours to discuss next steps and peer group placement.</strong>
+              <strong>Application under review.</strong> Jason Packer will personally reach out within 48 hours to discuss next steps and peer group placement.
             </p>
           </div>
+        )}
 
-          <div style={{borderTop: '1px solid #DDE3EB', paddingTop: '24px'}}>
-            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Application Details</h3>
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '0.88rem'}}>
-              <div>
-                <div style={{color: '#7A8BA0', fontSize: '0.78rem', marginBottom: '4px'}}>TIER</div>
-                <div style={{fontWeight: '600', color: '#2B4C6F'}}>{tiers.find(t => t.id === membershipStatus.tier)?.name}</div>
+        {/* Membership Card */}
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px', marginBottom: '24px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
+            <div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
+                <span style={{background: currentTier?.badgeColor || '#E05B6F', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em'}}>{currentTier?.badge || 'MEMBER'}</span>
               </div>
-              <div>
-                <div style={{color: '#7A8BA0', fontSize: '0.78rem', marginBottom: '4px'}}>APPLICATION DATE</div>
-                <div style={{fontWeight: '600', color: '#2B4C6F'}}>{new Date(membershipStatus.appliedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{currentTier?.name || 'Stride Member'}</h2>
+              <p style={{color: '#7A8BA0', fontSize: '0.88rem'}}>{isPending ? 'Pending approval' : 'Active membership'}</p>
+            </div>
+            <div style={{textAlign: 'right'}}>
+              <div style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F'}}>${currentTier?.price || '—'}</div>
+              <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>{currentTier?.period || '/year'}</div>
+            </div>
+          </div>
+
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', padding: '20px 0', borderTop: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB', marginBottom: '20px'}}>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>STATUS</div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                <span style={{width: '8px', height: '8px', borderRadius: '50%', background: isPending ? '#f59e0b' : '#10b981'}}></span>
+                <span style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>{isPending ? 'Pending Review' : 'Active'}</span>
               </div>
             </div>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>MEMBER SINCE</div>
+              <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>{new Date(memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+            </div>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>RENEWAL DATE</div>
+              <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>{renewalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+            </div>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>PEER GROUP</div>
+              <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>Family Enterprise Cohort</div>
+            </div>
+          </div>
+
+          <h3 style={{fontSize: '0.9rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Your Membership Includes</h3>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '8px'}}>
+            {(currentTier?.features || []).map((feature, i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', color: '#4A5E73', padding: '4px 0'}}>
+                <span style={{color: '#10b981', fontSize: '0.9rem'}}>&#10003;</span> {feature}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Account Info */}
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px', marginBottom: '24px'}}>
+          <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>Account Information</h3>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '0.9rem'}}>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>NAME</div>
+              <div style={{fontWeight: '600', color: '#2B4C6F'}}>{currentUser?.name || 'Member'}</div>
+            </div>
+            <div>
+              <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '4px'}}>EMAIL</div>
+              <div style={{fontWeight: '600', color: '#2B4C6F'}}>{currentUser?.email || '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Billing Info placeholder */}
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px'}}>
+          <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Billing & Payments</h3>
+          <p style={{color: '#7A8BA0', fontSize: '0.9rem', marginBottom: '16px'}}>Payment processing will be available once the backend is connected. For now, Jason handles billing directly.</p>
+          <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
+            Questions about billing? Reach out to <strong>jason@stridefba.com</strong>
           </div>
         </div>
       </div>
@@ -8441,7 +8498,12 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
 
 // ─── APP SHELL (post-auth) ────────────────────────────────────
 function AppShell({ currentUser, onLogout }) {
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [membershipStatus, setMembershipStatus] = useState(() => {
+    const saved = localStorage.getItem('stride_membership_status');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const isMember = membershipStatus && (membershipStatus.status === 'active' || membershipStatus.status === 'pending_review');
+  const [currentView, setCurrentView] = useState(isMember ? 'dashboard' : 'membership');
   const [scores, setScores] = useState(null);
   const [activePillar, setActivePillar] = useState('roots');
   const [moduleProgress, setModuleProgress] = useState({});
@@ -8500,7 +8562,7 @@ function AppShell({ currentUser, onLogout }) {
   if (showLepReportGenerator) {
     return (
       <div className="lep-app">
-        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} />
+        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} />
         <main className="app-main">
           <LEPReportGenerator
             scores={scores}
@@ -8514,14 +8576,16 @@ function AppShell({ currentUser, onLogout }) {
 
   return (
     <div className="lep-app">
-      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} />
+      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} />
       <main className="app-main">
-        {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
-        {currentView === 'sessions' && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
-        {currentView === 'my-family' && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
-        {currentView === 'workbook' && <WorkbookView />}
-        {currentView === 'community' && <CommunityView />}
-        {currentView === 'membership' && <MembershipView currentUser={currentUser} />}
+        {/* Member-only views — gate behind membership */}
+        {currentView === 'dashboard' && isMember && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
+        {currentView === 'sessions' && isMember && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
+        {currentView === 'workbook' && isMember && <WorkbookView />}
+        {currentView === 'community' && isMember && <CommunityView />}
+        {/* Membership — always accessible */}
+        {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
           const updated = { ...currentUser, tier };
