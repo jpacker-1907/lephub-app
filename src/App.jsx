@@ -2408,14 +2408,9 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navItems = [
     { id: 'dashboard', icon: '◇', name: 'Home' },
-    { id: 'family-profile', icon: '◎', name: 'Family Profile' },
-    { id: 'lep-journey', icon: '◆', name: 'LEP Journey' },
-    { id: 'family-dynamics', icon: '❤', name: 'Family Dynamics' },
-    { id: 'meetings', icon: '▢', name: 'Meetings' },
-    { id: 'vault', icon: '▤', name: 'Vault' },
-    { id: 'pillars', icon: '▣', name: 'Pillars' },
-    { id: 'education', icon: '📚', name: 'Education' },
-    { id: 'workbook', icon: '📝', name: 'Workbook' },
+    { id: 'learn', icon: '📚', name: 'Learn' },
+    { id: 'workbook', icon: '📝', name: 'My Workbook' },
+    { id: 'my-family', icon: '❤', name: 'My Family' },
     { id: 'community', icon: '💬', name: 'Community' },
   ];
 
@@ -2637,17 +2632,17 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
 
       <div className="quick-actions">
         <div className="action-grid">
-          <button className="action-card" onClick={() => setCurrentView('lep-journey')}>
-            <span className="action-icon">◆</span>
-            <span className="action-label">LEP Journey</span>
+          <button className="action-card" onClick={() => setCurrentView('learn')}>
+            <span className="action-icon">📚</span>
+            <span className="action-label">Learn & Assess</span>
           </button>
-          <button className="action-card" onClick={() => setCurrentView('family-dynamics')}>
+          <button className="action-card" onClick={() => setCurrentView('my-family')}>
             <span className="action-icon">❤</span>
-            <span className="action-label">Family Dynamics</span>
+            <span className="action-label">My Family</span>
           </button>
-          <button className="action-card" onClick={() => setCurrentView('pillars')}>
-            <span className="action-icon">▣</span>
-            <span className="action-label">Pillars</span>
+          <button className="action-card" onClick={() => setCurrentView('workbook')}>
+            <span className="action-icon">📝</span>
+            <span className="action-label">My Workbook</span>
           </button>
           <button className="action-card" onClick={() => setCurrentView('vault')}>
             <span className="action-icon">▤</span>
@@ -7676,6 +7671,88 @@ export default function App() {
   return <AppShell currentUser={currentUser} onLogout={handleLogout} />;
 }
 
+// ─── LEARN VIEW (Education + Assessment + Pillars) ────────────
+function LearnView({ activePillar, setActivePillar, moduleProgress, setModuleProgress, moduleData, setModuleData, onAssessmentComplete, scores, setCurrentView, familyProfile }) {
+  const [activeTab, setActiveTab] = useState('education');
+
+  const tabStyle = (isActive) => ({
+    padding: '12px 20px',
+    border: 'none',
+    background: isActive ? '#0f172a' : 'transparent',
+    color: isActive ? '#10b981' : '#94a3b8',
+    fontSize: '0.95rem',
+    fontWeight: isActive ? '600' : '500',
+    cursor: 'pointer',
+    borderBottom: isActive ? '2px solid #10b981' : '1px solid #e5e7eb',
+    transition: 'all 0.2s ease',
+  });
+
+  return (
+    <div>
+      {/* Tab navigation */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '24px', background: '#f8fafc', borderRadius: '12px 12px 0 0' }}>
+        <button style={tabStyle(activeTab === 'education')} onClick={() => setActiveTab('education')}>
+          Education
+        </button>
+        <button style={tabStyle(activeTab === 'assessment')} onClick={() => setActiveTab('assessment')}>
+          Assessment
+        </button>
+        <button style={tabStyle(activeTab === 'pillars')} onClick={() => setActiveTab('pillars')}>
+          Pillars
+        </button>
+      </div>
+
+      {/* Tab content */}
+      <div style={{ background: '#f8fafc', borderRadius: '0 0 12px 12px', padding: '24px' }}>
+        {activeTab === 'education' && <EducationHub />}
+        {activeTab === 'assessment' && <LEPJourneyView onAssessmentComplete={onAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {activeTab === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
+      </div>
+    </div>
+  );
+}
+
+// ─── MY FAMILY VIEW (Profile + Dynamics + Meetings) ────────────
+function MyFamilyView({ familyProfile, setFamilyProfile }) {
+  const [activeTab, setActiveTab] = useState('profile');
+
+  const tabStyle = (isActive) => ({
+    padding: '12px 20px',
+    border: 'none',
+    background: isActive ? '#0f172a' : 'transparent',
+    color: isActive ? '#10b981' : '#94a3b8',
+    fontSize: '0.95rem',
+    fontWeight: isActive ? '600' : '500',
+    cursor: 'pointer',
+    borderBottom: isActive ? '2px solid #10b981' : '1px solid #e5e7eb',
+    transition: 'all 0.2s ease',
+  });
+
+  return (
+    <div>
+      {/* Tab navigation */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '24px', background: '#f8fafc', borderRadius: '12px 12px 0 0' }}>
+        <button style={tabStyle(activeTab === 'profile')} onClick={() => setActiveTab('profile')}>
+          Profile
+        </button>
+        <button style={tabStyle(activeTab === 'dynamics')} onClick={() => setActiveTab('dynamics')}>
+          Dynamics
+        </button>
+        <button style={tabStyle(activeTab === 'meetings')} onClick={() => setActiveTab('meetings')}>
+          Meetings
+        </button>
+      </div>
+
+      {/* Tab content */}
+      <div style={{ background: '#f8fafc', borderRadius: '0 0 12px 12px', padding: '24px' }}>
+        {activeTab === 'profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
+        {activeTab === 'dynamics' && <FamilyDynamicsView familyProfile={familyProfile} />}
+        {activeTab === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
+      </div>
+    </div>
+  );
+}
+
 // ─── APP SHELL (post-auth) ────────────────────────────────────
 function AppShell({ currentUser, onLogout }) {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -7754,15 +7831,11 @@ function AppShell({ currentUser, onLogout }) {
       <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} />
       <main className="app-main">
         {currentView === 'dashboard' && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
-        {(currentView === 'lep-journey' || currentView === 'assessment' || currentView === 'transitions' || currentView === 'decision-engine') && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
-        {currentView === 'family-dynamics' && <FamilyDynamicsView familyProfile={familyProfile} />}
-        {currentView === 'pillars' && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
-        {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
-        {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
-        {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
-        {currentView === 'education' && <EducationHub />}
+        {currentView === 'learn' && <LearnView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {currentView === 'my-family' && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && <WorkbookView />}
         {currentView === 'community' && <CommunityView />}
+        {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
           const updated = { ...currentUser, tier };
           setCurrentUser(updated);
