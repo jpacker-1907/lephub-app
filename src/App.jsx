@@ -75,7 +75,7 @@ function AuthScreen({ onLogin }) {
   };
 
   return (
-    <div style={{minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #0a0f1c 0%, #1a2744 50%, #2d5a3d 100%)'}}>
+    <div style={{minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #1A2A3F 0%, #34597A 50%, #E05B6F 100%)'}}>
       {/* Left panel — brand */}
       <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', color: 'white', maxWidth: '560px'}}>
         <div style={{marginBottom: '48px'}}>
@@ -106,31 +106,31 @@ function AuthScreen({ onLogin }) {
 
           {mode === 'forgot' ? (
             <>
-              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#0a0f1c', marginBottom: '8px'}}>Reset password</h2>
+              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#1A2A3F', marginBottom: '8px'}}>Reset password</h2>
               {resetSent ? (
                 <div style={{textAlign: 'center', padding: '24px 0'}}>
                   <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>✉️</div>
-                  <p style={{color: '#475569', marginBottom: '20px'}}>If an account exists for <strong>{email}</strong>, we've sent password reset instructions.</p>
-                  <button onClick={() => { setMode('login'); setResetSent(false); }} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem'}}>Back to login</button>
+                  <p style={{color: '#4A5E73', marginBottom: '20px'}}>If an account exists for <strong>{email}</strong>, we've sent password reset instructions.</p>
+                  <button onClick={() => { setMode('login'); setResetSent(false); }} style={{background: 'none', border: 'none', color: '#E05B6F', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem'}}>Back to login</button>
                 </div>
               ) : (
                 <form onSubmit={handleForgotPassword}>
-                  <p style={{color: '#64748b', fontSize: '0.9rem', marginBottom: '24px'}}>Enter your email and we'll send reset instructions.</p>
+                  <p style={{color: '#7A8BA0', fontSize: '0.9rem', marginBottom: '24px'}}>Enter your email and we'll send reset instructions.</p>
                   <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '20px', outline: 'none'}} />
-                  <button type="submit" disabled={loading} style={{width: '100%', padding: '12px', background: 'linear-gradient(135deg, #2d5a3d, #4a7c5d)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1}}>{loading ? 'Sending...' : 'Send Reset Link'}</button>
-                  <p style={{textAlign: 'center', marginTop: '16px', fontSize: '0.85rem', color: '#64748b'}}>
-                    <button type="button" onClick={() => setMode('login')} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem'}}>Back to login</button>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '20px', outline: 'none'}} />
+                  <button type="submit" disabled={loading} style={{width: '100%', padding: '12px', background: 'linear-gradient(135deg, #E05B6F, #5AAFB5)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1}}>{loading ? 'Sending...' : 'Send Reset Link'}</button>
+                  <p style={{textAlign: 'center', marginTop: '16px', fontSize: '0.85rem', color: '#7A8BA0'}}>
+                    <button type="button" onClick={() => setMode('login')} style={{background: 'none', border: 'none', color: '#E05B6F', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem'}}>Back to login</button>
                   </p>
                 </form>
               )}
             </>
           ) : (
             <>
-              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#0a0f1c', marginBottom: '4px'}}>
+              <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#1A2A3F', marginBottom: '4px'}}>
                 {mode === 'login' ? 'Welcome back' : 'Join Stride'}
               </h2>
-              <p style={{color: '#64748b', fontSize: '0.88rem', marginBottom: '28px'}}>
+              <p style={{color: '#7A8BA0', fontSize: '0.88rem', marginBottom: '28px'}}>
                 {mode === 'login' ? 'Sign in to continue building your family enterprise legacy.' : 'Create your account to begin your family enterprise assessment.'}
               </p>
 
@@ -140,13 +140,13 @@ function AuthScreen({ onLogin }) {
                 {mode === 'signup' && (
                   <>
                     <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Full Name *</label>
-                    <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Jason Packer" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Jason Packer" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
 
                     <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Family Enterprise Name</label>
-                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g., The Packer Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g., The Packer Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
 
                     <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Your Role</label>
-                    <select value={role} onChange={e => setRole(e.target.value)} style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none', background: 'white'}}>
+                    <select value={role} onChange={e => setRole(e.target.value)} style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none', background: 'white'}}>
                       <option value="owner">Current Owner / Patriarch / Matriarch</option>
                       <option value="next-gen">Next Generation Leader</option>
                       <option value="family-member">Family Member / Stakeholder</option>
@@ -157,33 +157,33 @@ function AuthScreen({ onLogin }) {
                 )}
 
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Email *</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
 
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Password *</label>
                 <div style={{position: 'relative', marginBottom: mode === 'login' ? '8px' : '16px'}}>
-                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder={mode === 'login' ? 'Enter your password' : 'Min. 8 characters'} style={{width: '100%', padding: '11px 14px', paddingRight: '44px', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.92rem', outline: 'none'}} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.8rem'}}>{showPassword ? 'Hide' : 'Show'}</button>
+                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder={mode === 'login' ? 'Enter your password' : 'Min. 8 characters'} style={{width: '100%', padding: '11px 14px', paddingRight: '44px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', outline: 'none'}} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#7A8BA0', cursor: 'pointer', fontSize: '0.8rem'}}>{showPassword ? 'Hide' : 'Show'}</button>
                 </div>
 
                 {mode === 'login' && (
                   <p style={{textAlign: 'right', marginBottom: '20px'}}>
-                    <button type="button" onClick={() => setMode('forgot')} style={{background: 'none', border: 'none', color: '#2d5a3d', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer'}}>Forgot password?</button>
+                    <button type="button" onClick={() => setMode('forgot')} style={{background: 'none', border: 'none', color: '#E05B6F', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer'}}>Forgot password?</button>
                   </p>
                 )}
 
                 {mode === 'signup' && (
-                  <p style={{fontSize: '0.78rem', color: '#94a3b8', marginBottom: '20px'}}>By creating an account, you agree to Stride's Terms of Service and Privacy Policy.</p>
+                  <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '20px'}}>By creating an account, you agree to Stride's Terms of Service and Privacy Policy.</p>
                 )}
 
-                <button type="submit" disabled={loading} style={{width: '100%', padding: '13px', background: 'linear-gradient(135deg, #2d5a3d, #4a7c5d)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(45,90,61,0.25)'}}>
+                <button type="submit" disabled={loading} style={{width: '100%', padding: '13px', background: 'linear-gradient(135deg, #E05B6F, #5AAFB5)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', opacity: loading ? 0.6 : 1, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(45,90,61,0.25)'}}>
                   {loading ? (mode === 'login' ? 'Signing in...' : 'Creating account...') : (mode === 'login' ? 'Sign In' : 'Create Account')}
                 </button>
               </form>
 
-              <div style={{textAlign: 'center', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #f1f5f9'}}>
-                <p style={{fontSize: '0.88rem', color: '#64748b'}}>
+              <div style={{textAlign: 'center', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #F0F3F8'}}>
+                <p style={{fontSize: '0.88rem', color: '#7A8BA0'}}>
                   {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-                  <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} style={{background: 'none', border: 'none', color: '#2d5a3d', fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem'}}>
+                  <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} style={{background: 'none', border: 'none', color: '#E05B6F', fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem'}}>
                     {mode === 'login' ? 'Start free' : 'Sign in'}
                   </button>
                 </p>
@@ -211,7 +211,7 @@ const LEP_PILLARS = [
     name: 'PURPOSE & IDENTITY',
     toolName: 'The Foundation',
     icon: '🌟',
-    color: '#2d5a3d',
+    color: '#E05B6F',
     tagline: 'Know why you are together',
     description: 'Shared purpose, family values, and the narrative that binds generations',
     modules: [
@@ -223,7 +223,7 @@ const LEP_PILLARS = [
     name: 'FAMILY SYSTEM',
     toolName: 'The Relationships',
     icon: '👨‍👩‍👧‍👦',
-    color: '#1a3a5c',
+    color: '#34597A',
     tagline: 'Strengthen the family behind the business',
     description: 'Family dynamics, communication, transitions, and next-generation development',
     modules: [
@@ -238,7 +238,7 @@ const LEP_PILLARS = [
     name: 'OWNERSHIP & GOVERNANCE',
     toolName: 'The Structure',
     icon: '⚖️',
-    color: '#7c3aed',
+    color: '#5AAFB5',
     tagline: 'Build the architecture of trust',
     description: 'Ownership clarity, governance design, and decision-making frameworks',
     modules: [
@@ -252,7 +252,7 @@ const LEP_PILLARS = [
     name: 'BUSINESS & OPERATIONS',
     toolName: 'The Enterprise',
     icon: '🏢',
-    color: '#0891b2',
+    color: '#E05B6F',
     tagline: 'Run the business like a business',
     description: 'Roles, compensation, and professionalizing the family enterprise',
     modules: [
@@ -266,7 +266,7 @@ const LEP_PILLARS = [
     name: 'STRATEGY & LEGACY',
     toolName: 'The Future',
     icon: '🚀',
-    color: '#d97706',
+    color: '#E05B6F',
     tagline: 'Build for generations to come',
     description: 'Succession, strategy, estate planning, and philanthropy',
     modules: [
@@ -298,7 +298,7 @@ const TRANSITION_PATHWAYS = [
     id: 'pe-sale',
     name: 'Sell to Private Equity',
     icon: '🏦',
-    color: '#7c3aed',
+    color: '#5AAFB5',
     shortDesc: 'Full exit to a private equity firm or strategic buyer',
     description: 'Evaluate whether a full exit is right for your family. Assess readiness, align family members, understand the emotional and financial implications, and prepare for life after the sale.',
     considerations: ['Valuation readiness', 'Family alignment on exit', 'Employee & community impact', 'Post-exit identity & purpose', 'Wealth governance after liquidity'],
@@ -308,7 +308,7 @@ const TRANSITION_PATHWAYS = [
     id: 'private-credit',
     name: 'Private Credit Succession',
     icon: '🏗️',
-    color: '#0891b2',
+    color: '#E05B6F',
     shortDesc: 'Use debt to fund an internal ownership transition',
     description: 'Keep the business in the family by using private credit to buy out the senior generation. Assess whether the business can support the debt and whether the next generation is ready to operate under leverage.',
     considerations: ['Debt capacity & affordability', 'Next-gen operational readiness', 'Senior gen retirement needs', 'Lender relationship management', 'Risk tolerance assessment'],
@@ -318,7 +318,7 @@ const TRANSITION_PATHWAYS = [
     id: 'patient-capital',
     name: 'Patient Capital / Family Office',
     icon: '🤝',
-    color: '#2d5a3d',
+    color: '#E05B6F',
     shortDesc: 'Bring in outside capital without giving up full control',
     description: 'Explore minority investment, growth equity, or family office partnerships that provide liquidity and expertise while preserving family control and culture.',
     considerations: ['Control vs. capital tradeoffs', 'Governance with outside investors', 'Timeline & exit expectations', 'Cultural alignment', 'Board composition changes'],
@@ -328,7 +328,7 @@ const TRANSITION_PATHWAYS = [
     id: 'esop',
     name: 'Employee Ownership (ESOP)',
     icon: '👥',
-    color: '#d97706',
+    color: '#E05B6F',
     shortDesc: 'Transfer ownership to the people who built the business',
     description: 'Employee Stock Ownership Plans offer tax advantages and a meaningful succession path. Evaluate whether your workforce, culture, and financials support an ESOP transition.',
     considerations: ['Tax advantages & structure', 'Valuation methodology', 'Employee readiness & culture', 'Ongoing governance requirements', 'Partial vs. full ESOP'],
@@ -338,7 +338,7 @@ const TRANSITION_PATHWAYS = [
     id: 'next-gen',
     name: 'Next-Gen Takeover',
     icon: '🌱',
-    color: '#1a3a5c',
+    color: '#34597A',
     shortDesc: 'Prepare the next generation to lead',
     description: 'The most common — and most complex — path. Define employment policies, leadership criteria, board composition, and development plans. Address the hard questions: merit vs. birthright, readiness timelines, and founder transition.',
     considerations: ['Family employment policy', 'Leadership qualification criteria', 'Board composition & governance', 'Founder role post-transition', 'Sibling/cousin dynamics'],
@@ -2423,7 +2423,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
       <button
         className="mobile-nav-toggle"
         onClick={() => setMobileOpen(!mobileOpen)}
-        style={{display: 'none', position: 'fixed', top: '16px', left: '16px', zIndex: 1001, background: '#0f172a', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 14px', fontSize: '1.1rem', cursor: 'pointer'}}
+        style={{display: 'none', position: 'fixed', top: '16px', left: '16px', zIndex: 1001, background: '#2B4C6F', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 14px', fontSize: '1.1rem', cursor: 'pointer'}}
       >
         {mobileOpen ? '✕' : '☰'}
       </button>
@@ -2475,11 +2475,11 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
           <span className="user-name">{user?.name || 'User'}</span>
           <span className="user-role">{currentUser?.tier === 'enterprise' ? 'Enterprise' : currentUser?.tier === 'pro' ? 'Pro' : 'Free Plan'}</span>
         </div>
-        <span style={{color: '#64748b', fontSize: '0.7rem', marginLeft: 'auto'}}>▾</span>
+        <span style={{color: '#7A8BA0', fontSize: '0.7rem', marginLeft: 'auto'}}>▾</span>
 
         {showUserMenu && (
-          <div style={{position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#1a2744', borderRadius: '10px', padding: '6px', marginBottom: '8px', boxShadow: '0 -4px 20px rgba(0,0,0,0.4)', zIndex: 200}}>
-            <button onClick={(e) => { e.stopPropagation(); setCurrentView('settings'); setShowUserMenu(false); setMobileOpen(false); }} style={{width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#e2e8f0', fontSize: '0.85rem', textAlign: 'left', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'}}>
+          <div style={{position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#34597A', borderRadius: '10px', padding: '6px', marginBottom: '8px', boxShadow: '0 -4px 20px rgba(0,0,0,0.4)', zIndex: 200}}>
+            <button onClick={(e) => { e.stopPropagation(); setCurrentView('settings'); setShowUserMenu(false); setMobileOpen(false); }} style={{width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#EFF1F6', fontSize: '0.85rem', textAlign: 'left', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'}}>
               ⚙ Settings
             </button>
             <button onClick={(e) => { e.stopPropagation(); if (onLogout) onLogout(); }} style={{width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#f87171', fontSize: '0.85rem', textAlign: 'left', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'}}>
@@ -2512,88 +2512,88 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
   return (
     <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
       <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>Welcome back</h1>
-        <p style={{fontSize: '0.9rem', color: '#64748b'}}>Your family enterprise work, all in one place.</p>
+        <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Welcome back</h1>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Your family enterprise work, all in one place.</p>
       </header>
 
       {/* Peer Group Card */}
-      <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '16px', padding: '28px', marginBottom: '20px', color: 'white'}}>
+      <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '16px', padding: '28px', marginBottom: '20px', color: 'white'}}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
           <div>
-            <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8', marginBottom: '8px', fontWeight: '600'}}>Your Peer Group</div>
+            <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A8BA0', marginBottom: '8px', fontWeight: '600'}}>Your Peer Group</div>
             <h2 style={{fontSize: '1.3rem', fontWeight: '700', marginBottom: '6px'}}>Family Enterprise Cohort</h2>
             <p style={{fontSize: '0.88rem', color: '#cbd5e1'}}>Facilitated by Jason Packer</p>
           </div>
           <div style={{background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 16px', textAlign: 'center'}}>
             <div style={{fontSize: '1.6rem', fontWeight: '800'}}>7</div>
-            <div style={{fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.03em'}}>Families</div>
+            <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.03em'}}>Families</div>
           </div>
         </div>
       </div>
 
       {/* Next Session Card */}
       {nextSession ? (
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px 24px', marginBottom: '20px', cursor: 'pointer'}} onClick={() => setCurrentView('sessions')}>
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px 24px', marginBottom: '20px', cursor: 'pointer'}} onClick={() => setCurrentView('sessions')}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap'}}>
             <div>
-              <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#10b981', marginBottom: '6px', fontWeight: '700'}}>Next Session</div>
-              <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>{nextSession.title}</h3>
-              <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#94a3b8', marginTop: '8px'}}>
+              <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#E05B6F', marginBottom: '6px', fontWeight: '700'}}>Next Session</div>
+              <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{nextSession.title}</h3>
+              <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#7A8BA0', marginTop: '8px'}}>
                 <span>📅 {new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
                 <span>🕐 {nextSession.time}</span>
               </div>
               {nextSession.prepRequired && (
-                <div style={{marginTop: '10px', display: 'inline-block', background: '#fef3c7', color: '#92400e', fontSize: '0.78rem', padding: '4px 12px', borderRadius: '20px', fontWeight: '600'}}>
+                <div style={{marginTop: '10px', display: 'inline-block', background: '#FDF0F2', color: '#C44A5C', fontSize: '0.78rem', padding: '4px 12px', borderRadius: '20px', fontWeight: '600'}}>
                   Prep work required
                 </div>
               )}
             </div>
-            <span style={{color: '#94a3b8', fontSize: '1.2rem'}}>→</span>
+            <span style={{color: '#7A8BA0', fontSize: '1.2rem'}}>→</span>
           </div>
         </div>
       ) : (
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '24px', marginBottom: '20px', textAlign: 'center', color: '#94a3b8'}}>
-          <p style={{fontWeight: '600', color: '#64748b'}}>No upcoming sessions scheduled</p>
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '24px', marginBottom: '20px', textAlign: 'center', color: '#7A8BA0'}}>
+          <p style={{fontWeight: '600', color: '#7A8BA0'}}>No upcoming sessions scheduled</p>
           <p style={{fontSize: '0.85rem'}}>Your facilitator will post the next session soon.</p>
         </div>
       )}
 
       {/* Membership Card */}
-      <div style={{background: '#f0fdf4', borderRadius: '12px', border: '1px solid #dcfce7', padding: '16px 24px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+      <div style={{background: '#FDF0F2', borderRadius: '12px', border: '1px solid #FCE4E8', padding: '16px 24px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <div>
-          <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#15803d'}}>Stride Member</div>
-          <div style={{fontSize: '0.78rem', color: '#64748b'}}>Member since {new Date(memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#C44A5C'}}>Stride Member</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0'}}>Member since {new Date(memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
         </div>
-        <div style={{background: '#2d5a3d', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700'}}>Active</div>
+        <div style={{background: '#E05B6F', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700'}}>Active</div>
       </div>
 
       {/* Quick Actions */}
-      <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', marginBottom: '14px'}}>Quick Actions</h3>
+      <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '14px'}}>Quick Actions</h3>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px'}}>
-        <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>📅</div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#0f172a'}}>Sessions</div>
-          <div style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px'}}>View & register</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Sessions</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>View & register</div>
         </button>
-        <button onClick={() => setCurrentView('workbook')} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <button onClick={() => setCurrentView('workbook')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>📝</div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#0f172a'}}>My Workbook</div>
-          <div style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px'}}>Exercises & reflections</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>My Workbook</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Exercises & reflections</div>
         </button>
-        <button onClick={() => setCurrentView('my-family')} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <button onClick={() => setCurrentView('my-family')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>❤️</div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#0f172a'}}>My Family</div>
-          <div style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px'}}>Profile & dynamics</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>My Family</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Profile & dynamics</div>
         </button>
-        <button onClick={() => setCurrentView('community')} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <button onClick={() => setCurrentView('community')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>💬</div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#0f172a'}}>Community</div>
-          <div style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px'}}>Discuss & connect</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Community</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Discuss & connect</div>
         </button>
-        <button onClick={() => setCurrentView('membership')} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <button onClick={() => setCurrentView('membership')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>⭐</div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#0f172a'}}>Membership</div>
-          <div style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px'}}>Join or manage</div>
+          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Membership</div>
+          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Join or manage</div>
         </button>
       </div>
     </div>
@@ -2675,7 +2675,7 @@ function Assessment({ onComplete }) {
         <select
           value={selectedIndustry}
           onChange={(e) => { setSelectedIndustry(e.target.value); try { localStorage.setItem('lep_industry', e.target.value); } catch {} }}
-          style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem', color: '#374151', background: 'white', maxWidth: '200px'}}
+          style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem', color: '#2B3A52', background: 'white', maxWidth: '200px'}}
         >
           <option value="">Your Industry</option>
           {Object.entries(INDUSTRY_PROFILES).map(([name, p]) => (
@@ -2686,7 +2686,7 @@ function Assessment({ onComplete }) {
 
       {/* v6: Industry-specific context hint */}
       {selectedIndustry && industryContext[selectedIndustry] && (
-        <div style={{background: '#f0f9ff', borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', border: '1px solid #0891b222', fontSize: '0.82rem', color: '#0c4a6e', lineHeight: '1.5'}}>
+        <div style={{background: '#FDF0F2', borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', border: '1px solid #E05B6F22', fontSize: '0.82rem', color: '#0c4a6e', lineHeight: '1.5'}}>
           <strong>{INDUSTRY_PROFILES[selectedIndustry]?.icon} {selectedIndustry}:</strong> {industryContext[selectedIndustry]}
         </div>
       )}
@@ -3301,7 +3301,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
 
 const MEETING_TEMPLATES = {
   board: {
-    name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#1a3a5c',
+    name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#34597A',
     agenda: [
       { id: 'opening', name: 'Opening & Check-In', duration: '5 min', desc: 'Personal check-in. How is each board member doing — personally and professionally?' },
       { id: 'pulse-check', name: 'Pulse Check', duration: '10 min', desc: 'Review key metrics: revenue, EBITDA, cash position, succession milestones, LEP scores.' },
@@ -3313,7 +3313,7 @@ const MEETING_TEMPLATES = {
     ],
   },
   'family-council': {
-    name: 'Family Council', icon: '👥', frequency: 'Monthly', duration: '60 min', color: '#2d5a3d',
+    name: 'Family Council', icon: '👥', frequency: 'Monthly', duration: '60 min', color: '#E05B6F',
     agenda: [
       { id: 'opening', name: 'Opening & Gratitude', duration: '5 min', desc: 'Start with something positive. What are we grateful for as a family this month?' },
       { id: 'policy-review', name: 'Policy & Governance Review', duration: '10 min', desc: 'Any policies that need updating? Family employment, compensation, conflict resolution.' },
@@ -3324,7 +3324,7 @@ const MEETING_TEMPLATES = {
     ],
   },
   shareholder: {
-    name: 'Shareholder Meeting', icon: '📊', frequency: 'Annual', duration: '120 min', color: '#7c3aed',
+    name: 'Shareholder Meeting', icon: '📊', frequency: 'Annual', duration: '120 min', color: '#5AAFB5',
     agenda: [
       { id: 'call-to-order', name: 'Call to Order & Quorum', duration: '5 min', desc: 'Confirm quorum. Record attendance. Approve prior meeting minutes.' },
       { id: 'financial-report', name: 'Financial Report', duration: '20 min', desc: 'Annual financials: revenue, profit, distributions, valuation update, debt position.' },
@@ -3336,7 +3336,7 @@ const MEETING_TEMPLATES = {
     ],
   },
   'family-meeting': {
-    name: 'Family Meeting', icon: '🏠', frequency: 'Annual', duration: '180 min', color: '#d97706',
+    name: 'Family Meeting', icon: '🏠', frequency: 'Annual', duration: '180 min', color: '#E05B6F',
     agenda: [
       { id: 'welcome', name: 'Welcome & Values Recitation', duration: '10 min', desc: 'Read the family mission statement and core values together.' },
       { id: 'family-story', name: 'Family Story Moment', duration: '15 min', desc: 'A family member shares a story about the enterprise — past, present, or future.' },
@@ -3349,7 +3349,7 @@ const MEETING_TEMPLATES = {
     ],
   },
   nextgen: {
-    name: 'Next-Gen Gathering', icon: '🌱', frequency: 'Semi-Annual', duration: '90 min', color: '#0891b2',
+    name: 'Next-Gen Gathering', icon: '🌱', frequency: 'Semi-Annual', duration: '90 min', color: '#E05B6F',
     agenda: [
       { id: 'icebreaker', name: 'Icebreaker & Connection', duration: '10 min', desc: 'Fun opening activity. Build relationships between next-gen members.' },
       { id: 'education', name: 'Education Session', duration: '25 min', desc: 'A topic relevant to next-gen development: financial literacy, governance, leadership, industry knowledge.' },
@@ -3543,7 +3543,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
       type: 'operating-company',
       owners: [],
       description: '',
-      color: '#0f172a'
+      color: '#2B4C6F'
     };
     setFamilyProfile(prev => ({
       ...prev,
@@ -3572,28 +3572,28 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 
   // Entity type colors
   const entityTypeColors = {
-    'operating-company': '#2d5a3d',
-    'holding-company': '#1a3a5c',
-    'trust': '#7c3aed',
-    'foundation': '#d97706',
-    'llc': '#0891b2',
+    'operating-company': '#E05B6F',
+    'holding-company': '#34597A',
+    'trust': '#5AAFB5',
+    'foundation': '#E05B6F',
+    'llc': '#E05B6F',
     'partnership': '#dc2626',
     'estate': '#6b21a8',
   };
 
   // Role colors
   const roleColors = {
-    'CEO': '#2d5a3d',
-    'President': '#0891b2',
-    'COO': '#1a3a5c',
-    'CFO': '#0891b2',
-    'Board Chair': '#d97706',
-    'Board Member': '#d97706',
-    'Shareholder': '#7c3aed',
+    'CEO': '#E05B6F',
+    'President': '#E05B6F',
+    'COO': '#34597A',
+    'CFO': '#E05B6F',
+    'Board Chair': '#E05B6F',
+    'Board Member': '#E05B6F',
+    'Shareholder': '#5AAFB5',
     'Next-Gen': '#06b6d4',
-    'Spouse': '#64748b',
-    'Partner': '#64748b',
-    'Advisor': '#7c3aed',
+    'Spouse': '#7A8BA0',
+    'Partner': '#7A8BA0',
+    'Advisor': '#5AAFB5',
   };
 
   // Helper to generate genogram layout
@@ -3619,7 +3619,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 
     if (members.length === 0) {
       return (
-        <div style={{padding: '40px', textAlign: 'center', color: '#94a3b8'}}>
+        <div style={{padding: '40px', textAlign: 'center', color: '#7A8BA0'}}>
           <p>Add family members to see the genogram visualization.</p>
         </div>
       );
@@ -3636,7 +3636,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
     const svgHeight = Math.max(600, genCount * genSpacing + 100);
 
     return (
-      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #e5e7eb', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
+      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #DDE3EB', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
         {/* Draw spouse lines */}
         {members.map(member => {
           if (!member.spouseId || member.id > member.spouseId) return null;
@@ -3651,7 +3651,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 
           return (
             <line key={`spouse-${member.id}-${spouse.id}`} x1={x1} y1={y + boxHeight / 2} x2={x2} y2={y + boxHeight / 2}
-              stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />
+              stroke="#7A8BA0" strokeWidth="2" strokeDasharray="5,5" />
           );
         })}
 
@@ -3674,11 +3674,11 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           return (
             <g key={`parent-${member.id}}`}>
               <line x1={parentX} y1={parentY + boxHeight} x2={parentX} y2={parentY + boxHeight + (childY - parentY - boxHeight) / 2}
-                stroke="#64748b" strokeWidth="2" />
+                stroke="#7A8BA0" strokeWidth="2" />
               <line x1={parentX} y1={parentY + boxHeight + (childY - parentY - boxHeight) / 2} x2={childX} y2={parentY + boxHeight + (childY - parentY - boxHeight) / 2}
-                stroke="#64748b" strokeWidth="2" />
+                stroke="#7A8BA0" strokeWidth="2" />
               <line x1={childX} y1={parentY + boxHeight + (childY - parentY - boxHeight) / 2} x2={childX} y2={childY}
-                stroke="#64748b" strokeWidth="2" />
+                stroke="#7A8BA0" strokeWidth="2" />
             </g>
           );
         })}
@@ -3688,34 +3688,34 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           const y = 80 + (parseInt(gen) - 1) * genSpacing;
           return genMembers.map((member, idx) => {
             const x = 50 + idx * horSpacing;
-            const bgColor = roleColors[member.role] || '#0f172a';
+            const bgColor = roleColors[member.role] || '#2B4C6F';
             const isManaging = member.tags?.includes('managing');
             const isPassive = member.tags?.includes('passive');
             const isNextGen = member.tags?.includes('next-gen');
             const isAdvisor = member.tags?.includes('advisor');
             const isInLaw = member.tags?.includes('in-law');
 
-            let color = '#64748b';
-            if (isManaging) color = '#2d5a3d';
-            else if (isPassive) color = '#0891b2';
+            let color = '#7A8BA0';
+            if (isManaging) color = '#E05B6F';
+            else if (isPassive) color = '#E05B6F';
             else if (isNextGen) color = '#06b6d4';
-            else if (isInLaw) color = '#94a3b8';
-            else if (isAdvisor) color = '#7c3aed';
+            else if (isInLaw) color = '#7A8BA0';
+            else if (isAdvisor) color = '#5AAFB5';
 
             return (
               <g key={member.id} onClick={() => setSelectedMember(member)} style={{cursor: 'pointer'}}>
                 <rect x={x} y={y} width={boxWidth} height={boxHeight} fill={color} opacity="0.15" stroke={color} strokeWidth="2" rx="6" />
-                <text x={x + boxWidth / 2} y={y + 20} textAnchor="middle" fontSize="12" fontWeight="700" fill="#0f172a">
+                <text x={x + boxWidth / 2} y={y + 20} textAnchor="middle" fontSize="12" fontWeight="700" fill="#2B4C6F">
                   {member.firstName}
                 </text>
-                <text x={x + boxWidth / 2} y={y + 35} textAnchor="middle" fontSize="11" fill="#64748b">
+                <text x={x + boxWidth / 2} y={y + 35} textAnchor="middle" fontSize="11" fill="#7A8BA0">
                   {member.lastName}
                 </text>
-                <text x={x + boxWidth / 2} y={y + 50} textAnchor="middle" fontSize="10" fill="#94a3b8">
+                <text x={x + boxWidth / 2} y={y + 50} textAnchor="middle" fontSize="10" fill="#7A8BA0">
                   {member.role || 'Role'}
                 </text>
                 {member.ownershipPct > 0 && (
-                  <text x={x + boxWidth / 2} y={y + 65} textAnchor="middle" fontSize="9" fill="#0f172a" fontWeight="600">
+                  <text x={x + boxWidth / 2} y={y + 65} textAnchor="middle" fontSize="9" fill="#2B4C6F" fontWeight="600">
                     {member.ownershipPct}%
                   </text>
                 )}
@@ -3726,7 +3726,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 
         {/* Generation labels */}
         {Object.keys(generations).map((gen, idx) => (
-          <text key={`gen-label-${gen}`} x="20" y={100 + (parseInt(gen) - 1) * genSpacing} fontSize="14" fontWeight="700" fill="#64748b">
+          <text key={`gen-label-${gen}`} x="20" y={100 + (parseInt(gen) - 1) * genSpacing} fontSize="14" fontWeight="700" fill="#7A8BA0">
             {genLabels[parseInt(gen) - 1]}
           </text>
         ))}
@@ -3741,7 +3741,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 
     if (entities.length === 0 && members.length === 0) {
       return (
-        <div style={{padding: '40px', textAlign: 'center', color: '#94a3b8'}}>
+        <div style={{padding: '40px', textAlign: 'center', color: '#7A8BA0'}}>
           <p>Add entities and members to see the ownership structure.</p>
         </div>
       );
@@ -3756,10 +3756,10 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
     const svgHeight = 500;
 
     return (
-      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #e5e7eb', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
+      <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{border: '1px solid #DDE3EB', borderRadius: '8px', background: 'white', margin: '16px 0'}}>
         {/* Section labels */}
-        <text x="20" y="30" fontSize="12" fontWeight="700" fill="#64748b" textTransform="uppercase">Entities</text>
-        <text x="20" y="290" fontSize="12" fontWeight="700" fill="#64748b" textTransform="uppercase">Members</text>
+        <text x="20" y="30" fontSize="12" fontWeight="700" fill="#7A8BA0" textTransform="uppercase">Entities</text>
+        <text x="20" y="290" fontSize="12" fontWeight="700" fill="#7A8BA0" textTransform="uppercase">Members</text>
 
         {/* Draw ownership lines from entities to members */}
         {entities.map((entity, entityIdx) => {
@@ -3773,8 +3773,8 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
             return (
               <g key={`ownership-${entity.id}-${ownership.memberId}`}>
                 <line x1={entityX} y1={entityY + boxHeight} x2={memberX} y2={memberY}
-                  stroke="#94a3b8" strokeWidth="2" opacity="0.6" />
-                <text x={(entityX + memberX) / 2} y={(entityY + boxHeight + memberY) / 2 - 5} fontSize="11" fill="#64748b" fontWeight="600">
+                  stroke="#7A8BA0" strokeWidth="2" opacity="0.6" />
+                <text x={(entityX + memberX) / 2} y={(entityY + boxHeight + memberY) / 2 - 5} fontSize="11" fill="#7A8BA0" fontWeight="600">
                   {ownership.pct}%
                 </text>
               </g>
@@ -3785,7 +3785,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
         {/* Entity boxes */}
         {entities.map((entity, idx) => {
           const x = 60 + idx * horSpacing;
-          const color = entityTypeColors[entity.type] || '#0f172a';
+          const color = entityTypeColors[entity.type] || '#2B4C6F';
           return (
             <rect key={`entity-${entity.id}`} x={x} y={entityY} width={boxWidth} height={boxHeight}
               fill={color} opacity="0.12" stroke={color} strokeWidth="2" rx="6" onClick={() => setEditingEntityId(entity.id)} style={{cursor: 'pointer'}}
@@ -3800,10 +3800,10 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           const x = 60 + idx * horSpacing;
           return (
             <g key={`entity-label-${entity.id}`}>
-              <text x={x + boxWidth / 2} y={entityY + 25} textAnchor="middle" fontSize="11" fontWeight="700" fill="#0f172a">
+              <text x={x + boxWidth / 2} y={entityY + 25} textAnchor="middle" fontSize="11" fontWeight="700" fill="#2B4C6F">
                 {entity.name.length > 14 ? entity.name.substring(0, 12) + '...' : entity.name}
               </text>
-              <text x={x + boxWidth / 2} y={entityY + 42} textAnchor="middle" fontSize="9" fill="#64748b">
+              <text x={x + boxWidth / 2} y={entityY + 42} textAnchor="middle" fontSize="9" fill="#7A8BA0">
                 {entity.type.replace('-', ' ')}
               </text>
             </g>
@@ -3813,7 +3813,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
         {/* Member boxes */}
         {members.map((member, idx) => {
           const x = 60 + idx * horSpacing;
-          const color = roleColors[member.role] || '#0f172a';
+          const color = roleColors[member.role] || '#2B4C6F';
           return (
             <rect key={`member-${member.id}`} x={x} y={memberY} width={boxWidth} height={boxHeight}
               fill={color} opacity="0.12" stroke={color} strokeWidth="2" rx="6"
@@ -3826,13 +3826,13 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           const x = 60 + idx * horSpacing;
           return (
             <g key={`member-label-${member.id}`}>
-              <text x={x + boxWidth / 2} y={memberY + 22} textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">
+              <text x={x + boxWidth / 2} y={memberY + 22} textAnchor="middle" fontSize="10" fontWeight="700" fill="#2B4C6F">
                 {member.firstName}
               </text>
-              <text x={x + boxWidth / 2} y={memberY + 36} textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">
+              <text x={x + boxWidth / 2} y={memberY + 36} textAnchor="middle" fontSize="10" fontWeight="700" fill="#2B4C6F">
                 {member.lastName}
               </text>
-              <text x={x + boxWidth / 2} y={memberY + 50} textAnchor="middle" fontSize="8" fill="#64748b">
+              <text x={x + boxWidth / 2} y={memberY + 50} textAnchor="middle" fontSize="8" fill="#7A8BA0">
                 {member.role || 'Member'}
               </text>
             </g>
@@ -3852,7 +3852,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
       </header>
 
       {/* Tab bar */}
-      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb', paddingBottom: '0'}}>
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
         {[
           { id: 'members', label: 'Members & Enterprise' },
           { id: 'genogram', label: 'Family Genogram' },
@@ -3861,8 +3861,8 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSelectedMember(null); }}
             style={{
               padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600',
-              background: 'none', color: activeTab === tab.id ? '#0f172a' : '#94a3b8',
-              borderBottom: activeTab === tab.id ? '2px solid #0f172a' : '2px solid transparent',
+              background: 'none', color: activeTab === tab.id ? '#2B4C6F' : '#7A8BA0',
+              borderBottom: activeTab === tab.id ? '2px solid #2B4C6F' : '2px solid transparent',
               marginBottom: '-2px', transition: 'all 0.15s',
             }}
           >
@@ -3875,8 +3875,8 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
       {activeTab === 'members' && (
         <div>
           {/* Enterprise Section */}
-          <div style={{background: 'white', borderRadius: '12px', padding: '24px', marginBottom: '28px', border: '1px solid #e5e7eb'}}>
-            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '20px'}}>Enterprise Information</h3>
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', marginBottom: '28px', border: '1px solid #DDE3EB'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>Enterprise Information</h3>
 
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px'}}>
               {[
@@ -3888,20 +3888,20 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                 { key: 'employeeCount', label: 'Employee Count', type: 'number' },
               ].map(field => (
                 <div key={field.key}>
-                  <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#7A8BA0', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
                     {field.label}
                   </label>
                   <input
                     type={field.type}
                     value={familyProfile[field.key] || ''}
                     onChange={(e) => updateEnterprise(field.key, e.target.value)}
-                    style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem'}}
+                    style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.9rem'}}
                     placeholder={field.label}
                   />
                 </div>
               ))}
               <div>
-                <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                <label style={{display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#7A8BA0', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
                   Generations Involved
                 </label>
                 <input
@@ -3909,7 +3909,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                   min="1" max="5"
                   value={familyProfile.generations || 1}
                   onChange={(e) => updateEnterprise('generations', parseInt(e.target.value))}
-                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem'}}
+                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.9rem'}}
                 />
               </div>
             </div>
@@ -3918,55 +3918,55 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
           {/* Members Section */}
           <div>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a'}}>Family Members ({familyProfile.members?.length || 0})</h3>
+              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>Family Members ({familyProfile.members?.length || 0})</h3>
               <button onClick={addMember}
-                style={{background: '#0f172a', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                style={{background: '#2B4C6F', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
                 + Add Member
               </button>
             </div>
 
             <div style={{display: 'grid', gap: '16px'}}>
               {(familyProfile.members || []).map(member => (
-                <div key={member.id} style={{background: 'white', borderRadius: '12px', padding: '16px', border: '1px solid #e5e7eb'}}>
+                <div key={member.id} style={{background: 'white', borderRadius: '12px', padding: '16px', border: '1px solid #DDE3EB'}}>
                   {editingMemberId === member.id ? (
                     // Edit mode
                     <div>
                       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px'}}>
                         <input type="text" placeholder="First Name" value={member.firstName} onChange={(e) => updateMember(member.id, {firstName: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <input type="text" placeholder="Last Name" value={member.lastName} onChange={(e) => updateMember(member.id, {lastName: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <select value={member.role} onChange={(e) => updateMember(member.id, {role: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}}>
                           <option value="">Select Role</option>
                           {['CEO', 'President', 'COO', 'CFO', 'Board Chair', 'Board Member', 'Shareholder', 'Next-Gen', 'Spouse', 'Partner', 'Advisor', 'Other'].map(role => (
                             <option key={role} value={role}>{role}</option>
                           ))}
                         </select>
                         <select value={member.generation} onChange={(e) => updateMember(member.id, {generation: parseInt(e.target.value)})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}}>
                           <option value="">Select Generation</option>
                           {[1, 2, 3, 4].map(gen => (
                             <option key={gen} value={gen}>G{gen}</option>
                           ))}
                         </select>
                         <input type="number" placeholder="Birth Year" value={member.birthYear} onChange={(e) => updateMember(member.id, {birthYear: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <input type="email" placeholder="Email" value={member.email} onChange={(e) => updateMember(member.id, {email: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <input type="tel" placeholder="Phone" value={member.phone} onChange={(e) => updateMember(member.id, {phone: e.target.value})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <input type="number" placeholder="Ownership %" min="0" max="100" value={member.ownershipPct} onChange={(e) => updateMember(member.id, {ownershipPct: parseFloat(e.target.value)})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                         <select value={member.parentId || ''} onChange={(e) => updateMember(member.id, {parentId: e.target.value ? parseInt(e.target.value) : null})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}}>
                           <option value="">Select Parent</option>
                           {familyProfile.members.filter(m => m.id !== member.id && m.generation < member.generation).map(m => (
                             <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
                           ))}
                         </select>
                         <select value={member.spouseId || ''} onChange={(e) => updateMember(member.id, {spouseId: e.target.value ? parseInt(e.target.value) : null})}
-                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                          style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}}>
                           <option value="">Select Spouse</option>
                           {familyProfile.members.filter(m => m.id !== member.id).map(m => (
                             <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
@@ -3974,11 +3974,11 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                         </select>
                         <input type="text" placeholder="Tags (comma-separated)" value={Array.isArray(member.tags) ? member.tags.join(', ') : member.tags}
                           onChange={(e) => updateMember(member.id, {tags: e.target.value.split(',').map(t => t.trim()).filter(t => t)})}
-                          style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                          style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                       </div>
                       <div style={{display: 'flex', gap: '8px'}}>
                         <button onClick={() => setEditingMemberId(null)}
-                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          style={{background: '#E05B6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
                           Save
                         </button>
                         <button onClick={() => deleteMember(member.id)}
@@ -3992,23 +3992,23 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                     <div onClick={() => setEditingMemberId(member.id)} style={{cursor: 'pointer'}}>
                       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
                         <div>
-                          <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>
+                          <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>
                             {member.firstName} {member.lastName}
                           </h4>
-                          <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '8px'}}>
+                          <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '8px'}}>
                             {member.role || 'No role'} • G{member.generation}
                           </p>
-                          {member.email && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>{member.email}</p>}
+                          {member.email && <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>{member.email}</p>}
                         </div>
                         <div style={{textAlign: 'right'}}>
-                          {member.ownershipPct > 0 && <span style={{display: 'inline-block', background: '#f0fdf4', color: '#2d5a3d', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginBottom: '4px'}}>{member.ownershipPct}% owner</span>}
-                          {member.isBoard && <span style={{display: 'inline-block', background: '#fff7ed', color: '#d97706', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginLeft: '4px'}}>Board</span>}
+                          {member.ownershipPct > 0 && <span style={{display: 'inline-block', background: '#FDF0F2', color: '#E05B6F', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginBottom: '4px'}}>{member.ownershipPct}% owner</span>}
+                          {member.isBoard && <span style={{display: 'inline-block', background: '#fff7ed', color: '#E05B6F', padding: '4px 12px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: '600', marginLeft: '4px'}}>Board</span>}
                         </div>
                       </div>
                       {member.tags && member.tags.length > 0 && (
                         <div style={{marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
                           {member.tags.map(tag => (
-                            <span key={tag} style={{background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '100px', fontSize: '0.75rem'}}>{tag}</span>
+                            <span key={tag} style={{background: '#F0F3F8', color: '#7A8BA0', padding: '2px 8px', borderRadius: '100px', fontSize: '0.75rem'}}>{tag}</span>
                           ))}
                         </div>
                       )}
@@ -4024,19 +4024,19 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
       {/* TAB 2: Family Genogram */}
       {activeTab === 'genogram' && (
         <div>
-          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e5e7eb'}}>
-            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px'}}>Family Structure & Relationships</h3>
+          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #DDE3EB'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Family Structure & Relationships</h3>
             {renderGenogram()}
             {selectedMember && (
-              <div style={{marginTop: '20px', background: '#f8fafc', borderRadius: '8px', padding: '16px', border: '1px solid #e5e7eb'}}>
+              <div style={{marginTop: '20px', background: '#F5F7FA', borderRadius: '8px', padding: '16px', border: '1px solid #DDE3EB'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                   <div>
-                    <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#0f172a'}}>{selectedMember.firstName} {selectedMember.lastName}</h4>
-                    <p style={{fontSize: '0.85rem', color: '#64748b'}}>G{selectedMember.generation} • {selectedMember.role}</p>
-                    {selectedMember.parentId && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>Parent: {getMemberName(selectedMember.parentId)}</p>}
-                    {selectedMember.spouseId && <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>Spouse: {getMemberName(selectedMember.spouseId)}</p>}
+                    <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#2B4C6F'}}>{selectedMember.firstName} {selectedMember.lastName}</h4>
+                    <p style={{fontSize: '0.85rem', color: '#7A8BA0'}}>G{selectedMember.generation} • {selectedMember.role}</p>
+                    {selectedMember.parentId && <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>Parent: {getMemberName(selectedMember.parentId)}</p>}
+                    {selectedMember.spouseId && <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>Spouse: {getMemberName(selectedMember.spouseId)}</p>}
                   </div>
-                  <button onClick={() => setSelectedMember(null)} style={{background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
+                  <button onClick={() => setSelectedMember(null)} style={{background: 'none', border: 'none', color: '#7A8BA0', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
                 </div>
               </div>
             )}
@@ -4047,24 +4047,24 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
       {/* TAB 3: Ownership & Entity Map */}
       {activeTab === 'ownership' && (
         <div>
-          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e5e7eb', marginBottom: '28px'}}>
+          <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #DDE3EB', marginBottom: '28px'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a'}}>Entities ({familyProfile.entities?.length || 0})</h3>
+              <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>Entities ({familyProfile.entities?.length || 0})</h3>
               <button onClick={addEntity}
-                style={{background: '#0f172a', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                style={{background: '#2B4C6F', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
                 + Add Entity
               </button>
             </div>
 
             <div style={{display: 'grid', gap: '12px', marginBottom: '20px'}}>
               {(familyProfile.entities || []).map(entity => (
-                <div key={entity.id} style={{background: '#f8fafc', borderRadius: '8px', padding: '12px', border: `2px solid ${entityTypeColors[entity.type] || '#0f172a'}22`}}>
+                <div key={entity.id} style={{background: '#F5F7FA', borderRadius: '8px', padding: '12px', border: `2px solid ${entityTypeColors[entity.type] || '#2B4C6F'}22`}}>
                   {editingEntityId === entity.id ? (
                     <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px'}}>
                       <input type="text" placeholder="Entity Name" value={entity.name} onChange={(e) => updateEntity(entity.id, {name: e.target.value})}
-                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                       <select value={entity.type} onChange={(e) => updateEntity(entity.id, {type: e.target.value})}
-                        style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}}>
+                        style={{padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}}>
                         <option value="operating-company">Operating Company</option>
                         <option value="holding-company">Holding Company</option>
                         <option value="trust">Trust</option>
@@ -4074,10 +4074,10 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                         <option value="estate">Estate</option>
                       </select>
                       <input type="text" placeholder="Description" value={entity.description} onChange={(e) => updateEntity(entity.id, {description: e.target.value})}
-                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.85rem'}} />
+                        style={{gridColumn: 'span 2', padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
                       <div style={{gridColumn: 'span 3', display: 'flex', gap: '8px'}}>
                         <button onClick={() => setEditingEntityId(null)}
-                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
+                          style={{background: '#E05B6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>
                           Save
                         </button>
                         <button onClick={() => deleteEntity(entity.id)}
@@ -4088,8 +4088,8 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
                     </div>
                   ) : (
                     <div onClick={() => setEditingEntityId(entity.id)} style={{cursor: 'pointer'}}>
-                      <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: entityTypeColors[entity.type] || '#0f172a'}}>{entity.name}</h4>
-                      <p style={{fontSize: '0.8rem', color: '#64748b'}}>{entity.type.replace('-', ' ')}{entity.description && ` • ${entity.description}`}</p>
+                      <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: entityTypeColors[entity.type] || '#2B4C6F'}}>{entity.name}</h4>
+                      <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>{entity.type.replace('-', ' ')}{entity.description && ` • ${entity.description}`}</p>
                     </div>
                   )}
                 </div>
@@ -4125,7 +4125,7 @@ function LEPJourneyView({ onAssessmentComplete, scores, setCurrentView, familyPr
         </div>
       </header>
 
-      <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+      <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '0', marginBottom: '16px'}}>
           {phases.map((p, i) => (
             <React.Fragment key={p.id}>
@@ -4139,42 +4139,42 @@ function LEPJourneyView({ onAssessmentComplete, scores, setCurrentView, familyPr
                 <div style={{
                   width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.85rem', fontWeight: '700', flexShrink: 0,
-                  background: phase === p.id ? '#0f172a' : p.unlocked ? '#e2e8f0' : '#f1f5f9',
-                  color: phase === p.id ? 'white' : p.unlocked ? '#475569' : '#94a3b8',
-                  border: phase === p.id ? '2px solid #0f172a' : '2px solid transparent',
+                  background: phase === p.id ? '#2B4C6F' : p.unlocked ? '#EFF1F6' : '#F0F3F8',
+                  color: phase === p.id ? 'white' : p.unlocked ? '#4A5E73' : '#7A8BA0',
+                  border: phase === p.id ? '2px solid #2B4C6F' : '2px solid transparent',
                   transition: 'all 0.2s',
                 }}>
                   {p.id}
                 </div>
                 <div>
-                  <div style={{fontSize: '0.88rem', fontWeight: '700', color: phase === p.id ? '#0f172a' : '#64748b'}}>{p.name}</div>
-                  <div style={{fontSize: '0.72rem', color: '#94a3b8'}}>{p.subtitle}</div>
+                  <div style={{fontSize: '0.88rem', fontWeight: '700', color: phase === p.id ? '#2B4C6F' : '#7A8BA0'}}>{p.name}</div>
+                  <div style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{p.subtitle}</div>
                 </div>
               </div>
               {i < phases.length - 1 && (
-                <div style={{flex: '0 0 40px', height: '2px', background: phases[i+1].unlocked ? '#0f172a' : '#e2e8f0', margin: '0 8px', transition: 'background 0.3s'}} />
+                <div style={{flex: '0 0 40px', height: '2px', background: phases[i+1].unlocked ? '#2B4C6F' : '#EFF1F6', margin: '0 8px', transition: 'background 0.3s'}} />
               )}
             </React.Fragment>
           ))}
         </div>
-        <p style={{fontSize: '0.82rem', color: '#64748b', lineHeight: '1.5'}}>{phases.find(p => p.id === phase)?.desc}</p>
+        <p style={{fontSize: '0.82rem', color: '#7A8BA0', lineHeight: '1.5'}}>{phases.find(p => p.id === phase)?.desc}</p>
       </div>
 
       {phase === 1 && <Assessment onComplete={(newScores) => { onAssessmentComplete(newScores); setPhase(2); }} />}
       {phase === 2 && (scores ? <TransitionsView setCurrentView={(v) => { if (v === 'decision-engine') setPhase(3); else setCurrentView(v); }} /> : (
-        <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+        <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
           <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◈</div>
-          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '8px'}}>Complete Phase 1 First</h2>
+          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#7A8BA0', marginBottom: '8px'}}>Complete Phase 1 First</h2>
           <p>Take the LEP Assessment to unlock Transition Pathways.</p>
-          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
+          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#2B4C6F', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
         </div>
       ))}
       {phase === 3 && (scores ? <DecisionEngineView setCurrentView={(v) => { if (v === 'transitions') setPhase(2); else setCurrentView(v); }} scores={scores} /> : (
-        <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+        <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
           <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>⚙</div>
-          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '8px'}}>Complete Phase 1 First</h2>
+          <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#7A8BA0', marginBottom: '8px'}}>Complete Phase 1 First</h2>
           <p>Take the LEP Assessment to unlock the Decision Engine.</p>
-          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
+          <button onClick={() => setPhase(1)} style={{marginTop: '16px', background: '#2B4C6F', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600'}}>Go to Assessment</button>
         </div>
       ))}
     </div>
@@ -4228,10 +4228,10 @@ function FamilyDynamicsView({ familyProfile }) {
   const relationshipMapRender = () => {
     if (members.length === 0) {
       return (
-        <div style={{textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb'}}>
+        <div style={{textAlign: 'center', padding: '60px 20px', background: '#F5F7FA', borderRadius: '12px', border: '1px solid #DDE3EB'}}>
           <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◎</div>
-          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#475569', marginBottom: '8px'}}>No Family Members Added</h3>
-          <p style={{fontSize: '0.9rem', color: '#64748b', marginBottom: '16px', maxWidth: '400px'}}>Add family members in Family Profile to start mapping relationships and understanding family dynamics.</p>
+          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#4A5E73', marginBottom: '8px'}}>No Family Members Added</h3>
+          <p style={{fontSize: '0.9rem', color: '#7A8BA0', marginBottom: '16px', maxWidth: '400px'}}>Add family members in Family Profile to start mapping relationships and understanding family dynamics.</p>
         </div>
       );
     }
@@ -4244,7 +4244,7 @@ function FamilyDynamicsView({ familyProfile }) {
 
     return (
       <div>
-        <div style={{background: 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #0284c7'}}>
+        <div style={{background: 'linear-gradient(135deg, #e0f2fe 0%, #FDF0F2 100%)', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #0284c7'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'space-between'}}>
             <div>
               <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0c4a6e', marginBottom: '4px'}}>Family Cohesion Score</h3>
@@ -4254,21 +4254,21 @@ function FamilyDynamicsView({ familyProfile }) {
           </div>
         </div>
 
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px', marginBottom: '28px', overflowX: 'auto'}}>
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '28px', overflowX: 'auto'}}>
           <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '20px'}}>Relationship Heat Map</h3>
           <div style={{minWidth: '600px', display: 'inline-block', width: '100%'}}>
             <div style={{display: 'grid', gridTemplateColumns: `80px repeat(${members.length}, 80px)`, gap: '0px'}}>
-              <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb'}}></div>
+              <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB'}}></div>
               {members.map(m => (
-                <div key={m.name} style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.name}</div>
+                <div key={m.name} style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.name}</div>
               ))}
               {members.map(m1 => (
                 <React.Fragment key={m1.name}>
-                  <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m1.name}</div>
+                  <div style={{background: '#f3f4f6', padding: '12px', fontWeight: '700', fontSize: '0.7rem', color: '#6b7280', textAlign: 'center', borderRight: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m1.name}</div>
                   {members.map(m2 => {
                     if (m1.name === m2.name) {
                       return (
-                        <div key={`${m1.name}-${m2.name}`} style={{padding: '12px', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', background: '#f0f9ff', fontWeight: '600', fontSize: '0.7rem', color: '#64748b'}}>—</div>
+                        <div key={`${m1.name}-${m2.name}`} style={{padding: '12px', textAlign: 'center', borderRight: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB', background: '#FDF0F2', fontWeight: '600', fontSize: '0.7rem', color: '#7A8BA0'}}>—</div>
                       );
                     }
                     const key = [getMemberId(m1.name), getMemberId(m2.name)].sort().join('_');
@@ -4287,10 +4287,10 @@ function FamilyDynamicsView({ familyProfile }) {
                           }
                         }}
                         style={{
-                          padding: '12px', textAlign: 'center', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb',
+                          padding: '12px', textAlign: 'center', borderRight: '1px solid #DDE3EB', borderBottom: '1px solid #DDE3EB',
                           background: rating ? colorMap[rating] : '#f9fafb', cursor: 'pointer', fontWeight: '600', fontSize: '0.75rem',
                           color: rating ? (rating >= 4 ? 'white' : 'white') : '#9ca3af', transition: 'all 0.2s',
-                          border: rating ? `1px solid ${colorMap[rating]}` : '1px solid #e5e7eb'
+                          border: rating ? `1px solid ${colorMap[rating]}` : '1px solid #DDE3EB'
                         }}
                         title={rating ? labelMap[rating] : 'Click to rate'}
                       >
@@ -4302,9 +4302,9 @@ function FamilyDynamicsView({ familyProfile }) {
               ))}
             </div>
           </div>
-          <div style={{marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '16px', flexWrap: 'wrap'}}>
+          <div style={{marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #DDE3EB', display: 'flex', gap: '16px', flexWrap: 'wrap'}}>
             {Object.entries(colorMap).map(([val, color]) => (
-              <div key={val} style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#64748b'}}>
+              <div key={val} style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#7A8BA0'}}>
                 <div style={{width: '20px', height: '20px', background: color, borderRadius: '4px'}}></div>
                 {labelMap[val]}
               </div>
@@ -4319,10 +4319,10 @@ function FamilyDynamicsView({ familyProfile }) {
   const communicationStylesRender = () => {
     if (members.length === 0) {
       return (
-        <div style={{textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb'}}>
+        <div style={{textAlign: 'center', padding: '60px 20px', background: '#F5F7FA', borderRadius: '12px', border: '1px solid #DDE3EB'}}>
           <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>◎</div>
-          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#475569', marginBottom: '8px'}}>No Family Members Added</h3>
-          <p style={{fontSize: '0.9rem', color: '#64748b'}}>Add family members to assess communication styles.</p>
+          <h3 style={{fontSize: '1.05rem', fontWeight: '600', color: '#4A5E73', marginBottom: '8px'}}>No Family Members Added</h3>
+          <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Add family members to assess communication styles.</p>
         </div>
       );
     }
@@ -4363,21 +4363,21 @@ function FamilyDynamicsView({ familyProfile }) {
 
     return (
       <div>
-        <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #e5e7eb'}}>
+        <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px 28px', marginBottom: '28px', border: '1px solid #DDE3EB'}}>
           <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Team Composition</h3>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
             {Object.entries(styleDescriptions).map(([style, data]) => (
-              <div key={style} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #e5e7eb', textAlign: 'center'}}>
+              <div key={style} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #DDE3EB', textAlign: 'center'}}>
                 <div style={{fontSize: '1.8rem', marginBottom: '8px'}}>{data.icon}</div>
                 <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '4px'}}>{style}</h4>
-                <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{data.desc}</p>
-                <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#0f172a'}}>{styleComposition[style] || 0}</div>
+                <p style={{fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '12px'}}>{data.desc}</p>
+                <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#2B4C6F'}}>{styleComposition[style] || 0}</div>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px', marginBottom: '28px'}}>
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '28px'}}>
           <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '24px'}}>Individual Assessments</h3>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px'}}>
             {members.map(m => {
@@ -4386,31 +4386,31 @@ function FamilyDynamicsView({ familyProfile }) {
               const isAssessmentComplete = Object.keys(assessmentAnswers).length === 6;
               const currentStyle = memberStyles.find(ms => ms.name === m.name)?.style;
               return (
-                <div key={m.name} style={{background: '#f8fafc', borderRadius: '10px', padding: '20px', border: '1px solid #e5e7eb'}}>
+                <div key={m.name} style={{background: '#F5F7FA', borderRadius: '10px', padding: '20px', border: '1px solid #DDE3EB'}}>
                   <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '8px'}}>{m.name}</h4>
                   {isAssessmentComplete ? (
                     <div>
                       <div style={{fontSize: '2rem', marginBottom: '8px'}}>{styleDescriptions[currentStyle]?.icon}</div>
-                      <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>{currentStyle}</div>
-                      <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{styleDescriptions[currentStyle]?.desc}</p>
+                      <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{currentStyle}</div>
+                      <p style={{fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '12px'}}>{styleDescriptions[currentStyle]?.desc}</p>
                       <button
                         onClick={() => {
                           const newAssessments = {...styleAssessments};
                           delete newAssessments[memberId];
                           setStyleAssessments(newAssessments);
                         }}
-                        style={{width: '100%', background: 'white', border: '1px solid #e5e7eb', color: '#475569', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600'}}
+                        style={{width: '100%', background: 'white', border: '1px solid #DDE3EB', color: '#4A5E73', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600'}}
                       >
                         Retake Assessment
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '12px'}}>Complete the assessment</p>
+                      <p style={{fontSize: '0.82rem', color: '#7A8BA0', marginBottom: '12px'}}>Complete the assessment</p>
                       <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
                         {styleQuestions.map(q => (
                           <div key={q.id}>
-                            <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '6px'}}>Q{q.id}</p>
+                            <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#4A5E73', marginBottom: '6px'}}>Q{q.id}</p>
                             <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
                               {q.options.map((opt, idx) => (
                                 <label key={idx} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', padding: '4px 6px', borderRadius: '4px', background: assessmentAnswers[q.id] === opt.style ? '#dbeafe' : 'transparent'}}>
@@ -4424,7 +4424,7 @@ function FamilyDynamicsView({ familyProfile }) {
                                     }}
                                     style={{width: '12px', height: '12px', cursor: 'pointer'}}
                                   />
-                                  <span style={{color: '#374151'}}>{opt.text.substring(0, 20)}</span>
+                                  <span style={{color: '#2B3A52'}}>{opt.text.substring(0, 20)}</span>
                                 </label>
                               ))}
                             </div>
@@ -4439,8 +4439,8 @@ function FamilyDynamicsView({ familyProfile }) {
           </div>
         </div>
 
-        <div style={{background: '#fef3c7', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d', marginBottom: '28px'}}>
-          <p style={{fontSize: '0.85rem', color: '#92400e', lineHeight: '1.6'}}>
+        <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d', marginBottom: '28px'}}>
+          <p style={{fontSize: '0.85rem', color: '#C44A5C', lineHeight: '1.6'}}>
             <strong>Potential Clash Zones:</strong> Driver + Guardian can create tension around speed vs. relationships. Analyst + Collaborator may struggle between data and consensus. The diversity of styles is your family's strength — understanding how each communicates helps prevent unnecessary conflict.
           </p>
         </div>
@@ -4459,20 +4459,20 @@ function FamilyDynamicsView({ familyProfile }) {
       'Money/Compensation': '#f59e0b',
       'Control/Power': '#ef4444',
       'Recognition': '#06b6d4',
-      'Fairness/Equity': '#10b981',
+      'Fairness/Equity': '#E05B6F',
       'Succession': '#6366f1',
       'Communication': '#ec4899',
       'Boundaries': '#14b8a6',
     };
 
     const conflictItem = (conflict) => (
-      <div key={conflict.id} style={{background: 'white', borderRadius: '10px', padding: '16px', border: `2px solid ${categoryColors[conflict.category] || '#e5e7eb'}`, marginBottom: '12px'}}>
+      <div key={conflict.id} style={{background: 'white', borderRadius: '10px', padding: '16px', border: `2px solid ${categoryColors[conflict.category] || '#DDE3EB'}`, marginBottom: '12px'}}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px'}}>
           <div>
             <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '4px'}}>{conflict.description}</h4>
             <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap'}}>
               <span style={{background: categoryColors[conflict.category], color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600'}}>{conflict.category}</span>
-              <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{new Date(conflict.dateCreated).toLocaleDateString()}</span>
+              <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{new Date(conflict.dateCreated).toLocaleDateString()}</span>
             </div>
           </div>
           <div style={{display: 'flex', gap: '4px'}}>
@@ -4481,7 +4481,7 @@ function FamilyDynamicsView({ familyProfile }) {
                 const updated = conflicts.map(c => c.id === conflict.id ? {...c, status: c.status === 'active' ? 'monitoring' : c.status === 'monitoring' ? 'resolved' : 'active'} : c);
                 setConflicts(updated);
               }}
-              style={{background: '#f0f9ff', color: '#0284c7', border: '1px solid #0284c7', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600'}}
+              style={{background: '#FDF0F2', color: '#0284c7', border: '1px solid #0284c7', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600'}}
             >
               {conflict.status === 'active' ? 'To Monitor' : conflict.status === 'monitoring' ? 'Resolve' : 'Reopen'}
             </button>
@@ -4493,16 +4493,16 @@ function FamilyDynamicsView({ familyProfile }) {
             </button>
           </div>
         </div>
-        <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+        <div style={{fontSize: '0.82rem', color: '#7A8BA0', marginBottom: '8px', lineHeight: '1.5'}}>
           <strong>Involved:</strong> {conflict.involved.join(', ') || 'Not specified'}
         </div>
         {conflict.whatsTried && (
-          <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+          <div style={{fontSize: '0.82rem', color: '#7A8BA0', marginBottom: '8px', lineHeight: '1.5'}}>
             <strong>What's been tried:</strong> {conflict.whatsTried}
           </div>
         )}
         {conflict.desiredResolution && (
-          <div style={{fontSize: '0.82rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.5'}}>
+          <div style={{fontSize: '0.82rem', color: '#7A8BA0', marginBottom: '8px', lineHeight: '1.5'}}>
             <strong>Desired resolution:</strong> {conflict.desiredResolution}
           </div>
         )}
@@ -4527,12 +4527,12 @@ function FamilyDynamicsView({ familyProfile }) {
 
         {resolvedConflicts.length > 0 && (
           <div style={{marginBottom: '28px'}}>
-            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#10b981', marginBottom: '16px'}}>Resolved ({resolvedConflicts.length})</h3>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#E05B6F', marginBottom: '16px'}}>Resolved ({resolvedConflicts.length})</h3>
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px'}}>
               {resolvedConflicts.map(c => (
-                <div key={c.id} style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', border: '1px solid #86efac', opacity: 0.7}}>
+                <div key={c.id} style={{background: '#FDF0F2', borderRadius: '8px', padding: '12px', border: '1px solid #86efac', opacity: 0.7}}>
                   <div style={{fontSize: '0.82rem', fontWeight: '700', color: '#166534', marginBottom: '4px'}}>{c.description}</div>
-                  <div style={{fontSize: '0.7rem', color: '#64748b'}}>{new Date(c.dateCreated).toLocaleDateString()}</div>
+                  <div style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{new Date(c.dateCreated).toLocaleDateString()}</div>
                 </div>
               ))}
             </div>
@@ -4542,28 +4542,28 @@ function FamilyDynamicsView({ familyProfile }) {
         {!showNewConflict ? (
           <button
             onClick={() => setShowNewConflict(true)}
-            style={{background: '#0f172a', color: 'white', padding: '12px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '20px'}}
+            style={{background: '#2B4C6F', color: 'white', padding: '12px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '20px'}}
           >
             + Log New Conflict
           </button>
         ) : (
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb', marginTop: '20px'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', border: '1px solid #DDE3EB', marginTop: '20px'}}>
             <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Log Conflict</h3>
             <div style={{marginBottom: '16px'}}>
-              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Description</label>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#2B3A52', marginBottom: '6px'}}>Description</label>
               <textarea
                 value={newConflictForm.description}
                 onChange={(e) => setNewConflictForm({...newConflictForm, description: e.target.value})}
                 placeholder="Describe the tension or unresolved issue..."
-                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '100px', boxSizing: 'border-box'}}
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #DDE3EB', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '100px', boxSizing: 'border-box'}}
               />
             </div>
             <div style={{marginBottom: '16px'}}>
-              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Category</label>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#2B3A52', marginBottom: '6px'}}>Category</label>
               <select
                 value={newConflictForm.category}
                 onChange={(e) => setNewConflictForm({...newConflictForm, category: e.target.value})}
-                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.9rem', boxSizing: 'border-box'}}
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #DDE3EB', fontSize: '0.9rem', boxSizing: 'border-box'}}
               >
                 {['Values', 'Money/Compensation', 'Control/Power', 'Recognition', 'Fairness/Equity', 'Succession', 'Communication', 'Boundaries'].map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -4571,10 +4571,10 @@ function FamilyDynamicsView({ familyProfile }) {
               </select>
             </div>
             <div style={{marginBottom: '16px'}}>
-              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Who's Involved?</label>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#2B3A52', marginBottom: '6px'}}>Who's Involved?</label>
               <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
                 {members.map(m => (
-                  <label key={m.name} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '6px 10px', background: newConflictForm.involved.includes(m.name) ? '#dbeafe' : '#f0f9ff', borderRadius: '6px', border: `1px solid ${newConflictForm.involved.includes(m.name) ? '#0284c7' : '#e0f2fe'}`, fontSize: '0.85rem'}}>
+                  <label key={m.name} style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '6px 10px', background: newConflictForm.involved.includes(m.name) ? '#dbeafe' : '#FDF0F2', borderRadius: '6px', border: `1px solid ${newConflictForm.involved.includes(m.name) ? '#0284c7' : '#e0f2fe'}`, fontSize: '0.85rem'}}>
                     <input
                       type="checkbox"
                       checked={newConflictForm.involved.includes(m.name)}
@@ -4593,21 +4593,21 @@ function FamilyDynamicsView({ familyProfile }) {
               </div>
             </div>
             <div style={{marginBottom: '16px'}}>
-              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>What's Been Tried?</label>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#2B3A52', marginBottom: '6px'}}>What's Been Tried?</label>
               <textarea
                 value={newConflictForm.whatsTried}
                 onChange={(e) => setNewConflictForm({...newConflictForm, whatsTried: e.target.value})}
                 placeholder="What approaches or conversations have already happened?"
-                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #DDE3EB', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
               />
             </div>
             <div style={{marginBottom: '16px'}}>
-              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px'}}>Desired Resolution</label>
+              <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#2B3A52', marginBottom: '6px'}}>Desired Resolution</label>
               <textarea
                 value={newConflictForm.desiredResolution}
                 onChange={(e) => setNewConflictForm({...newConflictForm, desiredResolution: e.target.value})}
                 placeholder="What would resolution look like for this family?"
-                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
+                style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #DDE3EB', fontFamily: 'inherit', fontSize: '0.9rem', minHeight: '80px', boxSizing: 'border-box'}}
               />
             </div>
             <div style={{display: 'flex', gap: '10px'}}>
@@ -4621,7 +4621,7 @@ function FamilyDynamicsView({ familyProfile }) {
                   setNewConflictForm({description: '', category: 'Values', involved: [], whatsTried: '', desiredResolution: '', status: 'active'});
                   setShowNewConflict(false);
                 }}
-                style={{background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                style={{background: '#2B4C6F', color: 'white', padding: '10px 24px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
               >
                 Log Conflict
               </button>
@@ -4630,7 +4630,7 @@ function FamilyDynamicsView({ familyProfile }) {
                   setNewConflictForm({description: '', category: 'Values', involved: [], whatsTried: '', desiredResolution: '', status: 'active'});
                   setShowNewConflict(false);
                 }}
-                style={{background: '#f1f5f9', color: '#475569', padding: '10px 24px', borderRadius: '6px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                style={{background: '#F0F3F8', color: '#4A5E73', padding: '10px 24px', borderRadius: '6px', border: '1px solid #EFF1F6', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
               >
                 Cancel
               </button>
@@ -4673,7 +4673,7 @@ function FamilyDynamicsView({ familyProfile }) {
 
     return (
       <div>
-        <div style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', borderRadius: '12px', padding: '32px 28px', marginBottom: '28px', border: '1px solid #2d5a3d'}}>
+        <div style={{background: 'linear-gradient(135deg, #FDF0F2 0%, #ecfdf5 100%)', borderRadius: '12px', padding: '32px 28px', marginBottom: '28px', border: '1px solid #E05B6F'}}>
           <div style={{textAlign: 'center', marginBottom: '24px'}}>
             <div style={{fontSize: '4rem', fontWeight: '700', color: '#166534', marginBottom: '12px'}}>{overallScore}%</div>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#1a3a1a', marginBottom: '8px'}}>Family Alignment Score</h2>
@@ -4682,36 +4682,36 @@ function FamilyDynamicsView({ familyProfile }) {
         </div>
 
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '28px'}}>
-          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #DDE3EB'}}>
             <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Relationship Cohesion</div>
-            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+            <div style={{height: '8px', background: '#DDE3EB', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
               <div style={{height: '100%', background: '#059669', width: `${relationshipScore}%`, transition: 'width 0.3s'}}></div>
             </div>
             <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#059669', marginBottom: '4px'}}>{relationshipScore}%</div>
-            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Average relationship quality</p>
+            <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>Average relationship quality</p>
           </div>
 
-          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #DDE3EB'}}>
             <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Communication Diversity</div>
-            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+            <div style={{height: '8px', background: '#DDE3EB', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
               <div style={{height: '100%', background: '#0284c7', width: `${styleDiversity}%`, transition: 'width 0.3s'}}></div>
             </div>
             <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '4px'}}>{styleDiversity}%</div>
-            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Diversity of styles present</p>
+            <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>Diversity of styles present</p>
           </div>
 
-          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #DDE3EB'}}>
             <div style={{fontSize: '0.9rem', fontWeight: '700', color: '#1f2937', marginBottom: '16px'}}>Conflict Health</div>
-            <div style={{height: '8px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
+            <div style={{height: '8px', background: '#DDE3EB', borderRadius: '4px', marginBottom: '12px', overflow: 'hidden'}}>
               <div style={{height: '100%', background: '#f59e0b', width: `${conflictLoad}%`, transition: 'width 0.3s'}}></div>
             </div>
             <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#f59e0b', marginBottom: '4px'}}>{conflictLoad}%</div>
-            <p style={{fontSize: '0.8rem', color: '#64748b'}}>Low active conflict count</p>
+            <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>Low active conflict count</p>
           </div>
         </div>
 
-        <div style={{background: '#fef3c7', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d'}}>
-          <p style={{fontSize: '0.85rem', color: '#92400e', lineHeight: '1.6'}}>
+        <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '20px', border: '1px solid #fcd34d'}}>
+          <p style={{fontSize: '0.85rem', color: '#C44A5C', lineHeight: '1.6'}}>
             <strong>Recommendations:</strong> {
               relationshipScore < 60 ? "Consider a family retreat or facilitated conversation to strengthen relationships. " : ""
             }
@@ -4739,7 +4739,7 @@ function FamilyDynamicsView({ familyProfile }) {
         </div>
       </header>
 
-      <div style={{display: 'flex', gap: '12px', borderBottom: '1px solid #e5e7eb', marginBottom: '28px', overflowX: 'auto'}}>
+      <div style={{display: 'flex', gap: '12px', borderBottom: '1px solid #DDE3EB', marginBottom: '28px', overflowX: 'auto'}}>
         {[
           { id: 'relationships', name: 'Relationships', icon: '◎' },
           { id: 'communication', name: 'Communication', icon: '💬' },
@@ -4750,9 +4750,9 @@ function FamilyDynamicsView({ familyProfile }) {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             style={{
-              padding: '12px 16px', borderBottom: activeTab === tab.id ? '3px solid #0f172a' : '3px solid transparent',
+              padding: '12px 16px', borderBottom: activeTab === tab.id ? '3px solid #2B4C6F' : '3px solid transparent',
               background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: activeTab === tab.id ? '700' : '500',
-              color: activeTab === tab.id ? '#0f172a' : '#64748b', transition: 'all 0.2s', whiteSpace: 'nowrap'
+              color: activeTab === tab.id ? '#2B4C6F' : '#7A8BA0', transition: 'all 0.2s', whiteSpace: 'nowrap'
             }}
           >
             {tab.icon} {tab.name}
@@ -4969,7 +4969,7 @@ function MeetingsView({ familyProfile }) {
       </header>
 
       {/* Tab bar */}
-      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb', paddingBottom: '0'}}>
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
         {[
           { id: 'meetings', label: 'Meetings', count: meetings.length },
           { id: 'issues', label: 'Resolution Queue', count: issuesList.filter(i => !i.resolved).length },
@@ -4978,12 +4978,12 @@ function MeetingsView({ familyProfile }) {
           <button key={tab.id} onClick={() => { setActiveTab(tab.id); setActiveMeeting(null); }}
             style={{
               padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600',
-              background: 'none', color: activeTab === tab.id ? '#0f172a' : '#94a3b8',
-              borderBottom: activeTab === tab.id ? '2px solid #0f172a' : '2px solid transparent',
+              background: 'none', color: activeTab === tab.id ? '#2B4C6F' : '#7A8BA0',
+              borderBottom: activeTab === tab.id ? '2px solid #2B4C6F' : '2px solid transparent',
               marginBottom: '-2px', transition: 'all 0.15s',
             }}
           >
-            {tab.label} {tab.count > 0 && <span style={{background: activeTab === tab.id ? '#0f172a' : '#e5e7eb', color: activeTab === tab.id ? 'white' : '#64748b', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
+            {tab.label} {tab.count > 0 && <span style={{background: activeTab === tab.id ? '#2B4C6F' : '#DDE3EB', color: activeTab === tab.id ? 'white' : '#7A8BA0', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
           </button>
         ))}
       </div>
@@ -4994,7 +4994,7 @@ function MeetingsView({ familyProfile }) {
           {/* New meeting selector */}
           <div style={{marginBottom: '28px'}}>
             <button onClick={() => setShowNewMeeting(!showNewMeeting)}
-              style={{background: '#0f172a', color: 'white', padding: '10px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}>
+              style={{background: '#2B4C6F', color: 'white', padding: '10px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}>
               + New Meeting
             </button>
           </div>
@@ -5009,10 +5009,10 @@ function MeetingsView({ familyProfile }) {
                     <span style={{fontSize: '1.5rem'}}>{tmpl.icon}</span>
                     <div>
                       <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: tmpl.color}}>{tmpl.name}</h4>
-                      <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{tmpl.frequency} · {tmpl.duration}</span>
+                      <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{tmpl.frequency} · {tmpl.duration}</span>
                     </div>
                   </div>
-                  <p style={{fontSize: '0.78rem', color: '#64748b'}}>{tmpl.agenda.length} agenda items</p>
+                  <p style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{tmpl.agenda.length} agenda items</p>
                 </div>
               ))}
             </div>
@@ -5020,33 +5020,33 @@ function MeetingsView({ familyProfile }) {
 
           {/* Meeting history */}
           {meetings.length === 0 ? (
-            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
               <p style={{fontSize: '1.1rem', marginBottom: '8px'}}>No meetings yet.</p>
               <p style={{fontSize: '0.88rem'}}>Click "+ New Meeting" to start your first governance meeting with a structured agenda.</p>
             </div>
           ) : (
             <div>
-              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>Meeting History</h3>
+              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>Meeting History</h3>
               {meetings.map(m => {
                 const tmpl = MEETING_TEMPLATES[m.type];
                 const actionCount = (m.actionItems || []).length;
                 const doneCount = (m.actionItems || []).filter(a => a.done).length;
                 return (
                   <div key={m.id} onClick={() => setActiveMeeting(m.id)}
-                    style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.15s'}}
+                    style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.15s'}}
                   >
                     <span style={{fontSize: '1.4rem'}}>{tmpl?.icon || '📋'}</span>
                     <div style={{flex: 1}}>
-                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{tmpl?.name || m.type}</h4>
-                      <span style={{fontSize: '0.78rem', color: '#94a3b8'}}>{m.date}</span>
+                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#34597A'}}>{tmpl?.name || m.type}</h4>
+                      <span style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{m.date}</span>
                     </div>
                     {actionCount > 0 && (
-                      <span style={{fontSize: '0.75rem', background: doneCount === actionCount ? '#f0fdf4' : '#fffbeb', color: doneCount === actionCount ? '#2d5a3d' : '#d97706', padding: '3px 10px', borderRadius: '100px', fontWeight: '600'}}>
+                      <span style={{fontSize: '0.75rem', background: doneCount === actionCount ? '#FDF0F2' : '#fffbeb', color: doneCount === actionCount ? '#E05B6F' : '#E05B6F', padding: '3px 10px', borderRadius: '100px', fontWeight: '600'}}>
                         {doneCount}/{actionCount} actions
                       </span>
                     )}
-                    {m.rating && <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{m.rating}/10</span>}
-                    <span style={{color: '#94a3b8', fontSize: '0.85rem'}}>→</span>
+                    {m.rating && <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{m.rating}/10</span>}
+                    <span style={{color: '#7A8BA0', fontSize: '0.85rem'}}>→</span>
                   </div>
                 );
               })}
@@ -5058,7 +5058,7 @@ function MeetingsView({ familyProfile }) {
       {/* ─── ACTIVE MEETING VIEW ─── */}
       {activeTab === 'meetings' && activeMeeting && meeting && template && (
         <div>
-          <button onClick={() => setActiveMeeting(null)} style={{background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '16px', padding: 0}}>
+          <button onClick={() => setActiveMeeting(null)} style={{background: 'none', border: 'none', color: '#7A8BA0', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '16px', padding: 0}}>
             ← Back to all meetings
           </button>
 
@@ -5102,17 +5102,17 @@ function MeetingsView({ familyProfile }) {
           </div>
 
           {/* ─── MEETING RECORDER ─── */}
-          <div style={{background: isRecording ? '#fef2f2' : '#f0fdf4', borderRadius: '12px', padding: '16px 20px', marginBottom: '16px', border: `2px solid ${isRecording ? '#fca5a5' : '#bbf7d0'}`, transition: 'all 0.3s'}}>
+          <div style={{background: isRecording ? '#fef2f2' : '#FDF0F2', borderRadius: '12px', padding: '16px 20px', marginBottom: '16px', border: `2px solid ${isRecording ? '#fca5a5' : '#bbf7d0'}`, transition: 'all 0.3s'}}>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                 {isRecording && (
                   <div style={{width: '12px', height: '12px', borderRadius: '50%', background: isPaused ? '#fbbf24' : '#dc2626', animation: isPaused ? 'none' : 'pulse 1.5s infinite', flexShrink: 0}} />
                 )}
                 <div>
-                  <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '2px'}}>
+                  <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#34597A', marginBottom: '2px'}}>
                     {isRecording ? (isPaused ? 'Recording Paused' : 'Recording...') : processingDone ? 'Recording Processed' : 'Meeting Recorder'}
                   </h4>
-                  <p style={{fontSize: '0.75rem', color: '#64748b'}}>
+                  <p style={{fontSize: '0.75rem', color: '#7A8BA0'}}>
                     {isRecording ? `${formatTime(recordingTime)} — Speak naturally, we\'ll capture notes and action items.` :
                      processingDone ? 'Transcript has been processed into your agenda notes, action items, and resolution queue.' :
                      'Record your meeting to auto-populate agenda notes, action items, and issues.'}
@@ -5134,7 +5134,7 @@ function MeetingsView({ familyProfile }) {
                       Pause
                     </button>
                     <button onClick={stopRecording}
-                      style={{background: '#0f172a', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      style={{background: '#2B4C6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
                       Stop
                     </button>
                   </>
@@ -5146,7 +5146,7 @@ function MeetingsView({ familyProfile }) {
                       Resume
                     </button>
                     <button onClick={stopRecording}
-                      style={{background: '#0f172a', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      style={{background: '#2B4C6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
                       Stop
                     </button>
                   </>
@@ -5154,18 +5154,18 @@ function MeetingsView({ familyProfile }) {
                 {!isRecording && transcript && !processingDone && (
                   <>
                     <button onClick={() => processTranscript(meeting.id)}
-                      style={{background: '#2d5a3d', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
+                      style={{background: '#E05B6F', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700'}}>
                       Process Recording
                     </button>
                     <button onClick={() => setShowTranscript(!showTranscript)}
-                      style={{background: 'white', color: '#64748b', padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                      style={{background: 'white', color: '#7A8BA0', padding: '8px 14px', borderRadius: '8px', border: '1px solid #DDE3EB', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
                       {showTranscript ? 'Hide' : 'View'} Transcript
                     </button>
                   </>
                 )}
                 {processingDone && (
                   <button onClick={() => { setTranscript(''); setProcessingDone(false); setShowTranscript(false); setRecordingTime(0); }}
-                    style={{background: 'white', color: '#64748b', padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                    style={{background: 'white', color: '#7A8BA0', padding: '8px 14px', borderRadius: '8px', border: '1px solid #DDE3EB', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
                     New Recording
                   </button>
                 )}
@@ -5174,7 +5174,7 @@ function MeetingsView({ familyProfile }) {
 
             {/* Live transcription preview */}
             {isRecording && (liveText || transcript) && (
-              <div style={{marginTop: '12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', padding: '10px 14px', maxHeight: '80px', overflow: 'auto', fontSize: '0.82rem', color: '#374151', lineHeight: '1.5'}}>
+              <div style={{marginTop: '12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', padding: '10px 14px', maxHeight: '80px', overflow: 'auto', fontSize: '0.82rem', color: '#2B3A52', lineHeight: '1.5'}}>
                 {transcript.split('\n').slice(-3).map((line, i) => (
                   <div key={i} style={{opacity: 0.7}}>{line}</div>
                 ))}
@@ -5189,10 +5189,10 @@ function MeetingsView({ familyProfile }) {
                   value={transcript}
                   onChange={(e) => setTranscript(e.target.value)}
                   rows="8"
-                  style={{width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '0.82rem', fontFamily: 'inherit', lineHeight: '1.6', resize: 'vertical', background: 'white'}}
+                  style={{width: '100%', padding: '12px', border: '1px solid #DDE3EB', borderRadius: '8px', fontSize: '0.82rem', fontFamily: 'inherit', lineHeight: '1.6', resize: 'vertical', background: 'white'}}
                   placeholder="Transcript will appear here..."
                 />
-                <p style={{fontSize: '0.72rem', color: '#94a3b8', marginTop: '6px'}}>
+                <p style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '6px'}}>
                   You can edit the transcript before processing. The system will extract action items, issues, and route notes to the right agenda sections.
                 </p>
               </div>
@@ -5201,57 +5201,57 @@ function MeetingsView({ familyProfile }) {
 
           {/* Agenda items */}
           {template.agenda.map((item, idx) => (
-            <div key={item.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb'}}>
+            <div key={item.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB'}}>
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
                   <span style={{background: template.color, color: 'white', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: '700', flexShrink: 0}}>{idx + 1}</span>
                   <div>
-                    <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{item.name}</h4>
-                    <p style={{fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px'}}>{item.desc}</p>
+                    <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#34597A'}}>{item.name}</h4>
+                    <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '2px'}}>{item.desc}</p>
                   </div>
                 </div>
-                <span style={{fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600', whiteSpace: 'nowrap', marginLeft: '12px'}}>{item.duration}</span>
+                <span style={{fontSize: '0.72rem', color: '#7A8BA0', fontWeight: '600', whiteSpace: 'nowrap', marginLeft: '12px'}}>{item.duration}</span>
               </div>
               <textarea
                 rows="2"
                 placeholder={item.id === 'resolve' ? 'Issue 1: ...\nIssue 2: ...' : 'Notes...'}
                 value={(meeting.agendaNotes || {})[item.id] || ''}
                 onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
-                style={{width: '100%', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
+                style={{width: '100%', padding: '8px 12px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
               />
             </div>
           ))}
 
           {/* Action Items section */}
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginTop: '20px', marginBottom: '16px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginTop: '20px', marginBottom: '16px', border: '1px solid #DDE3EB'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
-              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c'}}>Action Items</h3>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A'}}>Action Items</h3>
               <button onClick={() => addActionItem(meeting.id)}
-                style={{background: '#0f172a', color: 'white', padding: '6px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                style={{background: '#2B4C6F', color: 'white', padding: '6px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
                 + Add
               </button>
             </div>
             {(meeting.actionItems || []).length === 0 ? (
-              <p style={{fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center', padding: '12px 0'}}>No action items yet. Add one above.</p>
+              <p style={{fontSize: '0.85rem', color: '#7A8BA0', textAlign: 'center', padding: '12px 0'}}>No action items yet. Add one above.</p>
             ) : (
               <div style={{display: 'grid', gap: '6px'}}>
                 {(meeting.actionItems || []).map(item => (
-                  <div key={item.id} style={{display: 'flex', gap: '8px', alignItems: 'center', background: 'white', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                  <div key={item.id} style={{display: 'flex', gap: '8px', alignItems: 'center', background: 'white', padding: '10px 14px', borderRadius: '8px', border: '1px solid #DDE3EB'}}>
                     <input type="checkbox" checked={item.done}
                       onChange={(e) => updateActionItem(meeting.id, item.id, { done: e.target.checked })}
-                      style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2d5a3d', flexShrink: 0}}
+                      style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#E05B6F', flexShrink: 0}}
                     />
                     <input type="text" placeholder="Action item..." value={item.text}
                       onChange={(e) => updateActionItem(meeting.id, item.id, { text: e.target.value })}
-                      style={{flex: 1, padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.85rem', textDecoration: item.done ? 'line-through' : 'none', color: item.done ? '#94a3b8' : '#1e293b'}}
+                      style={{flex: 1, padding: '4px 8px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.85rem', textDecoration: item.done ? 'line-through' : 'none', color: item.done ? '#7A8BA0' : '#34597A'}}
                     />
                     <input type="text" placeholder="Owner" value={item.owner}
                       onChange={(e) => updateActionItem(meeting.id, item.id, { owner: e.target.value })}
-                      style={{width: '100px', padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.82rem'}}
+                      style={{width: '100px', padding: '4px 8px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.82rem'}}
                     />
                     <input type="date" value={item.due}
                       onChange={(e) => updateActionItem(meeting.id, item.id, { due: e.target.value })}
-                      style={{padding: '4px 8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.82rem'}}
+                      style={{padding: '4px 8px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.82rem'}}
                     />
                   </div>
                 ))}
@@ -5260,21 +5260,21 @@ function MeetingsView({ familyProfile }) {
           </div>
 
           {/* Meeting rating */}
-          <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap'}}>
-            <span style={{fontSize: '0.88rem', fontWeight: '600', color: '#1a3a5c'}}>Rate this meeting:</span>
+          <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap'}}>
+            <span style={{fontSize: '0.88rem', fontWeight: '600', color: '#34597A'}}>Rate this meeting:</span>
             <div style={{display: 'flex', gap: '4px'}}>
               {[1,2,3,4,5,6,7,8,9,10].map(v => (
                 <button key={v} onClick={() => updateMeeting(meeting.id, { rating: v })}
                   style={{
                     width: '32px', height: '32px', borderRadius: '6px', border: 'none', cursor: 'pointer',
                     fontSize: '0.82rem', fontWeight: '600',
-                    background: meeting.rating === v ? '#0f172a' : meeting.rating && v <= meeting.rating ? '#0f172a' : '#f1f5f9',
-                    color: meeting.rating && v <= meeting.rating ? 'white' : '#64748b',
+                    background: meeting.rating === v ? '#2B4C6F' : meeting.rating && v <= meeting.rating ? '#2B4C6F' : '#F0F3F8',
+                    color: meeting.rating && v <= meeting.rating ? 'white' : '#7A8BA0',
                   }}
                 >{v}</button>
               ))}
             </div>
-            {meeting.rating && <span style={{fontSize: '0.82rem', color: meeting.rating >= 8 ? '#2d5a3d' : meeting.rating >= 6 ? '#d97706' : '#dc2626', fontWeight: '600'}}>
+            {meeting.rating && <span style={{fontSize: '0.82rem', color: meeting.rating >= 8 ? '#E05B6F' : meeting.rating >= 6 ? '#E05B6F' : '#dc2626', fontWeight: '600'}}>
               {meeting.rating >= 8 ? 'Great meeting!' : meeting.rating >= 6 ? 'Good — room to improve.' : 'Below standard — let\'s fix it.'}
             </span>}
           </div>
@@ -5284,9 +5284,9 @@ function MeetingsView({ familyProfile }) {
       {/* ─── RESOLUTION QUEUE TAB (Identify, Clarify, Act) ─── */}
       {activeTab === 'issues' && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #e5e7eb'}}>
-            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>Resolve — Identify, Clarify, Act</h3>
-            <p style={{fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5', marginBottom: '16px'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #DDE3EB'}}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A', marginBottom: '8px'}}>Resolve — Identify, Clarify, Act</h3>
+            <p style={{fontSize: '0.85rem', color: '#7A8BA0', lineHeight: '1.5', marginBottom: '16px'}}>
               The master resolution queue. Any family member can add an issue anytime. Issues get prioritized and resolved in your next meeting using the ICA process: Identify the real issue, Clarify it openly, Act with a clear commitment.
             </p>
             <div style={{display: 'flex', gap: '8px'}}>
@@ -5306,29 +5306,29 @@ function MeetingsView({ familyProfile }) {
                   setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority, addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]);
                   setNewIssue('');
                 }
-              }} style={{background: '#0f172a', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
+              }} style={{background: '#2B4C6F', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
                 + Add
               </button>
             </div>
           </div>
 
           {/* Open issues */}
-          <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
+          <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
             Open Issues ({issuesList.filter(i => !i.resolved).length})
           </h4>
           {issuesList.filter(i => !i.resolved).length === 0 ? (
-            <p style={{fontSize: '0.88rem', color: '#94a3b8', textAlign: 'center', padding: '32px 0'}}>No open issues. That's either great news or no one's been honest yet.</p>
+            <p style={{fontSize: '0.88rem', color: '#7A8BA0', textAlign: 'center', padding: '32px 0'}}>No open issues. That's either great news or no one's been honest yet.</p>
           ) : (
             issuesList.filter(i => !i.resolved).map(issue => (
-              <div key={issue.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px'}}>
+              <div key={issue.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', gap: '12px'}}>
                 <span style={{
                   width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0,
-                  background: issue.priority === 'high' ? '#dc2626' : issue.priority === 'medium' ? '#d97706' : '#94a3b8',
+                  background: issue.priority === 'high' ? '#dc2626' : issue.priority === 'medium' ? '#E05B6F' : '#7A8BA0',
                 }} />
-                <span style={{flex: 1, fontSize: '0.88rem', color: '#1e293b'}}>{issue.text}</span>
-                <span style={{fontSize: '0.72rem', color: '#94a3b8'}}>{issue.date}</span>
+                <span style={{flex: 1, fontSize: '0.88rem', color: '#34597A'}}>{issue.text}</span>
+                <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{issue.date}</span>
                 <button onClick={() => setIssuesList(prev => prev.map(i => i.id === issue.id ? { ...i, resolved: true } : i))}
-                  style={{background: '#f0fdf4', color: '#2d5a3d', padding: '4px 12px', borderRadius: '6px', border: '1px solid #2d5a3d33', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
+                  style={{background: '#FDF0F2', color: '#E05B6F', padding: '4px 12px', borderRadius: '6px', border: '1px solid #E05B6F33', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
                   Resolve
                 </button>
               </div>
@@ -5338,13 +5338,13 @@ function MeetingsView({ familyProfile }) {
           {/* Resolved issues */}
           {issuesList.filter(i => i.resolved).length > 0 && (
             <div style={{marginTop: '24px'}}>
-              <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
+              <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>
                 Resolved ({issuesList.filter(i => i.resolved).length})
               </h4>
               {issuesList.filter(i => i.resolved).map(issue => (
                 <div key={issue.id} style={{background: '#fafafa', borderRadius: '8px', padding: '10px 14px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  <span style={{color: '#2d5a3d', fontSize: '0.85rem'}}>✓</span>
-                  <span style={{flex: 1, fontSize: '0.82rem', color: '#94a3b8', textDecoration: 'line-through'}}>{issue.text}</span>
+                  <span style={{color: '#E05B6F', fontSize: '0.85rem'}}>✓</span>
+                  <span style={{flex: 1, fontSize: '0.82rem', color: '#7A8BA0', textDecoration: 'line-through'}}>{issue.text}</span>
                 </div>
               ))}
             </div>
@@ -5355,32 +5355,32 @@ function MeetingsView({ familyProfile }) {
       {/* ─── ACTION ITEMS TAB ─── */}
       {activeTab === 'actions' && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #e5e7eb'}}>
-            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>Action Items — All Meetings</h3>
-            <p style={{fontSize: '0.85rem', color: '#64748b'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginBottom: '20px', border: '1px solid #DDE3EB'}}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A', marginBottom: '4px'}}>Action Items — All Meetings</h3>
+            <p style={{fontSize: '0.85rem', color: '#7A8BA0'}}>
               Every action item from every meeting, in one place. {openActions.length} open, {allActions.length - openActions.length} completed.
             </p>
           </div>
 
           {openActions.length === 0 && allActions.length === 0 ? (
-            <p style={{fontSize: '0.88rem', color: '#94a3b8', textAlign: 'center', padding: '40px 0'}}>No action items yet. They'll appear here as you run meetings.</p>
+            <p style={{fontSize: '0.88rem', color: '#7A8BA0', textAlign: 'center', padding: '40px 0'}}>No action items yet. They'll appear here as you run meetings.</p>
           ) : (
             <div>
               {openActions.length > 0 && (
                 <div style={{marginBottom: '24px'}}>
                   <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Open ({openActions.length})</h4>
                   {openActions.map(item => (
-                    <div key={`${item.meetingId}-${item.id}`} style={{background: 'white', borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                    <div key={`${item.meetingId}-${item.id}`} style={{background: 'white', borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', border: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', gap: '10px'}}>
                       <input type="checkbox" checked={false}
                         onChange={() => updateActionItem(item.meetingId, item.id, { done: true })}
-                        style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2d5a3d', flexShrink: 0}}
+                        style={{width: '18px', height: '18px', cursor: 'pointer', accentColor: '#E05B6F', flexShrink: 0}}
                       />
                       <div style={{flex: 1}}>
-                        <span style={{fontSize: '0.88rem', color: '#1e293b'}}>{item.text || '(no description)'}</span>
-                        <div style={{fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px'}}>{item.meetingName}</div>
+                        <span style={{fontSize: '0.88rem', color: '#34597A'}}>{item.text || '(no description)'}</span>
+                        <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>{item.meetingName}</div>
                       </div>
-                      {item.owner && <span style={{fontSize: '0.78rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#475569'}}>{item.owner}</span>}
-                      {item.due && <span style={{fontSize: '0.78rem', color: new Date(item.due) < new Date() ? '#dc2626' : '#94a3b8', fontWeight: new Date(item.due) < new Date() ? '600' : '400'}}>{item.due}</span>}
+                      {item.owner && <span style={{fontSize: '0.78rem', background: '#F0F3F8', padding: '2px 8px', borderRadius: '4px', color: '#4A5E73'}}>{item.owner}</span>}
+                      {item.due && <span style={{fontSize: '0.78rem', color: new Date(item.due) < new Date() ? '#dc2626' : '#7A8BA0', fontWeight: new Date(item.due) < new Date() ? '600' : '400'}}>{item.due}</span>}
                     </div>
                   ))}
                 </div>
@@ -5388,12 +5388,12 @@ function MeetingsView({ familyProfile }) {
 
               {allActions.filter(a => a.done).length > 0 && (
                 <div>
-                  <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#2d5a3d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Completed ({allActions.filter(a => a.done).length})</h4>
+                  <h4 style={{fontSize: '0.82rem', fontWeight: '700', color: '#E05B6F', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Completed ({allActions.filter(a => a.done).length})</h4>
                   {allActions.filter(a => a.done).map(item => (
                     <div key={`${item.meetingId}-${item.id}`} style={{background: '#fafafa', borderRadius: '6px', padding: '8px 14px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <span style={{color: '#2d5a3d'}}>✓</span>
-                      <span style={{fontSize: '0.82rem', color: '#94a3b8', textDecoration: 'line-through', flex: 1}}>{item.text}</span>
-                      {item.owner && <span style={{fontSize: '0.72rem', color: '#94a3b8'}}>{item.owner}</span>}
+                      <span style={{color: '#E05B6F'}}>✓</span>
+                      <span style={{fontSize: '0.82rem', color: '#7A8BA0', textDecoration: 'line-through', flex: 1}}>{item.text}</span>
+                      {item.owner && <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{item.owner}</span>}
                     </div>
                   ))}
                 </div>
@@ -5407,11 +5407,11 @@ function MeetingsView({ familyProfile }) {
 }
 
 const VAULT_CATEGORIES = [
-  { id: 'financial', name: 'Financial', icon: '💰', color: '#2d5a3d', accepts: ['P&L / Income Statement', 'Balance Sheet', 'Cash Flow Statement', 'Tax Returns', 'Valuation Reports', 'Distribution Records', 'Budget / Forecast'] },
-  { id: 'legal', name: 'Legal & Governance', icon: '⚖️', color: '#7c3aed', accepts: ['Operating Agreement', 'Buy-Sell Agreement', 'Shareholder Agreement', 'Family Constitution', 'Bylaws', 'Trust Documents', 'Estate Plans'] },
-  { id: 'succession', name: 'Succession & Transition', icon: '🔄', color: '#d97706', accepts: ['Succession Plan', 'Leadership Development Plan', 'Transition Timeline', 'Key Person Assessment', 'Exit Strategy', 'Continuity Plan'] },
-  { id: 'family', name: 'Family', icon: '👥', color: '#0891b2', accepts: ['Family Meeting Minutes', 'Family Employment Policy', 'Compensation Policy', 'Conflict Resolution Policy', 'Code of Conduct', 'Family History / Legacy'] },
-  { id: 'reports', name: 'LEP Reports', icon: '📊', color: '#64748b', accepts: ['Assessment Reports', 'Health Reports', 'Decision Engine Output', 'Pillar Analysis'] },
+  { id: 'financial', name: 'Financial', icon: '💰', color: '#E05B6F', accepts: ['P&L / Income Statement', 'Balance Sheet', 'Cash Flow Statement', 'Tax Returns', 'Valuation Reports', 'Distribution Records', 'Budget / Forecast'] },
+  { id: 'legal', name: 'Legal & Governance', icon: '⚖️', color: '#5AAFB5', accepts: ['Operating Agreement', 'Buy-Sell Agreement', 'Shareholder Agreement', 'Family Constitution', 'Bylaws', 'Trust Documents', 'Estate Plans'] },
+  { id: 'succession', name: 'Succession & Transition', icon: '🔄', color: '#E05B6F', accepts: ['Succession Plan', 'Leadership Development Plan', 'Transition Timeline', 'Key Person Assessment', 'Exit Strategy', 'Continuity Plan'] },
+  { id: 'family', name: 'Family', icon: '👥', color: '#E05B6F', accepts: ['Family Meeting Minutes', 'Family Employment Policy', 'Compensation Policy', 'Conflict Resolution Policy', 'Code of Conduct', 'Family History / Legacy'] },
+  { id: 'reports', name: 'LEP Reports', icon: '📊', color: '#7A8BA0', accepts: ['Assessment Reports', 'Health Reports', 'Decision Engine Output', 'Pillar Analysis'] },
 ];
 
 function parseFinancialCSV(text) {
@@ -5593,7 +5593,7 @@ function VaultView({ vaultDocuments }) {
       </header>
 
       {/* Document Health Score */}
-      <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', color: 'white', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap'}}>
+      <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #1e3a5f 100%)', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', color: 'white', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap'}}>
         <div style={{textAlign: 'center', minWidth: '80px'}}>
           <div style={{fontSize: '2rem', fontWeight: '800', lineHeight: 1}}>{docHealth}%</div>
           <div style={{fontSize: '0.72rem', opacity: 0.7, marginTop: '4px'}}>Document Health</div>
@@ -5621,15 +5621,15 @@ function VaultView({ vaultDocuments }) {
       </div>
 
       {/* Tab bar */}
-      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #e5e7eb'}}>
+      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB'}}>
         {[
           { id: 'uploaded', label: 'Uploaded Documents', count: uploadedDocs.length },
           { id: 'generated', label: 'Generated Reports', count: vaultDocuments.length },
           { id: 'analysis', label: 'Analysis', count: analysisResult ? 1 : 0 },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveVaultTab(tab.id)}
-            style={{padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', background: 'none', color: activeVaultTab === tab.id ? '#0f172a' : '#94a3b8', borderBottom: activeVaultTab === tab.id ? '2px solid #0f172a' : '2px solid transparent', marginBottom: '-2px', transition: 'all 0.15s'}}>
-            {tab.label} {tab.count > 0 && <span style={{background: activeVaultTab === tab.id ? '#0f172a' : '#e5e7eb', color: activeVaultTab === tab.id ? 'white' : '#64748b', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
+            style={{padding: '10px 20px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', background: 'none', color: activeVaultTab === tab.id ? '#2B4C6F' : '#7A8BA0', borderBottom: activeVaultTab === tab.id ? '2px solid #2B4C6F' : '2px solid transparent', marginBottom: '-2px', transition: 'all 0.15s'}}>
+            {tab.label} {tab.count > 0 && <span style={{background: activeVaultTab === tab.id ? '#2B4C6F' : '#DDE3EB', color: activeVaultTab === tab.id ? 'white' : '#7A8BA0', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '100px', marginLeft: '6px'}}>{tab.count}</span>}
           </button>
         ))}
       </div>
@@ -5642,12 +5642,12 @@ function VaultView({ vaultDocuments }) {
             onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
             style={{
-              border: `2px dashed ${dragOver ? '#2d5a3d' : '#d1d5db'}`, borderRadius: '12px', padding: '40px', textAlign: 'center', cursor: 'pointer',
-              background: dragOver ? '#f0fdf4' : '#fafafa', transition: 'all 0.2s', marginBottom: '20px',
+              border: `2px dashed ${dragOver ? '#E05B6F' : '#d1d5db'}`, borderRadius: '12px', padding: '40px', textAlign: 'center', cursor: 'pointer',
+              background: dragOver ? '#FDF0F2' : '#fafafa', transition: 'all 0.2s', marginBottom: '20px',
             }}>
             <div style={{fontSize: '2.5rem', marginBottom: '8px'}}>📄</div>
-            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '6px'}}>Drop files here or click to upload</h3>
-            <p style={{fontSize: '0.82rem', color: '#94a3b8'}}>CSV, PDF, Excel, Word, Text — up to 10MB per file</p>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A', marginBottom: '6px'}}>Drop files here or click to upload</h3>
+            <p style={{fontSize: '0.82rem', color: '#7A8BA0'}}>CSV, PDF, Excel, Word, Text — up to 10MB per file</p>
             <input ref={fileInputRef} type="file" multiple accept=".csv,.pdf,.xlsx,.xls,.doc,.docx,.txt,.md" onChange={(e) => handleFileUpload(e.target.files)} style={{display: 'none'}} />
           </div>
 
@@ -5655,7 +5655,7 @@ function VaultView({ vaultDocuments }) {
           <div style={{display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap'}}>
             {VAULT_CATEGORIES.map(cat => (
               <button key={cat.id} onClick={() => { setUploadCategory(cat.id); setUploadSubtype(''); }}
-                style={{padding: '8px 16px', borderRadius: '8px', border: `1px solid ${uploadCategory === cat.id ? cat.color : '#e5e7eb'}`, background: uploadCategory === cat.id ? cat.color + '11' : 'white', color: uploadCategory === cat.id ? cat.color : '#64748b', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.15s'}}>
+                style={{padding: '8px 16px', borderRadius: '8px', border: `1px solid ${uploadCategory === cat.id ? cat.color : '#DDE3EB'}`, background: uploadCategory === cat.id ? cat.color + '11' : 'white', color: uploadCategory === cat.id ? cat.color : '#7A8BA0', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.15s'}}>
                 {cat.icon} {cat.name}
               </button>
             ))}
@@ -5666,7 +5666,7 @@ function VaultView({ vaultDocuments }) {
             <div style={{display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap'}}>
               {VAULT_CATEGORIES.find(c => c.id === uploadCategory).accepts.map(sub => (
                 <button key={sub} onClick={() => setUploadSubtype(sub)}
-                  style={{padding: '5px 12px', borderRadius: '100px', border: `1px solid ${uploadSubtype === sub ? '#0f172a' : '#e5e7eb'}`, background: uploadSubtype === sub ? '#0f172a' : 'white', color: uploadSubtype === sub ? 'white' : '#64748b', fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.15s'}}>
+                  style={{padding: '5px 12px', borderRadius: '100px', border: `1px solid ${uploadSubtype === sub ? '#2B4C6F' : '#DDE3EB'}`, background: uploadSubtype === sub ? '#2B4C6F' : 'white', color: uploadSubtype === sub ? 'white' : '#7A8BA0', fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.15s'}}>
                   {sub}
                 </button>
               ))}
@@ -5675,7 +5675,7 @@ function VaultView({ vaultDocuments }) {
 
           {/* Uploaded documents by category */}
           {uploadedDocs.length === 0 ? (
-            <div style={{textAlign: 'center', padding: '40px', color: '#94a3b8'}}>
+            <div style={{textAlign: 'center', padding: '40px', color: '#7A8BA0'}}>
               <p style={{fontSize: '1rem', marginBottom: '6px'}}>No documents uploaded yet.</p>
               <p style={{fontSize: '0.85rem'}}>Start by uploading your financial statements, legal agreements, or governance documents.</p>
             </div>
@@ -5687,29 +5687,29 @@ function VaultView({ vaultDocuments }) {
                 return (
                   <div key={cat.id} style={{marginBottom: '20px'}}>
                     <h3 style={{fontSize: '0.82rem', fontWeight: '700', color: cat.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <span>{cat.icon}</span> {cat.name} <span style={{background: '#e5e7eb', color: '#64748b', fontSize: '0.7rem', padding: '1px 8px', borderRadius: '100px'}}>{docs.length}</span>
+                      <span>{cat.icon}</span> {cat.name} <span style={{background: '#DDE3EB', color: '#7A8BA0', fontSize: '0.7rem', padding: '1px 8px', borderRadius: '100px'}}>{docs.length}</span>
                     </h3>
                     {docs.map(doc => (
-                      <div key={doc.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.15s'}}>
+                      <div key={doc.id} style={{background: 'white', borderRadius: '10px', padding: '14px 18px', marginBottom: '6px', border: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.15s'}}>
                         <span style={{fontSize: '1.3rem'}}>
                           {doc.ext === 'csv' ? '📊' : doc.ext === 'pdf' ? '📕' : doc.ext === 'xlsx' || doc.ext === 'xls' ? '📗' : doc.ext === 'docx' || doc.ext === 'doc' ? '📘' : '📄'}
                         </span>
                         <div style={{flex: 1}}>
-                          <h4 style={{fontSize: '0.9rem', fontWeight: '600', color: '#1a3a5c'}}>{doc.name}</h4>
+                          <h4 style={{fontSize: '0.9rem', fontWeight: '600', color: '#34597A'}}>{doc.name}</h4>
                           <div style={{display: 'flex', gap: '12px', marginTop: '2px'}}>
-                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{doc.subtype}</span>
-                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{(doc.size / 1024).toFixed(0)} KB</span>
-                            <span style={{fontSize: '0.75rem', color: '#94a3b8'}}>{new Date(doc.uploadDate).toLocaleDateString()}</span>
+                            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{doc.subtype}</span>
+                            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{(doc.size / 1024).toFixed(0)} KB</span>
+                            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{new Date(doc.uploadDate).toLocaleDateString()}</span>
                           </div>
                         </div>
                         {doc.hasAnalysis && (
                           <button onClick={() => analyzeDoc(doc)}
-                            style={{background: '#2d5a3d', color: 'white', padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
+                            style={{background: '#E05B6F', color: 'white', padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
                             Analyze
                           </button>
                         )}
                         <button onClick={() => setUploadedDocs(prev => prev.filter(d => d.id !== doc.id))}
-                          style={{background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.85rem', padding: '4px 8px'}}>✕</button>
+                          style={{background: 'none', border: 'none', color: '#7A8BA0', cursor: 'pointer', fontSize: '0.85rem', padding: '4px 8px'}}>✕</button>
                       </div>
                     ))}
                   </div>
@@ -5724,9 +5724,9 @@ function VaultView({ vaultDocuments }) {
       {activeVaultTab === 'generated' && (
         <div>
           {vaultDocuments.length === 0 ? (
-            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
               <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>📁</div>
-              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '6px'}}>No Generated Reports Yet</h2>
+              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#7A8BA0', marginBottom: '6px'}}>No Generated Reports Yet</h2>
               <p style={{fontSize: '0.88rem'}}>Complete your Assessment or generate a Health Report to see documents here.</p>
             </div>
           ) : (
@@ -5795,19 +5795,19 @@ function VaultView({ vaultDocuments }) {
       {activeVaultTab === 'analysis' && (
         <div>
           {!analysisResult ? (
-            <div style={{textAlign: 'center', padding: '60px 20px', color: '#94a3b8'}}>
+            <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
               <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>📈</div>
-              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '6px'}}>No Analysis Yet</h2>
+              <h2 style={{fontSize: '1.1rem', fontWeight: '600', color: '#7A8BA0', marginBottom: '6px'}}>No Analysis Yet</h2>
               <p style={{fontSize: '0.88rem'}}>Upload a CSV financial statement and click "Analyze" to see insights here.</p>
             </div>
           ) : (
             <div>
               {selectedDoc && (
-                <div style={{background: '#f8fafc', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px'}}>
+                <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', gap: '12px'}}>
                   <span style={{fontSize: '1.3rem'}}>📊</span>
                   <div>
-                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c'}}>Analyzing: {selectedDoc.name}</h3>
-                    <span style={{fontSize: '0.78rem', color: '#94a3b8'}}>{selectedDoc.subtype} — uploaded {new Date(selectedDoc.uploadDate).toLocaleDateString()}</span>
+                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#34597A'}}>Analyzing: {selectedDoc.name}</h3>
+                    <span style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{selectedDoc.subtype} — uploaded {new Date(selectedDoc.uploadDate).toLocaleDateString()}</span>
                   </div>
                 </div>
               )}
@@ -5827,21 +5827,21 @@ function VaultView({ vaultDocuments }) {
               {/* Metrics */}
               {analysisResult.metrics.length > 0 && (
                 <div style={{marginBottom: '20px'}}>
-                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Key Metrics</h3>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#34597A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Key Metrics</h3>
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px'}}>
                     {analysisResult.metrics.map((m, i) => (
-                      <div key={i} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #e5e7eb'}}>
-                        <div style={{fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px'}}>{m.name}</div>
-                        <div style={{fontSize: '1.5rem', fontWeight: '800', color: '#0f172a'}}>{typeof m.latest === 'number' ? m.latest.toLocaleString() : m.latest}</div>
-                        <div style={{display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#64748b'}}>
+                      <div key={i} style={{background: 'white', borderRadius: '10px', padding: '16px', border: '1px solid #DDE3EB'}}>
+                        <div style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px'}}>{m.name}</div>
+                        <div style={{fontSize: '1.5rem', fontWeight: '800', color: '#2B4C6F'}}>{typeof m.latest === 'number' ? m.latest.toLocaleString() : m.latest}</div>
+                        <div style={{display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0'}}>
                           <span>Avg: {m.avg?.toLocaleString()}</span>
                           {m.change !== null && (
-                            <span style={{color: m.change >= 0 ? '#2d5a3d' : '#dc2626', fontWeight: '600'}}>
+                            <span style={{color: m.change >= 0 ? '#E05B6F' : '#dc2626', fontWeight: '600'}}>
                               {m.change >= 0 ? '+' : ''}{m.change}%
                             </span>
                           )}
                         </div>
-                        <div style={{fontSize: '0.7rem', color: '#94a3b8', marginTop: '4px'}}>Range: {m.min?.toLocaleString()} — {m.max?.toLocaleString()} ({m.count} periods)</div>
+                        <div style={{fontSize: '0.7rem', color: '#7A8BA0', marginTop: '4px'}}>Range: {m.min?.toLocaleString()} — {m.max?.toLocaleString()} ({m.count} periods)</div>
                       </div>
                     ))}
                   </div>
@@ -5851,9 +5851,9 @@ function VaultView({ vaultDocuments }) {
               {/* Trends */}
               {analysisResult.trends.length > 0 && (
                 <div style={{marginBottom: '20px'}}>
-                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Trends</h3>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#34597A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Trends</h3>
                   {analysisResult.trends.map((t, i) => (
-                    <div key={i} style={{background: t.direction === 'up' ? '#f0fdf4' : '#fef2f2', border: `1px solid ${t.direction === 'up' ? '#bbf7d0' : '#fecaca'}`, borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', fontSize: '0.85rem', color: t.direction === 'up' ? '#166534' : '#991b1b', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                    <div key={i} style={{background: t.direction === 'up' ? '#FDF0F2' : '#fef2f2', border: `1px solid ${t.direction === 'up' ? '#bbf7d0' : '#fecaca'}`, borderRadius: '8px', padding: '12px 16px', marginBottom: '6px', fontSize: '0.85rem', color: t.direction === 'up' ? '#166534' : '#991b1b', display: 'flex', alignItems: 'center', gap: '10px'}}>
                       <span style={{fontSize: '1.1rem'}}>{t.direction === 'up' ? '📈' : '📉'}</span>
                       {t.note}
                     </div>
@@ -5864,13 +5864,13 @@ function VaultView({ vaultDocuments }) {
               {/* Raw data preview */}
               {selectedDoc?.parsedData && (
                 <div style={{marginBottom: '20px'}}>
-                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#1a3a5c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Data Preview (first 10 rows)</h3>
-                  <div style={{overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: '10px'}}>
+                  <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#34597A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px'}}>Data Preview (first 10 rows)</h3>
+                  <div style={{overflowX: 'auto', border: '1px solid #DDE3EB', borderRadius: '10px'}}>
                     <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem'}}>
                       <thead>
-                        <tr style={{background: '#f8fafc'}}>
+                        <tr style={{background: '#F5F7FA'}}>
                           {selectedDoc.parsedData.headers.map((h, i) => (
-                            <th key={i} style={{padding: '10px 14px', textAlign: 'left', fontWeight: '700', color: '#1a3a5c', borderBottom: '2px solid #e5e7eb', whiteSpace: 'nowrap'}}>{h}</th>
+                            <th key={i} style={{padding: '10px 14px', textAlign: 'left', fontWeight: '700', color: '#34597A', borderBottom: '2px solid #DDE3EB', whiteSpace: 'nowrap'}}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -5878,7 +5878,7 @@ function VaultView({ vaultDocuments }) {
                         {selectedDoc.parsedData.rows.slice(0, 10).map((row, ri) => (
                           <tr key={ri} style={{background: ri % 2 === 0 ? 'white' : '#fafafa'}}>
                             {selectedDoc.parsedData.headers.map((h, ci) => (
-                              <td key={ci} style={{padding: '8px 14px', borderBottom: '1px solid #f1f5f9', whiteSpace: 'nowrap'}}>{row[h]}</td>
+                              <td key={ci} style={{padding: '8px 14px', borderBottom: '1px solid #F0F3F8', whiteSpace: 'nowrap'}}>{row[h]}</td>
                             ))}
                           </tr>
                         ))}
@@ -5899,9 +5899,9 @@ function VaultView({ vaultDocuments }) {
 function SettingsView({ currentUser, onLogout, onTierChange }) {
   const [upgrading, setUpgrading] = useState(false);
   const TIERS = [
-    { id: 'free', name: 'Explorer', price: 'Free', features: ['LEP Assessment', 'LEP Score & Dashboard', 'Family Profile (Basic)', '1 Family Member'], color: '#64748b', current: currentUser?.tier === 'free' },
-    { id: 'pro', name: 'Pro', price: '$99/mo', features: ['Everything in Explorer', 'Full LEP Journey (3 Phases)', 'Family Dynamics Module', 'Valuation Engine', 'Document Vault', 'Up to 10 Family Members', 'Meeting Recorder & Notes', 'Priority Support'], color: '#2d5a3d', current: currentUser?.tier === 'pro', recommended: true },
-    { id: 'enterprise', name: 'Enterprise', price: '$499/mo', features: ['Everything in Pro', 'Unlimited Family Members', 'Advisor Portal Access', 'Multi-Entity Management', 'Custom Reporting', 'White-Glove Onboarding', 'Dedicated Account Manager', 'API Access'], color: '#1a3a5c', current: currentUser?.tier === 'enterprise' },
+    { id: 'free', name: 'Explorer', price: 'Free', features: ['LEP Assessment', 'LEP Score & Dashboard', 'Family Profile (Basic)', '1 Family Member'], color: '#7A8BA0', current: currentUser?.tier === 'free' },
+    { id: 'pro', name: 'Pro', price: '$99/mo', features: ['Everything in Explorer', 'Full LEP Journey (3 Phases)', 'Family Dynamics Module', 'Valuation Engine', 'Document Vault', 'Up to 10 Family Members', 'Meeting Recorder & Notes', 'Priority Support'], color: '#E05B6F', current: currentUser?.tier === 'pro', recommended: true },
+    { id: 'enterprise', name: 'Enterprise', price: '$499/mo', features: ['Everything in Pro', 'Unlimited Family Members', 'Advisor Portal Access', 'Multi-Entity Management', 'Custom Reporting', 'White-Glove Onboarding', 'Dedicated Account Manager', 'API Access'], color: '#34597A', current: currentUser?.tier === 'enterprise' },
   ];
 
   const handleUpgrade = async (tierId) => {
@@ -5926,29 +5926,29 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
 
       {/* Account Info */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
-        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '20px'}}>Account</h3>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '20px'}}>Account</h3>
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
-          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Name</span><span style={{fontWeight: 500}}>{currentUser?.name}</span></div>
-          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Email</span><span style={{fontWeight: 500}}>{currentUser?.email}</span></div>
-          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Enterprise</span><span style={{fontWeight: 500}}>{currentUser?.orgName || 'Not set'}</span></div>
-          <div><span style={{fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px'}}>Role</span><span style={{fontWeight: 500, textTransform: 'capitalize'}}>{currentUser?.role?.replace('-', ' ') || 'Owner'}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Name</span><span style={{fontWeight: 500}}>{currentUser?.name}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Email</span><span style={{fontWeight: 500}}>{currentUser?.email}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Enterprise</span><span style={{fontWeight: 500}}>{currentUser?.orgName || 'Not set'}</span></div>
+          <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Role</span><span style={{fontWeight: 500, textTransform: 'capitalize'}}>{currentUser?.role?.replace('-', ' ') || 'Owner'}</span></div>
         </div>
       </div>
 
       {/* Subscription Tiers */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
-        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '6px'}}>Subscription</h3>
-        <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '24px'}}>Choose the plan that fits your family enterprise.</p>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '6px'}}>Subscription</h3>
+        <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '24px'}}>Choose the plan that fits your family enterprise.</p>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
           {TIERS.map(tier => (
-            <div key={tier.id} style={{border: tier.current ? `2px solid ${tier.color}` : '1.5px solid #e2e8f0', borderRadius: '12px', padding: '24px', position: 'relative', background: tier.current ? `${tier.color}08` : 'white'}}>
-              {tier.recommended && <div style={{position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: '#2d5a3d', color: 'white', fontSize: '0.7rem', fontWeight: 700, padding: '3px 12px', borderRadius: '10px', letterSpacing: '0.5px'}}>RECOMMENDED</div>}
+            <div key={tier.id} style={{border: tier.current ? `2px solid ${tier.color}` : '1.5px solid #EFF1F6', borderRadius: '12px', padding: '24px', position: 'relative', background: tier.current ? `${tier.color}08` : 'white'}}>
+              {tier.recommended && <div style={{position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: '#E05B6F', color: 'white', fontSize: '0.7rem', fontWeight: 700, padding: '3px 12px', borderRadius: '10px', letterSpacing: '0.5px'}}>RECOMMENDED</div>}
               <h4 style={{fontSize: '1.1rem', fontWeight: 700, color: tier.color, marginBottom: '4px'}}>{tier.name}</h4>
-              <div style={{fontSize: '1.6rem', fontWeight: 700, color: '#0a0f1c', marginBottom: '16px'}}>{tier.price}</div>
+              <div style={{fontSize: '1.6rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '16px'}}>{tier.price}</div>
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
-                {tier.features.map((f, i) => <li key={i} style={{fontSize: '0.82rem', color: '#475569', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '8px'}}><span style={{color: tier.color, flexShrink: 0}}>✓</span>{f}</li>)}
+                {tier.features.map((f, i) => <li key={i} style={{fontSize: '0.82rem', color: '#4A5E73', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '8px'}}><span style={{color: tier.color, flexShrink: 0}}>✓</span>{f}</li>)}
               </ul>
-              <button onClick={() => !tier.current && handleUpgrade(tier.id)} style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#f1f5f9' : tier.color, color: tier.current ? '#64748b' : 'white', border: 'none', opacity: upgrading ? 0.6 : 1}} disabled={tier.current || upgrading}>
+              <button onClick={() => !tier.current && handleUpgrade(tier.id)} style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#F0F3F8' : tier.color, color: tier.current ? '#7A8BA0' : 'white', border: 'none', opacity: upgrading ? 0.6 : 1}} disabled={tier.current || upgrading}>
                 {tier.current ? 'Current Plan' : upgrading ? 'Processing...' : `Upgrade to ${tier.name}`}
               </button>
             </div>
@@ -5958,19 +5958,19 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
 
       {/* Platform Status */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
-        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#1a2744', marginBottom: '16px'}}>Platform</h3>
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '16px'}}>Platform</h3>
         <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
             <div style={{width: '8px', height: '8px', borderRadius: '50%', background: hasSupabase ? '#22c55e' : '#f59e0b'}} />
-            <span style={{fontSize: '0.85rem', color: '#475569'}}>{hasSupabase ? 'Cloud database active' : 'Local storage (upgrade to cloud by adding Supabase)'}</span>
+            <span style={{fontSize: '0.85rem', color: '#4A5E73'}}>{hasSupabase ? 'Cloud database active' : 'Local storage (upgrade to cloud by adding Supabase)'}</span>
           </div>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
             <div style={{width: '8px', height: '8px', borderRadius: '50%', background: hasStripe ? '#22c55e' : '#f59e0b'}} />
-            <span style={{fontSize: '0.85rem', color: '#475569'}}>{hasStripe ? 'Payments active' : 'Payments ready (add Stripe keys to activate)'}</span>
+            <span style={{fontSize: '0.85rem', color: '#4A5E73'}}>{hasStripe ? 'Payments active' : 'Payments ready (add Stripe keys to activate)'}</span>
           </div>
         </div>
         {currentUser?.tier !== 'free' && (
-          <button onClick={() => payments.openPortal()} style={{marginTop: '16px', padding: '8px 16px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
+          <button onClick={() => payments.openPortal()} style={{marginTop: '16px', padding: '8px 16px', background: '#F0F3F8', color: '#4A5E73', border: '1px solid #EFF1F6', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
             Manage Subscription
           </button>
         )}
@@ -5980,7 +5980,7 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', borderLeft: '3px solid #f87171'}}>
         <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#dc2626', marginBottom: '12px'}}>Danger Zone</h3>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-          <div><p style={{fontWeight: 500, marginBottom: '2px'}}>Sign out of Stride</p><p style={{fontSize: '0.82rem', color: '#94a3b8'}}>You can sign back in at any time.</p></div>
+          <div><p style={{fontWeight: 500, marginBottom: '2px'}}>Sign out of Stride</p><p style={{fontSize: '0.82rem', color: '#7A8BA0'}}>You can sign back in at any time.</p></div>
           <button onClick={onLogout} style={{padding: '8px 20px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer'}}>Sign Out</button>
         </div>
       </div>
@@ -6022,7 +6022,7 @@ function TransitionsView({ setCurrentView }) {
 
       {/* ─── GUIDED ONBOARDING (one-time, permanently dismissible) ── */}
       {!dismissedOnboarding && (
-        <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '32px', position: 'relative'}}>
+        <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '32px', position: 'relative'}}>
           <button onClick={() => { dismissOnboarding(); }} style={{position: 'absolute', top: '12px', right: '16px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
           <div style={{display: 'flex', gap: '8px', marginBottom: '20px'}}>
             {onboardingSteps.map((_, i) => (
@@ -6045,9 +6045,9 @@ function TransitionsView({ setCurrentView }) {
               <button onClick={() => setOnboardingStep(onboardingStep - 1)} style={{background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: '0.85rem'}}>← Back</button>
             )}
             {onboardingStep < onboardingSteps.length - 1 ? (
-              <button onClick={() => setOnboardingStep(onboardingStep + 1)} style={{background: '#4ade80', color: '#0f172a', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Next →</button>
+              <button onClick={() => setOnboardingStep(onboardingStep + 1)} style={{background: '#4ade80', color: '#2B4C6F', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Next →</button>
             ) : (
-              <button onClick={() => { dismissOnboarding(); }} style={{background: '#4ade80', color: '#0f172a', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Got It — Let's Go →</button>
+              <button onClick={() => { dismissOnboarding(); }} style={{background: '#4ade80', color: '#2B4C6F', padding: '8px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600'}}>Got It — Let's Go →</button>
             )}
             <button onClick={() => { dismissOnboarding(); }} style={{background: 'none', color: 'rgba(255,255,255,0.5)', padding: '8px 16px', border: 'none', cursor: 'pointer', fontSize: '0.82rem'}}>Skip tour</button>
           </div>
@@ -6061,7 +6061,7 @@ function TransitionsView({ setCurrentView }) {
         <select
           value={selectedIndustry || ''}
           onChange={(e) => setSelectedIndustry(e.target.value || null)}
-          style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.88rem', color: '#374151', background: 'white', cursor: 'pointer', minWidth: '200px'}}
+          style={{padding: '8px 14px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.88rem', color: '#2B3A52', background: 'white', cursor: 'pointer', minWidth: '200px'}}
         >
           <option value="">All Industries</option>
           {Object.entries(INDUSTRY_PROFILES).map(([name, profile]) => (
@@ -6069,14 +6069,14 @@ function TransitionsView({ setCurrentView }) {
           ))}
         </select>
         {selectedIndustry && INDUSTRY_PROFILES[selectedIndustry] && (
-          <p style={{fontSize: '0.85rem', color: '#64748b', margin: 0, lineHeight: '1.4', flex: 1}}>
+          <p style={{fontSize: '0.85rem', color: '#7A8BA0', margin: 0, lineHeight: '1.4', flex: 1}}>
             {INDUSTRY_PROFILES[selectedIndustry].tip}
           </p>
         )}
       </div>
 
       {/* Pre-Exit Readiness Banner */}
-      <div className="transition-banner" style={{background: 'linear-gradient(135deg, #1a3a5c 0%, #2d5a3d 100%)', borderRadius: '12px', padding: '28px 32px', color: 'white', marginBottom: '32px'}}>
+      <div className="transition-banner" style={{background: 'linear-gradient(135deg, #34597A 0%, #E05B6F 100%)', borderRadius: '12px', padding: '28px 32px', color: 'white', marginBottom: '32px'}}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'}}>
           <div>
             <h2 style={{fontSize: '1.3rem', fontWeight: '700', marginBottom: '8px', color: 'white'}}>Are You Ready for a Transition?</h2>
@@ -6086,7 +6086,7 @@ function TransitionsView({ setCurrentView }) {
           </div>
           <button
             className="btn"
-            style={{background: 'white', color: '#1a3a5c', fontWeight: '600', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: 'none', whiteSpace: 'nowrap'}}
+            style={{background: 'white', color: '#34597A', fontWeight: '600', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: 'none', whiteSpace: 'nowrap'}}
             onClick={() => setShowFamilyVoice(true)}
           >
             Start Family Voice Assessment →
@@ -6096,12 +6096,12 @@ function TransitionsView({ setCurrentView }) {
 
       {/* Family Voice Assessment Modal */}
       {showFamilyVoice && (
-        <div style={{background: '#f8fafc', border: '2px solid #2d5a3d', borderRadius: '12px', padding: '32px', marginBottom: '32px'}}>
+        <div style={{background: '#F5F7FA', border: '2px solid #E05B6F', borderRadius: '12px', padding: '32px', marginBottom: '32px'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700'}}>🗣️ Family Voice Assessment</h2>
             <button onClick={() => setShowFamilyVoice(false)} style={{background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer'}}>×</button>
           </div>
-          <p style={{color: '#64748b', marginBottom: '24px', lineHeight: '1.7', fontSize: '0.95rem'}}>
+          <p style={{color: '#7A8BA0', marginBottom: '24px', lineHeight: '1.7', fontSize: '0.95rem'}}>
             Before any transition decision, every family member needs to be heard. Not a vote — a hearing. Complete this individually, then bring the results together as a family.
           </p>
           <div style={{display: 'grid', gap: '16px'}}>
@@ -6114,8 +6114,8 @@ function TransitionsView({ setCurrentView }) {
               'What is your biggest hope?',
               'Do you feel your voice has been heard in decisions about the business?',
             ].map((question, i) => (
-              <div key={i} style={{background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
-                <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>
+              <div key={i} style={{background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #DDE3EB'}}>
+                <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#34597A'}}>
                   {i + 1}. {question}
                 </label>
                 <textarea
@@ -6134,9 +6134,9 @@ function TransitionsView({ setCurrentView }) {
       )}
 
       {/* Six Pathways */}
-      <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>
+      <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: '#34597A'}}>
         Six Pathways
-        {selectedIndustry && <span style={{fontSize: '0.82em', fontWeight: '400', color: '#64748b'}}> for {selectedIndustry}</span>}
+        {selectedIndustry && <span style={{fontSize: '0.82em', fontWeight: '400', color: '#7A8BA0'}}> for {selectedIndustry}</span>}
       </h2>
       <div className="pathway-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px', marginBottom: '32px'}}>
         {TRANSITION_PATHWAYS.map(pathway => {
@@ -6150,7 +6150,7 @@ function TransitionsView({ setCurrentView }) {
               background: isRecommended ? `${pathway.color}06` : 'white',
               borderRadius: '12px',
               padding: '24px',
-              border: selectedPathway === pathway.id ? `2px solid ${pathway.color}` : isRecommended ? `2px solid ${pathway.color}33` : '1px solid #e5e7eb',
+              border: selectedPathway === pathway.id ? `2px solid ${pathway.color}` : isRecommended ? `2px solid ${pathway.color}33` : '1px solid #DDE3EB',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               boxShadow: selectedPathway === pathway.id ? `0 4px 16px ${pathway.color}15` : 'none',
@@ -6166,14 +6166,14 @@ function TransitionsView({ setCurrentView }) {
               <span style={{fontSize: '1.8rem'}}>{pathway.icon}</span>
               <div>
                 <h3 style={{fontSize: '1rem', fontWeight: '700', color: pathway.color, marginBottom: '2px'}}>{pathway.name}</h3>
-                <p style={{fontSize: '0.82rem', color: '#64748b'}}>{pathway.shortDesc}</p>
+                <p style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{pathway.shortDesc}</p>
               </div>
             </div>
 
             {selectedPathway === pathway.id && (
-              <div style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb'}}>
-                <p style={{fontSize: '0.88rem', color: '#374151', lineHeight: '1.6', marginBottom: '16px'}}>{pathway.description}</p>
-                <h4 style={{fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px'}}>Key Considerations</h4>
+              <div style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #DDE3EB'}}>
+                <p style={{fontSize: '0.88rem', color: '#2B3A52', lineHeight: '1.6', marginBottom: '16px'}}>{pathway.description}</p>
+                <h4 style={{fontSize: '0.8rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px'}}>Key Considerations</h4>
                 <ul style={{listStyle: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
                   {pathway.considerations.map((c, i) => (
                     <li key={i} style={{
@@ -6188,7 +6188,7 @@ function TransitionsView({ setCurrentView }) {
                 </ul>
                 {/* v6: Tax implications note — 10% requested state-specific tax info */}
                 <div style={{background: '#fffbeb', borderRadius: '8px', padding: '10px 14px', marginTop: '14px', border: '1px solid #f59e0b22'}}>
-                  <p style={{fontSize: '0.78rem', color: '#92400e', lineHeight: '1.5', margin: 0}}>
+                  <p style={{fontSize: '0.78rem', color: '#C44A5C', lineHeight: '1.5', margin: 0}}>
                     <strong>Tax Note:</strong> {pathway.id === 'esop' ? 'ESOPs offer significant tax advantages — Section 1042 rollover can defer capital gains indefinitely. S-corp ESOPs may eliminate federal income tax entirely.'
                       : pathway.id === 'pe-sale' ? 'Capital gains treatment varies by structure. QSB stock (Section 1202) may exclude up to $10M in gains. Installment sales can spread tax liability.'
                       : pathway.id === 'next-gen' ? 'Gift and estate tax planning is critical. Annual exclusions, GRATs, and FLPs can minimize transfer taxes. Start planning 3-5 years before transition.'
@@ -6199,15 +6199,15 @@ function TransitionsView({ setCurrentView }) {
                   </p>
                 </div>
                 {/* v6: Case study teaser — 10.2% want real examples */}
-                <div style={{background: '#f8fafc', borderRadius: '8px', padding: '10px 14px', marginTop: '8px', border: '1px solid #e5e7eb'}}>
-                  <p style={{fontSize: '0.78rem', color: '#475569', lineHeight: '1.5', margin: 0}}>
+                <div style={{background: '#F5F7FA', borderRadius: '8px', padding: '10px 14px', marginTop: '8px', border: '1px solid #DDE3EB'}}>
+                  <p style={{fontSize: '0.78rem', color: '#4A5E73', lineHeight: '1.5', margin: 0}}>
                     <strong>Real Family Story:</strong> {pathway.id === 'esop' ? 'A 3rd-generation manufacturing family used a leveraged ESOP to provide $12M in liquidity while keeping the company culture intact.'
                       : pathway.id === 'pe-sale' ? 'After 40 years, the founding family sold to PE, negotiated earnouts, and transitioned into a family office managing the proceeds.'
                       : pathway.id === 'next-gen' ? 'Three siblings created a family employment policy with clear qualification criteria — two joined the business, one served on the board.'
                       : pathway.id === 'patient-capital' ? 'A family brought in a family office as minority investor, gaining a board seat and operational expertise while retaining 70% control.'
                       : pathway.id === 'private-credit' ? 'The next generation used mezzanine financing to buy out their parents over 7 years, preserving the business through a structured transition.'
                       : 'A non-family CEO was hired after the family defined clear authority boundaries and created a family council to maintain oversight.'}
-                    {' '}<em style={{color: '#94a3b8'}}>Names anonymized.</em>
+                    {' '}<em style={{color: '#7A8BA0'}}>Names anonymized.</em>
                   </p>
                 </div>
                 <button
@@ -6235,7 +6235,7 @@ function TransitionsView({ setCurrentView }) {
       </div>
 
       {/* ─── DECISION ENGINE ────────────────────────────────── */}
-      <div style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', color: 'white'}}>
+      <div style={{background: 'linear-gradient(135deg, #34597A 0%, #334155 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', color: 'white'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
           <span style={{fontSize: '2rem'}}>🧭</span>
           <div>
@@ -6266,7 +6266,7 @@ function TransitionsView({ setCurrentView }) {
           ))}
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-          <button onClick={() => setCurrentView('decision-engine')} style={{background: 'white', color: '#1e293b', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+          <button onClick={() => setCurrentView('decision-engine')} style={{background: 'white', color: '#34597A', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
             Begin Decision Process →
           </button>
           <span style={{fontSize: '0.82rem', opacity: 0.6}}>Estimated time: 4–6 weeks with your family</span>
@@ -6274,55 +6274,55 @@ function TransitionsView({ setCurrentView }) {
       </div>
 
       {/* ─── VALUATION ENGINE ────────────────────────────────── */}
-      <div style={{background: 'white', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '2px solid #7c3aed22'}}>
+      <div style={{background: 'white', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '2px solid #5AAFB522'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
-          <span style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: '2rem', fontWeight: '800'}}>$</span>
+          <span style={{background: 'linear-gradient(135deg, #5AAFB5, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: '2rem', fontWeight: '800'}}>$</span>
           <div>
-            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>LEP Valuation Engine</h2>
-            <p style={{fontSize: '0.88rem', color: '#64748b'}}>The first valuation tool that values the family — not just the business</p>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#34597A', marginBottom: '4px'}}>LEP Valuation Engine</h2>
+            <p style={{fontSize: '0.88rem', color: '#7A8BA0'}}>The first valuation tool that values the family — not just the business</p>
           </div>
         </div>
-        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#374151', marginBottom: '24px', maxWidth: '750px'}}>
+        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#2B3A52', marginBottom: '24px', maxWidth: '750px'}}>
           Traditional valuations miss what matters most. The LEP Valuation Engine combines EBITDA-based business valuation with a proprietary Family Health Multiplier — adjusting enterprise value by -60% to +65% based on your family's strength across all five LEP pillars.
         </p>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px'}}>
           {[
-            { name: 'Business Valuation', desc: 'Industry multiples, EBITDA, comparable transactions, DCF modeling', icon: '🏢', color: '#1a3a5c' },
-            { name: 'LEP Multiplier', desc: 'Family health score adjusts value based on five pillar assessment', icon: '👨‍👩‍👧‍👦', color: '#2d5a3d' },
+            { name: 'Business Valuation', desc: 'Industry multiples, EBITDA, comparable transactions, DCF modeling', icon: '🏢', color: '#34597A' },
+            { name: 'LEP Multiplier', desc: 'Family health score adjusts value based on five pillar assessment', icon: '👨‍👩‍👧‍👦', color: '#E05B6F' },
             { name: 'Continuity Risk Index', desc: 'Key-person, succession gap, and governance risk scoring', icon: '⚠️', color: '#dc2626' },
-            { name: 'Family Net Worth', desc: 'Total family picture — business equity, real estate, investments, liquidity', icon: '💎', color: '#7c3aed' },
-            { name: 'Pathway Impact Modeling', desc: 'See how each transition pathway changes your valuation & net worth', icon: '📈', color: '#0891b2' },
-            { name: 'Pattern Intelligence', desc: 'Anonymized benchmarks from LEP\'s family database', icon: '🧠', color: '#d97706' },
+            { name: 'Family Net Worth', desc: 'Total family picture — business equity, real estate, investments, liquidity', icon: '💎', color: '#5AAFB5' },
+            { name: 'Pathway Impact Modeling', desc: 'See how each transition pathway changes your valuation & net worth', icon: '📈', color: '#E05B6F' },
+            { name: 'Pattern Intelligence', desc: 'Anonymized benchmarks from LEP\'s family database', icon: '🧠', color: '#E05B6F' },
           ].map(mod => (
-            <div key={mod.name} style={{background: '#f8fafc', borderRadius: '10px', padding: '18px', border: '1px solid #e5e7eb'}}>
+            <div key={mod.name} style={{background: '#F5F7FA', borderRadius: '10px', padding: '18px', border: '1px solid #DDE3EB'}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                 <span style={{fontSize: '1.3rem'}}>{mod.icon}</span>
                 <h4 style={{fontSize: '0.88rem', fontWeight: '700', color: mod.color}}>{mod.name}</h4>
               </div>
-              <p style={{fontSize: '0.8rem', color: '#64748b', lineHeight: '1.5'}}>{mod.desc}</p>
+              <p style={{fontSize: '0.8rem', color: '#7A8BA0', lineHeight: '1.5'}}>{mod.desc}</p>
             </div>
           ))}
         </div>
-        <div style={{background: '#f5f3ff', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #7c3aed22'}}>
+        <div style={{background: '#f5f3ff', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #5AAFB522'}}>
           <p style={{fontSize: '0.85rem', color: '#5b21b6', lineHeight: '1.6'}}>
             <strong>Why this changes everything:</strong> A family with a $20M EBITDA business and strong LEP scores could see their adjusted enterprise value increase by $6.5M+ over a family in crisis with identical financials. Buyers, advisors, and families deserve to see the full picture.
           </p>
         </div>
-        <button style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+        <button style={{background: 'linear-gradient(135deg, #5AAFB5, #a855f7)', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
           Start Your Valuation →
         </button>
       </div>
 
       {/* ─── ESTATE PLAN MODULE ────────────────────────────────── */}
-      <div style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '1px solid #2d5a3d22'}}>
+      <div style={{background: 'linear-gradient(135deg, #FDF0F2 0%, #ecfdf5 100%)', borderRadius: '16px', padding: '32px', marginBottom: '32px', border: '1px solid #E05B6F22'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
           <span style={{fontSize: '2rem'}}>🏛️</span>
           <div>
-            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>Estate Plan Architecture</h2>
-            <p style={{fontSize: '0.88rem', color: '#64748b'}}>Legal, financial, and relational infrastructure for your transition</p>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#34597A', marginBottom: '4px'}}>Estate Plan Architecture</h2>
+            <p style={{fontSize: '0.88rem', color: '#7A8BA0'}}>Legal, financial, and relational infrastructure for your transition</p>
           </div>
         </div>
-        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#374151', marginBottom: '24px', maxWidth: '750px'}}>
+        <p style={{fontSize: '0.92rem', lineHeight: '1.7', color: '#2B3A52', marginBottom: '24px', maxWidth: '750px'}}>
           Your estate plan isn't just a legal document — it's the architecture that holds your family's transition together. LEP's Estate Plan module helps you inventory what you have, identify what's missing, and have the hard conversations most families avoid.
         </p>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px'}}>
@@ -6334,32 +6334,32 @@ function TransitionsView({ setCurrentView }) {
             { name: 'Pre-Transition Roadmap', desc: 'Timeline-based checklist: what to update, when, and which advisors to involve', icon: '📅' },
             { name: 'Education Library', desc: 'Plain-language guides on trusts, GRATs, FLPs, QSBs, ESOPs, and more', icon: '📚' },
           ].map(item => (
-            <div key={item.name} style={{background: 'white', borderRadius: '10px', padding: '18px', border: '1px solid #e5e7eb'}}>
+            <div key={item.name} style={{background: 'white', borderRadius: '10px', padding: '18px', border: '1px solid #DDE3EB'}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                 <span style={{fontSize: '1.2rem'}}>{item.icon}</span>
-                <h4 style={{fontSize: '0.88rem', fontWeight: '700', color: '#2d5a3d'}}>{item.name}</h4>
+                <h4 style={{fontSize: '0.88rem', fontWeight: '700', color: '#E05B6F'}}>{item.name}</h4>
               </div>
-              <p style={{fontSize: '0.8rem', color: '#64748b', lineHeight: '1.5'}}>{item.desc}</p>
+              <p style={{fontSize: '0.8rem', color: '#7A8BA0', lineHeight: '1.5'}}>{item.desc}</p>
             </div>
           ))}
         </div>
         <div style={{background: '#fff7ed', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', border: '1px solid #f59e0b33'}}>
-          <p style={{fontSize: '0.82rem', color: '#92400e', lineHeight: '1.5'}}>
+          <p style={{fontSize: '0.82rem', color: '#C44A5C', lineHeight: '1.5'}}>
             <strong>Important:</strong> Stride provides organizational tools and educational resources — not legal or tax advice. Always work with qualified attorneys and tax professionals for estate planning decisions.
           </p>
         </div>
-        <button style={{background: '#2d5a3d', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
+        <button style={{background: '#E05B6F', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', border: 'none', cursor: 'pointer'}}>
           Start Estate Plan Review →
         </button>
       </div>
 
       {/* The Grief Framework Teaser */}
       <div style={{background: '#fffbeb', border: '1px solid #f59e0b33', borderRadius: '12px', padding: '28px 32px', marginBottom: '32px'}}>
-        <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '8px', color: '#92400e'}}>🕊️ The Human Side of Transitions</h2>
+        <h2 style={{fontSize: '1.1rem', fontWeight: '700', marginBottom: '8px', color: '#C44A5C'}}>🕊️ The Human Side of Transitions</h2>
         <p style={{fontSize: '0.92rem', color: '#78350f', lineHeight: '1.6', maxWidth: '700px'}}>
           A family business doesn't have cells, blood, or tissue — but it is a living, breathing entity. When it changes hands, the family grieves. LEP's Seven Stages of Family Enterprise Loss helps families navigate the emotional journey — from rupture through rebuilding — with the same rigor they bring to the financial side.
         </p>
-        <p style={{fontSize: '0.85rem', color: '#92400e', fontWeight: '600', marginTop: '12px'}}>
+        <p style={{fontSize: '0.85rem', color: '#C44A5C', fontWeight: '600', marginTop: '12px'}}>
           Built from lived experience. Grounded in family systems therapy. Coming soon to Stride.
         </p>
       </div>
@@ -6367,26 +6367,26 @@ function TransitionsView({ setCurrentView }) {
       {/* Comparison tool removed — Steve: ship it when it's real */}
 
       {/* ─── COMPLIANCE DISCLAIMERS — Collapsible ────────────── */}
-      <div style={{background: '#fafafa', borderRadius: '12px', padding: '14px 20px', border: '1px solid #e5e7eb'}}>
+      <div style={{background: '#fafafa', borderRadius: '12px', padding: '14px 20px', border: '1px solid #DDE3EB'}}>
         <div onClick={() => setShowDisclaimers(!showDisclaimers)} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer'}}>
-          <span style={{fontSize: '0.78rem', color: '#64748b'}}>
-            ⚖️ <strong>Important Disclosures</strong> — Stride provides educational tools, not financial, legal, or tax advice. <span style={{color: '#94a3b8'}}>SOC 2 Type II compliant.</span>
+          <span style={{fontSize: '0.78rem', color: '#7A8BA0'}}>
+            ⚖️ <strong>Important Disclosures</strong> — Stride provides educational tools, not financial, legal, or tax advice. <span style={{color: '#7A8BA0'}}>SOC 2 Type II compliant.</span>
           </span>
-          <span style={{fontSize: '0.75rem', color: '#94a3b8', marginLeft: '12px'}}>{showDisclaimers ? '▲' : '▼'}</span>
+          <span style={{fontSize: '0.75rem', color: '#7A8BA0', marginLeft: '12px'}}>{showDisclaimers ? '▲' : '▼'}</span>
         </div>
         {showDisclaimers && (
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #e5e7eb'}}>
-            <div style={{fontSize: '0.72rem', color: '#64748b', lineHeight: '1.4'}}>
-              <strong style={{color: '#475569'}}>Not Financial Advice.</strong> Nothing on this platform constitutes investment, financial, legal, or tax advice. Consult qualified professionals.
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #DDE3EB'}}>
+            <div style={{fontSize: '0.72rem', color: '#7A8BA0', lineHeight: '1.4'}}>
+              <strong style={{color: '#4A5E73'}}>Not Financial Advice.</strong> Nothing on this platform constitutes investment, financial, legal, or tax advice. Consult qualified professionals.
             </div>
-            <div style={{fontSize: '0.72rem', color: '#64748b', lineHeight: '1.4'}}>
-              <strong style={{color: '#475569'}}>Not Legal Advice.</strong> Estate planning tools are for organizational purposes only. Work with licensed attorneys.
+            <div style={{fontSize: '0.72rem', color: '#7A8BA0', lineHeight: '1.4'}}>
+              <strong style={{color: '#4A5E73'}}>Not Legal Advice.</strong> Estate planning tools are for organizational purposes only. Work with licensed attorneys.
             </div>
-            <div style={{fontSize: '0.72rem', color: '#64748b', lineHeight: '1.4'}}>
-              <strong style={{color: '#475569'}}>Valuations Are Estimates.</strong> Formal valuations should be conducted by accredited appraisers (ASA, ABV, CVA).
+            <div style={{fontSize: '0.72rem', color: '#7A8BA0', lineHeight: '1.4'}}>
+              <strong style={{color: '#4A5E73'}}>Valuations Are Estimates.</strong> Formal valuations should be conducted by accredited appraisers (ASA, ABV, CVA).
             </div>
-            <div style={{fontSize: '0.72rem', color: '#64748b', lineHeight: '1.4'}}>
-              <strong style={{color: '#475569'}}>Data Privacy.</strong> End-to-end encrypted. You retain full ownership. SOC 2 Type II compliant.
+            <div style={{fontSize: '0.72rem', color: '#7A8BA0', lineHeight: '1.4'}}>
+              <strong style={{color: '#4A5E73'}}>Data Privacy.</strong> End-to-end encrypted. You retain full ownership. SOC 2 Type II compliant.
             </div>
           </div>
         )}
@@ -6525,12 +6525,12 @@ function DecisionEngineView({ setCurrentView, scores }) {
               onClick={() => unlocked && setCurrentPhase(phase.id)}
               style={{
                 flex: '1 0 auto', minWidth: '120px', padding: '12px 16px', borderRadius: '10px', border: 'none',
-                background: active ? '#0f172a' : complete ? '#2d5a3d' : unlocked ? 'white' : '#f1f5f9',
-                color: active ? 'white' : complete ? 'white' : unlocked ? '#374151' : '#94a3b8',
+                background: active ? '#2B4C6F' : complete ? '#E05B6F' : unlocked ? 'white' : '#F0F3F8',
+                color: active ? 'white' : complete ? 'white' : unlocked ? '#2B3A52' : '#7A8BA0',
                 cursor: unlocked ? 'pointer' : 'default', transition: 'all 0.2s',
                 opacity: unlocked ? 1 : 0.5,
                 boxShadow: active ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
-                border: active ? 'none' : '1px solid #e5e7eb',
+                border: active ? 'none' : '1px solid #DDE3EB',
               }}
             >
               <div style={{fontSize: '1.2rem', marginBottom: '4px'}}>{complete ? '✓' : phase.icon}</div>
@@ -6543,15 +6543,15 @@ function DecisionEngineView({ setCurrentView, scores }) {
       {/* ─── PHASE 1: READINESS ─── */}
       {currentPhase === 1 && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🔍 Phase 1: Readiness Assessment</h2>
-            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '650px'}}>
               Before any transition conversation, your family needs to know: are we actually ready for this? Rate each statement honestly. There are no wrong answers — only clarity.
             </p>
             {readinessScore !== null && (
-              <div style={{marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '12px', background: readinessScore >= 70 ? '#f0fdf4' : readinessScore >= 40 ? '#fffbeb' : '#fef2f2', padding: '8px 16px', borderRadius: '8px', border: `1px solid ${readinessScore >= 70 ? '#2d5a3d33' : readinessScore >= 40 ? '#f59e0b33' : '#dc262633'}`}}>
-                <span style={{fontSize: '1.4rem', fontWeight: '700', color: readinessScore >= 70 ? '#2d5a3d' : readinessScore >= 40 ? '#d97706' : '#dc2626'}}>{readinessScore}</span>
-                <span style={{fontSize: '0.85rem', color: '#475569'}}>
+              <div style={{marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '12px', background: readinessScore >= 70 ? '#FDF0F2' : readinessScore >= 40 ? '#fffbeb' : '#fef2f2', padding: '8px 16px', borderRadius: '8px', border: `1px solid ${readinessScore >= 70 ? '#E05B6F33' : readinessScore >= 40 ? '#f59e0b33' : '#dc262633'}`}}>
+                <span style={{fontSize: '1.4rem', fontWeight: '700', color: readinessScore >= 70 ? '#E05B6F' : readinessScore >= 40 ? '#E05B6F' : '#dc2626'}}>{readinessScore}</span>
+                <span style={{fontSize: '0.85rem', color: '#4A5E73'}}>
                   {readinessScore >= 70 ? 'Your family shows strong readiness signals.' : readinessScore >= 40 ? 'Some areas need attention before proceeding.' : 'Significant groundwork needed. That\'s okay — that\'s why you\'re here.'}
                 </span>
               </div>
@@ -6560,22 +6560,22 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {['Emotional', 'Financial', 'Professional', 'Relational'].map(cat => (
             <div key={cat} style={{marginBottom: '24px'}}>
-              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>{cat} Readiness</h3>
+              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>{cat} Readiness</h3>
               {READINESS_QUESTIONS.filter(q => q.category === cat).map(q => (
-                <div key={q.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #e5e7eb'}}>
-                  <p style={{fontSize: '0.9rem', color: '#1e293b', marginBottom: '10px', lineHeight: '1.5'}}>{q.text}</p>
+                <div key={q.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB'}}>
+                  <p style={{fontSize: '0.9rem', color: '#34597A', marginBottom: '10px', lineHeight: '1.5'}}>{q.text}</p>
                   <div style={{display: 'flex', gap: '6px'}}>
                     {[1,2,3,4,5].map(v => (
                       <button key={v} onClick={() => updateField('readiness', { ...(engineData.readiness || {}), [q.id]: v })}
                         style={{
                           width: '40px', height: '40px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                           fontSize: '0.9rem', fontWeight: '600', transition: 'all 0.15s',
-                          background: (engineData.readiness || {})[q.id] === v ? '#0f172a' : '#f1f5f9',
-                          color: (engineData.readiness || {})[q.id] === v ? 'white' : '#64748b',
+                          background: (engineData.readiness || {})[q.id] === v ? '#2B4C6F' : '#F0F3F8',
+                          color: (engineData.readiness || {})[q.id] === v ? 'white' : '#7A8BA0',
                         }}
                       >{v}</button>
                     ))}
-                    <span style={{fontSize: '0.72rem', color: '#94a3b8', alignSelf: 'center', marginLeft: '8px'}}>1 = Not at all → 5 = Absolutely</span>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0', alignSelf: 'center', marginLeft: '8px'}}>1 = Not at all → 5 = Absolutely</span>
                   </div>
                 </div>
               ))}
@@ -6584,7 +6584,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {readinessComplete && (
             <div style={{textAlign: 'center', padding: '24px 0'}}>
-              <button onClick={() => setCurrentPhase(2)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+              <button onClick={() => setCurrentPhase(2)} style={{background: '#2B4C6F', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
                 Continue to Family Voice →
               </button>
             </div>
@@ -6595,9 +6595,9 @@ function DecisionEngineView({ setCurrentView, scores }) {
       {/* ─── PHASE 2: FAMILY VOICE ─── */}
       {currentPhase === 2 && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🗣️ Phase 2: Family Voice</h2>
-            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '650px'}}>
               Before any numbers, strategies, or advisors — every family member gets heard. This isn't a vote. It's a hearing. Add each family member and have them respond individually.
             </p>
           </div>
@@ -6633,7 +6633,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
                 updateField('familyMembers', members);
                 nameInput.value = '';
               }
-            }} style={{background: '#0f172a', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
+            }} style={{background: '#2B4C6F', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
               + Add
             </button>
           </div>
@@ -6649,8 +6649,8 @@ function DecisionEngineView({ setCurrentView, scores }) {
                       onClick={() => updateField('activeVoiceMember', mi)}
                       style={{
                         padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                        background: engineData.activeVoiceMember === mi ? '#0f172a' : responseCount >= 4 ? '#2d5a3d' : '#f1f5f9',
-                        color: engineData.activeVoiceMember === mi || responseCount >= 4 ? 'white' : '#374151',
+                        background: engineData.activeVoiceMember === mi ? '#2B4C6F' : responseCount >= 4 ? '#E05B6F' : '#F0F3F8',
+                        color: engineData.activeVoiceMember === mi || responseCount >= 4 ? 'white' : '#2B3A52',
                         fontSize: '0.85rem', fontWeight: '600',
                       }}
                     >
@@ -6662,15 +6662,15 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
               {engineData.activeVoiceMember !== undefined && (engineData.familyMembers || [])[engineData.activeVoiceMember] && (
                 <div>
-                  <h3 style={{fontSize: '1rem', fontWeight: '700', marginBottom: '16px', color: '#1a3a5c'}}>
+                  <h3 style={{fontSize: '1rem', fontWeight: '700', marginBottom: '16px', color: '#34597A'}}>
                     {(engineData.familyMembers || [])[engineData.activeVoiceMember].name}'s Voice
                     {(engineData.familyMembers || [])[engineData.activeVoiceMember].role && (
-                      <span style={{fontSize: '0.8rem', fontWeight: '400', color: '#64748b', marginLeft: '8px'}}>({(engineData.familyMembers || [])[engineData.activeVoiceMember].role})</span>
+                      <span style={{fontSize: '0.8rem', fontWeight: '400', color: '#7A8BA0', marginLeft: '8px'}}>({(engineData.familyMembers || [])[engineData.activeVoiceMember].role})</span>
                     )}
                   </h3>
                   {FAMILY_VOICE_PROMPTS.map(prompt => (
-                    <div key={prompt.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '10px', border: '1px solid #e5e7eb'}}>
-                      <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '8px', color: '#1a3a5c', lineHeight: '1.5'}}>{prompt.text}</label>
+                    <div key={prompt.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '10px', border: '1px solid #DDE3EB'}}>
+                      <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '8px', color: '#34597A', lineHeight: '1.5'}}>{prompt.text}</label>
                       <textarea
                         rows="3"
                         placeholder="Share openly — this is confidential to the family..."
@@ -6692,7 +6692,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {voiceComplete && (
             <div style={{textAlign: 'center', padding: '24px 0'}}>
-              <button onClick={() => setCurrentPhase(3)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+              <button onClick={() => setCurrentPhase(3)} style={{background: '#2B4C6F', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
                 Continue to Financial Reality →
               </button>
             </div>
@@ -6703,18 +6703,18 @@ function DecisionEngineView({ setCurrentView, scores }) {
       {/* ─── PHASE 3: FINANCIAL REALITY ─── */}
       {currentPhase === 3 && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>📊 Phase 3: Financial Reality</h2>
-            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '650px'}}>
               Rough numbers are fine — this isn't a formal valuation. The goal is to understand your starting position so the pathway matching can be grounded in reality, not wishful thinking.
             </p>
           </div>
 
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px', marginBottom: '24px'}}>
             {FINANCIAL_INPUTS.map(fi => (
-              <div key={fi.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb'}}>
-                <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '6px', color: '#1a3a5c'}}>{fi.label}</label>
-                {fi.help && <p style={{fontSize: '0.75rem', color: '#94a3b8', marginBottom: '6px'}}>{fi.help}</p>}
+              <div key={fi.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #DDE3EB'}}>
+                <label style={{display: 'block', fontWeight: '600', fontSize: '0.88rem', marginBottom: '6px', color: '#34597A'}}>{fi.label}</label>
+                {fi.help && <p style={{fontSize: '0.75rem', color: '#7A8BA0', marginBottom: '6px'}}>{fi.help}</p>}
                 {fi.type === 'select' ? (
                   <select
                     value={(engineData.financial || {})[fi.id] || ''}
@@ -6739,13 +6739,13 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {/* Financial Health Snapshot */}
           {financialComplete && (
-            <div style={{background: '#f0fdf4', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #2d5a3d22'}}>
-              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2d5a3d', marginBottom: '12px'}}>Financial Snapshot</h3>
-              <p style={{fontSize: '0.88rem', color: '#374151', lineHeight: '1.6'}}>
+            <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #E05B6F22'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#E05B6F', marginBottom: '12px'}}>Financial Snapshot</h3>
+              <p style={{fontSize: '0.88rem', color: '#2B3A52', lineHeight: '1.6'}}>
                 Based on your inputs, your family enterprise has the financial profile to support multiple transition pathways. The next phase will match you to the options that fit your specific situation.
               </p>
               <div style={{marginTop: '16px', textAlign: 'center'}}>
-                <button onClick={() => setCurrentPhase(4)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                <button onClick={() => setCurrentPhase(4)} style={{background: '#2B4C6F', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
                   Continue to Pathway Matching →
                 </button>
               </div>
@@ -6757,9 +6757,9 @@ function DecisionEngineView({ setCurrentView, scores }) {
       {/* ─── PHASE 4: PATHWAY MATCHING ─── */}
       {currentPhase === 4 && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>🧬 Phase 4: Pathway Matching</h2>
-            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '650px'}}>
               Based on your readiness, family voice, and financial reality — here are the pathways that fit your family's DNA. Select the one that resonates most. You can always revisit.
             </p>
           </div>
@@ -6773,7 +6773,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
                   style={{
                     background: selected ? `${pathway.color}08` : 'white',
                     borderRadius: '12px', padding: '20px', cursor: 'pointer',
-                    border: selected ? `2px solid ${pathway.color}` : '1px solid #e5e7eb',
+                    border: selected ? `2px solid ${pathway.color}` : '1px solid #DDE3EB',
                     transition: 'all 0.2s', position: 'relative',
                   }}
                 >
@@ -6782,7 +6782,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
                     <span style={{fontSize: '1.6rem'}}>{pathway.icon}</span>
                     <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: pathway.color}}>{pathway.name}</h3>
                   </div>
-                  <p style={{fontSize: '0.82rem', color: '#64748b', lineHeight: '1.5'}}>{pathway.shortDesc}</p>
+                  <p style={{fontSize: '0.82rem', color: '#7A8BA0', lineHeight: '1.5'}}>{pathway.shortDesc}</p>
                   <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '10px'}}>
                     {pathway.considerations.slice(0, 3).map((c, i) => (
                       <span key={i} style={{fontSize: '0.7rem', background: `${pathway.color}10`, color: pathway.color, padding: '2px 8px', borderRadius: '100px'}}>{c}</span>
@@ -6795,8 +6795,8 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {/* Why this pathway */}
           {pathwaySelected && (
-            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
-              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>Why does this pathway resonate with your family?</label>
+            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
+              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#34597A'}}>Why does this pathway resonate with your family?</label>
               <textarea
                 rows="3"
                 placeholder="In your own words..."
@@ -6805,7 +6805,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
                 style={{width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit'}}
               />
               <div style={{marginTop: '16px', textAlign: 'center'}}>
-                <button onClick={() => setCurrentPhase(5)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                <button onClick={() => setCurrentPhase(5)} style={{background: '#2B4C6F', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
                   Continue to Decision Protocol →
                 </button>
               </div>
@@ -6817,9 +6817,9 @@ function DecisionEngineView({ setCurrentView, scores }) {
       {/* ─── PHASE 5: DECISION PROTOCOL ─── */}
       {currentPhase === 5 && (
         <div>
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
             <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>⚖️ Phase 5: Decision Protocol</h2>
-            <p style={{fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', maxWidth: '650px'}}>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '650px'}}>
               Before your family decides *what* to do, you need to agree on *how* you'll decide. This prevents the most common source of conflict in family transitions — not the decision itself, but the process.
             </p>
           </div>
@@ -6831,17 +6831,17 @@ function DecisionEngineView({ setCurrentView, scores }) {
                 <div key={method.id}
                   onClick={() => updateField('decisionMethod', method.id)}
                   style={{
-                    background: selected ? '#0f172a' : 'white',
+                    background: selected ? '#2B4C6F' : 'white',
                     borderRadius: '12px', padding: '20px', cursor: 'pointer',
-                    border: selected ? '2px solid #0f172a' : '1px solid #e5e7eb',
+                    border: selected ? '2px solid #2B4C6F' : '1px solid #DDE3EB',
                     transition: 'all 0.2s', display: 'flex', alignItems: 'flex-start', gap: '16px',
                   }}
                 >
                   <span style={{fontSize: '1.8rem', flexShrink: 0}}>{method.icon}</span>
                   <div>
-                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: selected ? 'white' : '#1a3a5c', marginBottom: '4px'}}>{method.name}</h3>
-                    <p style={{fontSize: '0.85rem', color: selected ? 'rgba(255,255,255,0.8)' : '#64748b', lineHeight: '1.5', marginBottom: '6px'}}>{method.desc}</p>
-                    <p style={{fontSize: '0.78rem', color: selected ? 'rgba(255,255,255,0.6)' : '#94a3b8', fontStyle: 'italic'}}>{method.fit}</p>
+                    <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: selected ? 'white' : '#34597A', marginBottom: '4px'}}>{method.name}</h3>
+                    <p style={{fontSize: '0.85rem', color: selected ? 'rgba(255,255,255,0.8)' : '#7A8BA0', lineHeight: '1.5', marginBottom: '6px'}}>{method.desc}</p>
+                    <p style={{fontSize: '0.78rem', color: selected ? 'rgba(255,255,255,0.6)' : '#7A8BA0', fontStyle: 'italic'}}>{method.fit}</p>
                   </div>
                   {selected && <span style={{marginLeft: 'auto', color: '#4ade80', fontSize: '1.2rem', flexShrink: 0}}>✓</span>}
                 </div>
@@ -6851,9 +6851,9 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
           {/* Ground rules */}
           {decisionMethodSelected && (
-            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #e5e7eb'}}>
-              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#1a3a5c'}}>Ground Rules — What does your family commit to during this process?</label>
-              <p style={{fontSize: '0.78rem', color: '#94a3b8', marginBottom: '8px'}}>Examples: "No side conversations — everything gets said in the room." "We commit to hearing each other without interrupting." "If we reach an impasse, we'll bring in a facilitator."</p>
+            <div style={{background: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', border: '1px solid #DDE3EB'}}>
+              <label style={{display: 'block', fontWeight: '600', fontSize: '0.9rem', marginBottom: '8px', color: '#34597A'}}>Ground Rules — What does your family commit to during this process?</label>
+              <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '8px'}}>Examples: "No side conversations — everything gets said in the room." "We commit to hearing each other without interrupting." "If we reach an impasse, we'll bring in a facilitator."</p>
               <textarea
                 rows="4"
                 placeholder="Our family commits to..."
@@ -6862,7 +6862,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
                 style={{width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit'}}
               />
               <div style={{marginTop: '16px', textAlign: 'center'}}>
-                <button onClick={() => setCurrentPhase(6)} style={{background: '#0f172a', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
+                <button onClick={() => setCurrentPhase(6)} style={{background: '#2B4C6F', color: 'white', padding: '12px 32px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600'}}>
                   Continue to Roadmap →
                 </button>
               </div>
@@ -6894,7 +6894,7 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
         return (
           <div>
-            <div style={{background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '12px', padding: '24px', marginBottom: '24px', color: 'white'}}>
+            <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '12px', padding: '24px', marginBottom: '24px', color: 'white'}}>
               <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px', color: 'white'}}>🗺️ Phase 6: Your 90-Day Pre-Transition Roadmap</h2>
               <p style={{fontSize: '0.9rem', opacity: 0.8, lineHeight: '1.6', maxWidth: '650px'}}>
                 This is your family's personalized roadmap — generated from your readiness scores, family voice responses, financial inputs, and chosen pathway ({selectedPW?.name || 'TBD'}).
@@ -6903,53 +6903,53 @@ function DecisionEngineView({ setCurrentView, scores }) {
 
             {/* Summary cards */}
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px'}}>
-              <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '14px', border: '1px solid #2d5a3d22'}}>
-                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Readiness Score</div>
-                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#2d5a3d'}}>{readinessScore || '—'}/100</div>
+              <div style={{background: '#FDF0F2', borderRadius: '10px', padding: '14px', border: '1px solid #E05B6F22'}}>
+                <div style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600', textTransform: 'uppercase'}}>Readiness Score</div>
+                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#E05B6F'}}>{readinessScore || '—'}/100</div>
               </div>
-              <div style={{background: '#f0f9ff', borderRadius: '10px', padding: '14px', border: '1px solid #0891b222'}}>
-                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Family Members</div>
-                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#0891b2'}}>{memberCount}</div>
+              <div style={{background: '#FDF0F2', borderRadius: '10px', padding: '14px', border: '1px solid #E05B6F22'}}>
+                <div style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600', textTransform: 'uppercase'}}>Family Members</div>
+                <div style={{fontSize: '1.6rem', fontWeight: '700', color: '#E05B6F'}}>{memberCount}</div>
               </div>
-              <div style={{background: '#faf5ff', borderRadius: '10px', padding: '14px', border: '1px solid #7c3aed22'}}>
-                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Pathway</div>
-                <div style={{fontSize: '1rem', fontWeight: '700', color: '#7c3aed'}}>{selectedPW?.name || '—'}</div>
+              <div style={{background: '#faf5ff', borderRadius: '10px', padding: '14px', border: '1px solid #5AAFB522'}}>
+                <div style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600', textTransform: 'uppercase'}}>Pathway</div>
+                <div style={{fontSize: '1rem', fontWeight: '700', color: '#5AAFB5'}}>{selectedPW?.name || '—'}</div>
               </div>
-              <div style={{background: '#fffbeb', borderRadius: '10px', padding: '14px', border: '1px solid #d9770622'}}>
-                <div style={{fontSize: '0.75rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase'}}>Decision Method</div>
-                <div style={{fontSize: '1rem', fontWeight: '700', color: '#d97706'}}>{selectedDM?.name || '—'}</div>
+              <div style={{background: '#fffbeb', borderRadius: '10px', padding: '14px', border: '1px solid #E05B6F22'}}>
+                <div style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600', textTransform: 'uppercase'}}>Decision Method</div>
+                <div style={{fontSize: '1rem', fontWeight: '700', color: '#E05B6F'}}>{selectedDM?.name || '—'}</div>
               </div>
             </div>
 
             {/* Roadmap timeline */}
             <div style={{position: 'relative', paddingLeft: '24px', marginBottom: '32px'}}>
-              <div style={{position: 'absolute', left: '10px', top: 0, bottom: 0, width: '2px', background: '#e5e7eb'}} />
+              <div style={{position: 'absolute', left: '10px', top: 0, bottom: 0, width: '2px', background: '#DDE3EB'}} />
               {roadmapItems.map((item, i) => (
                 <div key={i} style={{position: 'relative', marginBottom: '16px', paddingLeft: '24px'}}>
-                  <div style={{position: 'absolute', left: '-8px', top: '4px', width: '16px', height: '16px', borderRadius: '50%', background: '#0f172a', border: '3px solid white', boxShadow: '0 0 0 1px #e5e7eb'}} />
-                  <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #e5e7eb'}}>
+                  <div style={{position: 'absolute', left: '-8px', top: '4px', width: '16px', height: '16px', borderRadius: '50%', background: '#2B4C6F', border: '3px solid white', boxShadow: '0 0 0 1px #DDE3EB'}} />
+                  <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', border: '1px solid #DDE3EB'}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px'}}>
-                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1a3a5c'}}>{item.title}</h4>
-                      <span style={{fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600'}}>Week {item.week}</span>
+                      <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#34597A'}}>{item.title}</h4>
+                      <span style={{fontSize: '0.72rem', color: '#7A8BA0', fontWeight: '600'}}>Week {item.week}</span>
                     </div>
-                    <p style={{fontSize: '0.85rem', color: '#475569', lineHeight: '1.6'}}>{item.desc}</p>
-                    <span style={{display: 'inline-block', marginTop: '8px', fontSize: '0.7rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '4px'}}>{item.category}</span>
+                    <p style={{fontSize: '0.85rem', color: '#4A5E73', lineHeight: '1.6'}}>{item.desc}</p>
+                    <span style={{display: 'inline-block', marginTop: '8px', fontSize: '0.7rem', background: '#F0F3F8', color: '#7A8BA0', padding: '2px 8px', borderRadius: '4px'}}>{item.category}</span>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Mark complete + export */}
-            <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb', textAlign: 'center'}}>
-              <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>Your family has a plan.</h3>
-              <p style={{fontSize: '0.88rem', color: '#64748b', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto 20px'}}>
+            <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '24px', border: '1px solid #DDE3EB', textAlign: 'center'}}>
+              <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#34597A', marginBottom: '8px'}}>Your family has a plan.</h3>
+              <p style={{fontSize: '0.88rem', color: '#7A8BA0', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto 20px'}}>
                 Save this roadmap, share it with your family and advisors, and begin the most important transition of your family enterprise's history.
               </p>
               <div style={{display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap'}}>
-                <button onClick={() => { updateField('roadmapGenerated', true); }} style={{background: '#2d5a3d', color: 'white', padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
+                <button onClick={() => { updateField('roadmapGenerated', true); }} style={{background: '#E05B6F', color: 'white', padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
                   Mark Complete ✓
                 </button>
-                <button onClick={() => setCurrentView('dashboard')} style={{background: 'white', color: '#374151', padding: '12px 28px', borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
+                <button onClick={() => setCurrentView('dashboard')} style={{background: 'white', color: '#2B3A52', padding: '12px 28px', borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
                   Return to Dashboard
                 </button>
               </div>
@@ -6996,17 +6996,17 @@ function EducationHub() {
   return (
     <div style={{padding: '28px'}}>
       <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Education Hub</h1>
-        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px', maxWidth: '600px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Education Hub</h1>
+        <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '20px', maxWidth: '600px'}}>
           Explore comprehensive educational content across all 15 areas of the LEP framework. Learn at your own pace and track your progress.
         </p>
-        <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '12px 16px', display: 'inline-block', border: '1px solid #2d5a3d22'}}>
-          <span style={{fontSize: '0.85rem', color: '#15803d', fontWeight: '600'}}>Progress: {completedCount} of {totalAreas} areas completed</span>
+        <div style={{background: '#FDF0F2', borderRadius: '10px', padding: '12px 16px', display: 'inline-block', border: '1px solid #E05B6F22'}}>
+          <span style={{fontSize: '0.85rem', color: '#C44A5C', fontWeight: '600'}}>Progress: {completedCount} of {totalAreas} areas completed</span>
         </div>
       </header>
 
       {/* Category tabs */}
-      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #e5e7eb', paddingBottom: '16px'}}>
+      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #DDE3EB', paddingBottom: '16px'}}>
         {LEP_PILLARS.map(pillar => (
           <button
             key={pillar.id}
@@ -7014,7 +7014,7 @@ function EducationHub() {
             style={{
               padding: '10px 16px',
               background: selectedCategory === pillar.id ? pillar.color : 'transparent',
-              color: selectedCategory === pillar.id ? 'white' : '#475569',
+              color: selectedCategory === pillar.id ? 'white' : '#4A5E73',
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -7040,7 +7040,7 @@ function EducationHub() {
               key={area.id}
               style={{
                 background: 'white',
-                border: '1px solid #e5e7eb',
+                border: '1px solid #DDE3EB',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 cursor: 'pointer',
@@ -7049,13 +7049,13 @@ function EducationHub() {
               }}
               onClick={() => setExpandedArea(isExpanded ? null : area.id)}
             >
-              <div style={{padding: '20px', background: '#f8fafc', borderBottom: isExpanded ? '1px solid #e5e7eb' : 'none'}}>
+              <div style={{padding: '20px', background: '#F5F7FA', borderBottom: isExpanded ? '1px solid #DDE3EB' : 'none'}}>
                 <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px'}}>
                   <div style={{flex: 1}}>
-                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>{area.name}</h3>
-                    <p style={{fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5'}}>{area.description}</p>
+                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>{area.name}</h3>
+                    <p style={{fontSize: '0.85rem', color: '#7A8BA0', lineHeight: '1.5'}}>{area.description}</p>
                   </div>
-                  <div style={{minWidth: '24px', height: '24px', borderRadius: '50%', background: isRead ? '#2d5a3d' : '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.75rem', fontWeight: '700'}}>
+                  <div style={{minWidth: '24px', height: '24px', borderRadius: '50%', background: isRead ? '#E05B6F' : '#DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.75rem', fontWeight: '700'}}>
                     {isRead ? '✓' : '○'}
                   </div>
                 </div>
@@ -7064,21 +7064,21 @@ function EducationHub() {
               {isExpanded && content && (
                 <div style={{padding: '20px', maxHeight: '500px', overflowY: 'auto'}}>
                   {content.subtitle && (
-                    <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '16px', fontStyle: 'italic'}}>
+                    <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '16px', fontStyle: 'italic'}}>
                       {content.subtitle}
                     </p>
                   )}
 
                   {content.sections && content.sections.map(section => (
                     <div key={section.id} style={{marginBottom: '20px'}}>
-                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>
+                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#34597A', marginBottom: '8px'}}>
                         {section.title}
                       </h4>
-                      <p style={{fontSize: '0.85rem', color: '#475569', lineHeight: '1.6', marginBottom: '12px'}}>
+                      <p style={{fontSize: '0.85rem', color: '#4A5E73', lineHeight: '1.6', marginBottom: '12px'}}>
                         {section.description}
                       </p>
                       {section.exercises && section.exercises.length > 0 && (
-                        <div style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', fontSize: '0.8rem', color: '#15803d', borderLeft: '3px solid #2d5a3d'}}>
+                        <div style={{background: '#FDF0F2', borderRadius: '8px', padding: '12px', fontSize: '0.8rem', color: '#C44A5C', borderLeft: '3px solid #E05B6F'}}>
                           {section.exercises.length} key concept{section.exercises.length !== 1 ? 's' : ''} to explore
                         </div>
                       )}
@@ -7088,7 +7088,7 @@ function EducationHub() {
                   {!isRead && (
                     <button
                       onClick={(e) => { e.stopPropagation(); markAreaAsRead(area.id); }}
-                      style={{width: '100%', padding: '12px', background: '#2d5a3d', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '16px'}}
+                      style={{width: '100%', padding: '12px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '16px'}}
                     >
                       Mark as Completed
                     </button>
@@ -7148,22 +7148,22 @@ function WorkbookView() {
   return (
     <div style={{padding: '28px'}}>
       <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Workbook</h1>
-        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px', maxWidth: '600px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Workbook</h1>
+        <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '20px', maxWidth: '600px'}}>
           Reflective exercises to deepen your family's thinking across all 15 areas. Save your progress as you work.
         </p>
         <div style={{display: 'flex', gap: '12px'}}>
-          <div style={{background: '#f0f9ff', borderRadius: '10px', padding: '12px 16px', border: '1px solid #0891b222'}}>
+          <div style={{background: '#FDF0F2', borderRadius: '10px', padding: '12px 16px', border: '1px solid #E05B6F22'}}>
             <span style={{fontSize: '0.85rem', color: '#0c4a6e', fontWeight: '600'}}>{completedAreas} of {areas.length} areas started</span>
           </div>
-          <div style={{background: '#fef3c7', borderRadius: '10px', padding: '12px 16px', border: '1px solid #d9770622'}}>
+          <div style={{background: '#FDF0F2', borderRadius: '10px', padding: '12px 16px', border: '1px solid #E05B6F22'}}>
             <span style={{fontSize: '0.85rem', color: '#854d0e', fontWeight: '600'}}>Auto-saved to browser</span>
           </div>
         </div>
       </header>
 
       {/* Category tabs */}
-      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #e5e7eb', paddingBottom: '16px'}}>
+      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #DDE3EB', paddingBottom: '16px'}}>
         {LEP_PILLARS.map(pillar => (
           <button
             key={pillar.id}
@@ -7171,7 +7171,7 @@ function WorkbookView() {
             style={{
               padding: '10px 16px',
               background: selectedCategory === pillar.id ? pillar.color : 'transparent',
-              color: selectedCategory === pillar.id ? 'white' : '#475569',
+              color: selectedCategory === pillar.id ? 'white' : '#4A5E73',
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -7198,18 +7198,18 @@ function WorkbookView() {
               key={area.id}
               style={{
                 background: 'white',
-                border: '1px solid #e5e7eb',
+                border: '1px solid #DDE3EB',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 transition: 'all 0.2s',
                 boxShadow: isExpanded ? '0 10px 30px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)'
               }}
             >
-              <div style={{padding: '20px', background: '#f8fafc', borderBottom: isExpanded ? '1px solid #e5e7eb' : 'none', cursor: 'pointer'}} onClick={() => setExpandedArea(isExpanded ? null : area.id)}>
+              <div style={{padding: '20px', background: '#F5F7FA', borderBottom: isExpanded ? '1px solid #DDE3EB' : 'none', cursor: 'pointer'}} onClick={() => setExpandedArea(isExpanded ? null : area.id)}>
                 <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px'}}>
                   <div style={{flex: 1}}>
-                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>{area.name}</h3>
-                    <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>
+                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>{area.name}</h3>
+                    <p style={{fontSize: '0.8rem', color: '#7A8BA0'}}>
                       {exercisesCount > 0 ? `${exercisesCount} of ${totalExercises} exercises completed` : `${totalExercises} exercises`}
                     </p>
                   </div>
@@ -7221,10 +7221,10 @@ function WorkbookView() {
                 <div style={{padding: '20px', maxHeight: '600px', overflowY: 'auto'}}>
                   {content.sections && content.sections.map(section => (
                     <div key={section.id} style={{marginBottom: '24px'}}>
-                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>
+                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#34597A', marginBottom: '4px'}}>
                         {section.title}
                       </h4>
-                      <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{section.description}</p>
+                      <p style={{fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '12px'}}>{section.description}</p>
 
                       {section.exercises && section.exercises.map(exercise => (
                         <div key={exercise.id} style={{marginBottom: '16px'}}>
@@ -7236,7 +7236,7 @@ function WorkbookView() {
                               value={workbookData[area.id]?.[exercise.id] || ''}
                               onChange={(e) => updateAreaResponse(area.id, exercise.id, e.target.value)}
                               placeholder={exercise.placeholder}
-                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.85rem', fontFamily: 'system-ui', minHeight: '80px', outline: 'none', resize: 'vertical'}}
+                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.85rem', fontFamily: 'system-ui', minHeight: '80px', outline: 'none', resize: 'vertical'}}
                             />
                           ) : (
                             <input
@@ -7244,11 +7244,11 @@ function WorkbookView() {
                               value={workbookData[area.id]?.[exercise.id] || ''}
                               onChange={(e) => updateAreaResponse(area.id, exercise.id, e.target.value)}
                               placeholder={exercise.placeholder}
-                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.85rem', outline: 'none'}}
+                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.85rem', outline: 'none'}}
                             />
                           )}
                           {exercise.helperText && (
-                            <p style={{fontSize: '0.75rem', color: '#94a3b8', marginTop: '6px', fontStyle: 'italic'}}>
+                            <p style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '6px', fontStyle: 'italic'}}>
                               Tip: {exercise.helperText}
                             </p>
                           )}
@@ -7296,7 +7296,7 @@ function MembershipView({ currentUser }) {
       price: 250,
       period: '/year',
       badge: 'FOUNDING RATE',
-      badgeColor: '#d97706',
+      badgeColor: '#E05B6F',
       highlight: true,
       expiry: 'Rate expires May 1, 2026',
       description: 'Lock in the founding rate before May 1, 2026. Limited availability.',
@@ -7315,7 +7315,7 @@ function MembershipView({ currentUser }) {
       price: 500,
       period: '/year',
       badge: 'STANDARD',
-      badgeColor: '#2d5a3d',
+      badgeColor: '#E05B6F',
       highlight: false,
       description: 'For family enterprises in the Capital Region. Peer groups meet locally.',
       features: [
@@ -7333,7 +7333,7 @@ function MembershipView({ currentUser }) {
       price: 1000,
       period: '/first year',
       badge: 'REGIONAL',
-      badgeColor: '#7c3aed',
+      badgeColor: '#5AAFB5',
       highlight: false,
       renewalNote: '$1,500/yr after first year',
       description: 'For family enterprises outside the Albany area. Virtual + in-person programming.',
@@ -7390,35 +7390,35 @@ function MembershipView({ currentUser }) {
     return (
       <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
         <header style={{marginBottom: '32px'}}>
-          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>Stride Membership</h1>
-          <p style={{fontSize: '0.9rem', color: '#64748b'}}>Your membership status</p>
+          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Stride Membership</h1>
+          <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Your membership status</p>
         </header>
 
-        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '32px', maxWidth: '600px'}}>
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px', maxWidth: '600px'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px'}}>
             <div style={{fontSize: '3rem'}}>✅</div>
             <div>
-              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>Application Received</h2>
-              <p style={{color: '#64748b', fontSize: '0.9rem'}}>Thank you for applying to Stride.</p>
+              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>Application Received</h2>
+              <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>Thank you for applying to Stride.</p>
             </div>
           </div>
 
-          <div style={{background: '#f0fdf4', borderRadius: '12px', padding: '20px', marginBottom: '24px', borderLeft: '4px solid #2d5a3d'}}>
-            <p style={{color: '#15803d', fontSize: '0.9rem', margin: 0}}>
+          <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '20px', marginBottom: '24px', borderLeft: '4px solid #E05B6F'}}>
+            <p style={{color: '#C44A5C', fontSize: '0.9rem', margin: 0}}>
               <strong>Jason Packer will personally review your application and reach out within 48 hours to discuss next steps and peer group placement.</strong>
             </p>
           </div>
 
-          <div style={{borderTop: '1px solid #e5e7eb', paddingTop: '24px'}}>
-            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px'}}>Application Details</h3>
+          <div style={{borderTop: '1px solid #DDE3EB', paddingTop: '24px'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Application Details</h3>
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '0.88rem'}}>
               <div>
-                <div style={{color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px'}}>TIER</div>
-                <div style={{fontWeight: '600', color: '#0f172a'}}>{tiers.find(t => t.id === membershipStatus.tier)?.name}</div>
+                <div style={{color: '#7A8BA0', fontSize: '0.78rem', marginBottom: '4px'}}>TIER</div>
+                <div style={{fontWeight: '600', color: '#2B4C6F'}}>{tiers.find(t => t.id === membershipStatus.tier)?.name}</div>
               </div>
               <div>
-                <div style={{color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px'}}>APPLICATION DATE</div>
-                <div style={{fontWeight: '600', color: '#0f172a'}}>{new Date(membershipStatus.appliedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                <div style={{color: '#7A8BA0', fontSize: '0.78rem', marginBottom: '4px'}}>APPLICATION DATE</div>
+                <div style={{fontWeight: '600', color: '#2B4C6F'}}>{new Date(membershipStatus.appliedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
               </div>
             </div>
           </div>
@@ -7430,17 +7430,17 @@ function MembershipView({ currentUser }) {
   return (
     <div style={{maxWidth: '1000px', margin: '0 auto', padding: '32px 20px'}}>
       <header style={{marginBottom: '16px', textAlign: 'center'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '12px'}}>Stride Membership</h1>
-        <p style={{fontSize: '1rem', color: '#64748b', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Stride Membership</h1>
+        <p style={{fontSize: '1rem', color: '#7A8BA0', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6}}>
           Join a peer group of family enterprise leaders navigating succession, governance, and transition — together.
         </p>
       </header>
 
       {/* Urgency Banner */}
-      <div style={{background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', borderRadius: '12px', padding: '16px 20px', marginBottom: '32px', border: '1px solid #fcd34d', display: 'flex', alignItems: 'center', gap: '12px'}}>
+      <div style={{background: 'linear-gradient(135deg, #FDF0F2 0%, #FCE4E8 100%)', borderRadius: '12px', padding: '16px 20px', marginBottom: '32px', border: '1px solid #fcd34d', display: 'flex', alignItems: 'center', gap: '12px'}}>
         <span style={{fontSize: '1.5rem'}}>⏰</span>
         <div>
-          <div style={{fontWeight: '700', color: '#92400e', fontSize: '0.95rem'}}>Founding rate expires May 1, 2026</div>
+          <div style={{fontWeight: '700', color: '#C44A5C', fontSize: '0.95rem'}}>Founding rate expires May 1, 2026</div>
           <div style={{fontSize: '0.82rem', color: '#b45309'}}>Lock in $250/year before the rate increases</div>
         </div>
       </div>
@@ -7453,40 +7453,40 @@ function MembershipView({ currentUser }) {
             style={{
               background: 'white',
               borderRadius: '16px',
-              border: tier.highlight ? '2px solid #d97706' : '1px solid #e5e7eb',
+              border: tier.highlight ? '2px solid #E05B6F' : '1px solid #DDE3EB',
               padding: '28px',
               position: 'relative',
               boxShadow: tier.highlight ? '0 8px 24px rgba(217,118,6,0.1)' : '0 1px 3px rgba(0,0,0,0.1)',
             }}
           >
             {tier.highlight && (
-              <div style={{position: 'absolute', top: '-12px', left: '20px', background: '#d97706', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+              <div style={{position: 'absolute', top: '-12px', left: '20px', background: '#E05B6F', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
                 🌟 Best Value
               </div>
             )}
 
             <div style={{marginBottom: '20px'}}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
-                <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#0f172a', margin: 0}}>{tier.name}</h3>
+                <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>{tier.name}</h3>
                 <span style={{background: tier.badgeColor, color: 'white', padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em'}}>
                   {tier.badge}
                 </span>
               </div>
-              <div style={{fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', marginBottom: '4px'}}>
-                ${tier.price}<span style={{fontSize: '0.9rem', color: '#64748b'}}>{tier.period}</span>
+              <div style={{fontSize: '1.6rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '4px'}}>
+                ${tier.price}<span style={{fontSize: '0.9rem', color: '#7A8BA0'}}>{tier.period}</span>
               </div>
               {tier.renewalNote && (
-                <div style={{fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic'}}>{tier.renewalNote}</div>
+                <div style={{fontSize: '0.8rem', color: '#7A8BA0', fontStyle: 'italic'}}>{tier.renewalNote}</div>
               )}
             </div>
 
-            <p style={{fontSize: '0.9rem', color: '#64748b', marginBottom: '20px', lineHeight: 1.5}}>{tier.description}</p>
+            <p style={{fontSize: '0.9rem', color: '#7A8BA0', marginBottom: '20px', lineHeight: 1.5}}>{tier.description}</p>
 
-            <div style={{borderTop: '1px solid #e5e7eb', paddingTop: '20px', marginBottom: '20px'}}>
-              <div style={{fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '12px'}}>Includes:</div>
+            <div style={{borderTop: '1px solid #DDE3EB', paddingTop: '20px', marginBottom: '20px'}}>
+              <div style={{fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Includes:</div>
               <ul style={{margin: 0, padding: 0, listStyle: 'none'}}>
                 {tier.features.map((feature, idx) => (
-                  <li key={idx} style={{fontSize: '0.82rem', color: '#475569', marginBottom: '8px', paddingLeft: '20px', position: 'relative'}}>
+                  <li key={idx} style={{fontSize: '0.82rem', color: '#4A5E73', marginBottom: '8px', paddingLeft: '20px', position: 'relative'}}>
                     <span style={{position: 'absolute', left: 0}}>✓</span>
                     {feature}
                   </li>
@@ -7499,7 +7499,7 @@ function MembershipView({ currentUser }) {
               style={{
                 width: '100%',
                 padding: '12px',
-                background: tier.highlight ? 'linear-gradient(135deg, #d97706, #f97316)' : 'linear-gradient(135deg, #2d5a3d, #4a7c5d)',
+                background: tier.highlight ? 'linear-gradient(135deg, #E05B6F, #f97316)' : 'linear-gradient(135deg, #E05B6F, #5AAFB5)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '10px',
@@ -7519,20 +7519,20 @@ function MembershipView({ currentUser }) {
 
       {/* Application Form */}
       {showForm && (
-        <div style={{background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '32px', maxWidth: '700px', margin: '0 auto'}}>
-          <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Membership Application</h2>
-          <p style={{color: '#64748b', marginBottom: '24px'}}>Tell us about your family enterprise and what you're hoping to achieve with Stride.</p>
+        <div style={{background: '#F5F7FA', borderRadius: '16px', border: '1px solid #EFF1F6', padding: '32px', maxWidth: '700px', margin: '0 auto'}}>
+          <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Membership Application</h2>
+          <p style={{color: '#7A8BA0', marginBottom: '24px'}}>Tell us about your family enterprise and what you're hoping to achieve with Stride.</p>
 
           {submitted ? (
             <div style={{textAlign: 'center', padding: '32px'}}>
               <div style={{fontSize: '3rem', marginBottom: '16px'}}>✅</div>
-              <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#0f172a', marginBottom: '12px'}}>Application Received!</h3>
-              <p style={{color: '#64748b', fontSize: '0.95rem', marginBottom: '20px', lineHeight: 1.6}}>
+              <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Application Received!</h3>
+              <p style={{color: '#7A8BA0', fontSize: '0.95rem', marginBottom: '20px', lineHeight: 1.6}}>
                 Application received! Jason Packer will personally review your application and reach out within 48 hours to discuss next steps and peer group placement.
               </p>
               <button
                 onClick={() => { setShowForm(false); setSubmitted(false); }}
-                style={{background: '#2d5a3d', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
+                style={{background: '#E05B6F', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
               >
                 Done
               </button>
@@ -7540,44 +7540,44 @@ function MembershipView({ currentUser }) {
           ) : (
             <>
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Full Name *</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Full Name *</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleFormChange('name', e.target.value)}
                   placeholder="Your full name"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
                 />
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Email *</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Email *</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleFormChange('email', e.target.value)}
                   placeholder="you@family.com"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
                 />
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Family Enterprise Name *</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Family Enterprise Name *</label>
                 <input
                   type="text"
                   value={formData.enterpriseName}
                   onChange={(e) => handleFormChange('enterpriseName', e.target.value)}
                   placeholder="e.g., The Packer Family Enterprise"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
                 />
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Your Role *</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Your Role *</label>
                 <select
                   value={formData.role}
                   onChange={(e) => handleFormChange('role', e.target.value)}
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none', background: 'white'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', background: 'white'}}
                 >
                   <option value="Current Owner / Patriarch / Matriarch">Current Owner / Patriarch / Matriarch</option>
                   <option value="Next Generation">Next Generation Leader</option>
@@ -7587,48 +7587,48 @@ function MembershipView({ currentUser }) {
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Location *</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Location *</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => handleFormChange('location', e.target.value)}
                   placeholder="City, State or Region"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
                 />
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Brief description of your family enterprise</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Brief description of your family enterprise</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleFormChange('description', e.target.value)}
                   placeholder="Tell us about your business and family..."
                   rows="3"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
                 />
               </div>
 
               <div style={{marginBottom: '24px'}}>
-                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>What are you hoping to get from Stride?</label>
+                <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>What are you hoping to get from Stride?</label>
                 <textarea
                   value={formData.goals}
                   onChange={(e) => handleFormChange('goals', e.target.value)}
                   placeholder="Succession planning? Governance? Family dynamics? Something else?"
                   rows="3"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
+                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
                 />
               </div>
 
               <div style={{display: 'flex', gap: '12px'}}>
                 <button
                   onClick={handleSubmit}
-                  style={{flex: 1, padding: '13px', background: 'linear-gradient(135deg, #2d5a3d, #4a7c5d)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer'}}
+                  style={{flex: 1, padding: '13px', background: 'linear-gradient(135deg, #E05B6F, #5AAFB5)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer'}}
                 >
                   Submit Application
                 </button>
                 <button
                   onClick={() => { setShowForm(false); setSelectedTier(null); }}
-                  style={{flex: 1, padding: '13px', background: 'white', color: '#0f172a', border: '1px solid #e5e7eb', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'}}
+                  style={{flex: 1, padding: '13px', background: 'white', color: '#2B4C6F', border: '1px solid #DDE3EB', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'}}
                 >
                   Cancel
                 </button>
@@ -7749,7 +7749,7 @@ function CommunityView() {
   };
 
   const categories = [
-    { id: 'general', name: 'General', color: '#64748b' },
+    { id: 'general', name: 'General', color: '#7A8BA0' },
     ...LEP_PILLARS.map(p => ({ id: p.id, name: p.name.split(' ').slice(0, 2).join(' '), color: p.color }))
   ];
 
@@ -7759,27 +7759,27 @@ function CommunityView() {
   return (
     <div style={{padding: '28px', maxWidth: '900px', margin: '0 auto'}}>
       <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Community</h1>
-        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Community</h1>
+        <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '20px'}}>
           Discuss challenges, share experiences, and learn from other families navigating their enterprise journey.
         </p>
         <button
           onClick={() => setShowNewPost(!showNewPost)}
-          style={{background: '#2d5a3d', color: 'white', padding: '12px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+          style={{background: '#E05B6F', color: 'white', padding: '12px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
         >
           {showNewPost ? 'Cancel' : '+ New Discussion'}
         </button>
       </header>
 
       {showNewPost && (
-        <div style={{background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', marginBottom: '32px'}}>
-          <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px'}}>Start a Discussion</h3>
+        <div style={{background: '#F5F7FA', border: '1px solid #DDE3EB', borderRadius: '12px', padding: '24px', marginBottom: '32px'}}>
+          <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Start a Discussion</h3>
 
           <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Topic</label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
           >
             {categories.map(cat => (
               <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -7792,7 +7792,7 @@ function CommunityView() {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             placeholder="What's on your mind?"
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
           />
 
           <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Message</label>
@@ -7800,19 +7800,19 @@ function CommunityView() {
             value={newBody}
             onChange={(e) => setNewBody(e.target.value)}
             placeholder="Share your question or experience..."
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', minHeight: '120px', marginBottom: '16px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', minHeight: '120px', marginBottom: '16px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
           />
 
           <div style={{display: 'flex', gap: '12px'}}>
             <button
               onClick={createPost}
-              style={{background: '#2d5a3d', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+              style={{background: '#E05B6F', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
             >
               Post Discussion
             </button>
             <button
               onClick={() => setShowNewPost(false)}
-              style={{background: 'white', color: '#334155', padding: '10px 24px', borderRadius: '8px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+              style={{background: 'white', color: '#334155', padding: '10px 24px', borderRadius: '8px', border: '1px solid #EFF1F6', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
             >
               Cancel
             </button>
@@ -7829,8 +7829,8 @@ function CommunityView() {
             style={{
               padding: '8px 14px',
               background: selectedCategory === cat.id ? cat.color : 'transparent',
-              color: selectedCategory === cat.id ? 'white' : '#64748b',
-              border: `1px solid ${selectedCategory === cat.id ? cat.color : '#e5e7eb'}`,
+              color: selectedCategory === cat.id ? 'white' : '#7A8BA0',
+              border: `1px solid ${selectedCategory === cat.id ? cat.color : '#DDE3EB'}`,
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: '0.85rem',
@@ -7846,11 +7846,11 @@ function CommunityView() {
       {/* Posts feed */}
       <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
         {sortedPosts.length === 0 ? (
-          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '32px', textAlign: 'center', border: '1px solid #e5e7eb'}}>
-            <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '12px'}}>No discussions yet in this category.</p>
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '32px', textAlign: 'center', border: '1px solid #DDE3EB'}}>
+            <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '12px'}}>No discussions yet in this category.</p>
             <button
               onClick={() => setShowNewPost(true)}
-              style={{background: 'none', border: 'none', color: '#2d5a3d', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', textDecoration: 'underline'}}
+              style={{background: 'none', border: 'none', color: '#E05B6F', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', textDecoration: 'underline'}}
             >
               Start one now
             </button>
@@ -7861,7 +7861,7 @@ function CommunityView() {
               key={post.id}
               style={{
                 background: 'white',
-                border: '1px solid #e5e7eb',
+                border: '1px solid #DDE3EB',
                 borderRadius: '12px',
                 padding: '20px',
                 cursor: 'pointer',
@@ -7871,58 +7871,58 @@ function CommunityView() {
               onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
             >
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '8px'}}>
-                <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', flex: 1}}>{post.title}</h3>
+                <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', flex: 1}}>{post.title}</h3>
                 <span style={{fontSize: '0.75rem', background: categories.find(c => c.id === post.category)?.color + '22', color: categories.find(c => c.id === post.category)?.color, padding: '4px 10px', borderRadius: '4px', fontWeight: '600', whiteSpace: 'nowrap'}}>
                   {categories.find(c => c.id === post.category)?.name}
                 </span>
               </div>
 
-              <div style={{display: 'flex', gap: '12px', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '12px'}}>
+              <div style={{display: 'flex', gap: '12px', fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '12px'}}>
                 <span>{post.author}</span>
                 <span>•</span>
                 <span>{new Date(post.timestamp).toLocaleDateString()}</span>
               </div>
 
-              <p style={{fontSize: '0.9rem', color: '#475569', lineHeight: '1.6', marginBottom: expandedPost === post.id ? '16px' : '0px'}}>
+              <p style={{fontSize: '0.9rem', color: '#4A5E73', lineHeight: '1.6', marginBottom: expandedPost === post.id ? '16px' : '0px'}}>
                 {post.body}
               </p>
 
               {expandedPost === post.id && (
-                <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e7eb'}}>
+                <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #DDE3EB'}}>
                   {post.replies && post.replies.length > 0 && (
                     <div style={{marginBottom: '20px'}}>
                       <h4 style={{fontSize: '0.85rem', fontWeight: '700', color: '#334155', marginBottom: '12px'}}>{post.replies.length} replies</h4>
                       {post.replies.map(reply => (
-                        <div key={reply.id} style={{background: '#f8fafc', borderRadius: '8px', padding: '12px', marginBottom: '8px'}}>
-                          <div style={{display: 'flex', gap: '8px', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '6px'}}>
+                        <div key={reply.id} style={{background: '#F5F7FA', borderRadius: '8px', padding: '12px', marginBottom: '8px'}}>
+                          <div style={{display: 'flex', gap: '8px', fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '6px'}}>
                             <span style={{fontWeight: '600', color: '#334155'}}>{reply.author}</span>
                             <span>•</span>
                             <span>{new Date(reply.timestamp).toLocaleDateString()}</span>
                           </div>
-                          <p style={{fontSize: '0.85rem', color: '#475569'}}>{reply.text}</p>
+                          <p style={{fontSize: '0.85rem', color: '#4A5E73'}}>{reply.text}</p>
                         </div>
                       ))}
                     </div>
                   )}
 
                   {replyingTo === post.id ? (
-                    <div style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', border: '1px solid #2d5a3d22'}}>
+                    <div style={{background: '#FDF0F2', borderRadius: '8px', padding: '12px', border: '1px solid #E05B6F22'}}>
                       <textarea
                         value={newReply}
                         onChange={(e) => setNewReply(e.target.value)}
                         placeholder="Share your thoughts..."
-                        style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.85rem', minHeight: '60px', marginBottom: '8px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
+                        style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #EFF1F6', fontSize: '0.85rem', minHeight: '60px', marginBottom: '8px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
                       />
                       <div style={{display: 'flex', gap: '8px'}}>
                         <button
                           onClick={(e) => { e.stopPropagation(); addReply(post.id); }}
-                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                          style={{background: '#E05B6F', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
                         >
                           Reply
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); setReplyingTo(null); setNewReply(''); }}
-                          style={{background: 'white', color: '#334155', padding: '8px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                          style={{background: 'white', color: '#334155', padding: '8px 16px', borderRadius: '6px', border: '1px solid #EFF1F6', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
                         >
                           Cancel
                         </button>
@@ -7931,7 +7931,7 @@ function CommunityView() {
                   ) : (
                     <button
                       onClick={(e) => { e.stopPropagation(); setReplyingTo(post.id); }}
-                      style={{background: 'white', color: '#2d5a3d', padding: '8px 16px', borderRadius: '6px', border: '1px solid #2d5a3d', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                      style={{background: 'white', color: '#E05B6F', padding: '8px 16px', borderRadius: '6px', border: '1px solid #E05B6F', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
                     >
                       Reply
                     </button>
@@ -7982,7 +7982,7 @@ export default function App() {
   };
 
   if (!authChecked) {
-    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0f1c'}}><div style={{color: '#c9a962', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>◇ Stride</div></div>;
+    return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{color: '#c9a962', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif"}}>◇ Stride</div></div>;
   }
 
   if (!currentUser) {
@@ -8113,23 +8113,23 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
   const tabStyle = (isActive) => ({
     padding: '12px 20px',
     border: 'none',
-    background: isActive ? '#0f172a' : 'transparent',
-    color: isActive ? '#10b981' : '#94a3b8',
+    background: isActive ? '#2B4C6F' : 'transparent',
+    color: isActive ? '#E05B6F' : '#7A8BA0',
     fontSize: '0.95rem',
     fontWeight: isActive ? '600' : '500',
     cursor: 'pointer',
-    borderBottom: isActive ? '2px solid #10b981' : '1px solid #e5e7eb',
+    borderBottom: isActive ? '2px solid #E05B6F' : '1px solid #DDE3EB',
     transition: 'all 0.2s ease',
   });
 
   return (
     <div>
       <header style={{marginBottom: '24px'}}>
-        <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>Sessions & Events</h1>
-        <p style={{fontSize: '0.9rem', color: '#64748b'}}>Your peer group meetings, education sessions, and Stride events — all in one place.</p>
+        <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Sessions & Events</h1>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Your peer group meetings, education sessions, and Stride events — all in one place.</p>
       </header>
 
-      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '24px', background: '#f8fafc', borderRadius: '12px 12px 0 0' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #DDE3EB', marginBottom: '24px', background: '#F5F7FA', borderRadius: '12px 12px 0 0' }}>
         <button style={tabStyle(activeTab === 'upcoming')} onClick={() => setActiveTab('upcoming')}>
           Upcoming ({upcoming.length})
         </button>
@@ -8141,35 +8141,35 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
         </button>
       </div>
 
-      <div style={{ background: '#f8fafc', borderRadius: '0 0 12px 12px', padding: '24px' }}>
+      <div style={{ background: '#F5F7FA', borderRadius: '0 0 12px 12px', padding: '24px' }}>
         {activeTab === 'upcoming' && (
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
             {upcoming.length === 0 ? (
-              <div style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>
+              <div style={{textAlign: 'center', padding: '48px', color: '#7A8BA0'}}>
                 <div style={{fontSize: '2rem', marginBottom: '12px'}}>📅</div>
-                <p style={{fontWeight: '600', color: '#64748b'}}>No upcoming sessions</p>
+                <p style={{fontWeight: '600', color: '#7A8BA0'}}>No upcoming sessions</p>
                 <p style={{fontSize: '0.85rem'}}>Your facilitator will schedule your next peer group session soon.</p>
               </div>
             ) : upcoming.map(session => (
-              <div key={session.id} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap'}}>
+              <div key={session.id} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap'}}>
                 <div style={{flex: 1, minWidth: '250px'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
-                    <span style={{background: session.type === 'peer-group' ? '#0f172a' : session.type === 'education' ? '#7c3aed' : '#0891b2', color: 'white', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.03em'}}>
+                    <span style={{background: session.type === 'peer-group' ? '#2B4C6F' : session.type === 'education' ? '#5AAFB5' : '#E05B6F', color: 'white', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.03em'}}>
                       {session.type === 'peer-group' ? 'Peer Group' : session.type === 'education' ? 'Education' : 'Workshop'}
                     </span>
-                    {session.prepRequired && <span style={{background: '#fef3c7', color: '#92400e', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600'}}>Prep Required</span>}
+                    {session.prepRequired && <span style={{background: '#FDF0F2', color: '#C44A5C', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600'}}>Prep Required</span>}
                   </div>
-                  <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>{session.title}</h3>
-                  <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '8px'}}>{session.description}</p>
-                  <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#94a3b8'}}>
+                  <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{session.title}</h3>
+                  <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '8px'}}>{session.description}</p>
+                  <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#7A8BA0'}}>
                     <span>📅 {new Date(session.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
                     <span>🕐 {session.time}</span>
                     {session.facilitator && <span>👤 {session.facilitator}</span>}
                   </div>
                   {session.prepWork && (
-                    <div style={{marginTop: '12px', background: '#f0fdf4', borderRadius: '8px', padding: '12px', borderLeft: '3px solid #2d5a3d'}}>
-                      <div style={{fontSize: '0.78rem', fontWeight: '700', color: '#15803d', marginBottom: '4px'}}>Session Prep</div>
-                      <p style={{fontSize: '0.82rem', color: '#475569', lineHeight: '1.5'}}>{session.prepWork}</p>
+                    <div style={{marginTop: '12px', background: '#FDF0F2', borderRadius: '8px', padding: '12px', borderLeft: '3px solid #E05B6F'}}>
+                      <div style={{fontSize: '0.78rem', fontWeight: '700', color: '#C44A5C', marginBottom: '4px'}}>Session Prep</div>
+                      <p style={{fontSize: '0.82rem', color: '#4A5E73', lineHeight: '1.5'}}>{session.prepWork}</p>
                     </div>
                   )}
                 </div>
@@ -8178,9 +8178,9 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
                   style={{
                     padding: '10px 24px',
                     borderRadius: '8px',
-                    border: rsvps[session.id] ? '2px solid #2d5a3d' : '2px solid #e5e7eb',
-                    background: rsvps[session.id] ? '#f0fdf4' : 'white',
-                    color: rsvps[session.id] ? '#2d5a3d' : '#64748b',
+                    border: rsvps[session.id] ? '2px solid #E05B6F' : '2px solid #DDE3EB',
+                    background: rsvps[session.id] ? '#FDF0F2' : 'white',
+                    color: rsvps[session.id] ? '#E05B6F' : '#7A8BA0',
                     fontWeight: '600',
                     fontSize: '0.88rem',
                     cursor: 'pointer',
@@ -8198,23 +8198,23 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
         {activeTab === 'past' && (
           <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
             {past.length === 0 ? (
-              <div style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>
+              <div style={{textAlign: 'center', padding: '48px', color: '#7A8BA0'}}>
                 <div style={{fontSize: '2rem', marginBottom: '12px'}}>📋</div>
-                <p style={{fontWeight: '600', color: '#64748b'}}>No past sessions yet</p>
+                <p style={{fontWeight: '600', color: '#7A8BA0'}}>No past sessions yet</p>
                 <p style={{fontSize: '0.85rem'}}>Your session history and recordings will appear here.</p>
               </div>
             ) : past.map(session => (
-              <div key={session.id} style={{background: 'white', borderRadius: '10px', border: '1px solid #e5e7eb', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px'}}>
+              <div key={session.id} style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px'}}>
                 <div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                    <span style={{fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '600'}}>{session.type === 'peer-group' ? 'Peer Group' : 'Education'}</span>
-                    <span style={{fontSize: '0.72rem', color: '#94a3b8'}}>{new Date(session.date).toLocaleDateString()}</span>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', fontWeight: '600'}}>{session.type === 'peer-group' ? 'Peer Group' : 'Education'}</span>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{new Date(session.date).toLocaleDateString()}</span>
                   </div>
-                  <h4 style={{fontSize: '0.95rem', fontWeight: '600', color: '#0f172a'}}>{session.title}</h4>
+                  <h4 style={{fontSize: '0.95rem', fontWeight: '600', color: '#2B4C6F'}}>{session.title}</h4>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
-                  {session.recording && <button style={{padding: '6px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', background: 'white', color: '#475569', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>▶ Recording</button>}
-                  {session.takeaways && <button style={{padding: '6px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', background: 'white', color: '#475569', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>📝 Takeaways</button>}
+                  {session.recording && <button style={{padding: '6px 14px', borderRadius: '6px', border: '1px solid #DDE3EB', background: 'white', color: '#4A5E73', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>▶ Recording</button>}
+                  {session.takeaways && <button style={{padding: '6px 14px', borderRadius: '6px', border: '1px solid #DDE3EB', background: 'white', color: '#4A5E73', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>📝 Takeaways</button>}
                 </div>
               </div>
             ))}
@@ -8223,20 +8223,20 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
 
         {activeTab === 'events' && (
           <div>
-            <div style={{background: '#fffbeb', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #fde68a'}}>
-              <p style={{fontSize: '0.88rem', color: '#92400e', fontWeight: '600'}}>Stride Events</p>
+            <div style={{background: '#fffbeb', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', border: '1px solid #FCE4E8'}}>
+              <p style={{fontSize: '0.88rem', color: '#C44A5C', fontWeight: '600'}}>Stride Events</p>
               <p style={{fontSize: '0.82rem', color: '#a16207', lineHeight: '1.5'}}>Special workshops, guest speakers, and community gatherings. Your Stride membership includes access to all events.</p>
             </div>
             <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
               {sessions.filter(s => s.type === 'workshop' || s.type === 'education').filter(s => new Date(s.date) >= new Date()).map(event => (
-                <div key={event.id} style={{background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px'}}>
+                <div key={event.id} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
-                    <span style={{background: event.type === 'education' ? '#7c3aed' : '#0891b2', color: 'white', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600'}}>{event.type === 'education' ? 'Education' : 'Workshop'}</span>
+                    <span style={{background: event.type === 'education' ? '#5AAFB5' : '#E05B6F', color: 'white', fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px', fontWeight: '600'}}>{event.type === 'education' ? 'Education' : 'Workshop'}</span>
                   </div>
-                  <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px'}}>{event.title}</h3>
-                  <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '12px'}}>{event.description}</p>
+                  <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{event.title}</h3>
+                  <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '12px'}}>{event.description}</p>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#94a3b8'}}>
+                    <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#7A8BA0'}}>
                       <span>📅 {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
                       <span>🕐 {event.time}</span>
                     </div>
@@ -8244,9 +8244,9 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
                       onClick={() => toggleRsvp(event.id)}
                       style={{
                         padding: '8px 20px', borderRadius: '8px',
-                        border: rsvps[event.id] ? '2px solid #2d5a3d' : '2px solid #e5e7eb',
-                        background: rsvps[event.id] ? '#f0fdf4' : 'white',
-                        color: rsvps[event.id] ? '#2d5a3d' : '#64748b',
+                        border: rsvps[event.id] ? '2px solid #E05B6F' : '2px solid #DDE3EB',
+                        background: rsvps[event.id] ? '#FDF0F2' : 'white',
+                        color: rsvps[event.id] ? '#E05B6F' : '#7A8BA0',
                         fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer',
                       }}
                     >
@@ -8270,19 +8270,19 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
   const tabStyle = (isActive) => ({
     padding: '12px 20px',
     border: 'none',
-    background: isActive ? '#0f172a' : 'transparent',
-    color: isActive ? '#10b981' : '#94a3b8',
+    background: isActive ? '#2B4C6F' : 'transparent',
+    color: isActive ? '#E05B6F' : '#7A8BA0',
     fontSize: '0.95rem',
     fontWeight: isActive ? '600' : '500',
     cursor: 'pointer',
-    borderBottom: isActive ? '2px solid #10b981' : '1px solid #e5e7eb',
+    borderBottom: isActive ? '2px solid #E05B6F' : '1px solid #DDE3EB',
     transition: 'all 0.2s ease',
   });
 
   return (
     <div>
       {/* Tab navigation */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '24px', background: '#f8fafc', borderRadius: '12px 12px 0 0' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #DDE3EB', marginBottom: '24px', background: '#F5F7FA', borderRadius: '12px 12px 0 0' }}>
         <button style={tabStyle(activeTab === 'profile')} onClick={() => setActiveTab('profile')}>
           Profile
         </button>
@@ -8295,7 +8295,7 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
       </div>
 
       {/* Tab content */}
-      <div style={{ background: '#f8fafc', borderRadius: '0 0 12px 12px', padding: '24px' }}>
+      <div style={{ background: '#F5F7FA', borderRadius: '0 0 12px 12px', padding: '24px' }}>
         {activeTab === 'profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {activeTab === 'dynamics' && <FamilyDynamicsView familyProfile={familyProfile} />}
         {activeTab === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
