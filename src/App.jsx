@@ -12,39 +12,41 @@ import './App.css';
 // ─── STRIDE PINWHEEL LOGO ────────────────────────────────────
 function StrideLogo({ size = 40 }) {
   // Two interlocking rosettes — coral (bottom-left) and teal (top-right)
-  // Each rosette is a circle of radiating wedge spokes
-  const spokeCount = 20;
-  const coralCenter = { x: 30, y: 62 };
-  const tealCenter = { x: 58, y: 30 };
-  const radius = 30;
-  const innerRadius = 4;
-  const spokeWidth = 0.14; // radians half-width of each spoke
+  // Thick radiating wedge spokes forming dense sunburst pattern
+  const spokeCount = 18;
+  const coralCenter = { x: 28, y: 60 };
+  const tealCenter = { x: 56, y: 26 };
+  const radius = 28;
+  const innerRadius = 7;
+  const spokeHalfAngle = Math.PI / spokeCount * 0.75; // thick wedges
 
   const makeSpokes = (cx, cy, r) => {
     const paths = [];
     for (let i = 0; i < spokeCount; i++) {
       const angle = (i / spokeCount) * Math.PI * 2;
-      const x1 = cx + Math.cos(angle - spokeWidth) * innerRadius;
-      const y1 = cy + Math.sin(angle - spokeWidth) * innerRadius;
-      const x2 = cx + Math.cos(angle) * r;
-      const y2 = cy + Math.sin(angle) * r;
-      const x3 = cx + Math.cos(angle + spokeWidth) * innerRadius;
-      const y3 = cy + Math.sin(angle + spokeWidth) * innerRadius;
-      paths.push(`M${x1},${y1} L${x2},${y2} L${x3},${y3}Z`);
+      const x1 = cx + Math.cos(angle - spokeHalfAngle) * innerRadius;
+      const y1 = cy + Math.sin(angle - spokeHalfAngle) * innerRadius;
+      const x2 = cx + Math.cos(angle - spokeHalfAngle * 0.3) * r;
+      const y2 = cy + Math.sin(angle - spokeHalfAngle * 0.3) * r;
+      const x3 = cx + Math.cos(angle + spokeHalfAngle * 0.3) * r;
+      const y3 = cy + Math.sin(angle + spokeHalfAngle * 0.3) * r;
+      const x4 = cx + Math.cos(angle + spokeHalfAngle) * innerRadius;
+      const y4 = cy + Math.sin(angle + spokeHalfAngle) * innerRadius;
+      paths.push(`M${x1},${y1} L${x2},${y2} L${x3},${y3} L${x4},${y4}Z`);
     }
     return paths.join(' ');
   };
 
   return (
-    <svg width={size} height={size} viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size} height={size} viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Coral rosette — bottom-left */}
       <path d={makeSpokes(coralCenter.x, coralCenter.y, radius)} fill="#E05B6F"/>
-      <circle cx={coralCenter.x} cy={coralCenter.y} r={5.5} fill="#E05B6F"/>
-      <circle cx={coralCenter.x} cy={coralCenter.y} r={2.8} fill="white"/>
+      <circle cx={coralCenter.x} cy={coralCenter.y} r={7} fill="#E05B6F"/>
+      <circle cx={coralCenter.x} cy={coralCenter.y} r={3.5} fill="white"/>
       {/* Teal rosette — top-right */}
       <path d={makeSpokes(tealCenter.x, tealCenter.y, radius)} fill="#4AABB3"/>
-      <circle cx={tealCenter.x} cy={tealCenter.y} r={5.5} fill="#4AABB3"/>
-      <circle cx={tealCenter.x} cy={tealCenter.y} r={2.8} fill="#2B4C6F"/>
+      <circle cx={tealCenter.x} cy={tealCenter.y} r={7} fill="#4AABB3"/>
+      <circle cx={tealCenter.x} cy={tealCenter.y} r={3.5} fill="#2B4C6F"/>
     </svg>
   );
 }
@@ -119,8 +121,8 @@ function AuthScreen({ onLogin }) {
       {/* Left panel — brand */}
       <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', color: 'white', maxWidth: '560px'}}>
         <div style={{marginBottom: '48px'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px'}}>
-            <StrideLogo size={44} />
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px'}}>
+            <StrideLogo size={56} />
             <span style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px'}}>Stride</span>
           </div>
           <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2.8rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '20px'}}>
