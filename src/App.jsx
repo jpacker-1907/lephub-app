@@ -2414,6 +2414,9 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser 
     { id: 'meetings', icon: '▢', name: 'Meetings' },
     { id: 'vault', icon: '▤', name: 'Vault' },
     { id: 'pillars', icon: '▣', name: 'Pillars' },
+    { id: 'education', icon: '📚', name: 'Education' },
+    { id: 'workbook', icon: '📝', name: 'Workbook' },
+    { id: 'community', icon: '💬', name: 'Community' },
   ];
 
   return (
@@ -7017,6 +7020,616 @@ function DecisionEngineView({ setCurrentView, scores }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// EDUCATION HUB VIEW
+// ═══════════════════════════════════════════════════════════════
+
+function EducationHub() {
+  const [selectedCategory, setSelectedCategory] = useState('purpose-identity');
+  const [expandedArea, setExpandedArea] = useState(null);
+  const [educationProgress, setEducationProgress] = useState({});
+
+  useEffect(() => {
+    const saved = localStorage.getItem('lep_education_progress');
+    if (saved) setEducationProgress(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('lep_education_progress', JSON.stringify(educationProgress));
+  }, [educationProgress]);
+
+  const getAreasForCategory = (categoryId) => {
+    const category = LEP_PILLARS.find(p => p.id === categoryId);
+    return category ? category.modules : [];
+  };
+
+  const markAreaAsRead = (areaId) => {
+    setEducationProgress(prev => ({ ...prev, [areaId]: true }));
+  };
+
+  const completedCount = Object.values(educationProgress).filter(Boolean).length;
+  const totalAreas = 15;
+
+  const areas = getAreasForCategory(selectedCategory);
+
+  return (
+    <div style={{padding: '28px'}}>
+      <header style={{marginBottom: '32px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Education Hub</h1>
+        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px', maxWidth: '600px'}}>
+          Explore comprehensive educational content across all 15 areas of the LEP framework. Learn at your own pace and track your progress.
+        </p>
+        <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '12px 16px', display: 'inline-block', border: '1px solid #2d5a3d22'}}>
+          <span style={{fontSize: '0.85rem', color: '#15803d', fontWeight: '600'}}>Progress: {completedCount} of {totalAreas} areas completed</span>
+        </div>
+      </header>
+
+      {/* Category tabs */}
+      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #e5e7eb', paddingBottom: '16px'}}>
+        {LEP_PILLARS.map(pillar => (
+          <button
+            key={pillar.id}
+            onClick={() => { setSelectedCategory(pillar.id); setExpandedArea(null); }}
+            style={{
+              padding: '10px 16px',
+              background: selectedCategory === pillar.id ? pillar.color : 'transparent',
+              color: selectedCategory === pillar.id ? 'white' : '#475569',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: selectedCategory === pillar.id ? '600' : '500',
+              transition: 'all 0.2s'
+            }}
+          >
+            {pillar.icon} {pillar.name.split(' ').slice(0, 2).join(' ')}
+          </button>
+        ))}
+      </div>
+
+      {/* Areas grid */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px'}}>
+        {areas.map(area => {
+          const content = ALL_MODULE_CONTENT[area.id];
+          const isExpanded = expandedArea === area.id;
+          const isRead = educationProgress[area.id];
+
+          return (
+            <div
+              key={area.id}
+              style={{
+                background: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: isExpanded ? '0 10px 30px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)'
+              }}
+              onClick={() => setExpandedArea(isExpanded ? null : area.id)}
+            >
+              <div style={{padding: '20px', background: '#f8fafc', borderBottom: isExpanded ? '1px solid #e5e7eb' : 'none'}}>
+                <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px'}}>
+                  <div style={{flex: 1}}>
+                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>{area.name}</h3>
+                    <p style={{fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5'}}>{area.description}</p>
+                  </div>
+                  <div style={{minWidth: '24px', height: '24px', borderRadius: '50%', background: isRead ? '#2d5a3d' : '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.75rem', fontWeight: '700'}}>
+                    {isRead ? '✓' : '○'}
+                  </div>
+                </div>
+              </div>
+
+              {isExpanded && content && (
+                <div style={{padding: '20px', maxHeight: '500px', overflowY: 'auto'}}>
+                  {content.subtitle && (
+                    <p style={{fontSize: '0.85rem', color: '#64748b', marginBottom: '16px', fontStyle: 'italic'}}>
+                      {content.subtitle}
+                    </p>
+                  )}
+
+                  {content.sections && content.sections.map(section => (
+                    <div key={section.id} style={{marginBottom: '20px'}}>
+                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '8px'}}>
+                        {section.title}
+                      </h4>
+                      <p style={{fontSize: '0.85rem', color: '#475569', lineHeight: '1.6', marginBottom: '12px'}}>
+                        {section.description}
+                      </p>
+                      {section.exercises && section.exercises.length > 0 && (
+                        <div style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', fontSize: '0.8rem', color: '#15803d', borderLeft: '3px solid #2d5a3d'}}>
+                          {section.exercises.length} key concept{section.exercises.length !== 1 ? 's' : ''} to explore
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {!isRead && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); markAreaAsRead(area.id); }}
+                      style={{width: '100%', padding: '12px', background: '#2d5a3d', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginTop: '16px'}}
+                    >
+                      Mark as Completed
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKBOOK VIEW
+// ═══════════════════════════════════════════════════════════════
+
+function WorkbookView() {
+  const [selectedCategory, setSelectedCategory] = useState('purpose-identity');
+  const [expandedArea, setExpandedArea] = useState(null);
+  const [workbookData, setWorkbookData] = useState({});
+
+  useEffect(() => {
+    const saved = localStorage.getItem('lep_workbook_data');
+    if (saved) setWorkbookData(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('lep_workbook_data', JSON.stringify(workbookData));
+  }, [workbookData]);
+
+  const getAreasForCategory = (categoryId) => {
+    const category = LEP_PILLARS.find(p => p.id === categoryId);
+    return category ? category.modules : [];
+  };
+
+  const updateAreaResponse = (areaId, exerciseId, value) => {
+    setWorkbookData(prev => ({
+      ...prev,
+      [areaId]: {
+        ...prev[areaId],
+        [exerciseId]: value,
+        lastUpdated: new Date().toISOString()
+      }
+    }));
+  };
+
+  const getAreaCompletion = (areaId) => {
+    const data = workbookData[areaId];
+    return data ? Object.keys(data).length : 0;
+  };
+
+  const areas = getAreasForCategory(selectedCategory);
+  const completedAreas = areas.filter(a => getAreaCompletion(a.id) > 0).length;
+
+  return (
+    <div style={{padding: '28px'}}>
+      <header style={{marginBottom: '32px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Workbook</h1>
+        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px', maxWidth: '600px'}}>
+          Reflective exercises to deepen your family's thinking across all 15 areas. Save your progress as you work.
+        </p>
+        <div style={{display: 'flex', gap: '12px'}}>
+          <div style={{background: '#f0f9ff', borderRadius: '10px', padding: '12px 16px', border: '1px solid #0891b222'}}>
+            <span style={{fontSize: '0.85rem', color: '#0c4a6e', fontWeight: '600'}}>{completedAreas} of {areas.length} areas started</span>
+          </div>
+          <div style={{background: '#fef3c7', borderRadius: '10px', padding: '12px 16px', border: '1px solid #d9770622'}}>
+            <span style={{fontSize: '0.85rem', color: '#854d0e', fontWeight: '600'}}>Auto-saved to browser</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Category tabs */}
+      <div style={{display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', borderBottom: '2px solid #e5e7eb', paddingBottom: '16px'}}>
+        {LEP_PILLARS.map(pillar => (
+          <button
+            key={pillar.id}
+            onClick={() => { setSelectedCategory(pillar.id); setExpandedArea(null); }}
+            style={{
+              padding: '10px 16px',
+              background: selectedCategory === pillar.id ? pillar.color : 'transparent',
+              color: selectedCategory === pillar.id ? 'white' : '#475569',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: selectedCategory === pillar.id ? '600' : '500',
+              transition: 'all 0.2s'
+            }}
+          >
+            {pillar.icon} {pillar.name.split(' ').slice(0, 2).join(' ')}
+          </button>
+        ))}
+      </div>
+
+      {/* Areas grid */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '20px'}}>
+        {areas.map(area => {
+          const content = ALL_MODULE_CONTENT[area.id];
+          const isExpanded = expandedArea === area.id;
+          const exercisesCount = getAreaCompletion(area.id);
+          const totalExercises = content?.sections?.reduce((sum, s) => sum + (s.exercises?.length || 0), 0) || 0;
+
+          return (
+            <div
+              key={area.id}
+              style={{
+                background: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                transition: 'all 0.2s',
+                boxShadow: isExpanded ? '0 10px 30px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)'
+              }}
+            >
+              <div style={{padding: '20px', background: '#f8fafc', borderBottom: isExpanded ? '1px solid #e5e7eb' : 'none', cursor: 'pointer'}} onClick={() => setExpandedArea(isExpanded ? null : area.id)}>
+                <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px'}}>
+                  <div style={{flex: 1}}>
+                    <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '6px'}}>{area.name}</h3>
+                    <p style={{fontSize: '0.8rem', color: '#94a3b8'}}>
+                      {exercisesCount > 0 ? `${exercisesCount} of ${totalExercises} exercises completed` : `${totalExercises} exercises`}
+                    </p>
+                  </div>
+                  <span style={{fontSize: '1.2rem'}}>{isExpanded ? '▼' : '▶'}</span>
+                </div>
+              </div>
+
+              {isExpanded && content && (
+                <div style={{padding: '20px', maxHeight: '600px', overflowY: 'auto'}}>
+                  {content.sections && content.sections.map(section => (
+                    <div key={section.id} style={{marginBottom: '24px'}}>
+                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1a3a5c', marginBottom: '4px'}}>
+                        {section.title}
+                      </h4>
+                      <p style={{fontSize: '0.8rem', color: '#64748b', marginBottom: '12px'}}>{section.description}</p>
+
+                      {section.exercises && section.exercises.map(exercise => (
+                        <div key={exercise.id} style={{marginBottom: '16px'}}>
+                          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>
+                            {exercise.question}
+                          </label>
+                          {exercise.type === 'textarea' ? (
+                            <textarea
+                              value={workbookData[area.id]?.[exercise.id] || ''}
+                              onChange={(e) => updateAreaResponse(area.id, exercise.id, e.target.value)}
+                              placeholder={exercise.placeholder}
+                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.85rem', fontFamily: 'system-ui', minHeight: '80px', outline: 'none', resize: 'vertical'}}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              value={workbookData[area.id]?.[exercise.id] || ''}
+                              onChange={(e) => updateAreaResponse(area.id, exercise.id, e.target.value)}
+                              placeholder={exercise.placeholder}
+                              style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.85rem', outline: 'none'}}
+                            />
+                          )}
+                          {exercise.helperText && (
+                            <p style={{fontSize: '0.75rem', color: '#94a3b8', marginTop: '6px', fontStyle: 'italic'}}>
+                              Tip: {exercise.helperText}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMMUNITY VIEW
+// ═══════════════════════════════════════════════════════════════
+
+function CommunityView() {
+  const [posts, setPosts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('general');
+  const [showNewPost, setShowNewPost] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newBody, setNewBody] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [newReply, setNewReply] = useState('');
+  const [expandedPost, setExpandedPost] = useState(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('lep_community_posts');
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    } else {
+      // Pre-seed with example posts
+      const examplePosts = [
+        {
+          id: '1',
+          author: 'Sarah Mitchell',
+          title: 'How do we approach the conversation about next-gen readiness?',
+          body: 'We have three next-gen members interested in the business, but we\'re unsure how to assess their readiness. Has anyone created formal assessment criteria? We\'d love to hear what\'s worked for other families.',
+          category: 'family-system',
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          replies: [
+            { id: 'r1', author: 'James Chen', text: 'We used a combination of board interviews and external assessment. Worth the investment to get objective perspective.', timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() }
+          ]
+        },
+        {
+          id: '2',
+          author: 'Margaret Thompson',
+          title: 'Succession planning: founder identity vs. business continuity',
+          body: 'Our founder is struggling with the idea of stepping back. The business and his identity are deeply intertwined. How have other families navigated this emotional dimension of succession?',
+          category: 'strategy-legacy',
+          timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          replies: []
+        },
+        {
+          id: '3',
+          author: 'David Williams',
+          title: 'Governance structures that actually work',
+          body: 'We\'re establishing our first formal board. Any recommendations on size, composition, or how to handle family members vs. outside directors?',
+          category: 'ownership-governance',
+          timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          replies: [
+            { id: 'r2', author: 'Patricia Gonzalez', text: 'Start with a smaller board (5-7 people) with clear role clarity. We added independent directors early and it raised the caliber of our conversations significantly.', timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+            { id: 'r3', author: 'Robert Khan', text: 'Agree. Also critical: define decision-making authority upfront. Ambiguity creates friction.', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() }
+          ]
+        }
+      ];
+      setPosts(examplePosts);
+      localStorage.setItem('lep_community_posts', JSON.stringify(examplePosts));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('lep_community_posts', JSON.stringify(posts));
+  }, [posts]);
+
+  const createPost = () => {
+    if (!newTitle.trim() || !newBody.trim()) return;
+
+    const post = {
+      id: String(Date.now()),
+      author: 'You',
+      title: newTitle,
+      body: newBody,
+      category: selectedCategory,
+      timestamp: new Date().toISOString(),
+      replies: []
+    };
+
+    setPosts([post, ...posts]);
+    setNewTitle('');
+    setNewBody('');
+    setShowNewPost(false);
+  };
+
+  const addReply = (postId) => {
+    if (!newReply.trim()) return;
+
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          replies: [
+            ...post.replies,
+            {
+              id: String(Date.now()),
+              author: 'You',
+              text: newReply,
+              timestamp: new Date().toISOString()
+            }
+          ]
+        };
+      }
+      return post;
+    }));
+
+    setNewReply('');
+    setReplyingTo(null);
+  };
+
+  const categories = [
+    { id: 'general', name: 'General', color: '#64748b' },
+    ...LEP_PILLARS.map(p => ({ id: p.id, name: p.name.split(' ').slice(0, 2).join(' '), color: p.color }))
+  ];
+
+  const filteredPosts = selectedCategory === 'general' ? posts : posts.filter(p => p.category === selectedCategory);
+  const sortedPosts = [...filteredPosts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  return (
+    <div style={{padding: '28px', maxWidth: '900px', margin: '0 auto'}}>
+      <header style={{marginBottom: '32px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px'}}>Community</h1>
+        <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '20px'}}>
+          Discuss challenges, share experiences, and learn from other families navigating their enterprise journey.
+        </p>
+        <button
+          onClick={() => setShowNewPost(!showNewPost)}
+          style={{background: '#2d5a3d', color: 'white', padding: '12px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+        >
+          {showNewPost ? 'Cancel' : '+ New Discussion'}
+        </button>
+      </header>
+
+      {showNewPost && (
+        <div style={{background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', marginBottom: '32px'}}>
+          <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px'}}>Start a Discussion</h3>
+
+          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Topic</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
+          >
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+
+          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Title</label>
+          <input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            placeholder="What's on your mind?"
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
+          />
+
+          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Message</label>
+          <textarea
+            value={newBody}
+            onChange={(e) => setNewBody(e.target.value)}
+            placeholder="Share your question or experience..."
+            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.9rem', minHeight: '120px', marginBottom: '16px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
+          />
+
+          <div style={{display: 'flex', gap: '12px'}}>
+            <button
+              onClick={createPost}
+              style={{background: '#2d5a3d', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+            >
+              Post Discussion
+            </button>
+            <button
+              onClick={() => setShowNewPost(false)}
+              style={{background: 'white', color: '#334155', padding: '10px 24px', borderRadius: '8px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Category filter */}
+      <div style={{display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap'}}>
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            style={{
+              padding: '8px 14px',
+              background: selectedCategory === cat.id ? cat.color : 'transparent',
+              color: selectedCategory === cat.id ? 'white' : '#64748b',
+              border: `1px solid ${selectedCategory === cat.id ? cat.color : '#e5e7eb'}`,
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              fontWeight: selectedCategory === cat.id ? '600' : '500',
+              transition: 'all 0.2s'
+            }}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Posts feed */}
+      <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+        {sortedPosts.length === 0 ? (
+          <div style={{background: '#f8fafc', borderRadius: '12px', padding: '32px', textAlign: 'center', border: '1px solid #e5e7eb'}}>
+            <p style={{fontSize: '0.95rem', color: '#64748b', marginBottom: '12px'}}>No discussions yet in this category.</p>
+            <button
+              onClick={() => setShowNewPost(true)}
+              style={{background: 'none', border: 'none', color: '#2d5a3d', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', textDecoration: 'underline'}}
+            >
+              Start one now
+            </button>
+          </div>
+        ) : (
+          sortedPosts.map(post => (
+            <div
+              key={post.id}
+              style={{
+                background: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                padding: '20px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: expandedPost === post.id ? '0 10px 30px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)'
+              }}
+              onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+            >
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '8px'}}>
+                <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#0f172a', flex: 1}}>{post.title}</h3>
+                <span style={{fontSize: '0.75rem', background: categories.find(c => c.id === post.category)?.color + '22', color: categories.find(c => c.id === post.category)?.color, padding: '4px 10px', borderRadius: '4px', fontWeight: '600', whiteSpace: 'nowrap'}}>
+                  {categories.find(c => c.id === post.category)?.name}
+                </span>
+              </div>
+
+              <div style={{display: 'flex', gap: '12px', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '12px'}}>
+                <span>{post.author}</span>
+                <span>•</span>
+                <span>{new Date(post.timestamp).toLocaleDateString()}</span>
+              </div>
+
+              <p style={{fontSize: '0.9rem', color: '#475569', lineHeight: '1.6', marginBottom: expandedPost === post.id ? '16px' : '0px'}}>
+                {post.body}
+              </p>
+
+              {expandedPost === post.id && (
+                <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e7eb'}}>
+                  {post.replies && post.replies.length > 0 && (
+                    <div style={{marginBottom: '20px'}}>
+                      <h4 style={{fontSize: '0.85rem', fontWeight: '700', color: '#334155', marginBottom: '12px'}}>{post.replies.length} replies</h4>
+                      {post.replies.map(reply => (
+                        <div key={reply.id} style={{background: '#f8fafc', borderRadius: '8px', padding: '12px', marginBottom: '8px'}}>
+                          <div style={{display: 'flex', gap: '8px', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '6px'}}>
+                            <span style={{fontWeight: '600', color: '#334155'}}>{reply.author}</span>
+                            <span>•</span>
+                            <span>{new Date(reply.timestamp).toLocaleDateString()}</span>
+                          </div>
+                          <p style={{fontSize: '0.85rem', color: '#475569'}}>{reply.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {replyingTo === post.id ? (
+                    <div style={{background: '#f0fdf4', borderRadius: '8px', padding: '12px', border: '1px solid #2d5a3d22'}}>
+                      <textarea
+                        value={newReply}
+                        onChange={(e) => setNewReply(e.target.value)}
+                        placeholder="Share your thoughts..."
+                        style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.85rem', minHeight: '60px', marginBottom: '8px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
+                      />
+                      <div style={{display: 'flex', gap: '8px'}}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); addReply(post.id); }}
+                          style={{background: '#2d5a3d', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                        >
+                          Reply
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setReplyingTo(null); setNewReply(''); }}
+                          style={{background: 'white', color: '#334155', padding: '8px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setReplyingTo(post.id); }}
+                      style={{background: 'white', color: '#2d5a3d', padding: '8px 16px', borderRadius: '6px', border: '1px solid #2d5a3d', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
+                    >
+                      Reply
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // ─── AUTH STATE ─────────────────────────────────────────────
   const [currentUser, setCurrentUser] = useState(null);
@@ -7147,6 +7760,9 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'family-profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
+        {currentView === 'education' && <EducationHub />}
+        {currentView === 'workbook' && <WorkbookView />}
+        {currentView === 'community' && <CommunityView />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
           const updated = { ...currentUser, tier };
           setCurrentUser(updated);
