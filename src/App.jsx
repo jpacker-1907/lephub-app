@@ -6494,6 +6494,250 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
         )}
       </div>
 
+      {/* ═══ YOUR DATA — Open Platform Export ═══ */}
+      <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', borderLeft: '3px solid #5AAFB5'}}>
+        <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '6px'}}>
+          <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', margin: 0}}>Your Data</h3>
+          <span style={{background: '#E8F7F8', color: '#3A8A8F', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '10px', letterSpacing: '0.3px'}}>OPEN PLATFORM</span>
+        </div>
+        <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '20px', lineHeight: 1.6}}>
+          Your family's data belongs to you — always. Export everything at any time in standard, portable formats. No lock-in, no proprietary formats, no barriers. Take your data to any platform or use it independently.
+        </p>
+
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px', marginBottom: '20px'}}>
+          {/* Full JSON Export */}
+          <button
+            onClick={() => {
+              const allData = {};
+              const keys = [
+                'lep_scores', 'lep_progress', 'lep_module_data', 'lep_family_profile', 'lep_vault',
+                'lep_industry', 'lep_dynamics_relationships', 'lep_dynamics_styles', 'lep_dynamics_style_assessments',
+                'lep_dynamics_conflicts', 'lep_meetings', 'lep_issues', 'lep_vault_uploads', 'lep_decision_engine',
+                'lep_education_progress', 'lep_workbook_data', 'lep_current_user',
+                'stride_daily_pulse', 'stride_community_channels', 'stride_sessions', 'stride_member_since',
+                'stride_membership_status', 'stride_members', 'stride_rsvps', 'stride_membership_applications'
+              ];
+              keys.forEach(key => {
+                const val = localStorage.getItem(key);
+                if (val) {
+                  try { allData[key] = JSON.parse(val); } catch { allData[key] = val; }
+                }
+              });
+              allData._exportMeta = {
+                exportedAt: new Date().toISOString(),
+                exportedBy: currentUser?.email,
+                platform: 'The STRIDE Way (lephub.com)',
+                version: 'v30',
+                format: 'JSON — open, machine-readable, portable to any system',
+              };
+              const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-family-data-${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>📦</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Full Data Export</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>JSON — everything, machine-readable</span>
+          </button>
+
+          {/* Family Profile CSV */}
+          <button
+            onClick={() => {
+              const profile = JSON.parse(localStorage.getItem('lep_family_profile') || '{}');
+              const members = profile.members || [];
+              const rows = [['Name', 'Role', 'Generation', 'Age', 'Email', 'Involvement', 'Notes']];
+              members.forEach(m => rows.push([m.name||'', m.role||'', m.generation||'', m.age||'', m.email||'', m.involvement||'', m.notes||'']));
+              const csvContent = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-family-members-${new Date().toISOString().split('T')[0]}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>👥</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Family Members</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>CSV — open in Excel, Sheets, anywhere</span>
+          </button>
+
+          {/* Assessment & Scores CSV */}
+          <button
+            onClick={() => {
+              const scores = JSON.parse(localStorage.getItem('lep_scores') || '{}');
+              const progress = JSON.parse(localStorage.getItem('lep_progress') || '{}');
+              const rows = [['Category', 'Score (%)', 'Status']];
+              Object.entries(scores).forEach(([key, score]) => {
+                const status = score >= 80 ? 'Strong' : score >= 60 ? 'Developing' : 'Needs Attention';
+                rows.push([key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), score, status]);
+              });
+              rows.push([]);
+              rows.push(['Module', 'Completed']);
+              Object.entries(progress).forEach(([mod, done]) => rows.push([mod, done ? 'Yes' : 'No']));
+              const csvContent = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-assessment-scores-${new Date().toISOString().split('T')[0]}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>📊</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Assessment & Scores</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>CSV — scores, progress, modules</span>
+          </button>
+
+          {/* Community Messages Export */}
+          <button
+            onClick={() => {
+              const channels = JSON.parse(localStorage.getItem('stride_community_channels') || '{}');
+              const rows = [['Channel', 'Author', 'Message', 'Date', 'Reactions', 'Thread Replies']];
+              Object.entries(channels).forEach(([chId, msgs]) => {
+                if (Array.isArray(msgs)) {
+                  msgs.forEach(msg => {
+                    const reactions = msg.reactions ? Object.entries(msg.reactions).map(([e, u]) => e + '(' + u.length + ')').join(' ') : '';
+                    const threadCount = msg.thread ? msg.thread.length : 0;
+                    rows.push([chId, msg.author, msg.text, msg.ts, reactions, threadCount]);
+                    if (msg.thread) {
+                      msg.thread.forEach(reply => {
+                        const rReactions = reply.reactions ? Object.entries(reply.reactions).map(([e, u]) => e + '(' + u.length + ')').join(' ') : '';
+                        rows.push([chId + ' (reply)', reply.author, reply.text, reply.ts, rReactions, '']);
+                      });
+                    }
+                  });
+                }
+              });
+              const csvContent = rows.map(r => r.map(c => '"' + String(c||'').replace(/"/g, '""') + '"').join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-community-messages-${new Date().toISOString().split('T')[0]}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>💬</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Community Messages</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>CSV — all channels, threads, reactions</span>
+          </button>
+
+          {/* Workbook & Reflections Export */}
+          <button
+            onClick={() => {
+              const workbook = JSON.parse(localStorage.getItem('lep_workbook_data') || '{}');
+              const pulse = JSON.parse(localStorage.getItem('stride_daily_pulse') || '[]');
+              const rows = [['Type', 'Date', 'Category', 'Content']];
+              // Workbook entries
+              Object.entries(workbook).forEach(([key, val]) => {
+                if (typeof val === 'string' && val.trim()) {
+                  rows.push(['Workbook Response', '', key.replace(/_/g, ' '), val]);
+                } else if (typeof val === 'object') {
+                  Object.entries(val).forEach(([subKey, subVal]) => {
+                    if (typeof subVal === 'string' && subVal.trim()) rows.push(['Workbook Response', '', key + ' > ' + subKey, subVal]);
+                  });
+                }
+              });
+              // Daily pulse
+              pulse.forEach(p => {
+                rows.push(['Daily Pulse', p.date, 'Mood: ' + p.mood, p.note || '']);
+              });
+              const csvContent = rows.map(r => r.map(c => '"' + String(c||'').replace(/"/g, '""') + '"').join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-workbook-reflections-${new Date().toISOString().split('T')[0]}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>📝</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Workbook & Reflections</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>CSV — exercises, notes, daily pulse</span>
+          </button>
+
+          {/* Family Dynamics Export */}
+          <button
+            onClick={() => {
+              const relationships = JSON.parse(localStorage.getItem('lep_dynamics_relationships') || '{}');
+              const styles = JSON.parse(localStorage.getItem('lep_dynamics_styles') || '{}');
+              const conflicts = JSON.parse(localStorage.getItem('lep_dynamics_conflicts') || '[]');
+              const meetings = JSON.parse(localStorage.getItem('lep_meetings') || '[]');
+              const exportData = { relationships, communicationStyles: styles, conflicts, meetings, _format: 'Portable family dynamics data' };
+              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stride-family-dynamics-${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px',
+              background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'center'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = '#F5F7FA'; }}
+          >
+            <span style={{fontSize: '1.8rem'}}>🧬</span>
+            <span style={{fontSize: '0.88rem', fontWeight: 700, color: '#2B4C6F'}}>Family Dynamics</span>
+            <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>JSON — relationships, styles, conflicts</span>
+          </button>
+        </div>
+
+        {/* Open Platform Commitment */}
+        <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px 20px', border: '1px solid #DDE3EB'}}>
+          <div style={{fontSize: '0.85rem', fontWeight: 700, color: '#2B4C6F', marginBottom: '8px'}}>Our Open Platform Commitment</div>
+          <div style={{fontSize: '0.82rem', color: '#4A5E73', lineHeight: 1.65}}>
+            Every piece of data you create here — your family profile, genogram, trust structures, estate plans, assessment scores, workbook reflections, community conversations, and meeting notes — is yours. We use standard JSON and CSV formats that work with Excel, Google Sheets, any database, or any advisory platform. You can export at any time, no questions asked, no fees, no waiting periods. If you ever want to leave, your data leaves with you — complete and portable.
+          </div>
+        </div>
+      </div>
+
       {/* Danger Zone */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', borderLeft: '3px solid #f87171'}}>
         <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#dc2626', marginBottom: '12px'}}>Danger Zone</h3>
