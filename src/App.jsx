@@ -2649,11 +2649,6 @@ function DailyPulseWidget() {
   const [note, setNote] = useState('');
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const today = new Date().toISOString().split('T')[0];
-  const todayPulse = pulses.find(p => p.date === today);
-  const streak = calculateStreak(pulses);
-  const prompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
-
   const calculateStreak = (pulseData) => {
     let count = 0;
     let currentDate = new Date();
@@ -2669,6 +2664,11 @@ function DailyPulseWidget() {
     }
     return count;
   };
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayPulse = pulses.find(p => p.date === today);
+  const streak = calculateStreak(pulses);
+  const [prompt] = useState(() => PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
 
   const handleMoodSelect = (mood) => {
     setSelectedMood(mood);
