@@ -7830,302 +7830,490 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
 // ═══════════════════════════════════════════════════════════════
 
 function CommunityView() {
-  const [posts, setPosts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('general');
-  const [showNewPost, setShowNewPost] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newBody, setNewBody] = useState('');
-  const [replyingTo, setReplyingTo] = useState(null);
-  const [newReply, setNewReply] = useState('');
-  const [expandedPost, setExpandedPost] = useState(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('lep_community_posts');
-    if (saved) {
-      setPosts(JSON.parse(saved));
-    } else {
-      // Pre-seed with example posts
-      const examplePosts = [
-        {
-          id: '1',
-          author: 'Sarah Mitchell',
-          title: 'How do we approach the conversation about next-gen readiness?',
-          body: 'We have three next-gen members interested in the business, but we\'re unsure how to assess their readiness. Has anyone created formal assessment criteria? We\'d love to hear what\'s worked for other families.',
-          category: 'family-system',
-          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          replies: [
-            { id: 'r1', author: 'James Chen', text: 'We used a combination of board interviews and external assessment. Worth the investment to get objective perspective.', timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() }
-          ]
-        },
-        {
-          id: '2',
-          author: 'Margaret Thompson',
-          title: 'Succession planning: founder identity vs. business continuity',
-          body: 'Our founder is struggling with the idea of stepping back. The business and his identity are deeply intertwined. How have other families navigated this emotional dimension of succession?',
-          category: 'strategy-legacy',
-          timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          replies: []
-        },
-        {
-          id: '3',
-          author: 'David Williams',
-          title: 'Governance structures that actually work',
-          body: 'We\'re establishing our first formal board. Any recommendations on size, composition, or how to handle family members vs. outside directors?',
-          category: 'ownership-governance',
-          timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          replies: [
-            { id: 'r2', author: 'Patricia Gonzalez', text: 'Start with a smaller board (5-7 people) with clear role clarity. We added independent directors early and it raised the caliber of our conversations significantly.', timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
-            { id: 'r3', author: 'Robert Khan', text: 'Agree. Also critical: define decision-making authority upfront. Ambiguity creates friction.', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() }
-          ]
-        }
-      ];
-      setPosts(examplePosts);
-      localStorage.setItem('lep_community_posts', JSON.stringify(examplePosts));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('lep_community_posts', JSON.stringify(posts));
-  }, [posts]);
-
-  const createPost = () => {
-    if (!newTitle.trim() || !newBody.trim()) return;
-
-    const post = {
-      id: String(Date.now()),
-      author: 'You',
-      title: newTitle,
-      body: newBody,
-      category: selectedCategory,
-      timestamp: new Date().toISOString(),
-      replies: []
-    };
-
-    setPosts([post, ...posts]);
-    setNewTitle('');
-    setNewBody('');
-    setShowNewPost(false);
-  };
-
-  const addReply = (postId) => {
-    if (!newReply.trim()) return;
-
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          replies: [
-            ...post.replies,
-            {
-              id: String(Date.now()),
-              author: 'You',
-              text: newReply,
-              timestamp: new Date().toISOString()
-            }
-          ]
-        };
-      }
-      return post;
-    }));
-
-    setNewReply('');
-    setReplyingTo(null);
-  };
-
-  const categories = [
-    { id: 'general', name: 'General', color: '#7A8BA0' },
-    ...LEP_PILLARS.map(p => ({ id: p.id, name: p.name.split(' ').slice(0, 2).join(' '), color: p.color }))
+  // ─── CHANNELS ─────────────────────────────────────────────
+  const CHANNELS = [
+    { id: 'general', name: 'general', icon: '#', description: 'Open discussion for all members' },
+    { id: 'next-gen', name: 'next-gen', icon: '#', description: 'Rising generation leadership & development' },
+    { id: 'governance', name: 'governance', icon: '#', description: 'Boards, family councils & decision-making' },
+    { id: 'succession', name: 'succession', icon: '#', description: 'Transition planning & founder identity' },
+    { id: 'family-dynamics', name: 'family-dynamics', icon: '#', description: 'Communication, conflict & family systems' },
+    { id: 'wins', name: 'wins', icon: '#', description: 'Celebrate milestones & breakthroughs' },
+    { id: 'resources', name: 'resources', icon: '#', description: 'Articles, books & tools to share' },
   ];
 
-  const filteredPosts = selectedCategory === 'general' ? posts : posts.filter(p => p.category === selectedCategory);
-  const sortedPosts = [...filteredPosts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const AVATARS = {
+    'Sarah Mitchell': { initials: 'SM', color: '#5AAFB5' },
+    'James Chen': { initials: 'JC', color: '#E05B6F' },
+    'Margaret Thompson': { initials: 'MT', color: '#7C6BBF' },
+    'David Williams': { initials: 'DW', color: '#E8913A' },
+    'Patricia Gonzalez': { initials: 'PG', color: '#4A9B6F' },
+    'Robert Khan': { initials: 'RK', color: '#2B4C6F' },
+    'Jason Packer': { initials: 'JP', color: '#E05B6F' },
+    'You': { initials: 'ME', color: '#5AAFB5' },
+  };
+
+  // ─── STATE ────────────────────────────────────────────────
+  const [channels, setChannels] = useState(() => {
+    const saved = localStorage.getItem('stride_community_channels');
+    if (saved) return JSON.parse(saved);
+
+    // Seed data — Slack-style messages per channel
+    const seed = {
+      'general': [
+        { id: 'm1', author: 'Jason Packer', text: 'Welcome to The STRIDE Way community! This is your space to connect with other families navigating the complexities of enterprise continuity. Introduce yourself and share what brought you here.', ts: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
+        { id: 'm2', author: 'Sarah Mitchell', text: 'Thanks Jason! Excited to be here. We\'re a 3rd-gen manufacturing family in the Midwest — just started having the "what\'s next" conversation and it\'s been... a lot. Looking forward to learning from everyone.', ts: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't1', author: 'Margaret Thompson', text: 'Welcome Sarah! We\'re in a similar spot. The conversation can feel overwhelming but having a peer group makes all the difference.', ts: new Date(Date.now() - 8.5 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+        { id: 'm3', author: 'David Williams', text: 'Quick heads up — the governance workshop next month looks excellent. Anyone else planning to attend?', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't2', author: 'Patricia Gonzalez', text: 'Signed up! Governance has been our biggest growing pain this year.', ts: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000).toISOString() },
+          { id: 't3', author: 'Robert Khan', text: 'Same here. We just established our first advisory board and have a lot of questions.', ts: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'next-gen': [
+        { id: 'm4', author: 'Sarah Mitchell', text: 'How are other families assessing next-gen readiness? We have three members interested in the business but aren\'t sure how to evaluate who\'s prepared. Anyone created formal assessment criteria?', ts: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't4', author: 'James Chen', text: 'We used a combination of board interviews and external assessment. Worth the investment to get objective perspective. Happy to share our rubric if helpful.', ts: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
+          { id: 't5', author: 'David Williams', text: 'External assessment was key for us too. Removed a lot of the emotion from the process.', ts: new Date(Date.now() - 5.5 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'governance': [
+        { id: 'm5', author: 'David Williams', text: 'We\'re establishing our first formal board. Any recommendations on size, composition, or how to handle family members vs. outside directors?', ts: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't6', author: 'Patricia Gonzalez', text: 'Start with a smaller board (5-7 people) with clear role definitions. We added independent directors early and it raised the caliber of our conversations significantly.', ts: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+          { id: 't7', author: 'Robert Khan', text: 'Agree. Also critical: define decision-making authority upfront. Ambiguity creates friction.', ts: new Date(Date.now() - 6.5 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'succession': [
+        { id: 'm6', author: 'Margaret Thompson', text: 'Our founder is struggling with the idea of stepping back. The business and his identity are deeply intertwined. How have other families navigated this emotional dimension of succession?', ts: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't8', author: 'Jason Packer', text: 'This is one of the most common — and hardest — challenges in family enterprise. It\'s not just about a transition plan, it\'s about identity work. We cover this deeply in the Purpose & Identity pillar. Worth doing some of the vision board exercises together.', ts: new Date(Date.now() - 4.5 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'wins': [
+        { id: 'm7', author: 'Patricia Gonzalez', text: 'Big milestone for us — we just held our first formal family council meeting and it went incredibly well. A year ago we couldn\'t even sit in the same room and discuss the business without someone walking out. Grateful for this community.', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't9', author: 'Sarah Mitchell', text: 'That\'s amazing Patricia! Gives me hope for where we\'re headed.', ts: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000).toISOString() },
+          { id: 't10', author: 'James Chen', text: 'Incredible progress. Proof the work pays off.', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'family-dynamics': [],
+      'resources': [
+        { id: 'm8', author: 'James Chen', text: 'Just finished reading "Borrowed from Your Grandchildren" — the best framing of stewardship vs. ownership I\'ve encountered. Highly recommend for anyone working through the ownership identity questions.', ts: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
+      ],
+    };
+    localStorage.setItem('stride_community_channels', JSON.stringify(seed));
+    return seed;
+  });
+
+  const [activeChannel, setActiveChannel] = useState('general');
+  const [messageText, setMessageText] = useState('');
+  const [threadOpen, setThreadOpen] = useState(null); // message id
+  const [threadReply, setThreadReply] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const msgEndRef = useRef(null);
+  const threadEndRef = useRef(null);
+
+  // Persist
+  useEffect(() => {
+    localStorage.setItem('stride_community_channels', JSON.stringify(channels));
+  }, [channels]);
+
+  // Auto-scroll messages
+  useEffect(() => {
+    if (msgEndRef.current) msgEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [activeChannel, channels[activeChannel]?.length]);
+
+  useEffect(() => {
+    if (threadEndRef.current) threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [threadOpen, channels[activeChannel]?.find(m => m.id === threadOpen)?.thread?.length]);
+
+  // ─── HELPERS ──────────────────────────────────────────────
+  const getAvatar = (name) => AVATARS[name] || { initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(), color: '#7A8BA0' };
+
+  const formatTime = (iso) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = now - d;
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    if (hrs < 24) return `${hrs}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const formatDateDivider = (iso) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const diff = today - msgDay;
+    if (diff === 0) return 'Today';
+    if (diff === 86400000) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  };
+
+  const sendMessage = () => {
+    if (!messageText.trim()) return;
+    const msg = { id: String(Date.now()), author: 'You', text: messageText, ts: new Date().toISOString(), thread: [] };
+    setChannels(prev => ({ ...prev, [activeChannel]: [...(prev[activeChannel] || []), msg] }));
+    setMessageText('');
+  };
+
+  const sendThreadReply = () => {
+    if (!threadReply.trim() || !threadOpen) return;
+    const reply = { id: String(Date.now()), author: 'You', text: threadReply, ts: new Date().toISOString() };
+    setChannels(prev => ({
+      ...prev,
+      [activeChannel]: (prev[activeChannel] || []).map(m =>
+        m.id === threadOpen ? { ...m, thread: [...(m.thread || []), reply] } : m
+      )
+    }));
+    setThreadReply('');
+  };
+
+  const channelMessages = channels[activeChannel] || [];
+  const activeChannelInfo = CHANNELS.find(c => c.id === activeChannel);
+  const threadMessage = threadOpen ? channelMessages.find(m => m.id === threadOpen) : null;
+
+  // Unread counts (simple: channels with messages in last 24h)
+  const getUnreadDot = (chId) => {
+    const msgs = channels[chId] || [];
+    if (msgs.length === 0) return false;
+    const last = new Date(msgs[msgs.length - 1].ts);
+    return (Date.now() - last) < 24 * 60 * 60 * 1000 && chId !== activeChannel;
+  };
+
+  // Search across channels
+  const searchResults = showSearch && searchQuery.trim() ? Object.entries(channels).flatMap(([chId, msgs]) =>
+    msgs.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase())).map(m => ({ ...m, channel: chId }))
+  ).sort((a, b) => new Date(b.ts) - new Date(a.ts)).slice(0, 20) : [];
+
+  // ─── RENDER ───────────────────────────────────────────────
+  const avatarStyle = (name, size = 36) => {
+    const av = getAvatar(name);
+    return { width: size, height: size, borderRadius: '8px', background: av.color, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.35, fontWeight: '700', flexShrink: 0, letterSpacing: '-0.02em' };
+  };
 
   return (
-    <div style={{padding: '28px', maxWidth: '900px', margin: '0 auto'}}>
-      <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Community</h1>
-        <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '20px'}}>
-          Discuss challenges, share experiences, and learn from other families navigating their enterprise journey.
-        </p>
-        <button
-          onClick={() => setShowNewPost(!showNewPost)}
-          style={{background: '#E05B6F', color: 'white', padding: '12px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
-        >
-          {showNewPost ? 'Cancel' : '+ New Discussion'}
-        </button>
-      </header>
+    <div style={{display: 'flex', height: 'calc(100vh - 64px)', background: '#F5F7FA', overflow: 'hidden'}}>
+      {/* ── Channel sidebar ── */}
+      <div style={{width: '240px', background: '#2B4C6F', color: 'white', display: 'flex', flexDirection: 'column', flexShrink: 0}}>
+        {/* Workspace header */}
+        <div style={{padding: '16px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)'}}>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <h2 style={{fontSize: '1rem', fontWeight: '700', margin: 0}}>STRIDE Community</h2>
+            <button onClick={() => setShowSearch(!showSearch)} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '1rem', padding: '4px'}}>
+              {showSearch ? '✕' : '🔍'}
+            </button>
+          </div>
+          <p style={{fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', margin: '4px 0 0'}}>Family Enterprise Peer Network</p>
+        </div>
 
-      {showNewPost && (
-        <div style={{background: '#F5F7FA', border: '1px solid #DDE3EB', borderRadius: '12px', padding: '24px', marginBottom: '32px'}}>
-          <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Start a Discussion</h3>
+        {/* Search */}
+        {showSearch && (
+          <div style={{padding: '8px 12px'}}>
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search messages..."
+              style={{width: '100%', padding: '8px 10px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: '0.85rem', outline: 'none'}}
+              autoFocus
+            />
+          </div>
+        )}
 
-          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Topic</label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
-          >
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+        {/* Channels list */}
+        <div style={{padding: '12px 0', flex: 1, overflowY: 'auto'}}>
+          <div style={{padding: '0 12px', marginBottom: '8px'}}>
+            <span style={{fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.05em'}}>Channels</span>
+          </div>
+          {CHANNELS.map(ch => {
+            const isActive = activeChannel === ch.id;
+            const hasUnread = getUnreadDot(ch.id);
+            const msgCount = (channels[ch.id] || []).length;
+            return (
+              <button
+                key={ch.id}
+                onClick={() => { setActiveChannel(ch.id); setThreadOpen(null); setShowSearch(false); setSearchQuery(''); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '6px 16px',
+                  background: isActive ? 'rgba(255,255,255,0.15)' : 'transparent',
+                  color: isActive ? 'white' : hasUnread ? 'white' : 'rgba(255,255,255,0.65)',
+                  border: 'none', cursor: 'pointer', fontSize: '0.9rem', textAlign: 'left',
+                  fontWeight: hasUnread ? '700' : isActive ? '600' : '400',
+                  borderRadius: '0',
+                  transition: 'background 0.15s'
+                }}
+              >
+                <span style={{color: 'rgba(255,255,255,0.4)', fontWeight: '400', fontSize: '0.85rem'}}>#</span>
+                <span style={{flex: 1}}>{ch.name}</span>
+                {hasUnread && <span style={{width: 8, height: 8, borderRadius: '50%', background: '#E05B6F', flexShrink: 0}} />}
+                {msgCount > 0 && !hasUnread && <span style={{fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)'}}>{msgCount}</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Online members */}
+        <div style={{padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.1)'}}>
+          <span style={{fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.05em'}}>Members</span>
+          <div style={{display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap'}}>
+            {Object.entries(AVATARS).filter(([n]) => n !== 'You').slice(0, 6).map(([name, av]) => (
+              <div key={name} title={name} style={{width: 28, height: 28, borderRadius: '6px', background: av.color, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: '700', cursor: 'default'}}>
+                {av.initials}
+              </div>
             ))}
-          </select>
+          </div>
+        </div>
+      </div>
 
-          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Title</label>
-          <input
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="What's on your mind?"
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', marginBottom: '16px', outline: 'none'}}
-          />
+      {/* ── Main message area ── */}
+      <div style={{flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0}}>
+        {/* Search results overlay */}
+        {showSearch && searchQuery.trim() ? (
+          <div style={{flex: 1, overflowY: 'auto', padding: '20px'}}>
+            <h3 style={{fontSize: '0.9rem', fontWeight: '600', color: '#2B4C6F', marginBottom: '16px'}}>
+              {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
+            </h3>
+            {searchResults.map(msg => (
+              <div
+                key={msg.id}
+                onClick={() => { setActiveChannel(msg.channel); setShowSearch(false); setSearchQuery(''); }}
+                style={{background: 'white', borderRadius: '8px', padding: '12px 16px', marginBottom: '8px', cursor: 'pointer', border: '1px solid #DDE3EB', transition: 'box-shadow 0.15s'}}
+              >
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px'}}>
+                  <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>#{CHANNELS.find(c => c.id === msg.channel)?.name}</span>
+                  <span style={{fontSize: '0.75rem', color: '#C0C8D4'}}>·</span>
+                  <span style={{fontSize: '0.75rem', fontWeight: '600', color: '#334155'}}>{msg.author}</span>
+                  <span style={{fontSize: '0.75rem', color: '#C0C8D4'}}>·</span>
+                  <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{formatTime(msg.ts)}</span>
+                </div>
+                <p style={{fontSize: '0.9rem', color: '#4A5E73', margin: 0, lineHeight: '1.5'}}>{msg.text}</p>
+              </div>
+            ))}
+            {searchResults.length === 0 && (
+              <p style={{color: '#7A8BA0', fontSize: '0.9rem', textAlign: 'center', marginTop: '40px'}}>No messages found</p>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Channel header */}
+            <div style={{padding: '12px 20px', borderBottom: '1px solid #DDE3EB', background: 'white', display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0}}>
+              <div>
+                <h2 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>
+                  <span style={{color: '#7A8BA0', fontWeight: '400'}}># </span>{activeChannelInfo?.name}
+                </h2>
+                <p style={{fontSize: '0.78rem', color: '#7A8BA0', margin: '2px 0 0'}}>{activeChannelInfo?.description}</p>
+              </div>
+              <div style={{flex: 1}} />
+              <span style={{fontSize: '0.78rem', color: '#C0C8D4'}}>{channelMessages.length} message{channelMessages.length !== 1 ? 's' : ''}</span>
+            </div>
 
-          <label style={{display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#334155', marginBottom: '6px'}}>Message</label>
-          <textarea
-            value={newBody}
-            onChange={(e) => setNewBody(e.target.value)}
-            placeholder="Share your question or experience..."
-            style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', minHeight: '120px', marginBottom: '16px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
-          />
+            {/* Messages feed */}
+            <div style={{flex: 1, overflowY: 'auto', padding: '8px 20px 20px'}}>
+              {channelMessages.length === 0 ? (
+                <div style={{textAlign: 'center', padding: '60px 20px'}}>
+                  <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>💬</div>
+                  <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>
+                    Welcome to #{activeChannelInfo?.name}
+                  </h3>
+                  <p style={{fontSize: '0.9rem', color: '#7A8BA0', maxWidth: '400px', margin: '0 auto', lineHeight: '1.5'}}>
+                    {activeChannelInfo?.description}. Be the first to start a conversation!
+                  </p>
+                </div>
+              ) : (
+                channelMessages.map((msg, idx) => {
+                  const prevMsg = idx > 0 ? channelMessages[idx - 1] : null;
+                  const showDivider = !prevMsg || formatDateDivider(msg.ts) !== formatDateDivider(prevMsg.ts);
+                  const sameAuthorBlock = prevMsg && prevMsg.author === msg.author && (new Date(msg.ts) - new Date(prevMsg.ts)) < 300000;
 
-          <div style={{display: 'flex', gap: '12px'}}>
-            <button
-              onClick={createPost}
-              style={{background: '#E05B6F', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
-            >
-              Post Discussion
-            </button>
-            <button
-              onClick={() => setShowNewPost(false)}
-              style={{background: 'white', color: '#334155', padding: '10px 24px', borderRadius: '8px', border: '1px solid #EFF1F6', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem'}}
-            >
-              Cancel
-            </button>
+                  return (
+                    <div key={msg.id}>
+                      {showDivider && (
+                        <div style={{display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 12px'}}>
+                          <div style={{flex: 1, height: '1px', background: '#DDE3EB'}} />
+                          <span style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', whiteSpace: 'nowrap'}}>{formatDateDivider(msg.ts)}</span>
+                          <div style={{flex: 1, height: '1px', background: '#DDE3EB'}} />
+                        </div>
+                      )}
+                      <div
+                        style={{
+                          display: 'flex', gap: '10px', padding: sameAuthorBlock ? '2px 8px' : '8px 8px',
+                          marginTop: sameAuthorBlock ? '0' : '4px',
+                          borderRadius: '6px', transition: 'background 0.1s', cursor: 'default',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#F0F2F5'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {/* Avatar or time gutter */}
+                        {sameAuthorBlock ? (
+                          <div style={{width: 36, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <span style={{fontSize: '0.65rem', color: '#C0C8D4', opacity: 0, transition: 'opacity 0.1s'}} className="msg-ts">
+                              {new Date(msg.ts).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                            </span>
+                          </div>
+                        ) : (
+                          <div style={avatarStyle(msg.author)}>{getAvatar(msg.author).initials}</div>
+                        )}
+
+                        {/* Content */}
+                        <div style={{flex: 1, minWidth: 0}}>
+                          {!sameAuthorBlock && (
+                            <div style={{display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px'}}>
+                              <span style={{fontSize: '0.9rem', fontWeight: '700', color: '#2B4C6F'}}>{msg.author}</span>
+                              <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{formatTime(msg.ts)}</span>
+                            </div>
+                          )}
+                          <p style={{fontSize: '0.9rem', color: '#334155', lineHeight: '1.55', margin: 0, wordBreak: 'break-word'}}>{msg.text}</p>
+
+                          {/* Thread indicator */}
+                          {msg.thread && msg.thread.length > 0 && (
+                            <button
+                              onClick={() => setThreadOpen(threadOpen === msg.id ? null : msg.id)}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', padding: '4px 8px',
+                                background: 'none', border: '1px solid transparent', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '0.8rem', color: '#5AAFB5', fontWeight: '600', transition: 'all 0.15s'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = '#E8F7F8'; e.currentTarget.style.borderColor = '#5AAFB522'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'transparent'; }}
+                            >
+                              {/* Thread avatars */}
+                              <div style={{display: 'flex', marginRight: '2px'}}>
+                                {[...new Set(msg.thread.map(t => t.author))].slice(0, 3).map((name, i) => (
+                                  <div key={name} style={{...avatarStyle(name, 20), marginLeft: i > 0 ? '-4px' : 0, border: '2px solid white', boxSizing: 'content-box'}}>{getAvatar(name).initials}</div>
+                                ))}
+                              </div>
+                              {msg.thread.length} repl{msg.thread.length === 1 ? 'y' : 'ies'}
+                              <span style={{color: '#7A8BA0', fontWeight: '400'}}>· Last reply {formatTime(msg.thread[msg.thread.length - 1].ts)}</span>
+                            </button>
+                          )}
+
+                          {/* Inline reply button on hover (no thread yet) */}
+                          {(!msg.thread || msg.thread.length === 0) && (
+                            <button
+                              onClick={() => setThreadOpen(msg.id)}
+                              style={{
+                                opacity: 0, marginTop: '4px', padding: '2px 8px', background: 'none', border: 'none',
+                                fontSize: '0.78rem', color: '#7A8BA0', cursor: 'pointer', transition: 'opacity 0.15s',
+                              }}
+                              className="reply-btn"
+                            >
+                              Reply
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              <div ref={msgEndRef} />
+            </div>
+
+            {/* Message composer */}
+            <div style={{padding: '12px 20px 16px', borderTop: '1px solid #DDE3EB', background: 'white', flexShrink: 0}}>
+              <div style={{display: 'flex', alignItems: 'flex-end', gap: '10px', background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '8px 12px'}}>
+                <textarea
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                  placeholder={`Message #${activeChannelInfo?.name}...`}
+                  rows={1}
+                  style={{flex: 1, border: 'none', background: 'transparent', fontSize: '0.9rem', color: '#334155', outline: 'none', resize: 'none', fontFamily: 'system-ui', padding: '4px 0', lineHeight: '1.5', maxHeight: '120px', minHeight: '24px'}}
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!messageText.trim()}
+                  style={{
+                    width: 32, height: 32, borderRadius: '8px', border: 'none', cursor: messageText.trim() ? 'pointer' : 'default',
+                    background: messageText.trim() ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '1rem',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s'
+                  }}
+                >
+                  ↑
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* ── Thread panel ── */}
+      {threadOpen && threadMessage && (
+        <div style={{width: '340px', borderLeft: '1px solid #DDE3EB', background: 'white', display: 'flex', flexDirection: 'column', flexShrink: 0}}>
+          {/* Thread header */}
+          <div style={{padding: '12px 16px', borderBottom: '1px solid #DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Thread</h3>
+            <button onClick={() => setThreadOpen(null)} style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', color: '#7A8BA0', padding: '4px'}}>✕</button>
+          </div>
+
+          {/* Original message */}
+          <div style={{flex: 1, overflowY: 'auto', padding: '16px'}}>
+            <div style={{display: 'flex', gap: '10px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #EFF1F6'}}>
+              <div style={avatarStyle(threadMessage.author)}>{getAvatar(threadMessage.author).initials}</div>
+              <div style={{flex: 1}}>
+                <div style={{display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px'}}>
+                  <span style={{fontSize: '0.85rem', fontWeight: '700', color: '#2B4C6F'}}>{threadMessage.author}</span>
+                  <span style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{formatTime(threadMessage.ts)}</span>
+                </div>
+                <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{threadMessage.text}</p>
+              </div>
+            </div>
+
+            {/* Thread replies */}
+            {threadMessage.thread && threadMessage.thread.length > 0 && (
+              <div style={{marginBottom: '8px'}}>
+                <span style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '600'}}>{threadMessage.thread.length} repl{threadMessage.thread.length === 1 ? 'y' : 'ies'}</span>
+              </div>
+            )}
+            {(threadMessage.thread || []).map(reply => (
+              <div key={reply.id} style={{display: 'flex', gap: '10px', marginBottom: '12px'}}>
+                <div style={avatarStyle(reply.author, 28)}>{getAvatar(reply.author).initials}</div>
+                <div style={{flex: 1}}>
+                  <div style={{display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px'}}>
+                    <span style={{fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F'}}>{reply.author}</span>
+                    <span style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{formatTime(reply.ts)}</span>
+                  </div>
+                  <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{reply.text}</p>
+                </div>
+              </div>
+            ))}
+            <div ref={threadEndRef} />
+          </div>
+
+          {/* Thread composer */}
+          <div style={{padding: '12px 16px', borderTop: '1px solid #DDE3EB', flexShrink: 0}}>
+            <div style={{display: 'flex', alignItems: 'flex-end', gap: '8px', background: '#F5F7FA', borderRadius: '8px', border: '1px solid #DDE3EB', padding: '8px 10px'}}>
+              <textarea
+                value={threadReply}
+                onChange={(e) => setThreadReply(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendThreadReply(); } }}
+                placeholder="Reply..."
+                rows={1}
+                style={{flex: 1, border: 'none', background: 'transparent', fontSize: '0.85rem', color: '#334155', outline: 'none', resize: 'none', fontFamily: 'system-ui', padding: '2px 0', lineHeight: '1.5', maxHeight: '80px', minHeight: '20px'}}
+              />
+              <button
+                onClick={sendThreadReply}
+                disabled={!threadReply.trim()}
+                style={{
+                  width: 28, height: 28, borderRadius: '6px', border: 'none', cursor: threadReply.trim() ? 'pointer' : 'default',
+                  background: threadReply.trim() ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '0.85rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                }}
+              >
+                ↑
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Category filter */}
-      <div style={{display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap'}}>
-        {categories.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
-            style={{
-              padding: '8px 14px',
-              background: selectedCategory === cat.id ? cat.color : 'transparent',
-              color: selectedCategory === cat.id ? 'white' : '#7A8BA0',
-              border: `1px solid ${selectedCategory === cat.id ? cat.color : '#DDE3EB'}`,
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              fontWeight: selectedCategory === cat.id ? '600' : '500',
-              transition: 'all 0.2s'
-            }}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Posts feed */}
-      <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-        {sortedPosts.length === 0 ? (
-          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '32px', textAlign: 'center', border: '1px solid #DDE3EB'}}>
-            <p style={{fontSize: '0.95rem', color: '#7A8BA0', marginBottom: '12px'}}>No discussions yet in this category.</p>
-            <button
-              onClick={() => setShowNewPost(true)}
-              style={{background: 'none', border: 'none', color: '#E05B6F', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', textDecoration: 'underline'}}
-            >
-              Start one now
-            </button>
-          </div>
-        ) : (
-          sortedPosts.map(post => (
-            <div
-              key={post.id}
-              style={{
-                background: 'white',
-                border: '1px solid #DDE3EB',
-                borderRadius: '12px',
-                padding: '20px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: expandedPost === post.id ? '0 10px 30px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)'
-              }}
-              onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
-            >
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '8px'}}>
-                <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', flex: 1}}>{post.title}</h3>
-                <span style={{fontSize: '0.75rem', background: categories.find(c => c.id === post.category)?.color + '22', color: categories.find(c => c.id === post.category)?.color, padding: '4px 10px', borderRadius: '4px', fontWeight: '600', whiteSpace: 'nowrap'}}>
-                  {categories.find(c => c.id === post.category)?.name}
-                </span>
-              </div>
-
-              <div style={{display: 'flex', gap: '12px', fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '12px'}}>
-                <span>{post.author}</span>
-                <span>•</span>
-                <span>{new Date(post.timestamp).toLocaleDateString()}</span>
-              </div>
-
-              <p style={{fontSize: '0.9rem', color: '#4A5E73', lineHeight: '1.6', marginBottom: expandedPost === post.id ? '16px' : '0px'}}>
-                {post.body}
-              </p>
-
-              {expandedPost === post.id && (
-                <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #DDE3EB'}}>
-                  {post.replies && post.replies.length > 0 && (
-                    <div style={{marginBottom: '20px'}}>
-                      <h4 style={{fontSize: '0.85rem', fontWeight: '700', color: '#334155', marginBottom: '12px'}}>{post.replies.length} replies</h4>
-                      {post.replies.map(reply => (
-                        <div key={reply.id} style={{background: '#F5F7FA', borderRadius: '8px', padding: '12px', marginBottom: '8px'}}>
-                          <div style={{display: 'flex', gap: '8px', fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '6px'}}>
-                            <span style={{fontWeight: '600', color: '#334155'}}>{reply.author}</span>
-                            <span>•</span>
-                            <span>{new Date(reply.timestamp).toLocaleDateString()}</span>
-                          </div>
-                          <p style={{fontSize: '0.85rem', color: '#4A5E73'}}>{reply.text}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {replyingTo === post.id ? (
-                    <div style={{background: '#FDF0F2', borderRadius: '8px', padding: '12px', border: '1px solid #E05B6F22'}}>
-                      <textarea
-                        value={newReply}
-                        onChange={(e) => setNewReply(e.target.value)}
-                        placeholder="Share your thoughts..."
-                        style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #EFF1F6', fontSize: '0.85rem', minHeight: '60px', marginBottom: '8px', outline: 'none', fontFamily: 'system-ui', resize: 'vertical'}}
-                      />
-                      <div style={{display: 'flex', gap: '8px'}}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); addReply(post.id); }}
-                          style={{background: '#E05B6F', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
-                        >
-                          Reply
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setReplyingTo(null); setNewReply(''); }}
-                          style={{background: 'white', color: '#334155', padding: '8px 16px', borderRadius: '6px', border: '1px solid #EFF1F6', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setReplyingTo(post.id); }}
-                      style={{background: 'white', color: '#E05B6F', padding: '8px 16px', borderRadius: '6px', border: '1px solid #E05B6F', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem'}}
-                    >
-                      Reply
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+      {/* ── Hover styles (injected) ── */}
+      <style>{`
+        div:hover > .reply-btn { opacity: 1 !important; }
+        div:hover > div > .msg-ts { opacity: 1 !important; }
+      `}</style>
     </div>
   );
 }
