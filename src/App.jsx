@@ -8879,106 +8879,710 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
 // ─── APP SHELL (post-auth) ────────────────────────────────────
 // ─── ADMIN VIEW ──────────────────────────────────────────────
 function AdminView({ currentUser }) {
-  const [applications, setApplications] = useState(() => {
-    return JSON.parse(localStorage.getItem('stride_membership_applications') || '[]');
-  });
+  // ─── ADMIN TABS ───────────────────────────────────────────
+  const ADMIN_TABS = [
+    { id: 'overview', name: 'Overview', icon: '📊' },
+    { id: 'members', name: 'Members', icon: '👥' },
+    { id: 'events', name: 'Events', icon: '📅' },
+    { id: 'community', name: 'Community', icon: '💬' },
+    { id: 'settings', name: 'Settings', icon: '⚙' },
+  ];
 
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // ─── MEMBERS STATE ────────────────────────────────────────
+  const [applications, setApplications] = useState(() => JSON.parse(localStorage.getItem('stride_membership_applications') || '[]'));
+  const [members, setMembers] = useState(() => JSON.parse(localStorage.getItem('stride_members') || '[]'));
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberSearch, setMemberSearch] = useState('');
+  const [memberFilter, setMemberFilter] = useState('all');
+  const [showImportCSV, setShowImportCSV] = useState(false);
+  const [csvPreview, setCsvPreview] = useState(null);
+  const csvInputRef = useRef(null);
+
+  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
+
+  // ─── EVENTS STATE ─────────────────────────────────────────
+  const [sessions, setSessions] = useState(() => {
+    const saved = localStorage.getItem('stride_sessions');
+    return saved ? JSON.parse(saved) : getDefaultSessions();
+  });
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [newEvent, setNewEvent] = useState({ id: '', type: 'peer-group', title: '', description: '', date: '', time: '', facilitator: 'Jason Packer', prepRequired: false, prepWork: '', recording: false, takeaways: false, zoomUrl: '' });
+
+  // ─── COMMUNITY STATE ──────────────────────────────────────
+  const [channels, setChannels] = useState(() => JSON.parse(localStorage.getItem('stride_community_channels') || '{}'));
+  const [showAddChannel, setShowAddChannel] = useState(false);
+  const [newChannelName, setNewChannelName] = useState('');
+  const [newChannelDesc, setNewChannelDesc] = useState('');
+
+  // ─── PERSIST ──────────────────────────────────────────────
+  useEffect(() => { localStorage.setItem('stride_members', JSON.stringify(members)); }, [members]);
+  useEffect(() => { localStorage.setItem('stride_sessions', JSON.stringify(sessions)); }, [sessions]);
+  useEffect(() => { localStorage.setItem('stride_membership_applications', JSON.stringify(applications)); }, [applications]);
+
+  // ─── MEMBER HANDLERS ──────────────────────────────────────
   const handleApprove = (index) => {
     const updated = [...applications];
     updated[index].status = 'approved';
     setApplications(updated);
-    localStorage.setItem('stride_membership_applications', JSON.stringify(updated));
-
-    // Also update the membership status for the applicant
-    const memberStatus = {
-      tier: updated[index].tier,
-      appliedAt: updated[index].submittedAt,
-      status: 'active',
-    };
-    localStorage.setItem('stride_membership_status', JSON.stringify(memberStatus));
+    // Add to members list
+    const app = updated[index];
+    const member = { id: String(Date.now()), name: app.name, email: app.email, phone: '', enterpriseName: app.enterpriseName, location: app.location, tier: app.tier, status: 'active', peerGroup: '', notes: app.goals || '', joinedAt: new Date().toISOString() };
+    setMembers(prev => [...prev, member]);
+    localStorage.setItem('stride_membership_status', JSON.stringify({ tier: app.tier, appliedAt: app.submittedAt, status: 'active' }));
   };
 
+  const handleReject = (index) => {
+    const updated = [...applications];
+    updated[index].status = 'rejected';
+    setApplications(updated);
+  };
+
+  const saveMember = () => {
+    if (!newMember.name.trim() || !newMember.email.trim()) return;
+    if (editingMember) {
+      setMembers(prev => prev.map(m => m.id === editingMember ? { ...newMember, id: editingMember } : m));
+    } else {
+      setMembers(prev => [...prev, { ...newMember, id: String(Date.now()) }]);
+    }
+    setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
+    setShowAddMember(false);
+    setEditingMember(null);
+  };
+
+  const deleteMember = (id) => {
+    if (confirm('Remove this member? This cannot be undone.')) {
+      setMembers(prev => prev.filter(m => m.id !== id));
+    }
+  };
+
+  const startEditMember = (member) => {
+    setNewMember({ ...member });
+    setEditingMember(member.id);
+    setShowAddMember(true);
+  };
+
+  // CSV Import
+  const handleCSVFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target.result;
+      const lines = text.split('\n').map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
+      const headers = lines[0].map(h => h.toLowerCase());
+      const rows = lines.slice(1).filter(r => r.length > 1 && r[0]);
+      const nameIdx = headers.findIndex(h => h.includes('name') && !h.includes('enterprise') && !h.includes('business') && !h.includes('company'));
+      const emailIdx = headers.findIndex(h => h.includes('email'));
+      const phoneIdx = headers.findIndex(h => h.includes('phone'));
+      const companyIdx = headers.findIndex(h => h.includes('enterprise') || h.includes('company') || h.includes('business') || h.includes('organization'));
+      const locationIdx = headers.findIndex(h => h.includes('location') || h.includes('city') || h.includes('state') || h.includes('address'));
+      const tierIdx = headers.findIndex(h => h.includes('tier') || h.includes('plan') || h.includes('level'));
+      const notesIdx = headers.findIndex(h => h.includes('note') || h.includes('comment'));
+
+      const parsed = rows.map(row => ({
+        name: nameIdx >= 0 ? row[nameIdx] : '',
+        email: emailIdx >= 0 ? row[emailIdx] : '',
+        phone: phoneIdx >= 0 ? row[phoneIdx] : '',
+        enterpriseName: companyIdx >= 0 ? row[companyIdx] : '',
+        location: locationIdx >= 0 ? row[locationIdx] : '',
+        tier: tierIdx >= 0 ? row[tierIdx]?.toLowerCase() : 'founding',
+        notes: notesIdx >= 0 ? row[notesIdx] : '',
+      })).filter(r => r.name && r.email);
+
+      setCsvPreview({ headers, parsed, total: rows.length, valid: parsed.length });
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const importCSV = () => {
+    if (!csvPreview) return;
+    const imported = csvPreview.parsed.map(r => ({ ...r, id: String(Date.now() + Math.random()), status: 'active', peerGroup: '', joinedAt: new Date().toISOString() }));
+    setMembers(prev => [...prev, ...imported]);
+    setCsvPreview(null);
+    setShowImportCSV(false);
+  };
+
+  // ─── EVENT HANDLERS ───────────────────────────────────────
+  const saveEvent = () => {
+    if (!newEvent.title.trim() || !newEvent.date) return;
+    if (editingEvent) {
+      setSessions(prev => prev.map(s => s.id === editingEvent ? { ...newEvent, id: editingEvent } : s));
+    } else {
+      setSessions(prev => [...prev, { ...newEvent, id: 'e' + Date.now() }]);
+    }
+    setNewEvent({ id: '', type: 'peer-group', title: '', description: '', date: '', time: '', facilitator: 'Jason Packer', prepRequired: false, prepWork: '', recording: false, takeaways: false, zoomUrl: '' });
+    setShowAddEvent(false);
+    setEditingEvent(null);
+  };
+
+  const deleteEvent = (id) => {
+    if (confirm('Delete this event? This cannot be undone.')) {
+      setSessions(prev => prev.filter(s => s.id !== id));
+    }
+  };
+
+  const startEditEvent = (session) => {
+    setNewEvent({ ...session });
+    setEditingEvent(session.id);
+    setShowAddEvent(true);
+  };
+
+  // ─── COMMUNITY HANDLERS ───────────────────────────────────
+  const addChannel = () => {
+    if (!newChannelName.trim()) return;
+    const id = newChannelName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    setChannels(prev => {
+      const updated = { ...prev, [id]: [] };
+      localStorage.setItem('stride_community_channels', JSON.stringify(updated));
+      return updated;
+    });
+    setNewChannelName('');
+    setNewChannelDesc('');
+    setShowAddChannel(false);
+  };
+
+  const deleteChannel = (id) => {
+    if (id === 'general') return alert('Cannot delete the #general channel.');
+    if (confirm(`Delete #${id} and all its messages?`)) {
+      setChannels(prev => {
+        const updated = { ...prev };
+        delete updated[id];
+        localStorage.setItem('stride_community_channels', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
+  const clearChannel = (id) => {
+    if (confirm(`Clear all messages in #${id}?`)) {
+      setChannels(prev => {
+        const updated = { ...prev, [id]: [] };
+        localStorage.setItem('stride_community_channels', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
+  // ─── COMPUTED ─────────────────────────────────────────────
   const pendingApps = applications.filter(a => a.status === 'pending');
   const approvedApps = applications.filter(a => a.status === 'approved');
+  const tierPrices = { founding: 250, albany: 500, regional: 1000, 'regional-plus': 1500 };
+  const totalRevenue = members.filter(m => m.status === 'active').reduce((sum, m) => sum + (tierPrices[m.tier] || 0), 0);
+  const filteredMembers = members.filter(m => {
+    const matchSearch = !memberSearch || m.name.toLowerCase().includes(memberSearch.toLowerCase()) || m.email.toLowerCase().includes(memberSearch.toLowerCase()) || (m.enterpriseName || '').toLowerCase().includes(memberSearch.toLowerCase());
+    const matchFilter = memberFilter === 'all' || m.status === memberFilter || m.tier === memberFilter;
+    return matchSearch && matchFilter;
+  });
+  const upcomingEvents = [...sessions].filter(s => new Date(s.date) >= new Date()).sort((a, b) => new Date(a.date) - new Date(b.date));
+  const pastEvents = [...sessions].filter(s => new Date(s.date) < new Date()).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const totalMessages = Object.values(channels).reduce((sum, msgs) => sum + msgs.length, 0);
 
+  // ─── SHARED STYLES ────────────────────────────────────────
+  const cardStyle = { background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '24px' };
+  const btnPrimary = { background: '#E05B6F', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' };
+  const btnSecondary = { background: 'white', color: '#334155', border: '1px solid #DDE3EB', borderRadius: '8px', padding: '10px 20px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' };
+  const btnDanger = { background: '#FEE2E2', color: '#991B1B', border: 'none', borderRadius: '8px', padding: '8px 14px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' };
+  const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.9rem', outline: 'none', fontFamily: 'system-ui' };
+  const labelStyle = { display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '4px' };
+  const fieldGroup = { marginBottom: '14px' };
+
+  // ─── MEMBER FORM ──────────────────────────────────────────
+  const renderMemberForm = () => (
+    <div style={{ ...cardStyle, border: '2px solid #5AAFB5' }}>
+      <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>{editingMember ? 'Edit Member' : 'Add New Member'}</h3>
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 20px'}}>
+        <div style={fieldGroup}><label style={labelStyle}>Full Name *</label><input style={inputStyle} value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} placeholder="Sarah Mitchell" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Email *</label><input style={inputStyle} value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} placeholder="sarah@mitchell.com" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Phone</label><input style={inputStyle} value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} placeholder="(555) 123-4567" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Enterprise Name</label><input style={inputStyle} value={newMember.enterpriseName} onChange={e => setNewMember({...newMember, enterpriseName: e.target.value})} placeholder="Mitchell Family Enterprises" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Location</label><input style={inputStyle} value={newMember.location} onChange={e => setNewMember({...newMember, location: e.target.value})} placeholder="Albany, NY" /></div>
+        <div style={fieldGroup}>
+          <label style={labelStyle}>Membership Tier</label>
+          <select style={inputStyle} value={newMember.tier} onChange={e => setNewMember({...newMember, tier: e.target.value})}>
+            <option value="founding">Founding ($250/yr)</option>
+            <option value="albany">Albany ($500/yr)</option>
+            <option value="regional">Regional ($1,000/yr)</option>
+            <option value="regional-plus">Regional+ ($1,500/yr)</option>
+          </select>
+        </div>
+        <div style={fieldGroup}>
+          <label style={labelStyle}>Status</label>
+          <select style={inputStyle} value={newMember.status} onChange={e => setNewMember({...newMember, status: e.target.value})}>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="inactive">Inactive</option>
+            <option value="churned">Churned</option>
+          </select>
+        </div>
+        <div style={fieldGroup}><label style={labelStyle}>Peer Group</label><input style={inputStyle} value={newMember.peerGroup} onChange={e => setNewMember({...newMember, peerGroup: e.target.value})} placeholder="Cohort 1" /></div>
+        <div style={{...fieldGroup, gridColumn: '1 / -1'}}><label style={labelStyle}>Notes</label><textarea style={{...inputStyle, minHeight: '60px', resize: 'vertical'}} value={newMember.notes} onChange={e => setNewMember({...newMember, notes: e.target.value})} placeholder="Any notes about this member..." /></div>
+      </div>
+      <div style={{display: 'flex', gap: '10px', marginTop: '8px'}}>
+        <button onClick={saveMember} style={btnPrimary}>{editingMember ? 'Save Changes' : 'Add Member'}</button>
+        <button onClick={() => { setShowAddMember(false); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() }); }} style={btnSecondary}>Cancel</button>
+      </div>
+    </div>
+  );
+
+  // ─── EVENT FORM ───────────────────────────────────────────
+  const renderEventForm = () => (
+    <div style={{ ...cardStyle, border: '2px solid #5AAFB5' }}>
+      <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>{editingEvent ? 'Edit Event' : 'Create New Event'}</h3>
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 20px'}}>
+        <div style={{...fieldGroup, gridColumn: '1 / -1'}}><label style={labelStyle}>Title *</label><input style={inputStyle} value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} placeholder="Peer Group Session: Topic Name" /></div>
+        <div style={fieldGroup}>
+          <label style={labelStyle}>Type</label>
+          <select style={inputStyle} value={newEvent.type} onChange={e => setNewEvent({...newEvent, type: e.target.value})}>
+            <option value="peer-group">Peer Group</option>
+            <option value="workshop">Workshop</option>
+            <option value="education">Education / Guest Speaker</option>
+            <option value="social">Social / Networking</option>
+          </select>
+        </div>
+        <div style={fieldGroup}><label style={labelStyle}>Facilitator</label><input style={inputStyle} value={newEvent.facilitator || ''} onChange={e => setNewEvent({...newEvent, facilitator: e.target.value})} placeholder="Jason Packer" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Date *</label><input type="date" style={inputStyle} value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Time</label><input style={inputStyle} value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} placeholder="2:00 PM - 3:30 PM ET" /></div>
+        <div style={{...fieldGroup, gridColumn: '1 / -1'}}><label style={labelStyle}>Description</label><textarea style={{...inputStyle, minHeight: '80px', resize: 'vertical'}} value={newEvent.description} onChange={e => setNewEvent({...newEvent, description: e.target.value})} placeholder="What will this session cover?" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Zoom / Meeting URL</label><input style={inputStyle} value={newEvent.zoomUrl || ''} onChange={e => setNewEvent({...newEvent, zoomUrl: e.target.value})} placeholder="https://zoom.us/j/..." /></div>
+        <div style={{...fieldGroup, display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'flex-end'}}>
+          <label style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#334155', cursor: 'pointer'}}>
+            <input type="checkbox" checked={newEvent.prepRequired} onChange={e => setNewEvent({...newEvent, prepRequired: e.target.checked})} /> Prep work required
+          </label>
+          <label style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#334155', cursor: 'pointer'}}>
+            <input type="checkbox" checked={newEvent.recording} onChange={e => setNewEvent({...newEvent, recording: e.target.checked})} /> Has recording
+          </label>
+        </div>
+        {newEvent.prepRequired && (
+          <div style={{...fieldGroup, gridColumn: '1 / -1'}}><label style={labelStyle}>Prep Work Instructions</label><textarea style={{...inputStyle, minHeight: '60px', resize: 'vertical'}} value={newEvent.prepWork || ''} onChange={e => setNewEvent({...newEvent, prepWork: e.target.value})} placeholder="What should members prepare before this session?" /></div>
+        )}
+      </div>
+      <div style={{display: 'flex', gap: '10px', marginTop: '8px'}}>
+        <button onClick={saveEvent} style={btnPrimary}>{editingEvent ? 'Save Changes' : 'Create Event'}</button>
+        <button onClick={() => { setShowAddEvent(false); setEditingEvent(null); setNewEvent({ id: '', type: 'peer-group', title: '', description: '', date: '', time: '', facilitator: 'Jason Packer', prepRequired: false, prepWork: '', recording: false, takeaways: false, zoomUrl: '' }); }} style={btnSecondary}>Cancel</button>
+      </div>
+    </div>
+  );
+
+  // ─── RENDER ───────────────────────────────────────────────
   return (
-    <div style={{maxWidth: '1000px', margin: '0 auto', padding: '32px 20px'}}>
-      <header style={{marginBottom: '32px'}}>
+    <div style={{maxWidth: '1100px', margin: '0 auto', padding: '32px 20px'}}>
+      {/* Header */}
+      <header style={{marginBottom: '24px'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px'}}>
           <span style={{background: '#E05B6F', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em'}}>ADMIN</span>
-          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Admin Dashboard</h1>
+          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Stride CMS</h1>
         </div>
-        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Manage membership applications, members, and portal settings.</p>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Manage members, events, community, and portal settings.</p>
       </header>
 
-      {/* Stats */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px'}}>
-        {[
-          { label: 'Total Applications', value: applications.length, color: '#2B4C6F' },
-          { label: 'Pending Review', value: pendingApps.length, color: '#f59e0b' },
-          { label: 'Active Members', value: approvedApps.length, color: '#10b981' },
-          { label: 'Revenue (Est.)', value: '$' + approvedApps.reduce((sum, a) => sum + ({ founding: 250, albany: 500, regional: 1000 }[a.tier] || 0), 0), color: '#E05B6F' },
-        ].map((stat, i) => (
-          <div key={i} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px'}}>
-            <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '6px'}}>{stat.label}</div>
-            <div style={{fontSize: '1.6rem', fontWeight: '700', color: stat.color}}>{stat.value}</div>
-          </div>
+      {/* Tab navigation */}
+      <div style={{display: 'flex', gap: '4px', marginBottom: '28px', background: '#F0F4F8', borderRadius: '10px', padding: '4px'}}>
+        {ADMIN_TABS.map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 16px',
+            borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600',
+            background: activeTab === tab.id ? 'white' : 'transparent',
+            color: activeTab === tab.id ? '#2B4C6F' : '#7A8BA0',
+            boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+            transition: 'all 0.15s'
+          }}>
+            <span>{tab.icon}</span> {tab.name}
+            {tab.id === 'members' && pendingApps.length > 0 && <span style={{background: '#f59e0b', color: 'white', padding: '1px 6px', borderRadius: '10px', fontSize: '0.65rem'}}>{pendingApps.length}</span>}
+          </button>
         ))}
       </div>
 
-      {/* Pending Applications */}
-      <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '24px'}}>
-        <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>
-          Pending Applications {pendingApps.length > 0 && <span style={{background: '#FEF3C7', color: '#92400e', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '8px'}}>{pendingApps.length}</span>}
-        </h2>
-        {pendingApps.length === 0 ? (
-          <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No pending applications. New applicants will appear here for your review.</p>
-        ) : (
-          <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-            {applications.map((app, i) => app.status === 'pending' && (
-              <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-                <div>
-                  <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{app.name}</div>
-                  <div style={{fontSize: '0.85rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.location}</div>
-                  <div style={{fontSize: '0.8rem', color: '#7A8BA0', marginTop: '4px'}}>
-                    <span style={{background: '#F0F4F8', padding: '2px 8px', borderRadius: '8px', marginRight: '8px'}}>{app.tier?.toUpperCase()}</span>
-                    Applied {new Date(app.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                  {app.goals && <div style={{fontSize: '0.85rem', color: '#4A5E73', marginTop: '8px', fontStyle: 'italic'}}>"{app.goals}"</div>}
-                </div>
-                <div style={{display: 'flex', gap: '8px'}}>
-                  <button onClick={() => handleApprove(i)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
-                </div>
+      {/* ═══ OVERVIEW TAB ═══ */}
+      {activeTab === 'overview' && (
+        <>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px'}}>
+            {[
+              { label: 'Active Members', value: members.filter(m => m.status === 'active').length, color: '#10b981' },
+              { label: 'Pending Apps', value: pendingApps.length, color: '#f59e0b' },
+              { label: 'Upcoming Events', value: upcomingEvents.length, color: '#5AAFB5' },
+              { label: 'Est. Annual Revenue', value: '$' + totalRevenue.toLocaleString(), color: '#E05B6F' },
+              { label: 'Community Messages', value: totalMessages, color: '#2B4C6F' },
+              { label: 'Channels', value: Object.keys(channels).length, color: '#7C6BBF' },
+            ].map((stat, i) => (
+              <div key={i} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', cursor: 'pointer', transition: 'border-color 0.15s'}}
+                onClick={() => setActiveTab(i < 2 ? 'members' : i < 3 ? 'events' : 'community')}>
+                <div style={{color: '#7A8BA0', fontSize: '0.73rem', letterSpacing: '0.05em', marginBottom: '6px', textTransform: 'uppercase'}}>{stat.label}</div>
+                <div style={{fontSize: '1.6rem', fontWeight: '700', color: stat.color}}>{stat.value}</div>
               </div>
             ))}
           </div>
-        )}
-      </div>
 
-      {/* All Members */}
-      <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '28px'}}>
-        <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>
-          Members {approvedApps.length > 0 && <span style={{background: '#D1FAE5', color: '#065f46', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '8px'}}>{approvedApps.length}</span>}
-        </h2>
-        {approvedApps.length === 0 ? (
-          <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No approved members yet. Approve applications above to add members.</p>
-        ) : (
-          <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-            {approvedApps.map((app, i) => (
-              <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div>
-                  <div style={{fontWeight: '600', color: '#2B4C6F'}}>{app.name}</div>
-                  <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName}</div>
+          {/* Recent activity */}
+          <div style={cardStyle}>
+            <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Quick Actions</h2>
+            <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
+              <button onClick={() => { setActiveTab('members'); setShowAddMember(true); }} style={btnPrimary}>+ Add Member</button>
+              <button onClick={() => { setActiveTab('members'); setShowImportCSV(true); }} style={btnSecondary}>Import CSV</button>
+              <button onClick={() => { setActiveTab('events'); setShowAddEvent(true); }} style={btnPrimary}>+ Create Event</button>
+              <button onClick={() => { setActiveTab('community'); setShowAddChannel(true); }} style={btnSecondary}>+ Add Channel</button>
+            </div>
+          </div>
+
+          {/* Pending applications preview */}
+          {pendingApps.length > 0 && (
+            <div style={cardStyle}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+                <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Pending Applications <span style={{background: '#FEF3C7', color: '#92400e', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '6px'}}>{pendingApps.length}</span></h2>
+                <button onClick={() => setActiveTab('members')} style={{background: 'none', border: 'none', color: '#5AAFB5', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>View all →</button>
+              </div>
+              {pendingApps.slice(0, 3).map((app, i) => {
+                const appIdx = applications.indexOf(app);
+                return (
+                  <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                    <div>
+                      <div style={{fontWeight: '600', color: '#2B4C6F'}}>{app.name}</div>
+                      <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.tier?.toUpperCase()}</div>
+                    </div>
+                    <div style={{display: 'flex', gap: '8px'}}>
+                      <button onClick={() => handleApprove(appIdx)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
+                      <button onClick={() => handleReject(appIdx)} style={{background: '#FEE2E2', color: '#991B1B', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>Decline</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Next events preview */}
+          {upcomingEvents.length > 0 && (
+            <div style={cardStyle}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+                <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Upcoming Events</h2>
+                <button onClick={() => setActiveTab('events')} style={{background: 'none', border: 'none', color: '#5AAFB5', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>Manage →</button>
+              </div>
+              {upcomingEvents.slice(0, 3).map((s, i) => (
+                <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '14px'}}>
+                  <div style={{width: 48, height: 48, borderRadius: '10px', background: '#F0F4F8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                    <span style={{fontSize: '0.65rem', color: '#7A8BA0', textTransform: 'uppercase'}}>{new Date(s.date).toLocaleDateString('en-US', {month: 'short'})}</span>
+                    <span style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', lineHeight: 1}}>{new Date(s.date).getDate()}</span>
+                  </div>
+                  <div style={{flex: 1}}>
+                    <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>{s.title}</div>
+                    <div style={{fontSize: '0.8rem', color: '#7A8BA0'}}>{s.time} · {s.type}</div>
+                  </div>
                 </div>
-                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <span style={{background: '#D1FAE5', color: '#065f46', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600'}}>ACTIVE</span>
-                  <span style={{background: '#F0F4F8', color: '#4A5E73', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem'}}>{app.tier?.toUpperCase()}</span>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ═══ MEMBERS TAB ═══ */}
+      {activeTab === 'members' && (
+        <>
+          {/* Toolbar */}
+          <div style={{display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center'}}>
+            <button onClick={() => { setShowAddMember(true); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() }); }} style={btnPrimary}>+ Add Member</button>
+            <button onClick={() => setShowImportCSV(!showImportCSV)} style={btnSecondary}>Import CSV</button>
+            <div style={{flex: 1}} />
+            <input value={memberSearch} onChange={e => setMemberSearch(e.target.value)} placeholder="Search members..." style={{...inputStyle, width: '220px', flex: 'none'}} />
+            <select value={memberFilter} onChange={e => setMemberFilter(e.target.value)} style={{...inputStyle, width: '140px', flex: 'none'}}>
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="inactive">Inactive</option>
+              <option value="founding">Founding</option>
+              <option value="albany">Albany</option>
+              <option value="regional">Regional</option>
+            </select>
+          </div>
+
+          {/* CSV Import */}
+          {showImportCSV && (
+            <div style={{...cardStyle, border: '2px solid #5AAFB5'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Import Contacts from CSV</h3>
+              <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '16px'}}>
+                Upload a CSV file with columns for name, email, phone, company/enterprise, location, tier, and notes. Headers are matched automatically.
+              </p>
+              <input type="file" ref={csvInputRef} accept=".csv,.txt" style={{display: 'none'}} onChange={handleCSVFile} />
+              <button onClick={() => csvInputRef.current?.click()} style={btnSecondary}>Choose CSV File</button>
+
+              {csvPreview && (
+                <div style={{marginTop: '16px'}}>
+                  <div style={{fontSize: '0.85rem', color: '#334155', marginBottom: '8px'}}>
+                    Found <strong>{csvPreview.valid}</strong> valid contacts out of {csvPreview.total} rows
+                  </div>
+                  <div style={{maxHeight: '200px', overflowY: 'auto', border: '1px solid #DDE3EB', borderRadius: '8px', marginBottom: '12px'}}>
+                    <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem'}}>
+                      <thead><tr style={{background: '#F0F4F8'}}>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Name</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Email</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Enterprise</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Location</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Tier</th>
+                      </tr></thead>
+                      <tbody>{csvPreview.parsed.slice(0, 10).map((r, i) => (
+                        <tr key={i} style={{borderTop: '1px solid #EFF1F6'}}>
+                          <td style={{padding: '6px 10px'}}>{r.name}</td>
+                          <td style={{padding: '6px 10px'}}>{r.email}</td>
+                          <td style={{padding: '6px 10px'}}>{r.enterpriseName}</td>
+                          <td style={{padding: '6px 10px'}}>{r.location}</td>
+                          <td style={{padding: '6px 10px'}}>{r.tier}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                    {csvPreview.parsed.length > 10 && <div style={{padding: '6px 10px', fontSize: '0.75rem', color: '#7A8BA0'}}>...and {csvPreview.parsed.length - 10} more</div>}
+                  </div>
+                  <div style={{display: 'flex', gap: '10px'}}>
+                    <button onClick={importCSV} style={btnPrimary}>Import {csvPreview.valid} Members</button>
+                    <button onClick={() => { setCsvPreview(null); setShowImportCSV(false); }} style={btnSecondary}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Add/Edit form */}
+          {showAddMember && renderMemberForm()}
+
+          {/* Pending Applications */}
+          {pendingApps.length > 0 && (
+            <div style={{...cardStyle, borderLeft: '4px solid #f59e0b'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>
+                Pending Applications <span style={{background: '#FEF3C7', color: '#92400e', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem'}}>{pendingApps.length}</span>
+              </h3>
+              {applications.map((app, i) => app.status === 'pending' && (
+                <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px'}}>
+                  <div>
+                    <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '2px'}}>{app.name}</div>
+                    <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.location}</div>
+                    <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>
+                      <span style={{background: '#F0F4F8', padding: '2px 8px', borderRadius: '6px', marginRight: '6px'}}>{app.tier?.toUpperCase()}</span>
+                      Applied {new Date(app.submittedAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}
+                    </div>
+                    {app.goals && <div style={{fontSize: '0.82rem', color: '#4A5E73', marginTop: '6px', fontStyle: 'italic'}}>"{app.goals}"</div>}
+                  </div>
+                  <div style={{display: 'flex', gap: '8px'}}>
+                    <button onClick={() => handleApprove(i)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
+                    <button onClick={() => handleReject(i)} style={btnDanger}>Decline</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Members list */}
+          <div style={cardStyle}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>
+                Members <span style={{background: '#D1FAE5', color: '#065f46', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '6px'}}>{filteredMembers.length}</span>
+              </h3>
+            </div>
+            {filteredMembers.length === 0 ? (
+              <div style={{textAlign: 'center', padding: '32px', color: '#7A8BA0'}}>
+                <p style={{fontSize: '0.9rem', marginBottom: '12px'}}>{members.length === 0 ? 'No members yet. Add your first member or import from CSV.' : 'No members match your search.'}</p>
+              </div>
+            ) : (
+              <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                {filteredMembers.map(member => (
+                  <div key={member.id} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.1s'}}
+                    onMouseEnter={e => e.currentTarget.style.background = '#FAFBFC'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                    <div style={{flex: 1, minWidth: 0}}>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px'}}>
+                        <span style={{fontWeight: '600', color: '#2B4C6F'}}>{member.name}</span>
+                        {member.peerGroup && <span style={{fontSize: '0.7rem', background: '#E8F7F8', color: '#5AAFB5', padding: '1px 6px', borderRadius: '4px'}}>{member.peerGroup}</span>}
+                      </div>
+                      <div style={{fontSize: '0.8rem', color: '#7A8BA0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+                        {member.email}{member.enterpriseName ? ` · ${member.enterpriseName}` : ''}{member.location ? ` · ${member.location}` : ''}
+                      </div>
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0}}>
+                      <span style={{background: member.status === 'active' ? '#D1FAE5' : member.status === 'pending' ? '#FEF3C7' : '#F0F0F0', color: member.status === 'active' ? '#065f46' : member.status === 'pending' ? '#92400e' : '#666', padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: '600', textTransform: 'uppercase'}}>{member.status}</span>
+                      <span style={{background: '#F0F4F8', color: '#4A5E73', padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem'}}>{member.tier?.toUpperCase()}</span>
+                      <button onClick={() => startEditMember(member)} style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', color: '#7A8BA0', padding: '4px'}} title="Edit">✏</button>
+                      <button onClick={() => deleteMember(member.id)} style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', color: '#D1848F', padding: '4px'}} title="Remove">✕</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* ═══ EVENTS TAB ═══ */}
+      {activeTab === 'events' && (
+        <>
+          <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+            <button onClick={() => { setShowAddEvent(true); setEditingEvent(null); setNewEvent({ id: '', type: 'peer-group', title: '', description: '', date: '', time: '', facilitator: 'Jason Packer', prepRequired: false, prepWork: '', recording: false, takeaways: false, zoomUrl: '' }); }} style={btnPrimary}>+ Create Event</button>
+          </div>
+
+          {showAddEvent && renderEventForm()}
+
+          {/* Upcoming */}
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Upcoming Events <span style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '400'}}>({upcomingEvents.length})</span></h3>
+            {upcomingEvents.length === 0 ? (
+              <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No upcoming events. Create one above.</p>
+            ) : upcomingEvents.map(s => (
+              <div key={s.id} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', marginBottom: '10px', display: 'flex', alignItems: 'flex-start', gap: '14px'}}>
+                <div style={{width: 52, height: 52, borderRadius: '10px', background: '#F0F4F8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                  <span style={{fontSize: '0.6rem', color: '#7A8BA0', textTransform: 'uppercase'}}>{new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short'})}</span>
+                  <span style={{fontSize: '1.2rem', fontWeight: '700', color: '#2B4C6F', lineHeight: 1}}>{new Date(s.date + 'T12:00:00').getDate()}</span>
+                </div>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '700', color: '#2B4C6F', fontSize: '0.95rem', marginBottom: '4px'}}>{s.title}</div>
+                  <div style={{fontSize: '0.82rem', color: '#7A8BA0', marginBottom: '4px'}}>
+                    {s.time} · <span style={{background: '#F0F4F8', padding: '1px 6px', borderRadius: '4px', fontSize: '0.75rem'}}>{s.type}</span>
+                    {s.facilitator && ` · ${s.facilitator}`}
+                  </div>
+                  {s.description && <div style={{fontSize: '0.82rem', color: '#4A5E73', lineHeight: '1.4'}}>{s.description.substring(0, 120)}{s.description.length > 120 ? '...' : ''}</div>}
+                  {s.prepRequired && <div style={{fontSize: '0.75rem', color: '#f59e0b', marginTop: '4px', fontWeight: '600'}}>Prep work required</div>}
+                </div>
+                <div style={{display: 'flex', gap: '6px', flexShrink: 0}}>
+                  <button onClick={() => startEditEvent(s)} style={{background: '#F0F4F8', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem', color: '#334155', cursor: 'pointer', fontWeight: '600'}}>Edit</button>
+                  <button onClick={() => deleteEvent(s.id)} style={btnDanger}>Delete</button>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+
+          {/* Past */}
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Past Events <span style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '400'}}>({pastEvents.length})</span></h3>
+            {pastEvents.length === 0 ? (
+              <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No past events.</p>
+            ) : pastEvents.map(s => (
+              <div key={s.id} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px', opacity: 0.8}}>
+                <div style={{width: 44, height: 44, borderRadius: '8px', background: '#F0F4F8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                  <span style={{fontSize: '0.55rem', color: '#7A8BA0', textTransform: 'uppercase'}}>{new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short'})}</span>
+                  <span style={{fontSize: '1rem', fontWeight: '700', color: '#7A8BA0', lineHeight: 1}}>{new Date(s.date + 'T12:00:00').getDate()}</span>
+                </div>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '600', color: '#4A5E73', fontSize: '0.9rem'}}>{s.title}</div>
+                  <div style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{s.type}{s.recording ? ' · Recording available' : ''}</div>
+                </div>
+                <div style={{display: 'flex', gap: '6px'}}>
+                  <button onClick={() => startEditEvent(s)} style={{background: '#F0F4F8', border: 'none', borderRadius: '6px', padding: '6px 10px', fontSize: '0.78rem', color: '#334155', cursor: 'pointer'}}>Edit</button>
+                  <button onClick={() => deleteEvent(s.id)} style={{...btnDanger, padding: '6px 10px', fontSize: '0.78rem'}}>Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ═══ COMMUNITY TAB ═══ */}
+      {activeTab === 'community' && (
+        <>
+          <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+            <button onClick={() => setShowAddChannel(!showAddChannel)} style={btnPrimary}>+ Add Channel</button>
+          </div>
+
+          {showAddChannel && (
+            <div style={{...cardStyle, border: '2px solid #5AAFB5'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Create New Channel</h3>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 20px'}}>
+                <div style={fieldGroup}><label style={labelStyle}>Channel Name *</label><input style={inputStyle} value={newChannelName} onChange={e => setNewChannelName(e.target.value)} placeholder="announcements" /></div>
+                <div style={fieldGroup}><label style={labelStyle}>Description</label><input style={inputStyle} value={newChannelDesc} onChange={e => setNewChannelDesc(e.target.value)} placeholder="Official announcements from Stride" /></div>
+              </div>
+              <div style={{display: 'flex', gap: '10px', marginTop: '8px'}}>
+                <button onClick={addChannel} style={btnPrimary}>Create Channel</button>
+                <button onClick={() => { setShowAddChannel(false); setNewChannelName(''); setNewChannelDesc(''); }} style={btnSecondary}>Cancel</button>
+              </div>
+            </div>
+          )}
+
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>
+              Channels <span style={{fontSize: '0.75rem', color: '#7A8BA0', fontWeight: '400'}}>({Object.keys(channels).length})</span>
+            </h3>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+              {Object.entries(channels).map(([id, msgs]) => (
+                <div key={id} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <div>
+                    <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.95rem'}}>
+                      <span style={{color: '#7A8BA0', fontWeight: '400'}}># </span>{id}
+                    </div>
+                    <div style={{fontSize: '0.8rem', color: '#7A8BA0'}}>{msgs.length} messages{msgs.length > 0 ? ` · Last: ${new Date(msgs[msgs.length - 1].ts).toLocaleDateString()}` : ''}</div>
+                  </div>
+                  <div style={{display: 'flex', gap: '6px'}}>
+                    <button onClick={() => clearChannel(id)} style={{background: '#F0F4F8', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '0.78rem', color: '#334155', cursor: 'pointer'}}>Clear Messages</button>
+                    {id !== 'general' && <button onClick={() => deleteChannel(id)} style={{...btnDanger, padding: '6px 12px', fontSize: '0.78rem'}}>Delete</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Community stats */}
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Community Stats</h3>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+              <div><div style={{fontSize: '0.73rem', color: '#7A8BA0', textTransform: 'uppercase', marginBottom: '4px'}}>Total Messages</div><div style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F'}}>{totalMessages}</div></div>
+              <div><div style={{fontSize: '0.73rem', color: '#7A8BA0', textTransform: 'uppercase', marginBottom: '4px'}}>Active Channels</div><div style={{fontSize: '1.4rem', fontWeight: '700', color: '#5AAFB5'}}>{Object.entries(channels).filter(([_, msgs]) => msgs.length > 0).length}</div></div>
+              <div><div style={{fontSize: '0.73rem', color: '#7A8BA0', textTransform: 'uppercase', marginBottom: '4px'}}>Thread Replies</div><div style={{fontSize: '1.4rem', fontWeight: '700', color: '#E05B6F'}}>{Object.values(channels).flat().reduce((sum, m) => sum + (m.thread?.length || 0), 0)}</div></div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ═══ SETTINGS TAB ═══ */}
+      {activeTab === 'settings' && (
+        <>
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Portal Settings</h3>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+              <div>
+                <label style={labelStyle}>Portal Name</label>
+                <input style={inputStyle} defaultValue="The STRIDE Way" disabled />
+                <span style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '2px', display: 'block'}}>Contact support to change</span>
+              </div>
+              <div>
+                <label style={labelStyle}>Admin Emails</label>
+                <input style={inputStyle} defaultValue="jason@stridefba.com, jpacker@stridefba.com, jason.m.packer@gmail.com" disabled />
+                <span style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '2px', display: 'block'}}>Hardcoded — will be configurable with Supabase backend</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Data Management</h3>
+            <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '16px'}}>All data is currently stored in your browser's localStorage. This will move to Supabase (cloud database) in Phase 2.</p>
+            <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+              <button onClick={() => {
+                const data = { members, applications, sessions, channels, exportedAt: new Date().toISOString() };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `stride-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+              }} style={btnPrimary}>Export All Data (JSON)</button>
+              <button onClick={() => {
+                const csvRows = ['Name,Email,Phone,Enterprise,Location,Tier,Status,Peer Group,Joined,Notes'];
+                members.forEach(m => csvRows.push([m.name, m.email, m.phone || '', m.enterpriseName || '', m.location || '', m.tier, m.status, m.peerGroup || '', m.joinedAt?.split('T')[0] || '', (m.notes || '').replace(/,/g, ';')].join(',')));
+                const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `stride-members-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+              }} style={btnSecondary}>Export Members (CSV)</button>
+            </div>
+          </div>
+
+          <div style={{...cardStyle, borderLeft: '4px solid #f59e0b'}}>
+            <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Phase 2 Roadmap</h3>
+            <div style={{fontSize: '0.88rem', color: '#4A5E73', lineHeight: '1.7'}}>
+              <div style={{marginBottom: '8px'}}><strong style={{color: '#2B4C6F'}}>Supabase Backend</strong> — Real database, shared data across all users, proper auth</div>
+              <div style={{marginBottom: '8px'}}><strong style={{color: '#2B4C6F'}}>Stripe Payments</strong> — Real billing, subscription management, invoicing</div>
+              <div style={{marginBottom: '8px'}}><strong style={{color: '#2B4C6F'}}>Email Notifications</strong> — Welcome sequences, event reminders, digests</div>
+              <div style={{marginBottom: '8px'}}><strong style={{color: '#2B4C6F'}}>Member Directory</strong> — Searchable profiles, peer discovery</div>
+              <div><strong style={{color: '#2B4C6F'}}>Analytics Dashboard</strong> — Engagement tracking, revenue reporting</div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
