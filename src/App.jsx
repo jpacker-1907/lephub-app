@@ -2535,6 +2535,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'workbook', icon: '📝', name: 'My Workbook', memberOnly: true },
     { id: 'my-family', icon: '❤', name: 'My Family', memberOnly: true },
     { id: 'community', icon: '💬', name: 'Community', memberOnly: true },
+    { id: 'professionals', icon: '🏛️', name: 'Professionals', memberOnly: true },
     { id: 'membership', icon: '⭐', name: 'Membership', memberOnly: false },
     { id: 'admin', icon: '🔧', name: 'Admin', adminOnly: true },
   ];
@@ -8460,6 +8461,419 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
 }
 
 // ═══════════════════════════════════════════════════════════════
+// PROFESSIONAL DIRECTORY VIEW
+// ═══════════════════════════════════════════════════════════════
+
+function ProfessionalDirectoryView() {
+  const PROFESSIONALS_VERSION = 'v1';
+  const SPECIALTY_ICONS = {
+    'wealth-advisor': '💰',
+    'estate-attorney': '⚖️',
+    'family-business': '🏢',
+    'insurance': '🛡️',
+    'cpa': '📋',
+    'investment-banker': '🏦',
+    'family-office': '🏛️',
+    'family-therapist': '🧠',
+  };
+
+  const SPECIALTY_LABELS = {
+    'wealth-advisor': 'Wealth Advisory',
+    'estate-attorney': 'Estate & Trust Law',
+    'family-business': 'Family Business Consulting',
+    'insurance': 'Insurance & Risk',
+    'cpa': 'Accounting & Tax',
+    'investment-banker': 'Investment Banking',
+    'family-office': 'Family Office Services',
+    'family-therapist': 'Family Therapy & Mediation',
+  };
+
+  const seedProfessionals = [
+    {
+      id: 'p1',
+      name: 'Catherine Wells',
+      title: 'Wealth Advisor',
+      firm: 'Beacon Wealth Partners',
+      specialty: 'wealth-advisor',
+      location: 'Boston, MA',
+      bio: 'Catherine specializes in comprehensive wealth planning for multi-generational families. With 22 years of experience managing family portfolios and estates, she brings deep expertise in tax-efficient wealth transfer and succession planning.',
+      email: 'catherine@beaconwealth.com',
+      yearsExperience: 22,
+      tier: 'firm',
+      specialties: ['wealth-advisor', 'family-business'],
+    },
+    {
+      id: 'p2',
+      name: 'Richard Torres',
+      title: 'Estate Attorney',
+      firm: 'Torres & Associates',
+      specialty: 'estate-attorney',
+      location: 'New York, NY',
+      bio: 'Richard is a leading estate planning attorney with 18 years of experience drafting trusts, wills, and family governance documents. He has worked with some of the region\'s most prominent family enterprises.',
+      email: 'rtorres@torresassociates.com',
+      yearsExperience: 18,
+      tier: 'professional',
+      specialties: ['estate-attorney', 'family-business'],
+    },
+    {
+      id: 'p3',
+      name: 'Amanda Liu',
+      title: 'Family Business Consultant',
+      firm: 'Liu Advisory Group',
+      specialty: 'family-business',
+      location: 'San Francisco, CA',
+      bio: 'Amanda guides families through complex business transitions and governance challenges. Her 15 years working with manufacturing, retail, and professional services families inform her pragmatic, systems-based approach.',
+      email: 'amanda@liuadvisory.com',
+      yearsExperience: 15,
+      tier: 'professional',
+      specialties: ['family-business', 'wealth-advisor'],
+    },
+    {
+      id: 'p4',
+      name: 'Jonathan Burke',
+      title: 'Insurance Advisor',
+      firm: 'Northeast Risk Partners',
+      specialty: 'insurance',
+      location: 'Albany, NY',
+      bio: 'Jonathan structures risk management and insurance strategies for family enterprises. Over 20 years, he\'s designed coverage plans protecting business continuity, succession, and family wealth preservation.',
+      email: 'jburke@northeastrisk.com',
+      yearsExperience: 20,
+      tier: 'professional',
+      specialties: ['insurance', 'family-business'],
+    },
+    {
+      id: 'p5',
+      name: 'Patricia Chen',
+      title: 'CPA',
+      firm: 'Chen & Associates CPAs',
+      specialty: 'cpa',
+      location: 'Chicago, IL',
+      bio: 'Patricia advises family enterprises on tax strategy, entity structuring, and compliance. Her 16 years of experience include advising on intergenerational wealth transfer and business succession tax planning.',
+      email: 'pchen@chenassociates.com',
+      yearsExperience: 16,
+      tier: 'sponsor',
+      specialties: ['cpa', 'wealth-advisor'],
+    },
+    {
+      id: 'p6',
+      name: 'Michael Sato',
+      title: 'Investment Banker',
+      firm: 'Atlas Family Capital',
+      specialty: 'investment-banker',
+      location: 'Boston, MA',
+      bio: 'Michael structures exits, acquisitions, and recapitalizations for family businesses. With 25 years in investment banking, he brings institutional expertise to mid-market family enterprise transactions.',
+      email: 'msato@atlasfamilycapital.com',
+      yearsExperience: 25,
+      tier: 'professional',
+      specialties: ['investment-banker', 'family-business'],
+    },
+    {
+      id: 'p7',
+      name: 'Elizabeth Hartwell',
+      title: 'Family Office Director',
+      firm: 'Hartwell Family Office',
+      specialty: 'family-office',
+      location: 'Greenwich, CT',
+      bio: 'Elizabeth directs operations for multi-family offices and single-family offices. Her 19 years include governance, investment oversight, and family dynamics facilitation for ultra-high-net-worth families.',
+      email: 'ehartwell@hartwellfamilyoffice.com',
+      yearsExperience: 19,
+      tier: 'professional',
+      specialties: ['family-office', 'wealth-advisor'],
+    },
+    {
+      id: 'p8',
+      name: 'Dr. Karen Okonkwo',
+      title: 'Family Therapist',
+      firm: 'Okonkwo Family Systems',
+      specialty: 'family-therapist',
+      location: 'Philadelphia, PA',
+      bio: 'Dr. Okonkwo brings systems thinking to family enterprise dynamics. With 14 years specialized in family business conflict, succession transitions, and next-gen development, she integrates psychology with business strategy.',
+      email: 'kokonkwo@okonkowfamilysystems.com',
+      yearsExperience: 14,
+      tier: 'professional',
+      specialties: ['family-therapist', 'family-business'],
+    },
+  ];
+
+  const [professionals, setProfessionals] = useState(() => {
+    const saved = localStorage.getItem('stride_professionals');
+    const version = localStorage.getItem('stride_professionals_version');
+    if (saved && version === PROFESSIONALS_VERSION) return JSON.parse(saved);
+    localStorage.setItem('stride_professionals', JSON.stringify(seedProfessionals));
+    localStorage.setItem('stride_professionals_version', PROFESSIONALS_VERSION);
+    return seedProfessionals;
+  });
+
+  const [selectedSpecialty, setSelectedSpecialty] = useState('all');
+  const [expandedProfessional, setExpandedProfessional] = useState(null);
+
+  const specialtyOptions = [
+    { value: 'all', label: 'All Specialties' },
+    { value: 'wealth-advisor', label: 'Wealth Advisory' },
+    { value: 'estate-attorney', label: 'Estate & Trust Law' },
+    { value: 'family-business', label: 'Family Business Consulting' },
+    { value: 'insurance', label: 'Insurance & Risk' },
+    { value: 'cpa', label: 'Accounting & Tax' },
+    { value: 'investment-banker', label: 'Investment Banking' },
+    { value: 'family-office', label: 'Family Office Services' },
+    { value: 'family-therapist', label: 'Family Therapy & Mediation' },
+  ];
+
+  const filteredProfessionals = selectedSpecialty === 'all'
+    ? professionals
+    : professionals.filter(p => p.specialty === selectedSpecialty);
+
+  const handleRequestIntroduction = (professional) => {
+    alert(`Introduction request sent to ${professional.name} at ${professional.firm}. You'll receive contact information shortly.`);
+  };
+
+  return (
+    <div style={{padding: '24px', background: '#F5F7FA', minHeight: '100vh'}}>
+      {/* Header */}
+      <div style={{marginBottom: '32px'}}>
+        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', margin: '0 0 8px', fontFamily: "'Instrument Serif', Georgia, serif"}}>
+          Professional Directory
+        </h1>
+        <p style={{fontSize: '0.95rem', color: '#7A8BA0', margin: 0, maxWidth: '600px', lineHeight: '1.6'}}>
+          Vetted advisors and service providers for family enterprises
+        </p>
+      </div>
+
+      {/* Controls */}
+      <div style={{display: 'flex', gap: '16px', marginBottom: '28px', alignItems: 'flex-end', flexWrap: 'wrap'}}>
+        {/* Search placeholder */}
+        <div style={{flex: 1, minWidth: '240px'}}>
+          <input
+            type="text"
+            placeholder="Search by name or firm..."
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              border: '1px solid #DDE3EB',
+              borderRadius: '8px',
+              fontSize: '0.9rem',
+              background: 'white',
+              color: '#2B4C6F',
+              outline: 'none',
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#5AAFB5'}
+            onBlur={(e) => e.target.style.borderColor = '#DDE3EB'}
+          />
+        </div>
+
+        {/* Specialty filter */}
+        <div>
+          <label style={{display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#7A8BA0', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+            Specialty
+          </label>
+          <select
+            value={selectedSpecialty}
+            onChange={(e) => setSelectedSpecialty(e.target.value)}
+            style={{
+              padding: '10px 12px',
+              border: '1px solid #DDE3EB',
+              borderRadius: '8px',
+              fontSize: '0.9rem',
+              background: 'white',
+              color: '#2B4C6F',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            {specialtyOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Professionals Grid */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px'}}>
+        {filteredProfessionals.map(prof => {
+          const isExpanded = expandedProfessional === prof.id;
+          const tierBadge = prof.tier === 'sponsor' ? 'gold' : prof.tier === 'firm' ? 'silver' : null;
+
+          return (
+            <div
+              key={prof.id}
+              style={{
+                background: 'white',
+                borderRadius: '12px',
+                border: isExpanded ? '2px solid #5AAFB5' : '1px solid #DDE3EB',
+                overflow: 'hidden',
+                transition: 'all 0.2s',
+                boxShadow: isExpanded ? '0 4px 12px rgba(90, 175, 181, 0.15)' : 'none',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => !isExpanded && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)', e.currentTarget.style.borderColor = '#5AAFB5')}
+              onMouseLeave={(e) => !isExpanded && (e.currentTarget.style.boxShadow = 'none', e.currentTarget.style.borderColor = '#DDE3EB')}
+            >
+              <div style={{padding: isExpanded ? '20px' : '16px'}}>
+                {/* Header: Name & Tier Badge */}
+                <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: isExpanded ? '16px' : '12px'}}>
+                  <div>
+                    <h3 style={{fontSize: isExpanded ? '1.1rem' : '0.95rem', fontWeight: '700', color: '#2B4C6F', margin: '0 0 4px'}}>{prof.name}</h3>
+                    <p style={{fontSize: '0.85rem', color: '#5AAFB5', margin: 0, fontWeight: '600'}}>{prof.title}</p>
+                  </div>
+                  {tierBadge && (
+                    <div style={{
+                      background: tierBadge === 'gold' ? '#F4D35E' : '#E8E8E8',
+                      color: tierBadge === 'gold' ? '#8B7500' : '#666',
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.7rem',
+                      fontWeight: '600',
+                      whiteSpace: 'nowrap',
+                      marginLeft: '8px',
+                    }}>
+                      {tierBadge === 'gold' ? 'Sponsor' : 'Firm Partner'}
+                    </div>
+                  )}
+                </div>
+
+                {/* Firm & Location */}
+                <div style={{marginBottom: isExpanded ? '14px' : '10px'}}>
+                  <p style={{fontSize: '0.85rem', color: '#7A8BA0', margin: '0 0 2px'}}><strong>{prof.firm}</strong></p>
+                  <p style={{fontSize: '0.8rem', color: '#7A8BA0', margin: 0}}>{prof.location}</p>
+                </div>
+
+                {/* Specialty Icon & Years */}
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: isExpanded ? '14px' : '10px', fontSize: '0.9rem'}}>
+                  <span style={{fontSize: '1.4rem'}}>{SPECIALTY_ICONS[prof.specialty]}</span>
+                  <div>
+                    <div style={{color: '#2B4C6F', fontWeight: '600'}}>{SPECIALTY_LABELS[prof.specialty]}</div>
+                    <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>{prof.yearsExperience} years experience</div>
+                  </div>
+                </div>
+
+                {/* Bio snippet or full bio */}
+                {isExpanded ? (
+                  <>
+                    <div style={{background: '#F9FAFB', padding: '12px', borderRadius: '6px', marginBottom: '12px', fontSize: '0.85rem', lineHeight: '1.5', color: '#4A5E73'}}>
+                      {prof.bio}
+                    </div>
+
+                    {/* Secondary Specialties */}
+                    {prof.specialties && prof.specialties.length > 0 && (
+                      <div style={{marginBottom: '12px'}}>
+                        <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                          Also Specializes In
+                        </p>
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
+                          {prof.specialties.map(spec => (
+                            <span
+                              key={spec}
+                              style={{
+                                background: '#EBF7F8',
+                                color: '#2B6B73',
+                                padding: '4px 10px',
+                                borderRadius: '4px',
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                              }}
+                            >
+                              {SPECIALTY_LABELS[spec] || spec}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Contact Info */}
+                    <div style={{background: '#F9FAFB', padding: '10px 12px', borderRadius: '6px', marginBottom: '12px', fontSize: '0.8rem', color: '#4A5E73'}}>
+                      <strong>Email:</strong> <a href={`mailto:${prof.email}`} style={{color: '#5AAFB5', textDecoration: 'none'}}>{prof.email}</a>
+                    </div>
+
+                    {/* Request Introduction Button */}
+                    <button
+                      onClick={() => handleRequestIntroduction(prof)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: '#5AAFB5',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s',
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = '#4A9BA5'}
+                      onMouseLeave={(e) => e.target.style.background = '#5AAFB5'}
+                    >
+                      Request Introduction
+                    </button>
+
+                    <button
+                      onClick={() => setExpandedProfessional(null)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        marginTop: '8px',
+                        background: 'white',
+                        color: '#7A8BA0',
+                        border: '1px solid #DDE3EB',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => { e.target.style.borderColor = '#7A8BA0'; e.target.style.color = '#2B4C6F'; }}
+                      onMouseLeave={(e) => { e.target.style.borderColor = '#DDE3EB'; e.target.style.color = '#7A8BA0'; }}
+                    >
+                      Collapse
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {/* Bio snippet */}
+                    <p style={{fontSize: '0.85rem', color: '#4A5E73', margin: '0 0 12px', lineHeight: '1.5', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                      {prof.bio}
+                    </p>
+
+                    {/* View Profile Button */}
+                    <button
+                      onClick={() => setExpandedProfessional(prof.id)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: 'white',
+                        color: '#5AAFB5',
+                        border: '2px solid #5AAFB5',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => { e.target.style.background = '#EBF7F8'; }}
+                      onMouseLeave={(e) => { e.target.style.background = 'white'; }}
+                    >
+                      View Profile
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Empty State */}
+      {filteredProfessionals.length === 0 && (
+        <div style={{textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB'}}>
+          <div style={{fontSize: '2rem', marginBottom: '12px'}}>🔍</div>
+          <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>No professionals found</h3>
+          <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Try adjusting your filters to see available professionals</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // COMMUNITY VIEW
 // ═══════════════════════════════════════════════════════════════
 
@@ -8473,6 +8887,8 @@ function CommunityView() {
     { id: 'family-dynamics', name: 'family-dynamics', icon: '#', description: 'Communication, conflict & family systems' },
     { id: 'wins', name: 'wins', icon: '#', description: 'Celebrate milestones & breakthroughs' },
     { id: 'resources', name: 'resources', icon: '#', description: 'Articles, books & tools to share' },
+    { id: 'pro-lounge', name: 'pro-lounge', icon: '🏛️', description: 'Professionals-only — industry insights, trends & peer discussion' },
+    { id: 'pro-referrals', name: 'pro-referrals', icon: '🤝', description: 'Share referral opportunities and collaborate across specialties' },
   ];
 
   const AVATARS = {
@@ -8484,10 +8900,13 @@ function CommunityView() {
     'Robert Khan': { initials: 'RK', color: '#2B4C6F' },
     'Jason Packer': { initials: 'JP', color: '#E05B6F' },
     'You': { initials: 'ME', color: '#5AAFB5' },
+    'Catherine Wells': { initials: 'CW', color: '#5AAFB5' },
+    'Richard Torres': { initials: 'RT', color: '#2B4C6F' },
+    'Amanda Liu': { initials: 'AL', color: '#7C6BBF' },
   };
 
   // ─── STATE ────────────────────────────────────────────────
-  const COMMUNITY_VERSION = 'v2'; // bump to re-seed community data with reactions
+  const COMMUNITY_VERSION = 'v3'; // bump to re-seed community data with professional channels
   const [channels, setChannels] = useState(() => {
     const savedVersion = localStorage.getItem('stride_community_version');
     const saved = localStorage.getItem('stride_community_channels');
@@ -8531,6 +8950,14 @@ function CommunityView() {
       'family-dynamics': [],
       'resources': [
         { id: 'm8', author: 'James Chen', text: 'Just finished reading "Borrowed from Your Grandchildren" — the best framing of stewardship vs. ownership I\'ve encountered. Highly recommend for anyone working through the ownership identity questions.', ts: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
+      ],
+      'pro-lounge': [
+        { id: 'm9', author: 'Catherine Wells', text: 'Interesting trend I\'m seeing across my book: more families are consolidating advisors rather than fragmenting across 5+ firms. They want integrated advice on wealth, tax, and succession. The siloed model doesn\'t serve complexity well. Anyone else noticing this shift?', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+          { id: 't11', author: 'Richard Torres', text: 'Absolutely. And it creates real planning challenges. When wealth and estate advice are disconnected from business transition planning, you miss critical opportunities. We\'ve been pushing toward integrated family advisory teams.', ts: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000).toISOString() },
+        ] },
+      ],
+      'pro-referrals': [
+        { id: 'm10', author: 'Amanda Liu', text: 'Looking for a referral to a top-tier estate attorney for a 3rd-gen manufacturing family in the Midwest. They\'re mid-market ($150M+ revenue) and need someone who understands business succession from an estate planning lens. Would appreciate recommendations.', ts: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
       ],
     };
     localStorage.setItem('stride_community_channels', JSON.stringify(seed));
@@ -10548,6 +10975,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
+        {currentView === 'professionals' && isMember && <ProfessionalDirectoryView />}
         {/* Membership — always accessible */}
         {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
         {currentView === 'admin' && isAdmin && <AdminView currentUser={currentUser} />}
