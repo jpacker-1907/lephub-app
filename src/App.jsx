@@ -2525,7 +2525,7 @@ async function downloadDocument(moduleId, data, title) {
 // COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser, isMember }) {
+function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser, isMember, isAdmin }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const allNavItems = [
@@ -2535,8 +2535,13 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'my-family', icon: '❤', name: 'My Family', memberOnly: true },
     { id: 'community', icon: '💬', name: 'Community', memberOnly: true },
     { id: 'membership', icon: '⭐', name: 'Membership', memberOnly: false },
+    { id: 'admin', icon: '🔧', name: 'Admin', adminOnly: true },
   ];
-  const navItems = isMember ? allNavItems : allNavItems.filter(item => !item.memberOnly);
+  const navItems = allNavItems.filter(item => {
+    if (item.adminOnly) return isAdmin;
+    if (item.memberOnly) return isMember;
+    return true;
+  });
 
   return (
     <>
@@ -8497,12 +8502,122 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
 }
 
 // ─── APP SHELL (post-auth) ────────────────────────────────────
+// ─── ADMIN VIEW ──────────────────────────────────────────────
+function AdminView({ currentUser }) {
+  const [applications, setApplications] = useState(() => {
+    return JSON.parse(localStorage.getItem('stride_membership_applications') || '[]');
+  });
+
+  const handleApprove = (index) => {
+    const updated = [...applications];
+    updated[index].status = 'approved';
+    setApplications(updated);
+    localStorage.setItem('stride_membership_applications', JSON.stringify(updated));
+
+    // Also update the membership status for the applicant
+    const memberStatus = {
+      tier: updated[index].tier,
+      appliedAt: updated[index].submittedAt,
+      status: 'active',
+    };
+    localStorage.setItem('stride_membership_status', JSON.stringify(memberStatus));
+  };
+
+  const pendingApps = applications.filter(a => a.status === 'pending');
+  const approvedApps = applications.filter(a => a.status === 'approved');
+
+  return (
+    <div style={{maxWidth: '1000px', margin: '0 auto', padding: '32px 20px'}}>
+      <header style={{marginBottom: '32px'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px'}}>
+          <span style={{background: '#E05B6F', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em'}}>ADMIN</span>
+          <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Admin Dashboard</h1>
+        </div>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Manage membership applications, members, and portal settings.</p>
+      </header>
+
+      {/* Stats */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px'}}>
+        {[
+          { label: 'Total Applications', value: applications.length, color: '#2B4C6F' },
+          { label: 'Pending Review', value: pendingApps.length, color: '#f59e0b' },
+          { label: 'Active Members', value: approvedApps.length, color: '#10b981' },
+          { label: 'Revenue (Est.)', value: '$' + approvedApps.reduce((sum, a) => sum + ({ founding: 250, albany: 500, regional: 1000 }[a.tier] || 0), 0), color: '#E05B6F' },
+        ].map((stat, i) => (
+          <div key={i} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px'}}>
+            <div style={{color: '#7A8BA0', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '6px'}}>{stat.label}</div>
+            <div style={{fontSize: '1.6rem', fontWeight: '700', color: stat.color}}>{stat.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pending Applications */}
+      <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '24px'}}>
+        <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>
+          Pending Applications {pendingApps.length > 0 && <span style={{background: '#FEF3C7', color: '#92400e', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '8px'}}>{pendingApps.length}</span>}
+        </h2>
+        {pendingApps.length === 0 ? (
+          <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No pending applications. New applicants will appear here for your review.</p>
+        ) : (
+          <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+            {applications.map((app, i) => app.status === 'pending' && (
+              <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+                <div>
+                  <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{app.name}</div>
+                  <div style={{fontSize: '0.85rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.location}</div>
+                  <div style={{fontSize: '0.8rem', color: '#7A8BA0', marginTop: '4px'}}>
+                    <span style={{background: '#F0F4F8', padding: '2px 8px', borderRadius: '8px', marginRight: '8px'}}>{app.tier?.toUpperCase()}</span>
+                    Applied {new Date(app.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </div>
+                  {app.goals && <div style={{fontSize: '0.85rem', color: '#4A5E73', marginTop: '8px', fontStyle: 'italic'}}>"{app.goals}"</div>}
+                </div>
+                <div style={{display: 'flex', gap: '8px'}}>
+                  <button onClick={() => handleApprove(i)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* All Members */}
+      <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '28px'}}>
+        <h2 style={{fontSize: '1.2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>
+          Members {approvedApps.length > 0 && <span style={{background: '#D1FAE5', color: '#065f46', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '8px'}}>{approvedApps.length}</span>}
+        </h2>
+        {approvedApps.length === 0 ? (
+          <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>No approved members yet. Approve applications above to add members.</p>
+        ) : (
+          <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+            {approvedApps.map((app, i) => (
+              <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div>
+                  <div style={{fontWeight: '600', color: '#2B4C6F'}}>{app.name}</div>
+                  <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName}</div>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                  <span style={{background: '#D1FAE5', color: '#065f46', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600'}}>ACTIVE</span>
+                  <span style={{background: '#F0F4F8', color: '#4A5E73', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem'}}>{app.tier?.toUpperCase()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Admin emails — these users bypass membership gating and see the admin panel
+const ADMIN_EMAILS = ['jason@stridefba.com', 'jpacker@stridefba.com', 'jason.m.packer@gmail.com'];
+
 function AppShell({ currentUser, onLogout }) {
+  const isAdmin = ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase());
   const [membershipStatus, setMembershipStatus] = useState(() => {
     const saved = localStorage.getItem('stride_membership_status');
     return saved ? JSON.parse(saved) : null;
   });
-  const isMember = membershipStatus && (membershipStatus.status === 'active' || membershipStatus.status === 'pending_review');
+  const isMember = isAdmin || (membershipStatus && (membershipStatus.status === 'active' || membershipStatus.status === 'pending_review'));
   const [currentView, setCurrentView] = useState(isMember ? 'dashboard' : 'membership');
   const [scores, setScores] = useState(null);
   const [activePillar, setActivePillar] = useState('roots');
@@ -8562,7 +8677,7 @@ function AppShell({ currentUser, onLogout }) {
   if (showLepReportGenerator) {
     return (
       <div className="lep-app">
-        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} />
+        <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} isAdmin={isAdmin} />
         <main className="app-main">
           <LEPReportGenerator
             scores={scores}
@@ -8576,7 +8691,7 @@ function AppShell({ currentUser, onLogout }) {
 
   return (
     <div className="lep-app">
-      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} />
+      <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} isAdmin={isAdmin} />
       <main className="app-main">
         {/* Member-only views — gate behind membership */}
         {currentView === 'dashboard' && isMember && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
@@ -8586,6 +8701,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'community' && isMember && <CommunityView />}
         {/* Membership — always accessible */}
         {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
+        {currentView === 'admin' && isAdmin && <AdminView currentUser={currentUser} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
           const updated = { ...currentUser, tier };
