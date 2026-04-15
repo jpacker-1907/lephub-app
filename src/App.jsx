@@ -7907,8 +7907,13 @@ function CommunityView() {
   const [threadReply, setThreadReply] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState([]); // { name, type, size, dataUrl, kind: 'image'|'video'|'document' }
+  const [threadPendingFiles, setThreadPendingFiles] = useState([]);
+  const [lightboxSrc, setLightboxSrc] = useState(null);
   const msgEndRef = useRef(null);
   const threadEndRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const threadFileInputRef = useRef(null);
 
   // Persist
   useEffect(() => {
@@ -7952,16 +7957,136 @@ function CommunityView() {
     return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   };
 
+  // ─── FILE HANDLING ─────────────────────────────────────────
+  const MAX_IMAGE_DIM = 800;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB for localStorage budget
+
+  const classifyFile = (type, name) => {
+    if (type.startsWith('image/')) return 'image';
+    if (type.startsWith('video/')) return 'video';
+    return 'document';
+  };
+
+  const fileIcon = (name) => {
+    const ext = name.split('.').pop().toLowerCase();
+    const icons = { pdf: '📄', doc: '📝', docx: '📝', xls: '📊', xlsx: '📊', csv: '📊', ppt: '📎', pptx: '📎', txt: '📃', zip: '📦', mp4: '🎬', mov: '🎬', avi: '🎬', webm: '🎬' };
+    return icons[ext] || '📁';
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  const processFiles = (fileList, setter) => {
+    Array.from(fileList).forEach(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`"${file.name}" is too large (${formatFileSize(file.size)}). Max ${formatFileSize(MAX_FILE_SIZE)}.`);
+        return;
+      }
+      const kind = classifyFile(file.type, file.name);
+
+      if (kind === 'image') {
+        // Resize images to save localStorage space
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > MAX_IMAGE_DIM || h > MAX_IMAGE_DIM) {
+            const ratio = Math.min(MAX_IMAGE_DIM / w, MAX_IMAGE_DIM / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          URL.revokeObjectURL(url);
+          setter(prev => [...prev, { name: file.name, type: file.type, size: file.size, dataUrl, kind, width: w, height: h }]);
+        };
+        img.src = url;
+      } else if (kind === 'video') {
+        // Store video as base64 (small clips only)
+        const reader = new FileReader();
+        reader.onload = () => {
+          setter(prev => [...prev, { name: file.name, type: file.type, size: file.size, dataUrl: reader.result, kind }]);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Documents — store metadata + base64
+        const reader = new FileReader();
+        reader.onload = () => {
+          setter(prev => [...prev, { name: file.name, type: file.type, size: file.size, dataUrl: reader.result, kind }]);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  const removeFile = (idx, setter) => setter(prev => prev.filter((_, i) => i !== idx));
+
+  // ─── ATTACHMENT RENDERER ──────────────────────────────────
+  const renderAttachments = (attachments, compact = false) => {
+    if (!attachments || attachments.length === 0) return null;
+    return (
+      <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px'}}>
+        {attachments.map((att, i) => {
+          if (att.kind === 'image') {
+            return (
+              <div key={i} style={{borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDE3EB', cursor: 'pointer', maxWidth: compact ? '180px' : '320px'}}
+                onClick={(e) => { e.stopPropagation(); setLightboxSrc(att.dataUrl); }}>
+                <img src={att.dataUrl} alt={att.name} style={{display: 'block', width: '100%', maxHeight: compact ? '120px' : '240px', objectFit: 'cover'}} />
+              </div>
+            );
+          }
+          if (att.kind === 'video') {
+            return (
+              <div key={i} style={{borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDE3EB', maxWidth: compact ? '200px' : '360px'}}
+                onClick={(e) => e.stopPropagation()}>
+                <video src={att.dataUrl} controls style={{display: 'block', width: '100%', maxHeight: compact ? '140px' : '260px'}} />
+                <div style={{padding: '6px 10px', background: '#F5F7FA', fontSize: '0.75rem', color: '#7A8BA0'}}>{att.name} · {formatFileSize(att.size)}</div>
+              </div>
+            );
+          }
+          // Document
+          return (
+            <a key={i} href={att.dataUrl} download={att.name} onClick={(e) => e.stopPropagation()}
+              style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #DDE3EB', background: '#F5F7FA', textDecoration: 'none', cursor: 'pointer', minWidth: compact ? '140px' : '200px', transition: 'border-color 0.15s'}}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#5AAFB5'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = '#DDE3EB'}>
+              <span style={{fontSize: '1.5rem'}}>{fileIcon(att.name)}</span>
+              <div style={{flex: 1, minWidth: 0}}>
+                <div style={{fontSize: '0.82rem', fontWeight: '600', color: '#2B4C6F', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{att.name}</div>
+                <div style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{formatFileSize(att.size)}</div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // ─── SEND MESSAGES ────────────────────────────────────────
   const sendMessage = () => {
-    if (!messageText.trim()) return;
-    const msg = { id: String(Date.now()), author: 'You', text: messageText, ts: new Date().toISOString(), thread: [] };
+    if (!messageText.trim() && pendingFiles.length === 0) return;
+    const msg = {
+      id: String(Date.now()), author: 'You', text: messageText, ts: new Date().toISOString(), thread: [],
+      attachments: pendingFiles.length > 0 ? pendingFiles : undefined
+    };
     setChannels(prev => ({ ...prev, [activeChannel]: [...(prev[activeChannel] || []), msg] }));
     setMessageText('');
+    setPendingFiles([]);
   };
 
   const sendThreadReply = () => {
-    if (!threadReply.trim() || !threadOpen) return;
-    const reply = { id: String(Date.now()), author: 'You', text: threadReply, ts: new Date().toISOString() };
+    if (!threadReply.trim() && threadPendingFiles.length === 0) return;
+    if (!threadOpen) return;
+    const reply = {
+      id: String(Date.now()), author: 'You', text: threadReply, ts: new Date().toISOString(),
+      attachments: threadPendingFiles.length > 0 ? threadPendingFiles : undefined
+    };
     setChannels(prev => ({
       ...prev,
       [activeChannel]: (prev[activeChannel] || []).map(m =>
@@ -7969,6 +8094,7 @@ function CommunityView() {
       )
     }));
     setThreadReply('');
+    setThreadPendingFiles([]);
   };
 
   const channelMessages = channels[activeChannel] || [];
@@ -8164,7 +8290,8 @@ function CommunityView() {
                               <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{formatTime(msg.ts)}</span>
                             </div>
                           )}
-                          <p style={{fontSize: '0.9rem', color: '#334155', lineHeight: '1.55', margin: 0, wordBreak: 'break-word'}}>{msg.text}</p>
+                          {msg.text && <p style={{fontSize: '0.9rem', color: '#334155', lineHeight: '1.55', margin: 0, wordBreak: 'break-word'}}>{msg.text}</p>}
+                          {renderAttachments(msg.attachments)}
 
                           {/* Thread indicator */}
                           {msg.thread && msg.thread.length > 0 && (
@@ -8213,7 +8340,33 @@ function CommunityView() {
 
             {/* Message composer */}
             <div style={{padding: '12px 20px 16px', borderTop: '1px solid #DDE3EB', background: 'white', flexShrink: 0}}>
+              {/* Pending file previews */}
+              {pendingFiles.length > 0 && (
+                <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', padding: '0 4px'}}>
+                  {pendingFiles.map((f, i) => (
+                    <div key={i} style={{position: 'relative', borderRadius: '8px', border: '1px solid #DDE3EB', overflow: 'hidden', background: '#F5F7FA'}}>
+                      {f.kind === 'image' ? (
+                        <img src={f.dataUrl} alt={f.name} style={{display: 'block', height: '64px', width: 'auto', maxWidth: '100px', objectFit: 'cover'}} />
+                      ) : (
+                        <div style={{padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', minWidth: '80px'}}>
+                          <span style={{fontSize: '1.2rem'}}>{f.kind === 'video' ? '🎬' : fileIcon(f.name)}</span>
+                          <span style={{fontSize: '0.72rem', color: '#334155', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{f.name}</span>
+                        </div>
+                      )}
+                      <button onClick={() => removeFile(i, setPendingFiles)} style={{position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1}}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div style={{display: 'flex', alignItems: 'flex-end', gap: '10px', background: '#F5F7FA', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '8px 12px'}}>
+                <input type="file" ref={fileInputRef} multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.zip" style={{display: 'none'}}
+                  onChange={(e) => { processFiles(e.target.files, setPendingFiles); e.target.value = ''; }} />
+                <button onClick={() => fileInputRef.current?.click()} title="Attach files"
+                  style={{width: 32, height: 32, borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#7A8BA0', transition: 'color 0.15s'}}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#2B4C6F'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#7A8BA0'}>
+                  📎
+                </button>
                 <textarea
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
@@ -8224,10 +8377,10 @@ function CommunityView() {
                 />
                 <button
                   onClick={sendMessage}
-                  disabled={!messageText.trim()}
+                  disabled={!messageText.trim() && pendingFiles.length === 0}
                   style={{
-                    width: 32, height: 32, borderRadius: '8px', border: 'none', cursor: messageText.trim() ? 'pointer' : 'default',
-                    background: messageText.trim() ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '1rem',
+                    width: 32, height: 32, borderRadius: '8px', border: 'none', cursor: (messageText.trim() || pendingFiles.length > 0) ? 'pointer' : 'default',
+                    background: (messageText.trim() || pendingFiles.length > 0) ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '1rem',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s'
                   }}
                 >
@@ -8257,7 +8410,8 @@ function CommunityView() {
                   <span style={{fontSize: '0.85rem', fontWeight: '700', color: '#2B4C6F'}}>{threadMessage.author}</span>
                   <span style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{formatTime(threadMessage.ts)}</span>
                 </div>
-                <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{threadMessage.text}</p>
+                {threadMessage.text && <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{threadMessage.text}</p>}
+                {renderAttachments(threadMessage.attachments, true)}
               </div>
             </div>
 
@@ -8275,7 +8429,8 @@ function CommunityView() {
                     <span style={{fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F'}}>{reply.author}</span>
                     <span style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{formatTime(reply.ts)}</span>
                   </div>
-                  <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{reply.text}</p>
+                  {reply.text && <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{reply.text}</p>}
+                  {renderAttachments(reply.attachments, true)}
                 </div>
               </div>
             ))}
@@ -8284,7 +8439,31 @@ function CommunityView() {
 
           {/* Thread composer */}
           <div style={{padding: '12px 16px', borderTop: '1px solid #DDE3EB', flexShrink: 0}}>
+            {/* Pending thread file previews */}
+            {threadPendingFiles.length > 0 && (
+              <div style={{display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px'}}>
+                {threadPendingFiles.map((f, i) => (
+                  <div key={i} style={{position: 'relative', borderRadius: '6px', border: '1px solid #DDE3EB', overflow: 'hidden', background: '#F5F7FA'}}>
+                    {f.kind === 'image' ? (
+                      <img src={f.dataUrl} alt={f.name} style={{display: 'block', height: '48px', width: 'auto', maxWidth: '72px', objectFit: 'cover'}} />
+                    ) : (
+                      <div style={{padding: '6px 8px', display: 'flex', alignItems: 'center', gap: '4px'}}>
+                        <span style={{fontSize: '0.9rem'}}>{f.kind === 'video' ? '🎬' : fileIcon(f.name)}</span>
+                        <span style={{fontSize: '0.68rem', color: '#334155', maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{f.name}</span>
+                      </div>
+                    )}
+                    <button onClick={() => removeFile(i, setThreadPendingFiles)} style={{position: 'absolute', top: 1, right: 1, width: 16, height: 16, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1}}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
             <div style={{display: 'flex', alignItems: 'flex-end', gap: '8px', background: '#F5F7FA', borderRadius: '8px', border: '1px solid #DDE3EB', padding: '8px 10px'}}>
+              <input type="file" ref={threadFileInputRef} multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.zip" style={{display: 'none'}}
+                onChange={(e) => { processFiles(e.target.files, setThreadPendingFiles); e.target.value = ''; }} />
+              <button onClick={() => threadFileInputRef.current?.click()} title="Attach files"
+                style={{width: 26, height: 26, borderRadius: '6px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#7A8BA0'}}>
+                📎
+              </button>
               <textarea
                 value={threadReply}
                 onChange={(e) => setThreadReply(e.target.value)}
@@ -8295,10 +8474,10 @@ function CommunityView() {
               />
               <button
                 onClick={sendThreadReply}
-                disabled={!threadReply.trim()}
+                disabled={!threadReply.trim() && threadPendingFiles.length === 0}
                 style={{
-                  width: 28, height: 28, borderRadius: '6px', border: 'none', cursor: threadReply.trim() ? 'pointer' : 'default',
-                  background: threadReply.trim() ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '0.85rem',
+                  width: 28, height: 28, borderRadius: '6px', border: 'none', cursor: (threadReply.trim() || threadPendingFiles.length > 0) ? 'pointer' : 'default',
+                  background: (threadReply.trim() || threadPendingFiles.length > 0) ? '#E05B6F' : '#DDE3EB', color: 'white', fontSize: '0.85rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}
               >
@@ -8306,6 +8485,14 @@ function CommunityView() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── Image lightbox ── */}
+      {lightboxSrc && (
+        <div onClick={() => setLightboxSrc(null)} style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out'}}>
+          <img src={lightboxSrc} alt="Preview" style={{maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)'}} />
+          <button onClick={() => setLightboxSrc(null)} style={{position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem'}}>✕</button>
         </div>
       )}
 
