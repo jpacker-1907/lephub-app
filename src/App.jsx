@@ -8243,18 +8243,20 @@ function CommunityView() {
   };
 
   // ─── STATE ────────────────────────────────────────────────
+  const COMMUNITY_VERSION = 'v2'; // bump to re-seed community data with reactions
   const [channels, setChannels] = useState(() => {
+    const savedVersion = localStorage.getItem('stride_community_version');
     const saved = localStorage.getItem('stride_community_channels');
-    if (saved) return JSON.parse(saved);
+    if (saved && savedVersion === COMMUNITY_VERSION) return JSON.parse(saved);
 
-    // Seed data — Slack-style messages per channel
+    // Seed data — Slack-style messages per channel (v2: includes reactions)
     const seed = {
       'general': [
-        { id: 'm1', author: 'Jason Packer', text: 'Welcome to The STRIDE Way community! This is your space to connect with other families navigating the complexities of enterprise continuity. Introduce yourself and share what brought you here.', ts: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
+        { id: 'm1', author: 'Jason Packer', text: 'Welcome to The STRIDE Way community! This is your space to connect with other families navigating the complexities of enterprise continuity. Introduce yourself and share what brought you here.', ts: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), thread: [], reactions: { '❤️': ['Sarah Mitchell', 'David Williams', 'Patricia Gonzalez', 'Robert Khan'], '🔥': ['James Chen', 'Margaret Thompson'] } },
         { id: 'm2', author: 'Sarah Mitchell', text: 'Thanks Jason! Excited to be here. We\'re a 3rd-gen manufacturing family in the Midwest — just started having the "what\'s next" conversation and it\'s been... a lot. Looking forward to learning from everyone.', ts: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), thread: [
           { id: 't1', author: 'Margaret Thompson', text: 'Welcome Sarah! We\'re in a similar spot. The conversation can feel overwhelming but having a peer group makes all the difference.', ts: new Date(Date.now() - 8.5 * 24 * 60 * 60 * 1000).toISOString() },
         ] },
-        { id: 'm3', author: 'David Williams', text: 'Quick heads up — the governance workshop next month looks excellent. Anyone else planning to attend?', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+        { id: 'm3', author: 'David Williams', text: 'Quick heads up — the governance workshop next month looks excellent. Anyone else planning to attend?', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), reactions: { '👍': ['Patricia Gonzalez', 'Robert Khan', 'Sarah Mitchell'] }, thread: [
           { id: 't2', author: 'Patricia Gonzalez', text: 'Signed up! Governance has been our biggest growing pain this year.', ts: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000).toISOString() },
           { id: 't3', author: 'Robert Khan', text: 'Same here. We just established our first advisory board and have a lot of questions.', ts: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
         ] },
@@ -8277,7 +8279,7 @@ function CommunityView() {
         ] },
       ],
       'wins': [
-        { id: 'm7', author: 'Patricia Gonzalez', text: 'Big milestone for us — we just held our first formal family council meeting and it went incredibly well. A year ago we couldn\'t even sit in the same room and discuss the business without someone walking out. Grateful for this community.', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), thread: [
+        { id: 'm7', author: 'Patricia Gonzalez', text: 'Big milestone for us — we just held our first formal family council meeting and it went incredibly well. A year ago we couldn\'t even sit in the same room and discuss the business without someone walking out. Grateful for this community.', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), reactions: { '🙌': ['Sarah Mitchell', 'James Chen', 'Jason Packer', 'Robert Khan', 'David Williams'], '❤️': ['Margaret Thompson', 'Sarah Mitchell'], '🔥': ['Jason Packer'] }, thread: [
           { id: 't9', author: 'Sarah Mitchell', text: 'That\'s amazing Patricia! Gives me hope for where we\'re headed.', ts: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000).toISOString() },
           { id: 't10', author: 'James Chen', text: 'Incredible progress. Proof the work pays off.', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
         ] },
@@ -8288,6 +8290,7 @@ function CommunityView() {
       ],
     };
     localStorage.setItem('stride_community_channels', JSON.stringify(seed));
+    localStorage.setItem('stride_community_version', COMMUNITY_VERSION);
     return seed;
   });
 
@@ -8756,51 +8759,29 @@ function CommunityView() {
                             </div>
                           )}
 
-                          {/* Reaction picker toggle */}
-                          {reactionPickerOpen !== msg.id && (
-                            <button
-                              onClick={() => setReactionPickerOpen(msg.id)}
-                              style={{
-                                opacity: 0, marginTop: '4px', padding: '2px 6px', background: 'none', border: 'none',
-                                fontSize: '0.85rem', color: '#7A8BA0', cursor: 'pointer', transition: 'opacity 0.15s',
-                              }}
-                              className="reaction-btn"
-                              title="Add reaction"
-                            >
-                              🙂
-                            </button>
-                          )}
-
-                          {/* Reaction picker */}
-                          {reactionPickerOpen === msg.id && (
-                            <div style={{display: 'flex', gap: '6px', marginTop: '8px', padding: '8px', background: '#F5F7FA', borderRadius: '8px', border: '1px solid #DDE3EB'}}>
-                              {REACTION_EMOJIS.map(emoji => (
+                          {/* Quick-react bar — always visible, Facebook-style */}
+                          <div style={{display: 'flex', alignItems: 'center', gap: '2px', marginTop: '6px'}}>
+                            {REACTION_EMOJIS.map(emoji => {
+                              const hasReacted = msg.reactions?.[emoji]?.includes('You');
+                              return (
                                 <button
                                   key={emoji}
                                   onClick={() => toggleReaction(msg.id, emoji)}
                                   style={{
-                                    fontSize: '1.2rem', background: 'white', border: '1px solid #DDE3EB',
-                                    borderRadius: '6px', padding: '4px 8px', cursor: 'pointer',
-                                    transition: 'all 0.15s'
+                                    fontSize: '0.85rem', background: hasReacted ? '#FDF0F2' : 'transparent',
+                                    border: hasReacted ? '1px solid #E05B6F55' : '1px solid transparent',
+                                    borderRadius: '6px', padding: '2px 5px', cursor: 'pointer',
+                                    transition: 'all 0.15s', lineHeight: 1,
                                   }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = 'white'; }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F2F5'; e.currentTarget.style.transform = 'scale(1.2)'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = hasReacted ? '#FDF0F2' : 'transparent'; e.currentTarget.style.transform = 'scale(1)'; }}
                                   title={emoji}
                                 >
                                   {emoji}
                                 </button>
-                              ))}
-                              <button
-                                onClick={() => setReactionPickerOpen(null)}
-                                style={{
-                                  fontSize: '0.8rem', background: 'none', border: 'none', color: '#7A8BA0',
-                                  cursor: 'pointer', marginLeft: 'auto'
-                                }}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
+                              );
+                            })}
+                          </div>
 
                           {/* Thread indicator */}
                           {msg.thread && msg.thread.length > 0 && (
@@ -8967,23 +8948,28 @@ function CommunityView() {
                     </div>
                   )}
 
-                  {/* Quick reaction add for thread replies */}
-                  <button
-                    onClick={() => {
-                      const emoji = prompt('Quick pick: 👍 ❤️ 🔥 💡 🙌 😂');
-                      if (emoji && REACTION_EMOJIS.includes(emoji.trim())) {
-                        addReactionInThread(threadMessage.id, reply.id, emoji.trim());
-                      }
-                    }}
-                    style={{
-                      opacity: 0, marginTop: '4px', padding: '2px 6px', background: 'none', border: 'none',
-                      fontSize: '0.75rem', color: '#7A8BA0', cursor: 'pointer', transition: 'opacity 0.15s',
-                    }}
-                    className="reaction-btn-thread"
-                    title="Add reaction"
-                  >
-                    🙂
-                  </button>
+                  {/* Quick-react bar for thread replies */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: '1px', marginTop: '4px'}}>
+                    {REACTION_EMOJIS.map(emoji => {
+                      const hasReacted = reply.reactions?.[emoji]?.includes('You');
+                      return (
+                        <button
+                          key={emoji}
+                          onClick={() => addReactionInThread(threadMessage.id, reply.id, emoji)}
+                          style={{
+                            fontSize: '0.72rem', background: hasReacted ? '#FDF0F2' : 'transparent',
+                            border: hasReacted ? '1px solid #E05B6F55' : '1px solid transparent',
+                            borderRadius: '5px', padding: '1px 3px', cursor: 'pointer',
+                            transition: 'all 0.15s', lineHeight: 1,
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F2F5'; e.currentTarget.style.transform = 'scale(1.2)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = hasReacted ? '#FDF0F2' : 'transparent'; e.currentTarget.style.transform = 'scale(1)'; }}
+                        >
+                          {emoji}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             ))}
