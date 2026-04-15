@@ -15,6 +15,29 @@ function StrideLogo({ size = 40 }) {
   return <img src="/stride-logo.png" alt="Stride" width={size} height={size} style={{objectFit: 'contain'}} />;
 }
 
+// ─── CLEAN SVG ICONS ────────────────────────────────────────────
+function Icon({ name, size = 20, color = '#2B4C6F', strokeWidth = 1.8 }) {
+  const icons = {
+    home: <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />,
+    calendar: <><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></>,
+    'book-open': <path d="M12 6.25v13m0-13C10.83 5.33 9.24 4.5 7.5 4.5 5.76 4.5 4.17 5.33 3 6.25v13c1.17-.92 2.76-1.75 4.5-1.75 1.74 0 3.33.83 4.5 1.75m0-13c1.17-.92 2.76-1.75 4.5-1.75 1.74 0 3.33.83 4.5 1.75v13c-1.17-.92-2.76-1.75-4.5-1.75-1.74 0-3.33.83-4.5 1.75" />,
+    heart: <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />,
+    'message-circle': <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />,
+    award: <><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></>,
+    'trending-up': <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" /></>,
+    'bar-chart': <><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></>,
+    compass: <><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></>,
+    briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" /></>,
+  };
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink: 0}}>
+      {icons[name] || icons.award}
+    </svg>
+  );
+}
+
 // ─── AUTH SYSTEM ──────────────────────────────────────────────
 // Phase 1: Client-side auth with localStorage (production will use Supabase)
 // This provides the full UX flow while we wire up the backend
@@ -2530,14 +2553,14 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const allNavItems = [
-    { id: 'dashboard', icon: '🏠', name: 'Home', memberOnly: true },
-    { id: 'sessions', icon: '📅', name: 'Sessions', memberOnly: true },
-    { id: 'workbook', icon: '📝', name: 'My Workbook', memberOnly: true },
-    { id: 'my-family', icon: '❤', name: 'My Family', memberOnly: true },
-    { id: 'community', icon: '💬', name: 'Community', memberOnly: true },
-    { id: 'professionals', icon: '🏛️', name: 'Professionals', memberOnly: true },
-    { id: 'membership', icon: '⭐', name: 'Membership', memberOnly: false },
-    { id: 'admin', icon: '🔧', name: 'Admin', adminOnly: true },
+    { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
+    { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
+    { id: 'workbook', icon: 'book-open', name: 'My Workbook', memberOnly: true },
+    { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
+    { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
+    { id: 'professionals', icon: 'briefcase', name: 'Professionals', memberOnly: true },
+    { id: 'membership', icon: 'award', name: 'Membership', memberOnly: false },
+    { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
   ];
   const navItems = allNavItems.filter(item => {
     if (item.adminOnly) return isAdmin;
@@ -2591,7 +2614,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
             className={`nav-item ${currentView === item.id ? 'active' : ''}`}
             onClick={() => { setCurrentView(item.id); setMobileOpen(false); }}
           >
-            <span className="nav-icon" style={{fontFamily: 'system-ui', fontSize: '0.9rem'}}>{item.icon}</span>
+            <span className="nav-icon" style={{display: 'flex', alignItems: 'center'}}><Icon name={item.icon} size={18} color={currentView === item.id ? '#E05B6F' : '#7A8BA0'} /></span>
             <span>{item.name}</span>
           </button>
         ))}
@@ -2841,17 +2864,17 @@ function EngagementStatsBar({ sessions }) {
   return (
     <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px'}}>
       <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
-        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>🔥</div>
+        <div style={{marginBottom: '4px'}}><Icon name="trending-up" size={24} color="#E05B6F" /></div>
         <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{streak}</div>
         <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Day Streak</div>
       </div>
       <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
-        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>💬</div>
+        <div style={{marginBottom: '4px'}}><Icon name="message-circle" size={24} color="#5AAFB5" /></div>
         <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{messages}</div>
         <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Messages</div>
       </div>
       <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
-        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>📊</div>
+        <div style={{marginBottom: '4px'}}><Icon name="bar-chart" size={24} color="#2B4C6F" /></div>
         <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{workbookProgress}%</div>
         <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Workbook Progress</div>
       </div>
@@ -2927,12 +2950,12 @@ function ActivityFeed({ setCurrentView }) {
         <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>What's Happening</h3>
         <button
           onClick={() => window.location.reload()}
-          style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#7A8BA0', padding: '4px 8px', transition: 'color 0.2s'}}
+          style={{background: 'none', border: 'none', cursor: 'pointer', color: '#7A8BA0', padding: '4px 8px', transition: 'color 0.2s', display: 'flex', alignItems: 'center'}}
           onMouseEnter={(e) => e.currentTarget.style.color = '#2B4C6F'}
           onMouseLeave={(e) => e.currentTarget.style.color = '#7A8BA0'}
           title="Refresh"
         >
-          ↻
+          <Icon name="compass" size={16} color="currentColor" />
         </button>
       </div>
 
@@ -3049,8 +3072,8 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
               <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#E05B6F', marginBottom: '6px', fontWeight: '700'}}>Next Session</div>
               <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{nextSession.title}</h3>
               <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#7A8BA0', marginTop: '8px'}}>
-                <span>📅 {new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-                <span>🕐 {nextSession.time}</span>
+                <span>{new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+                <span>{nextSession.time}</span>
               </div>
               {nextSession.prepRequired && (
                 <div style={{marginTop: '10px', display: 'inline-block', background: '#FDF0F2', color: '#C44A5C', fontSize: '0.78rem', padding: '4px 12px', borderRadius: '20px', fontWeight: '600'}}>
@@ -3087,27 +3110,27 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
       <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '14px'}}>Quick Actions</h3>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '32px'}}>
         <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>📅</div>
+          <div style={{marginBottom: '10px'}}><Icon name="calendar" size={28} color="#5AAFB5" /></div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Sessions</div>
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>View & register</div>
         </button>
         <button onClick={() => setCurrentView('workbook')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>📝</div>
+          <div style={{marginBottom: '10px'}}><Icon name="book-open" size={28} color="#5AAFB5" /></div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>My Workbook</div>
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Exercises & reflections</div>
         </button>
         <button onClick={() => setCurrentView('my-family')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>❤️</div>
+          <div style={{marginBottom: '10px'}}><Icon name="heart" size={28} color="#E05B6F" /></div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>My Family</div>
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Profile & dynamics</div>
         </button>
         <button onClick={() => setCurrentView('community')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>💬</div>
+          <div style={{marginBottom: '10px'}}><Icon name="message-circle" size={28} color="#5AAFB5" /></div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Community</div>
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Discuss & connect</div>
         </button>
         <button onClick={() => setCurrentView('membership')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>⭐</div>
+          <div style={{marginBottom: '10px'}}><Icon name="award" size={28} color="#E05B6F" /></div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Membership</div>
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Join or manage</div>
         </button>

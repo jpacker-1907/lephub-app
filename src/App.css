@@ -119,6 +119,18 @@ body {
 
 .nav-icon {
   font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
+.nav-item.active .nav-icon svg {
+  stroke: #E05B6F;
+}
+
+.nav-item:hover .nav-icon svg {
+  stroke: white;
 }
 
 .nav-user {
