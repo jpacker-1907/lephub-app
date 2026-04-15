@@ -8461,6 +8461,193 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
 }
 
 // ═══════════════════════════════════════════════════════════════
+// REVIEW FORM COMPONENT
+// ═══════════════════════════════════════════════════════════════
+
+function ReviewForm({ profId, onSubmit, onCancel }) {
+  const [overallRating, setOverallRating] = useState(0);
+  const [categories, setCategories] = useState({
+    responsiveness: 0,
+    expertise: 0,
+    value: 0,
+    communication: 0,
+  });
+  const [reviewText, setReviewText] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = () => {
+    if (overallRating === 0) {
+      alert('Please select an overall rating');
+      return;
+    }
+    if (Object.values(categories).some(v => v === 0)) {
+      alert('Please rate all categories');
+      return;
+    }
+    if (reviewText.trim().length === 0) {
+      alert('Please share your experience');
+      return;
+    }
+
+    onSubmit(profId, overallRating, categories, reviewText);
+    setSubmitted(true);
+    setTimeout(() => {
+      onCancel();
+    }, 2000);
+  };
+
+  if (submitted) {
+    return (
+      <div style={{
+        background: '#EBF7F8',
+        padding: '16px 12px',
+        borderRadius: '6px',
+        textAlign: 'center',
+        color: '#2B6B73',
+        fontSize: '0.9rem',
+        fontWeight: '600',
+      }}>
+        Thank you for your review! It will help other family business professionals make informed decisions.
+      </div>
+    );
+  }
+
+  const StarRating = ({ value, onChange, label }) => (
+    <div style={{marginBottom: '12px'}}>
+      {label && (
+        <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', margin: '0 0 4px', textTransform: 'capitalize'}}>
+          {label}
+        </p>
+      )}
+      <div style={{display: 'flex', gap: '4px'}}>
+        {[1, 2, 3, 4, 5].map(star => (
+          <span
+            key={star}
+            onClick={() => onChange(star)}
+            style={{
+              fontSize: '1.3rem',
+              cursor: 'pointer',
+              color: star <= value ? '#E05B6F' : '#DDE3EB',
+              transition: 'color 0.2s',
+            }}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{
+      background: '#F9FAFB',
+      padding: '12px',
+      borderRadius: '6px',
+      border: '1px solid #DDE3EB',
+      marginBottom: '12px',
+    }}>
+      <div style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+        Leave a Review
+      </div>
+
+      <StarRating value={overallRating} onChange={setOverallRating} label="Overall Rating" />
+
+      <div style={{marginBottom: '12px', borderTop: '1px solid #DDE3EB', paddingTop: '12px'}}>
+        <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+          Category Ratings
+        </p>
+        <StarRating
+          value={categories.responsiveness}
+          onChange={(v) => setCategories({...categories, responsiveness: v})}
+          label="Responsiveness"
+        />
+        <StarRating
+          value={categories.expertise}
+          onChange={(v) => setCategories({...categories, expertise: v})}
+          label="Expertise"
+        />
+        <StarRating
+          value={categories.value}
+          onChange={(v) => setCategories({...categories, value: v})}
+          label="Value"
+        />
+        <StarRating
+          value={categories.communication}
+          onChange={(v) => setCategories({...categories, communication: v})}
+          label="Communication"
+        />
+      </div>
+
+      <textarea
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="Share your experience (confidential)"
+        style={{
+          width: '100%',
+          padding: '8px 10px',
+          border: '1px solid #DDE3EB',
+          borderRadius: '6px',
+          fontSize: '0.85rem',
+          fontFamily: 'inherit',
+          color: '#2B4C6F',
+          outline: 'none',
+          marginBottom: '8px',
+          minHeight: '70px',
+          resize: 'vertical',
+        }}
+        onFocus={(e) => e.target.style.borderColor = '#5AAFB5'}
+        onBlur={(e) => e.target.style.borderColor = '#DDE3EB'}
+      />
+
+      <p style={{fontSize: '0.7rem', color: '#7A8BA0', margin: '0 0 8px', fontStyle: 'italic'}}>
+        Your review is completely confidential. Only aggregate ratings are visible to the community.
+      </p>
+
+      <div style={{display: 'flex', gap: '8px'}}>
+        <button
+          onClick={handleSubmit}
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            background: '#5AAFB5',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'background 0.2s',
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#4A9BA5'}
+          onMouseLeave={(e) => e.target.style.background = '#5AAFB5'}
+        >
+          Submit Review
+        </button>
+        <button
+          onClick={onCancel}
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            background: 'white',
+            color: '#7A8BA0',
+            border: '1px solid #DDE3EB',
+            borderRadius: '6px',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.target.style.borderColor = '#7A8BA0'; e.target.style.color = '#2B4C6F'; }}
+          onMouseLeave={(e) => { e.target.style.borderColor = '#DDE3EB'; e.target.style.color = '#7A8BA0'; }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // PROFESSIONAL DIRECTORY VIEW
 // ═══════════════════════════════════════════════════════════════
 
@@ -8604,8 +8791,35 @@ function ProfessionalDirectoryView() {
     return seedProfessionals;
   });
 
+  const [reviews, setReviews] = useState(() => {
+    const saved = localStorage.getItem('stride_professional_reviews');
+    if (saved) return JSON.parse(saved);
+    const seedReviews = {
+      'p1': [ // Catherine Wells
+        { id: '1', rating: 5, review: 'Excellent wealth planning advisor. Very thorough and responsive.', category: 'responsiveness', date: '2026-02-15', anonymous: true },
+        { id: '2', rating: 4, review: 'Deep expertise in tax-efficient strategies. Highly recommended.', category: 'expertise', date: '2026-03-01', anonymous: true },
+        { id: '3', rating: 5, review: 'Great value for comprehensive planning. Worth every penny.', category: 'value', date: '2026-03-10', anonymous: true },
+      ],
+      'p2': [ // Richard Torres
+        { id: '1', rating: 4, review: 'Clear communication about complex estate documents.', category: 'communication', date: '2026-02-20', anonymous: true },
+      ],
+      'p3': [ // Amanda Liu
+        { id: '1', rating: 5, review: 'Outstanding family business consultant. Pragmatic approach.', category: 'expertise', date: '2026-01-15', anonymous: true },
+        { id: '2', rating: 5, review: 'Very responsive and effective facilitation. Highly professional.', category: 'responsiveness', date: '2026-02-28', anonymous: true },
+      ],
+      'p8': [ // Dr. Karen Okonkwo
+        { id: '1', rating: 5, review: 'Exceptional at helping families work through difficult dynamics.', category: 'expertise', date: '2026-03-05', anonymous: true },
+        { id: '2', rating: 5, review: 'Brilliant systems thinking. Transformed how we approach succession.', category: 'value', date: '2026-03-12', anonymous: true },
+      ],
+    };
+    localStorage.setItem('stride_professional_reviews', JSON.stringify(seedReviews));
+    return seedReviews;
+  });
+
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [expandedProfessional, setExpandedProfessional] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(null);
 
   const specialtyOptions = [
     { value: 'all', label: 'All Specialties' },
@@ -8619,9 +8833,49 @@ function ProfessionalDirectoryView() {
     { value: 'family-therapist', label: 'Family Therapy & Mediation' },
   ];
 
-  const filteredProfessionals = selectedSpecialty === 'all'
-    ? professionals
-    : professionals.filter(p => p.specialty === selectedSpecialty);
+  const filteredProfessionals = professionals.filter(p => {
+    const matchesSpecialty = selectedSpecialty === 'all' || p.specialty === selectedSpecialty;
+    const matchesSearch = searchTerm === '' ||
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.firm.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSpecialty && matchesSearch;
+  });
+
+  const getAverageRating = (profId) => {
+    const profReviews = reviews[profId] || [];
+    if (profReviews.length === 0) return null;
+    const sum = profReviews.reduce((acc, r) => acc + r.rating, 0);
+    return (sum / profReviews.length).toFixed(1);
+  };
+
+  const getCategoryRating = (profId, category) => {
+    const profReviews = reviews[profId] || [];
+    const categoryReviews = profReviews.filter(r => r.category === category);
+    if (categoryReviews.length === 0) return 0;
+    const sum = categoryReviews.reduce((acc, r) => acc + r.rating, 0);
+    return (sum / categoryReviews.length);
+  };
+
+  const handleSubmitReview = (profId, rating, categories, text) => {
+    const newReviews = { ...reviews };
+    if (!newReviews[profId]) newReviews[profId] = [];
+
+    // Add a review for each category
+    Object.entries(categories).forEach(([category, categoryRating]) => {
+      newReviews[profId].push({
+        id: Date.now().toString() + Math.random(),
+        rating: categoryRating,
+        review: text,
+        category: category,
+        date: new Date().toISOString().split('T')[0],
+        anonymous: true,
+      });
+    });
+
+    setReviews(newReviews);
+    localStorage.setItem('stride_professional_reviews', JSON.stringify(newReviews));
+    setShowReviewForm(null);
+  };
 
   const handleRequestIntroduction = (professional) => {
     alert(`Introduction request sent to ${professional.name} at ${professional.firm}. You'll receive contact information shortly.`);
@@ -8641,11 +8895,13 @@ function ProfessionalDirectoryView() {
 
       {/* Controls */}
       <div style={{display: 'flex', gap: '16px', marginBottom: '28px', alignItems: 'flex-end', flexWrap: 'wrap'}}>
-        {/* Search placeholder */}
+        {/* Search input */}
         <div style={{flex: 1, minWidth: '240px'}}>
           <input
             type="text"
             placeholder="Search by name or firm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
               padding: '10px 14px',
@@ -8688,10 +8944,14 @@ function ProfessionalDirectoryView() {
       </div>
 
       {/* Professionals Grid */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px', marginBottom: '40px'}}>
         {filteredProfessionals.map(prof => {
           const isExpanded = expandedProfessional === prof.id;
-          const tierBadge = prof.tier === 'sponsor' ? 'gold' : prof.tier === 'firm' ? 'silver' : null;
+          const isVerified = prof.tier === 'sponsor' || prof.tier === 'firm';
+          const tierBadgeType = prof.tier === 'sponsor' ? 'gold' : prof.tier === 'firm' ? 'silver' : null;
+          const avgRating = getAverageRating(prof.id);
+          const profReviewCount = (reviews[prof.id] || []).length;
+          const showReviewForm_ = showReviewForm === prof.id;
 
           return (
             <div
@@ -8699,26 +8959,59 @@ function ProfessionalDirectoryView() {
               style={{
                 background: 'white',
                 borderRadius: '12px',
-                border: isExpanded ? '2px solid #5AAFB5' : '1px solid #DDE3EB',
+                border: isExpanded ? '2px solid #5AAFB5' : isVerified ? '3px solid #5AAFB5' : '1px solid #DDE3EB',
+                borderLeft: isVerified && !isExpanded ? '3px solid #5AAFB5' : undefined,
                 overflow: 'hidden',
                 transition: 'all 0.2s',
                 boxShadow: isExpanded ? '0 4px 12px rgba(90, 175, 181, 0.15)' : 'none',
                 cursor: 'pointer',
               }}
-              onMouseEnter={(e) => !isExpanded && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)', e.currentTarget.style.borderColor = '#5AAFB5')}
-              onMouseLeave={(e) => !isExpanded && (e.currentTarget.style.boxShadow = 'none', e.currentTarget.style.borderColor = '#DDE3EB')}
+              onMouseEnter={(e) => !isExpanded && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)', !isVerified && (e.currentTarget.style.borderColor = '#5AAFB5'))}
+              onMouseLeave={(e) => !isExpanded && (e.currentTarget.style.boxShadow = 'none', !isVerified && (e.currentTarget.style.borderColor = '#DDE3EB'))}
             >
               <div style={{padding: isExpanded ? '20px' : '16px'}}>
+                {/* Tier Badge - Verified Member or Listed */}
+                {isVerified && (
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    background: '#EBF7F8',
+                    color: '#2B6B73',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '0.7rem',
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                  }}>
+                    ✓ Verified Member
+                  </div>
+                )}
+                {!isVerified && (
+                  <div style={{
+                    display: 'inline-block',
+                    background: '#EEEEEE',
+                    color: '#666666',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '0.7rem',
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                  }}>
+                    Listed
+                  </div>
+                )}
+
                 {/* Header: Name & Tier Badge */}
                 <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: isExpanded ? '16px' : '12px'}}>
                   <div>
                     <h3 style={{fontSize: isExpanded ? '1.1rem' : '0.95rem', fontWeight: '700', color: '#2B4C6F', margin: '0 0 4px'}}>{prof.name}</h3>
                     <p style={{fontSize: '0.85rem', color: '#5AAFB5', margin: 0, fontWeight: '600'}}>{prof.title}</p>
                   </div>
-                  {tierBadge && (
+                  {tierBadgeType && (
                     <div style={{
-                      background: tierBadge === 'gold' ? '#F4D35E' : '#E8E8E8',
-                      color: tierBadge === 'gold' ? '#8B7500' : '#666',
+                      background: tierBadgeType === 'gold' ? '#F4D35E' : '#E8E8E8',
+                      color: tierBadgeType === 'gold' ? '#8B7500' : '#666',
                       padding: '4px 10px',
                       borderRadius: '12px',
                       fontSize: '0.7rem',
@@ -8726,7 +9019,7 @@ function ProfessionalDirectoryView() {
                       whiteSpace: 'nowrap',
                       marginLeft: '8px',
                     }}>
-                      {tierBadge === 'gold' ? 'Sponsor' : 'Firm Partner'}
+                      {tierBadgeType === 'gold' ? 'Sponsor' : 'Firm Partner'}
                     </div>
                   )}
                 </div>
@@ -8737,12 +9030,16 @@ function ProfessionalDirectoryView() {
                   <p style={{fontSize: '0.8rem', color: '#7A8BA0', margin: 0}}>{prof.location}</p>
                 </div>
 
-                {/* Specialty Icon & Years */}
+                {/* Specialty Icon & Years - with Rating on collapsed card */}
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: isExpanded ? '14px' : '10px', fontSize: '0.9rem'}}>
                   <span style={{fontSize: '1.4rem'}}>{SPECIALTY_ICONS[prof.specialty]}</span>
-                  <div>
+                  <div style={{flex: 1}}>
                     <div style={{color: '#2B4C6F', fontWeight: '600'}}>{SPECIALTY_LABELS[prof.specialty]}</div>
-                    <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>{prof.yearsExperience} years experience</div>
+                    <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>
+                      {prof.yearsExperience} years experience
+                      {avgRating && ` • ★ ${avgRating}`}
+                      {profReviewCount > 0 && ` (${profReviewCount})`}
+                    </div>
                   </div>
                 </div>
 
@@ -8779,31 +9076,139 @@ function ProfessionalDirectoryView() {
                       </div>
                     )}
 
-                    {/* Contact Info */}
-                    <div style={{background: '#F9FAFB', padding: '10px 12px', borderRadius: '6px', marginBottom: '12px', fontSize: '0.8rem', color: '#4A5E73'}}>
-                      <strong>Email:</strong> <a href={`mailto:${prof.email}`} style={{color: '#5AAFB5', textDecoration: 'none'}}>{prof.email}</a>
+                    {/* Community Rating Section */}
+                    <div style={{background: '#F9FAFB', padding: '12px', borderRadius: '6px', marginBottom: '12px', borderLeft: '3px solid #5AAFB5'}}>
+                      <p style={{fontSize: '0.75rem', fontWeight: '600', color: '#7A8BA0', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                        Community Rating
+                      </p>
+                      {avgRating ? (
+                        <>
+                          <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
+                            <span style={{fontSize: '1.2rem', color: '#E05B6F'}}>
+                              {'★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating))}
+                            </span>
+                            <span style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>
+                              {avgRating}/5
+                            </span>
+                          </div>
+                          <p style={{fontSize: '0.75rem', color: '#7A8BA0', margin: '0 0 8px'}}>
+                            Based on {profReviewCount} confidential review{profReviewCount !== 1 ? 's' : ''}
+                          </p>
+
+                          {/* Category Breakdown */}
+                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                            {['Responsiveness', 'Expertise', 'Value', 'Communication'].map((label, idx) => {
+                              const category = label.toLowerCase();
+                              const catRating = getCategoryRating(prof.id, category);
+                              const percent = catRating > 0 ? (catRating / 5) * 100 : 0;
+                              return (
+                                <div key={category} style={{fontSize: '0.7rem'}}>
+                                  <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '2px', color: '#7A8BA0'}}>
+                                    <span>{label}</span>
+                                    <span>{catRating > 0 ? catRating.toFixed(1) : '—'}</span>
+                                  </div>
+                                  <div style={{
+                                    height: '4px',
+                                    background: '#DDE3EB',
+                                    borderRadius: '2px',
+                                    overflow: 'hidden',
+                                  }}>
+                                    <div style={{
+                                      height: '100%',
+                                      background: '#5AAFB5',
+                                      width: percent + '%',
+                                      transition: 'width 0.3s',
+                                    }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        <p style={{fontSize: '0.8rem', color: '#7A8BA0', margin: 0}}>
+                          No reviews yet — be the first to share your experience
+                        </p>
+                      )}
                     </div>
 
-                    {/* Request Introduction Button */}
-                    <button
-                      onClick={() => handleRequestIntroduction(prof)}
-                      style={{
+                    {/* Review Form Toggle & Form */}
+                    <div style={{marginBottom: '12px'}}>
+                      {!showReviewForm_ ? (
+                        <button
+                          onClick={() => setShowReviewForm(prof.id)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            background: 'white',
+                            color: '#5AAFB5',
+                            border: '1px solid #5AAFB5',
+                            borderRadius: '6px',
+                            fontSize: '0.8rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={(e) => { e.target.style.background = '#EBF7F8'; }}
+                          onMouseLeave={(e) => { e.target.style.background = 'white'; }}
+                        >
+                          Leave a Review
+                        </button>
+                      ) : (
+                        <ReviewForm
+                          profId={prof.id}
+                          onSubmit={handleSubmitReview}
+                          onCancel={() => setShowReviewForm(null)}
+                        />
+                      )}
+                    </div>
+
+                    {/* Contact Info */}
+                    {isVerified ? (
+                      <div style={{background: '#F9FAFB', padding: '10px 12px', borderRadius: '6px', marginBottom: '12px', fontSize: '0.8rem', color: '#4A5E73'}}>
+                        <strong>Email:</strong> <a href={`mailto:${prof.email}`} style={{color: '#5AAFB5', textDecoration: 'none'}}>{prof.email}</a>
+                      </div>
+                    ) : (
+                      <div style={{background: '#F9FAFB', padding: '10px 12px', borderRadius: '6px', marginBottom: '12px', fontSize: '0.8rem', color: '#4A5E73'}}>
+                        <strong>Email:</strong> <span style={{color: '#7A8BA0'}}>{prof.email.split('@')[0].substring(0, 1)}****@{prof.email.split('@')[1]}</span>
+                      </div>
+                    )}
+
+                    {/* Request Introduction Button or Message */}
+                    {isVerified ? (
+                      <button
+                        onClick={() => handleRequestIntroduction(prof)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          background: '#5AAFB5',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.85rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => e.target.style.background = '#4A9BA5'}
+                        onMouseLeave={(e) => e.target.style.background = '#5AAFB5'}
+                      >
+                        Request Introduction
+                      </button>
+                    ) : (
+                      <div style={{
                         width: '100%',
                         padding: '10px 12px',
-                        background: '#5AAFB5',
-                        color: 'white',
-                        border: 'none',
+                        background: '#F9FAFB',
+                        color: '#7A8BA0',
+                        border: '1px solid #DDE3EB',
                         borderRadius: '6px',
-                        fontSize: '0.85rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'background 0.2s',
-                      }}
-                      onMouseEnter={(e) => e.target.style.background = '#4A9BA5'}
-                      onMouseLeave={(e) => e.target.style.background = '#5AAFB5'}
-                    >
-                      Request Introduction
-                    </button>
+                        fontSize: '0.8rem',
+                        textAlign: 'center',
+                      }}>
+                        This professional is listed but not a verified member. Introduction requests are available for verified members only.
+                      </div>
+                    )}
 
                     <button
                       onClick={() => setExpandedProfessional(null)}
@@ -8869,6 +9274,40 @@ function ProfessionalDirectoryView() {
           <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Try adjusting your filters to see available professionals</p>
         </div>
       )}
+
+      {/* Membership Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #5AAFB5 0%, #2B4C6F 100%)',
+        color: 'white',
+        padding: '24px',
+        borderRadius: '12px',
+        textAlign: 'center',
+        marginTop: '40px',
+      }}>
+        <h3 style={{fontSize: '1.1rem', fontWeight: '700', margin: '0 0 8px'}}>
+          Are you a family business professional?
+        </h3>
+        <p style={{fontSize: '0.95rem', margin: '0 0 16px', lineHeight: '1.6', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
+          Join the directory to connect with family enterprises. Verified Members get full profile visibility, direct introductions, and access to professional peer groups.
+        </p>
+        <button
+          style={{
+            padding: '10px 24px',
+            background: 'white',
+            color: '#5AAFB5',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.target.style.background = '#F5F7FA'; }}
+          onMouseLeave={(e) => { e.target.style.background = 'white'; }}
+        >
+          Learn More
+        </button>
+      </div>
     </div>
   );
 }
