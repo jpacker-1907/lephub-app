@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import './App.css';
 
@@ -8965,43 +8966,114 @@ function AdminView({ currentUser }) {
     setShowAddMember(true);
   };
 
-  // CSV Import
-  const handleCSVFile = (e) => {
+  // File Import (CSV + Excel)
+  const handleImportFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target.result;
-      const lines = text.split('\n').map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
-      const headers = lines[0].map(h => h.toLowerCase());
-      const rows = lines.slice(1).filter(r => r.length > 1 && r[0]);
-      const nameIdx = headers.findIndex(h => h.includes('name') && !h.includes('enterprise') && !h.includes('business') && !h.includes('company'));
-      const emailIdx = headers.findIndex(h => h.includes('email'));
-      const phoneIdx = headers.findIndex(h => h.includes('phone'));
-      const companyIdx = headers.findIndex(h => h.includes('enterprise') || h.includes('company') || h.includes('business') || h.includes('organization'));
-      const locationIdx = headers.findIndex(h => h.includes('location') || h.includes('city') || h.includes('state') || h.includes('address'));
-      const tierIdx = headers.findIndex(h => h.includes('tier') || h.includes('plan') || h.includes('level'));
-      const notesIdx = headers.findIndex(h => h.includes('note') || h.includes('comment'));
+    const isExcel = file.name.match(/\.xlsx?$/i);
 
-      const parsed = rows.map(row => ({
-        name: nameIdx >= 0 ? row[nameIdx] : '',
-        email: emailIdx >= 0 ? row[emailIdx] : '',
-        phone: phoneIdx >= 0 ? row[phoneIdx] : '',
-        enterpriseName: companyIdx >= 0 ? row[companyIdx] : '',
-        location: locationIdx >= 0 ? row[locationIdx] : '',
-        tier: tierIdx >= 0 ? row[tierIdx]?.toLowerCase() : 'founding',
-        notes: notesIdx >= 0 ? row[notesIdx] : '',
-      })).filter(r => r.name && r.email);
+    const processRows = (headers, rows) => {
+      const h = headers.map(x => (x || '').toString().toLowerCase().trim());
+      // Smart column matching — handles Glue Up, HubSpot, Mailchimp, generic CSVs
+      const find = (...terms) => h.findIndex(col => terms.some(t => col.includes(t)));
+      const firstIdx = find('first name', 'first_name', 'firstname');
+      const lastIdx = find('last name', 'last_name', 'lastname');
+      const fullNameIdx = find('full name', 'full_name', 'fullname', 'contact name');
+      const nameIdx = firstIdx < 0 && lastIdx < 0 ? (fullNameIdx >= 0 ? fullNameIdx : find('name')) : -1;
+      const emailIdx = find('email');
+      const phoneIdx = find('phone', 'mobile', 'telephone');
+      const companyIdx = find('company', 'organization', 'enterprise', 'business', 'firm');
+      const titleIdx = find('title', 'position', 'role', 'job');
+      const cityIdx = find('city', 'town');
+      const stateIdx = find('state', 'province', 'region');
+      const locationIdx = find('location', 'address');
+      const tierIdx = find('tier', 'plan', 'level', 'membership');
+      const notesIdx = find('note', 'comment', 'description');
+      const activeIdx = find('active member', 'active', 'status');
 
-      setCsvPreview({ headers, parsed, total: rows.length, valid: parsed.length });
+      const parsed = rows.map(row => {
+        const get = (idx) => idx >= 0 ? (row[idx] || '').toString().trim() : '';
+        let name = '';
+        if (firstIdx >= 0 || lastIdx >= 0) {
+          name = [get(firstIdx), get(lastIdx)].filter(Boolean).join(' ');
+        } else {
+          name = get(nameIdx);
+        }
+        const city = get(cityIdx);
+        const state = get(stateIdx);
+        const loc = get(locationIdx);
+        const location = city || state ? [city, state].filter(Boolean).join(', ') : loc;
+        const activeVal = get(activeIdx).toLowerCase();
+
+        return {
+          name,
+          email: get(emailIdx),
+          phone: get(phoneIdx),
+          enterpriseName: get(companyIdx),
+          title: get(titleIdx),
+          location,
+          tier: get(tierIdx).toLowerCase() || 'founding',
+          notes: get(notesIdx),
+          isActive: activeVal === 'yes' || activeVal === 'active' || activeVal === 'true',
+        };
+      }).filter(r => r.name && r.email);
+
+      setCsvPreview({ headers: h, parsed, total: rows.length, valid: parsed.length, fileName: file.name });
     };
-    reader.readAsText(file);
+
+    if (isExcel) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const wb = XLSX.read(ev.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        // Glue Up has a sub-header row (row 1) — detect by checking if row 1 has mostly empty/category values
+        let headerRow = 0;
+        let dataStart = 1;
+        if (raw.length > 2) {
+          const row1Filled = raw[1].filter(c => c && c.toString().trim()).length;
+          const row0Filled = raw[0].filter(c => c && c.toString().trim()).length;
+          // If row 1 has significantly fewer filled cells than row 0, it's a sub-header — skip it
+          if (row1Filled > 0 && row1Filled < row0Filled * 0.5) {
+            dataStart = 2;
+          }
+        }
+        const headers = raw[headerRow].map(c => (c || '').toString());
+        const rows = raw.slice(dataStart).filter(r => r.some(c => c && c.toString().trim()));
+        processRows(headers, rows);
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target.result;
+        const lines = text.split('\n').map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
+        const headers = lines[0];
+        const rows = lines.slice(1).filter(r => r.length > 1 && r.some(c => c.trim()));
+        processRows(headers, rows);
+      };
+      reader.readAsText(file);
+    }
     e.target.value = '';
   };
 
   const importCSV = () => {
     if (!csvPreview) return;
-    const imported = csvPreview.parsed.map(r => ({ ...r, id: String(Date.now() + Math.random()), status: 'active', peerGroup: '', joinedAt: new Date().toISOString() }));
+    const activeOnly = document.getElementById('importActiveOnly')?.checked;
+    const toImport = activeOnly ? csvPreview.parsed.filter(r => r.isActive) : csvPreview.parsed;
+    const imported = toImport.map(r => ({
+      id: String(Date.now() + Math.random()),
+      name: r.name,
+      email: r.email,
+      phone: r.phone || '',
+      enterpriseName: r.enterpriseName || '',
+      location: r.location || '',
+      tier: r.tier && r.tier !== 'founding' ? r.tier : 'founding',
+      status: r.isActive ? 'active' : 'inactive',
+      peerGroup: '',
+      notes: [r.title, r.notes].filter(Boolean).join(' — '),
+      joinedAt: new Date().toISOString(),
+    }));
     setMembers(prev => [...prev, ...imported]);
     setCsvPreview(null);
     setShowImportCSV(false);
@@ -9300,41 +9372,54 @@ function AdminView({ currentUser }) {
           {/* CSV Import */}
           {showImportCSV && (
             <div style={{...cardStyle, border: '2px solid #5AAFB5'}}>
-              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Import Contacts from CSV</h3>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Import Contacts</h3>
               <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '16px'}}>
-                Upload a CSV file with columns for name, email, phone, company/enterprise, location, tier, and notes. Headers are matched automatically.
+                Upload a CSV or Excel (.xlsx) file. Supports Glue Up, HubSpot, Mailchimp, and generic contact exports. Column headers are matched automatically.
               </p>
-              <input type="file" ref={csvInputRef} accept=".csv,.txt" style={{display: 'none'}} onChange={handleCSVFile} />
-              <button onClick={() => csvInputRef.current?.click()} style={btnSecondary}>Choose CSV File</button>
+              <input type="file" ref={csvInputRef} accept=".csv,.txt,.xlsx,.xls" style={{display: 'none'}} onChange={handleImportFile} />
+              <button onClick={() => csvInputRef.current?.click()} style={btnSecondary}>Choose File (CSV or Excel)</button>
 
               {csvPreview && (
                 <div style={{marginTop: '16px'}}>
-                  <div style={{fontSize: '0.85rem', color: '#334155', marginBottom: '8px'}}>
-                    Found <strong>{csvPreview.valid}</strong> valid contacts out of {csvPreview.total} rows
+                  <div style={{fontSize: '0.85rem', color: '#334155', marginBottom: '4px'}}>
+                    <strong>{csvPreview.fileName}</strong>
                   </div>
-                  <div style={{maxHeight: '200px', overflowY: 'auto', border: '1px solid #DDE3EB', borderRadius: '8px', marginBottom: '12px'}}>
-                    <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem'}}>
-                      <thead><tr style={{background: '#F0F4F8'}}>
+                  <div style={{fontSize: '0.85rem', color: '#334155', marginBottom: '4px'}}>
+                    Found <strong>{csvPreview.valid}</strong> valid contacts out of {csvPreview.total} rows
+                    {csvPreview.parsed.filter(r => r.isActive).length > 0 && (
+                      <span style={{marginLeft: '8px', background: '#D1FAE5', color: '#065f46', padding: '2px 8px', borderRadius: '8px', fontSize: '0.78rem'}}>{csvPreview.parsed.filter(r => r.isActive).length} active</span>
+                    )}
+                  </div>
+                  <div style={{display: 'flex', gap: '8px', marginBottom: '12px'}}>
+                    <label style={{fontSize: '0.82rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer'}}>
+                      <input type="checkbox" id="importActiveOnly" /> Import active members only
+                    </label>
+                  </div>
+                  <div style={{maxHeight: '260px', overflowY: 'auto', border: '1px solid #DDE3EB', borderRadius: '8px', marginBottom: '12px'}}>
+                    <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem'}}>
+                      <thead><tr style={{background: '#F0F4F8', position: 'sticky', top: 0}}>
                         <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Name</th>
                         <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Email</th>
-                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Enterprise</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Company</th>
+                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Title</th>
                         <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Location</th>
-                        <th style={{padding: '8px 10px', textAlign: 'left', color: '#334155'}}>Tier</th>
+                        <th style={{padding: '8px 10px', textAlign: 'center', color: '#334155'}}>Active</th>
                       </tr></thead>
-                      <tbody>{csvPreview.parsed.slice(0, 10).map((r, i) => (
-                        <tr key={i} style={{borderTop: '1px solid #EFF1F6'}}>
-                          <td style={{padding: '6px 10px'}}>{r.name}</td>
+                      <tbody>{csvPreview.parsed.slice(0, 20).map((r, i) => (
+                        <tr key={i} style={{borderTop: '1px solid #EFF1F6', background: r.isActive ? '#F0FDF4' : 'transparent'}}>
+                          <td style={{padding: '6px 10px', fontWeight: r.isActive ? '600' : '400'}}>{r.name}</td>
                           <td style={{padding: '6px 10px'}}>{r.email}</td>
                           <td style={{padding: '6px 10px'}}>{r.enterpriseName}</td>
+                          <td style={{padding: '6px 10px'}}>{r.title || ''}</td>
                           <td style={{padding: '6px 10px'}}>{r.location}</td>
-                          <td style={{padding: '6px 10px'}}>{r.tier}</td>
+                          <td style={{padding: '6px 10px', textAlign: 'center'}}>{r.isActive ? '✓' : ''}</td>
                         </tr>
                       ))}</tbody>
                     </table>
-                    {csvPreview.parsed.length > 10 && <div style={{padding: '6px 10px', fontSize: '0.75rem', color: '#7A8BA0'}}>...and {csvPreview.parsed.length - 10} more</div>}
+                    {csvPreview.parsed.length > 20 && <div style={{padding: '6px 10px', fontSize: '0.75rem', color: '#7A8BA0'}}>...and {csvPreview.parsed.length - 20} more</div>}
                   </div>
                   <div style={{display: 'flex', gap: '10px'}}>
-                    <button onClick={importCSV} style={btnPrimary}>Import {csvPreview.valid} Members</button>
+                    <button onClick={importCSV} style={btnPrimary}>Import {csvPreview.valid} Contacts</button>
                     <button onClick={() => { setCsvPreview(null); setShowImportCSV(false); }} style={btnSecondary}>Cancel</button>
                   </div>
                 </div>
