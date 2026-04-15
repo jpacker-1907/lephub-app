@@ -2622,6 +2622,386 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
   );
 }
 
+// ─── DAILY PULSE CHECK-IN WIDGET ──────────────────────────────
+function DailyPulseWidget() {
+  const PROMPTS = [
+    "What's one conversation you've been avoiding with family about the business?",
+    "What would your enterprise look like if your values truly drove every decision?",
+    "What's one thing the next generation needs to hear from you today?",
+    "How can you better honor your family's legacy while creating your own?",
+    "What does success look like for your family enterprise in 5 years?",
+  ];
+
+  const MOODS = [
+    { emoji: '😤', label: 'Frustrated', value: 'frustrated' },
+    { emoji: '😐', label: 'Okay', value: 'okay' },
+    { emoji: '😊', label: 'Good', value: 'good' },
+    { emoji: '🔥', label: 'Energized', value: 'energized' },
+    { emoji: '🌟', label: 'Inspired', value: 'inspired' },
+  ];
+
+  const [pulses, setPulses] = useState(() => {
+    const saved = localStorage.getItem('stride_daily_pulse');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [showInput, setShowInput] = useState(false);
+  const [note, setNote] = useState('');
+  const [selectedMood, setSelectedMood] = useState(null);
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayPulse = pulses.find(p => p.date === today);
+  const streak = calculateStreak(pulses);
+  const prompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+
+  const calculateStreak = (pulseData) => {
+    let count = 0;
+    let currentDate = new Date();
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(currentDate);
+      checkDate.setDate(checkDate.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      if (pulseData.find(p => p.date === dateStr)) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  };
+
+  const handleMoodSelect = (mood) => {
+    setSelectedMood(mood);
+    setShowInput(true);
+  };
+
+  const handleSubmitPulse = () => {
+    if (!selectedMood) return;
+    const newPulse = { date: today, mood: selectedMood, note, prompt };
+    setPulses(prev => {
+      const updated = prev.filter(p => p.date !== today);
+      updated.push(newPulse);
+      localStorage.setItem('stride_daily_pulse', JSON.stringify(updated));
+      return updated;
+    });
+    setShowInput(false);
+    setNote('');
+    setSelectedMood(null);
+  };
+
+  const moodLabel = todayPulse ? MOODS.find(m => m.value === todayPulse.mood)?.label : null;
+  const moodEmoji = todayPulse ? MOODS.find(m => m.value === todayPulse.mood)?.emoji : null;
+
+  return (
+    <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px 24px', marginBottom: '14px'}}>
+      {todayPulse ? (
+        <>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '10px'}}>
+            <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Today's Pulse</h3>
+            {streak > 1 && <span style={{fontSize: '0.8rem', color: '#E05B6F', fontWeight: '600'}}>🔥 {streak} day streak</span>}
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px'}}>
+            <span style={{fontSize: '1.8rem'}}>{moodEmoji}</span>
+            <div>
+              <div style={{fontSize: '0.9rem', fontWeight: '600', color: '#2B4C6F'}}>{moodLabel}</div>
+              {todayPulse.note && <div style={{fontSize: '0.82rem', color: '#7A8BA0', marginTop: '4px'}}>{todayPulse.note}</div>}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>Daily Pulse Check-in</h3>
+          <p style={{fontSize: '0.8rem', color: '#7A8BA0', marginBottom: '16px', fontStyle: 'italic'}}>"{prompt}"</p>
+
+          {!showInput ? (
+            <div style={{display: 'flex', gap: '8px', justifyContent: 'space-between'}}>
+              {MOODS.map(mood => (
+                <button
+                  key={mood.value}
+                  onClick={() => handleMoodSelect(mood.value)}
+                  style={{
+                    flex: 1, padding: '10px 8px', borderRadius: '10px', border: '1px solid #DDE3EB',
+                    background: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontSize: '0.75rem'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#F5F7FA'; e.currentTarget.style.borderColor = '#5AAFB5'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#DDE3EB'; }}
+                >
+                  <span style={{fontSize: '1.5rem'}}>{mood.emoji}</span>
+                  <span style={{color: '#7A8BA0'}}>{mood.label}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <div style={{marginBottom: '12px'}}>
+                <label style={{fontSize: '0.78rem', fontWeight: '600', color: '#2B4C6F', display: 'block', marginBottom: '6px'}}>
+                  Add a reflection (optional)
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="What's on your mind?"
+                  style={{
+                    width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB',
+                    fontSize: '0.85rem', color: '#334155', fontFamily: 'system-ui', resize: 'vertical',
+                    minHeight: '60px', outline: 'none'
+                  }}
+                />
+              </div>
+              <div style={{display: 'flex', gap: '8px'}}>
+                <button
+                  onClick={handleSubmitPulse}
+                  style={{
+                    flex: 1, padding: '8px 16px', borderRadius: '8px', border: 'none',
+                    background: '#E05B6F', color: 'white', fontSize: '0.85rem', fontWeight: '600',
+                    cursor: 'pointer', transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#D04860'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#E05B6F'}
+                >
+                  Save Pulse
+                </button>
+                <button
+                  onClick={() => { setShowInput(false); setNote(''); setSelectedMood(null); }}
+                  style={{
+                    flex: 1, padding: '8px 16px', borderRadius: '8px', border: '1px solid #DDE3EB',
+                    background: 'white', color: '#7A8BA0', fontSize: '0.85rem', fontWeight: '600',
+                    cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#7A8BA0'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── ENGAGEMENT STATS BAR ────────────────────────────────────
+function EngagementStatsBar({ sessions }) {
+  const [pulses] = useState(() => {
+    const saved = localStorage.getItem('stride_daily_pulse');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [channels] = useState(() => {
+    const saved = localStorage.getItem('stride_community_channels');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [workbookData] = useState(() => {
+    const saved = localStorage.getItem('lep_progress');
+    return saved ? JSON.parse(saved) : { completed: 0, total: 0 };
+  });
+
+  const calculateStreak = () => {
+    let count = 0;
+    let currentDate = new Date();
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(currentDate);
+      checkDate.setDate(checkDate.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      if (pulses.find(p => p.date === dateStr)) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  };
+
+  const countMessages = () => {
+    let count = 0;
+    Object.values(channels).forEach(msgs => {
+      if (Array.isArray(msgs)) {
+        msgs.forEach(msg => {
+          if (msg.author === 'You') count++;
+          if (msg.thread) {
+            msg.thread.forEach(reply => {
+              if (reply.author === 'You') count++;
+            });
+          }
+        });
+      }
+    });
+    return count;
+  };
+
+  const streak = calculateStreak();
+  const messages = countMessages();
+  const workbookProgress = workbookData.total > 0 ? Math.round((workbookData.completed / workbookData.total) * 100) : 0;
+
+  return (
+    <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px'}}>
+      <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
+        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>🔥</div>
+        <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{streak}</div>
+        <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Day Streak</div>
+      </div>
+      <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
+        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>💬</div>
+        <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{messages}</div>
+        <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Messages</div>
+      </div>
+      <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
+        <div style={{fontSize: '1.4rem', marginBottom: '4px'}}>📊</div>
+        <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{workbookProgress}%</div>
+        <div style={{fontSize: '0.72rem', color: '#7A8BA0', marginTop: '2px'}}>Workbook Progress</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ACTIVITY FEED ────────────────────────────────────────────
+function ActivityFeed({ setCurrentView }) {
+  const [channels] = useState(() => {
+    const saved = localStorage.getItem('stride_community_channels');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [sessions] = useState(() => {
+    const saved = localStorage.getItem('stride_sessions');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const AVATARS = {
+    'Sarah Mitchell': { initials: 'SM', color: '#5AAFB5' },
+    'James Chen': { initials: 'JC', color: '#E05B6F' },
+    'Margaret Thompson': { initials: 'MT', color: '#7C6BBF' },
+    'David Williams': { initials: 'DW', color: '#E8913A' },
+    'Patricia Gonzalez': { initials: 'PG', color: '#4A9B6F' },
+    'Robert Khan': { initials: 'RK', color: '#2B4C6F' },
+    'Jason Packer': { initials: 'JP', color: '#E05B6F' },
+    'You': { initials: 'ME', color: '#5AAFB5' },
+  };
+
+  const getAvatar = (name) => AVATARS[name] || { initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(), color: '#7A8BA0' };
+
+  const formatTime = (iso) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = now - d;
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    if (hrs < 24) return `${hrs}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const getRecentMessages = () => {
+    const allMessages = [];
+    Object.entries(channels).forEach(([chId, msgs]) => {
+      if (Array.isArray(msgs)) {
+        msgs.forEach(msg => {
+          allMessages.push({
+            id: msg.id,
+            author: msg.author,
+            channel: chId,
+            text: msg.text,
+            ts: msg.ts,
+          });
+        });
+      }
+    });
+    return allMessages.sort((a, b) => new Date(b.ts) - new Date(a.ts)).slice(0, 5);
+  };
+
+  const recentMessages = getRecentMessages();
+  const upcomingSessions = sessions.filter(s => new Date(s.date) >= new Date()).slice(0, 3);
+
+  const hasActivity = recentMessages.length > 0 || upcomingSessions.length > 0;
+
+  return (
+    <div>
+      <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px'}}>
+        <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>What's Happening</h3>
+        <button
+          onClick={() => window.location.reload()}
+          style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#7A8BA0', padding: '4px 8px', transition: 'color 0.2s'}}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#2B4C6F'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#7A8BA0'}
+          title="Refresh"
+        >
+          ↻
+        </button>
+      </div>
+
+      {!hasActivity ? (
+        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '40px 20px', textAlign: 'center'}}>
+          <div style={{fontSize: '2rem', marginBottom: '12px'}}>🌱</div>
+          <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>No activity yet</h4>
+          <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '16px'}}>Be the first to start a conversation in the community!</p>
+          <button
+            onClick={() => setCurrentView('community')}
+            style={{padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#5AAFB5', color: 'white', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s'}}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#4A9BA5'}
+            onMouseLeave={(e) => e.currentTarget.style.background = '#5AAFB5'}
+          >
+            Go to Community
+          </button>
+        </div>
+      ) : (
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px'}}>
+          {recentMessages.map(msg => (
+            <div
+              key={msg.id}
+              onClick={() => setCurrentView('community')}
+              style={{
+                background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '12px',
+                cursor: 'pointer', transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(32, 76, 111, 0.1)'; e.currentTarget.style.borderColor = '#5AAFB5'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#DDE3EB'; }}
+            >
+              <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
+                <div style={{width: 28, height: 28, borderRadius: '6px', background: getAvatar(msg.author).color, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: '700', flexShrink: 0}}>
+                  {getAvatar(msg.author).initials}
+                </div>
+                <div style={{flex: 1, minWidth: 0}}>
+                  <div style={{fontSize: '0.8rem', fontWeight: '600', color: '#2B4C6F'}}>{msg.author}</div>
+                  <div style={{fontSize: '0.72rem', color: '#7A8BA0'}}>#{msg.channel}</div>
+                </div>
+              </div>
+              <p style={{fontSize: '0.8rem', color: '#334155', lineHeight: '1.4', margin: '8px 0', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                {msg.text}
+              </p>
+              <div style={{fontSize: '0.7rem', color: '#7A8BA0'}}>{formatTime(msg.ts)}</div>
+            </div>
+          ))}
+
+          {upcomingSessions.map(session => (
+            <div
+              key={session.id}
+              onClick={() => setCurrentView('sessions')}
+              style={{
+                background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '10px', color: 'white',
+                padding: '12px', cursor: 'pointer', transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(32, 76, 111, 0.3)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <div style={{fontSize: '0.8rem', fontWeight: '600', marginBottom: '6px'}}>📅 {session.title}</div>
+              <div style={{fontSize: '0.72rem', color: 'rgba(255,255,255,0.8)', marginBottom: '4px'}}>
+                {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {session.time}
+              </div>
+              {session.prepRequired && <div style={{fontSize: '0.7rem', color: '#FFA5AE', marginTop: '4px'}}>Prep work required</div>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, onGenerateLepReport }) {
   const [memberSince] = useState(() => {
     const saved = localStorage.getItem('stride_member_since');
@@ -2696,9 +3076,15 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
         <div style={{background: '#E05B6F', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700'}}>Active</div>
       </div>
 
+      {/* Daily Pulse Check-in Widget */}
+      <DailyPulseWidget />
+
+      {/* Engagement Stats Bar */}
+      <EngagementStatsBar sessions={sessions} />
+
       {/* Quick Actions */}
       <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '14px'}}>Quick Actions</h3>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '32px'}}>
         <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
           <div style={{fontSize: '1.5rem', marginBottom: '8px'}}>📅</div>
           <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Sessions</div>
@@ -2725,6 +3111,9 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Join or manage</div>
         </button>
       </div>
+
+      {/* Activity Feed */}
+      <ActivityFeed setCurrentView={setCurrentView} />
     </div>
   );
 }
@@ -7911,10 +8300,60 @@ function CommunityView() {
   const [pendingFiles, setPendingFiles] = useState([]); // { name, type, size, dataUrl, kind: 'image'|'video'|'document' }
   const [threadPendingFiles, setThreadPendingFiles] = useState([]);
   const [lightboxSrc, setLightboxSrc] = useState(null);
+  const [reactionPickerOpen, setReactionPickerOpen] = useState(null); // message id
   const msgEndRef = useRef(null);
   const threadEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const threadFileInputRef = useRef(null);
+
+  const REACTION_EMOJIS = ['👍', '❤️', '🔥', '💡', '🙌', '😂'];
+
+  // ─── REACTION HANDLERS ────────────────────────────────────
+  const toggleReaction = (messageId, emoji) => {
+    setChannels(prev => {
+      const updated = { ...prev };
+      const msg = updated[activeChannel]?.find(m => m.id === messageId);
+      if (!msg) return prev;
+
+      if (!msg.reactions) msg.reactions = {};
+      if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+
+      const userIndex = msg.reactions[emoji].indexOf('You');
+      if (userIndex > -1) {
+        msg.reactions[emoji].splice(userIndex, 1);
+        if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
+      } else {
+        msg.reactions[emoji].push('You');
+      }
+
+      return updated;
+    });
+    setReactionPickerOpen(null);
+  };
+
+  const addReactionInThread = (messageId, replyId, emoji) => {
+    setChannels(prev => {
+      const updated = { ...prev };
+      const msg = updated[activeChannel]?.find(m => m.id === messageId);
+      if (!msg || !msg.thread) return prev;
+
+      const reply = msg.thread.find(r => r.id === replyId);
+      if (!reply) return prev;
+
+      if (!reply.reactions) reply.reactions = {};
+      if (!reply.reactions[emoji]) reply.reactions[emoji] = [];
+
+      const userIndex = reply.reactions[emoji].indexOf('You');
+      if (userIndex > -1) {
+        reply.reactions[emoji].splice(userIndex, 1);
+        if (reply.reactions[emoji].length === 0) delete reply.reactions[emoji];
+      } else {
+        reply.reactions[emoji].push('You');
+      }
+
+      return updated;
+    });
+  };
 
   // Persist
   useEffect(() => {
@@ -8294,6 +8733,75 @@ function CommunityView() {
                           {msg.text && <p style={{fontSize: '0.9rem', color: '#334155', lineHeight: '1.55', margin: 0, wordBreak: 'break-word'}}>{msg.text}</p>}
                           {renderAttachments(msg.attachments)}
 
+                          {/* Reactions */}
+                          {msg.reactions && Object.entries(msg.reactions).length > 0 && (
+                            <div style={{display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '8px'}}>
+                              {Object.entries(msg.reactions).map(([emoji, users]) => (
+                                <button
+                                  key={emoji}
+                                  onClick={() => toggleReaction(msg.id, emoji)}
+                                  style={{
+                                    display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px',
+                                    borderRadius: '12px', fontSize: '0.75rem', border: `1px solid ${users.includes('You') ? '#E05B6F' : '#DDE3EB'}`,
+                                    background: users.includes('You') ? '#FDF0F2' : '#F5F7FA',
+                                    cursor: 'pointer', transition: 'all 0.15s', fontWeight: '600', color: '#2B4C6F'
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#E05B6F'; e.currentTarget.style.background = '#FDF0F2'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = users.includes('You') ? '#E05B6F' : '#DDE3EB'; e.currentTarget.style.background = users.includes('You') ? '#FDF0F2' : '#F5F7FA'; }}
+                                >
+                                  <span>{emoji}</span>
+                                  <span>{users.length}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Reaction picker toggle */}
+                          {reactionPickerOpen !== msg.id && (
+                            <button
+                              onClick={() => setReactionPickerOpen(msg.id)}
+                              style={{
+                                opacity: 0, marginTop: '4px', padding: '2px 6px', background: 'none', border: 'none',
+                                fontSize: '0.85rem', color: '#7A8BA0', cursor: 'pointer', transition: 'opacity 0.15s',
+                              }}
+                              className="reaction-btn"
+                              title="Add reaction"
+                            >
+                              🙂
+                            </button>
+                          )}
+
+                          {/* Reaction picker */}
+                          {reactionPickerOpen === msg.id && (
+                            <div style={{display: 'flex', gap: '6px', marginTop: '8px', padding: '8px', background: '#F5F7FA', borderRadius: '8px', border: '1px solid #DDE3EB'}}>
+                              {REACTION_EMOJIS.map(emoji => (
+                                <button
+                                  key={emoji}
+                                  onClick={() => toggleReaction(msg.id, emoji)}
+                                  style={{
+                                    fontSize: '1.2rem', background: 'white', border: '1px solid #DDE3EB',
+                                    borderRadius: '6px', padding: '4px 8px', cursor: 'pointer',
+                                    transition: 'all 0.15s'
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5AAFB5'; e.currentTarget.style.background = '#E8F7F8'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDE3EB'; e.currentTarget.style.background = 'white'; }}
+                                  title={emoji}
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => setReactionPickerOpen(null)}
+                                style={{
+                                  fontSize: '0.8rem', background: 'none', border: 'none', color: '#7A8BA0',
+                                  cursor: 'pointer', marginLeft: 'auto'
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+
                           {/* Thread indicator */}
                           {msg.thread && msg.thread.length > 0 && (
                             <button
@@ -8423,7 +8931,10 @@ function CommunityView() {
               </div>
             )}
             {(threadMessage.thread || []).map(reply => (
-              <div key={reply.id} style={{display: 'flex', gap: '10px', marginBottom: '12px'}}>
+              <div key={reply.id} style={{display: 'flex', gap: '10px', marginBottom: '12px', padding: '6px 8px', borderRadius: '6px'}}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#F5F7FA'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
                 <div style={avatarStyle(reply.author, 28)}>{getAvatar(reply.author).initials}</div>
                 <div style={{flex: 1}}>
                   <div style={{display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px'}}>
@@ -8432,6 +8943,47 @@ function CommunityView() {
                   </div>
                   {reply.text && <p style={{fontSize: '0.85rem', color: '#334155', lineHeight: '1.5', margin: 0}}>{reply.text}</p>}
                   {renderAttachments(reply.attachments, true)}
+
+                  {/* Thread reply reactions */}
+                  {reply.reactions && Object.entries(reply.reactions).length > 0 && (
+                    <div style={{display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px'}}>
+                      {Object.entries(reply.reactions).map(([emoji, users]) => (
+                        <button
+                          key={emoji}
+                          onClick={() => addReactionInThread(threadMessage.id, reply.id, emoji)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 6px',
+                            borderRadius: '10px', fontSize: '0.7rem', border: `1px solid ${users.includes('You') ? '#E05B6F' : '#DDE3EB'}`,
+                            background: users.includes('You') ? '#FDF0F2' : '#F5F7FA',
+                            cursor: 'pointer', transition: 'all 0.15s', fontWeight: '600', color: '#2B4C6F'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#E05B6F'; e.currentTarget.style.background = '#FDF0F2'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = users.includes('You') ? '#E05B6F' : '#DDE3EB'; e.currentTarget.style.background = users.includes('You') ? '#FDF0F2' : '#F5F7FA'; }}
+                        >
+                          <span>{emoji}</span>
+                          <span>{users.length}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Quick reaction add for thread replies */}
+                  <button
+                    onClick={() => {
+                      const emoji = prompt('Quick pick: 👍 ❤️ 🔥 💡 🙌 😂');
+                      if (emoji && REACTION_EMOJIS.includes(emoji.trim())) {
+                        addReactionInThread(threadMessage.id, reply.id, emoji.trim());
+                      }
+                    }}
+                    style={{
+                      opacity: 0, marginTop: '4px', padding: '2px 6px', background: 'none', border: 'none',
+                      fontSize: '0.75rem', color: '#7A8BA0', cursor: 'pointer', transition: 'opacity 0.15s',
+                    }}
+                    className="reaction-btn-thread"
+                    title="Add reaction"
+                  >
+                    🙂
+                  </button>
                 </div>
               </div>
             ))}
@@ -8500,6 +9052,9 @@ function CommunityView() {
       {/* ── Hover styles (injected) ── */}
       <style>{`
         div:hover > .reply-btn { opacity: 1 !important; }
+        div:hover > .reaction-btn { opacity: 1 !important; }
+        div:hover > div > .reaction-btn { opacity: 1 !important; }
+        div:hover > div > .reaction-btn-thread { opacity: 1 !important; }
         div:hover > div > .msg-ts { opacity: 1 !important; }
       `}</style>
     </div>
