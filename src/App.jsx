@@ -29,6 +29,11 @@ function Icon({ name, size = 20, color = '#2B4C6F', strokeWidth = 1.8 }) {
     'bar-chart': <><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></>,
     compass: <><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></>,
     briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" /></>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>,
+    lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></>,
+    eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>,
+    'check-circle': <><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>,
+    globe: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></>,
   };
 
   return (
@@ -2559,6 +2564,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     { id: 'professionals', icon: 'briefcase', name: 'Professionals', memberOnly: true },
+    { id: 'security', icon: 'shield', name: 'Security', memberOnly: false },
     { id: 'membership', icon: 'award', name: 'Membership', memberOnly: false },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
   ];
@@ -11346,6 +11352,272 @@ function AdminView({ currentUser }) {
   );
 }
 
+// ─── SECURITY & PRIVACY PAGE ─────────────────────────────────
+function SecurityPrivacyView() {
+  const sectionCard = {
+    background: 'white',
+    borderRadius: '16px',
+    padding: '32px',
+    marginBottom: '20px',
+    border: '1px solid #DDE3EB',
+  };
+
+  const sectionTitle = {
+    fontSize: '1.15rem',
+    fontWeight: '700',
+    color: '#2B4C6F',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  };
+
+  const bodyText = {
+    fontSize: '0.92rem',
+    color: '#4A5E73',
+    lineHeight: 1.7,
+    marginBottom: '12px',
+  };
+
+  const protectionItem = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '12px',
+    padding: '14px 0',
+    borderBottom: '1px solid #F0F4F8',
+  };
+
+  const protectionLabel = {
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    color: '#2B4C6F',
+    marginBottom: '2px',
+  };
+
+  const protectionDesc = {
+    fontSize: '0.82rem',
+    color: '#7A8BA0',
+    lineHeight: 1.5,
+  };
+
+  const badgeActive = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: '#E8F8F0',
+    color: '#0D9F6E',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    padding: '4px 10px',
+    borderRadius: '20px',
+    letterSpacing: '0.02em',
+  };
+
+  const badgePlanned = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: '#FEF3C7',
+    color: '#B45309',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    padding: '4px 10px',
+    borderRadius: '20px',
+    letterSpacing: '0.02em',
+  };
+
+  return (
+    <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+      {/* Hero header */}
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #2B4C6F 0%, #5AAFB5 100%)', marginBottom: '16px' }}>
+          <Icon name="shield" size={32} color="white" strokeWidth={1.6} />
+        </div>
+        <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '8px' }}>Security & Privacy</h1>
+        <p style={{ fontSize: '0.95rem', color: '#7A8BA0', maxWidth: '560px', margin: '0 auto', lineHeight: 1.6 }}>
+          Your family's data is among the most sensitive information you'll ever entrust to a platform. We take that responsibility seriously.
+        </p>
+      </div>
+
+      {/* Our Commitment */}
+      <div style={{ ...sectionCard, background: 'linear-gradient(135deg, #2B4C6F 0%, #344E6F 100%)', border: 'none', color: 'white' }}>
+        <div style={{ ...sectionTitle, color: 'white' }}>
+          <Icon name="heart" size={22} color="#E05B6F" />
+          Our Commitment to Your Family
+        </div>
+        <p style={{ ...bodyText, color: 'rgba(255,255,255,0.85)' }}>
+          Stride was built by a family business owner who understands that succession plans, ownership structures, financial details, and family dynamics aren't just data — they're your legacy. Every architectural decision we make starts with one question: would we trust this platform with our own family's information?
+        </p>
+        <p style={{ ...bodyText, color: 'rgba(255,255,255,0.7)', marginBottom: 0 }}>
+          We will never sell your data, mine it for advertising, or share it with third parties. Your information exists to serve your family — nothing else.
+        </p>
+      </div>
+
+      {/* Infrastructure Protections */}
+      <div style={sectionCard}>
+        <div style={sectionTitle}>
+          <Icon name="lock" size={20} color="#5AAFB5" />
+          Infrastructure Protections
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>HTTPS Everywhere (HSTS)</div>
+              <span style={badgeActive}>Active</span>
+            </div>
+            <div style={protectionDesc}>All connections are encrypted with TLS. We enforce HTTPS with Strict Transport Security headers — your browser will never communicate with Stride over an unencrypted connection.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Content Security Policy (CSP)</div>
+              <span style={badgeActive}>Active</span>
+            </div>
+            <div style={protectionDesc}>Strict rules control exactly which scripts and resources can run on this platform. This prevents cross-site scripting attacks and unauthorized code injection.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Clickjacking Protection</div>
+              <span style={badgeActive}>Active</span>
+            </div>
+            <div style={protectionDesc}>X-Frame-Options headers prevent other websites from embedding Stride in hidden frames — a common attack vector used to trick users into clicking things they didn't intend to.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>XSS Protection</div>
+              <span style={badgeActive}>Active</span>
+            </div>
+            <div style={protectionDesc}>Multiple layers of cross-site scripting defense including browser-level XSS filtering and strict content type enforcement.</div>
+          </div>
+        </div>
+        <div style={{ ...protectionItem, borderBottom: 'none' }}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Referrer Control & Feature Restrictions</div>
+              <span style={badgeActive}>Active</span>
+            </div>
+            <div style={protectionDesc}>We limit what information your browser shares when navigating away from Stride, and we disable unnecessary browser features like camera, microphone, and geolocation access.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Privacy */}
+      <div style={sectionCard}>
+        <div style={sectionTitle}>
+          <Icon name="eye" size={20} color="#5AAFB5" />
+          Data Privacy
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={protectionLabel}>No Third-Party Data Sharing</div>
+            <div style={protectionDesc}>We will never sell, lease, or share your family's data with advertisers, data brokers, or any third party. Period.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={protectionLabel}>Full Data Portability</div>
+            <div style={protectionDesc}>Export all of your data at any time in open formats (JSON, CSV). We believe in zero vendor lock-in — your data belongs to your family, not to us.</div>
+          </div>
+        </div>
+        <div style={{ ...protectionItem, borderBottom: 'none' }}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="check-circle" size={18} color="#0D9F6E" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={protectionLabel}>Confidential Ratings</div>
+            <div style={protectionDesc}>Professional directory ratings are anonymous and visible only to verified Stride members. Professionals can never see who left a specific rating.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* What's Next — Roadmap */}
+      <div style={sectionCard}>
+        <div style={sectionTitle}>
+          <Icon name="trending-up" size={20} color="#5AAFB5" />
+          Security Roadmap
+        </div>
+        <p style={{ ...bodyText, marginBottom: '16px' }}>We're continuously strengthening our security posture. Here's what's coming:</p>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="shield" size={18} color="#B45309" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Two-Factor Authentication (2FA)</div>
+              <span style={badgePlanned}>Coming Soon</span>
+            </div>
+            <div style={protectionDesc}>Add an extra layer of protection to your account with authenticator app or SMS verification on every login.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="shield" size={18} color="#B45309" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Audit Logging</div>
+              <span style={badgePlanned}>Coming Soon</span>
+            </div>
+            <div style={protectionDesc}>A detailed log of who accessed what, when — giving family administrators full visibility into account activity.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="shield" size={18} color="#B45309" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Application-Level Encryption</div>
+              <span style={badgePlanned}>Coming Soon</span>
+            </div>
+            <div style={protectionDesc}>Sensitive family data encrypted at rest with keys unique to each family account — even our database administrators won't be able to read your information.</div>
+          </div>
+        </div>
+        <div style={protectionItem}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="shield" size={18} color="#B45309" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>Role-Based Access Control</div>
+              <span style={badgePlanned}>Planned</span>
+            </div>
+            <div style={protectionDesc}>Granular permissions within family accounts — decide which members can view financial data, governance documents, or family meeting notes.</div>
+          </div>
+        </div>
+        <div style={{ ...protectionItem, borderBottom: 'none' }}>
+          <div style={{ flexShrink: 0, marginTop: '2px' }}><Icon name="shield" size={18} color="#B45309" /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={protectionLabel}>SOC 2 Type II Certification</div>
+              <span style={badgePlanned}>Planned</span>
+            </div>
+            <div style={protectionDesc}>Independent third-party audit of our security controls, availability, and confidentiality practices — the gold standard for enterprise trust.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact */}
+      <div style={{ ...sectionCard, background: '#F5F7FA', textAlign: 'center' }}>
+        <div style={sectionTitle}>
+          <span style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '10px' }}>
+            <Icon name="message-circle" size={20} color="#5AAFB5" />
+            Questions About Security?
+          </span>
+        </div>
+        <p style={{ ...bodyText, maxWidth: '500px', margin: '0 auto 16px', textAlign: 'center' }}>
+          If you have questions about how we protect your family's data, or if you'd like to report a security concern, we want to hear from you.
+        </p>
+        <a href="mailto:jason@stridefba.com" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#2B4C6F', color: 'white', textDecoration: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '600', fontSize: '0.9rem' }}>
+          Contact Our Team
+        </a>
+      </div>
+    </div>
+  );
+}
+
 // Admin emails — these users bypass membership gating and see the admin panel
 const ADMIN_EMAILS = ['jason@stridefba.com', 'jpacker@stridefba.com', 'jason.m.packer@gmail.com'];
 
@@ -11438,6 +11710,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
         {currentView === 'professionals' && isMember && <ProfessionalDirectoryView />}
+        {currentView === 'security' && <SecurityPrivacyView />}
         {/* Membership — always accessible */}
         {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
         {currentView === 'admin' && isAdmin && <AdminView currentUser={currentUser} />}

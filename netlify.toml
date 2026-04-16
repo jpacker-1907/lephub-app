@@ -9,3 +9,33 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# ═══════════════════════════════════════════════════════════════
+# SECURITY HEADERS — Hardening for family enterprise data
+# ═══════════════════════════════════════════════════════════════
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Force HTTPS for all connections (1 year, include subdomains)
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+    # Prevent clickjacking — only allow our own domain to frame the page
+    X-Frame-Options = "SAMEORIGIN"
+
+    # Block MIME type sniffing — prevents browsers from guessing content types
+    X-Content-Type-Options = "nosniff"
+
+    # Control referrer information sent to other domains
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Restrict browser features (camera, microphone, geolocation, etc.)
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self)"
+
+    # Content Security Policy — restrict where resources can load from
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://*.netlify.app; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+
+    # Prevent cross-site scripting reflection attacks
+    X-XSS-Protection = "1; mode=block"
+
+    # Disable DNS prefetching to prevent data leakage
+    X-DNS-Prefetch-Control = "off"
