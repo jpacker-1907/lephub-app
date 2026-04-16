@@ -8268,7 +8268,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Billing & Payments</h3>
           <p style={{color: '#7A8BA0', fontSize: '0.9rem', marginBottom: '16px'}}>Payment processing will be available once the backend is connected. For now, Jason handles billing directly.</p>
           <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
-            Questions about billing? Reach out to <strong>jason@stridefba.com</strong>
+            Questions about billing? Reach out to <strong>jpacker@stridefba.com</strong>
           </div>
         </div>
       </div>
@@ -11610,7 +11610,7 @@ function SecurityPrivacyView() {
         <p style={{ ...bodyText, maxWidth: '500px', margin: '0 auto 16px', textAlign: 'center' }}>
           If you have questions about how we protect your family's data, or if you'd like to report a security concern, we want to hear from you.
         </p>
-        <a href="mailto:jason@stridefba.com" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#2B4C6F', color: 'white', textDecoration: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '600', fontSize: '0.9rem' }}>
+        <a href="mailto:jpacker@stridefba.com" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#2B4C6F', color: 'white', textDecoration: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '600', fontSize: '0.9rem' }}>
           Contact Our Team
         </a>
       </div>
