@@ -2564,6 +2564,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     { id: 'professionals', icon: 'briefcase', name: 'Professionals', memberOnly: true },
+    { id: 'credentialing', icon: 'award', name: 'Credentials', memberOnly: true },
     { id: 'security', icon: 'shield', name: 'Security', memberOnly: false },
     { id: 'membership', icon: 'award', name: 'Membership', memberOnly: false },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
@@ -11352,6 +11353,520 @@ function AdminView({ currentUser }) {
   );
 }
 
+// ─── CREDENTIALING / LEARNING PATHWAYS ───────────────────────
+function CredentialingView() {
+  const CREDENTIAL_VERSION = 'v1';
+  const [progress, setProgress] = useState(() => {
+    const saved = localStorage.getItem('stride_credentials');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed._version === CREDENTIAL_VERSION) return parsed;
+    }
+    return { _version: CREDENTIAL_VERSION, completedLessons: [], badges: [], trackProgress: {} };
+  });
+  const [activeTrack, setActiveTrack] = useState(null);
+  const [activeModule, setActiveModule] = useState(null);
+  const [activeLesson, setActiveLesson] = useState(null);
+  const [reflectionText, setReflectionText] = useState('');
+  const [showCertModal, setShowCertModal] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('stride_credentials', JSON.stringify(progress));
+  }, [progress]);
+
+  // ── Track & Module Data ──
+  const TRACKS = [
+    {
+      id: 'rising-gen',
+      title: 'Rising Generation',
+      subtitle: 'From Inheritor to Steward',
+      description: 'A developmental pathway that prepares next-generation family members to lead with competence, credibility, and commitment — building an identity that stands on its own.',
+      color: '#5AAFB5',
+      icon: 'trending-up',
+      inspired: 'Informed by Dennis Jaffe\'s stewardship model, Peter Begalla\'s credibility framework, and John Ward\'s family education research',
+      modules: [
+        {
+          id: 'rg-m1',
+          title: 'Know Your Enterprise',
+          description: 'Understand the family enterprise as a system — its history, values, business model, and the intersection of family, ownership, and management.',
+          status: 'available',
+          lessons: [
+            { id: 'rg-m1-l1', title: 'The Three-Circle Model', type: 'learn', content: 'Every family enterprise operates at the intersection of three systems: the Family, the Business, and Ownership. John Ward and his colleagues built on the pioneering work of Tagiuri and Davis to show that most family conflicts aren\'t personal — they\'re structural. A disagreement about dividend policy isn\'t a fight between siblings; it\'s a collision between someone wearing an "owner" hat and someone wearing a "manager" hat.\n\nUnderstanding which circle you\'re standing in at any given moment is the single most important skill in family enterprise leadership. When you can say "I\'m speaking as an owner right now, not as a family member," you\'ve already outpaced most family business leaders.\n\nReflect: Where do you currently sit in the three circles? Which roles do you expect to occupy in 5 years? 10 years?' },
+            { id: 'rg-m1-l2', title: 'Your Family Enterprise Story', type: 'reflect', content: 'Dennis Jaffe\'s research on 100-year family enterprises found that families who thrive across generations maintain a living narrative — not a static origin myth, but an evolving story that each generation adds to.\n\nYour task: Write the story of your family enterprise in three chapters. Chapter 1: How it began (the founding generation\'s vision and sacrifice). Chapter 2: Where it is now (the current reality, including tensions). Chapter 3: Where you believe it should go (your generation\'s contribution).\n\nThis isn\'t about getting the "right" answer. It\'s about developing your own perspective on the enterprise — something Peter Begalla identifies as essential to establishing credibility separate from your family name.' },
+            { id: 'rg-m1-l3', title: 'Values Inventory', type: 'exercise', content: 'Long-lasting family enterprises are anchored by shared values — but those values must be discovered, not imposed. Jaffe found that generative families revisit their values each generation, allowing the next generation to adopt the values authentically rather than inheriting them passively.\n\nExercise: List the 5 values you believe your family enterprise was built on. Then list the 5 values you personally hold most deeply. Where do they overlap? Where do they diverge? The gaps aren\'t problems — they\'re the starting point for the most important conversations your family will ever have.' },
+            { id: 'rg-m1-l4', title: 'Module Assessment', type: 'quiz', questions: [
+              { q: 'In the Three-Circle Model, a conflict about whether to reinvest profits or distribute dividends is most likely a tension between which two circles?', options: ['Family and Business', 'Ownership and Management', 'Family and Ownership', 'All three equally'], correct: 1 },
+              { q: 'According to Jaffe\'s research, how do 100-year family enterprises handle their core values across generations?', options: ['They preserve them exactly as the founder defined them', 'Each generation revisits and authentically adopts them', 'They abandon old values and create new ones', 'Values are irrelevant to long-term success'], correct: 1 },
+              { q: 'Peter Begalla emphasizes that next-generation credibility requires:', options: ['An MBA from a top-10 program', 'Establishing identity and competence separate from the family name', 'Working in the family business from age 16', 'Deferring to senior generation decisions until given authority'], correct: 1 },
+            ]},
+          ],
+        },
+        {
+          id: 'rg-m2',
+          title: 'Financial Literacy for Owners',
+          description: 'Read financial statements, understand ownership economics, and develop the financial fluency required of responsible stewards.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'rg-m3',
+          title: 'Governance Foundations',
+          description: 'Learn how family councils, boards, and constitutions create the structures that allow families to make decisions together across generations.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'rg-m4',
+          title: 'Leadership & Communication',
+          description: 'Develop the interpersonal skills that Jaffe identifies as essential: facilitation, active listening, conflict navigation, and emotional intelligence.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'rg-m5',
+          title: 'Building Your Own Path',
+          description: 'Begalla\'s credibility framework — establish marketable skills and professional identity outside the family enterprise before stepping into governance roles.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'rg-m6',
+          title: 'Stewardship Capstone',
+          description: 'Integration project — synthesize everything into a personal stewardship statement and present your vision for the next chapter of your family enterprise.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+      ],
+    },
+    {
+      id: 'senior-gen',
+      title: 'Senior Generation',
+      subtitle: 'From Operator to Architect',
+      description: 'A pathway for the wealth-creating generation to build governance structures, develop mentoring skills, and plan transitions that preserve both the enterprise and family relationships.',
+      color: '#2B4C6F',
+      icon: 'award',
+      inspired: 'Informed by Dennis Jaffe\'s transition research, John Ward\'s perpetuation principles, and the STRIDE methodology',
+      modules: [
+        {
+          id: 'sg-m1',
+          title: 'Defining Your Legacy',
+          description: 'Clarify what you\'re really passing on — it\'s not just a business or balance sheet. It\'s values, relationships, purpose, and a way of being in the world.',
+          status: 'available',
+          lessons: [
+            { id: 'sg-m1-l1', title: 'Beyond the Balance Sheet', type: 'learn', content: 'Dennis Jaffe\'s research revealed something counterintuitive: the families who lasted 100+ years weren\'t the ones who were most focused on preserving wealth. They were the ones who focused on developing people. The wealth was a byproduct of capable, committed family members — not the other way around.\n\nJohn Ward reinforced this in his perpetuation research: the #1 predictor of multi-generational success isn\'t the size of the business. It\'s the family\'s ability to communicate, govern themselves, and develop each generation\'s unique contributions.\n\nYour legacy isn\'t what you leave behind in a trust document. It\'s the capability you build in the people who come after you.' },
+            { id: 'sg-m1-l2', title: 'The Four Capitals', type: 'reflect', content: 'Generative families invest in four forms of capital simultaneously:\n\n• Financial Capital — the business, investments, and assets\n• Human Capital — the education, health, skills, and character of family members\n• Social Capital — the relationships, reputation, and networks the family maintains\n• Intellectual Capital — the knowledge, governance structures, and decision-making frameworks\n\nReflect: If you scored your family\'s investment in each capital on a 1-10 scale, where would you land? Most founders over-invest in financial capital and under-invest in the other three. Where are your gaps? What would it take to rebalance?' },
+            { id: 'sg-m1-l3', title: 'Your Transition Timeline', type: 'exercise', content: 'Ward\'s research shows that the most successful transitions happen gradually, over 5-15 years — not as a single "handoff" event. The senior generation moves through phases: from sole operator, to operator-with-input, to co-leader, to advisor, to emeritus.\n\nExercise: Draw your timeline. Where are you today on that spectrum? Where do you want to be in 2 years? 5 years? What specific responsibilities would you transfer at each stage? Be honest about what\'s hardest to let go of — that\'s usually where the most important work needs to happen.' },
+            { id: 'sg-m1-l4', title: 'Module Assessment', type: 'quiz', questions: [
+              { q: 'According to Jaffe\'s research on 100-year families, the #1 focus of lasting family enterprises is:', options: ['Maximizing financial returns', 'Developing capable, committed family members', 'Diversifying the business portfolio', 'Minimizing tax exposure across generations'], correct: 1 },
+              { q: 'The Four Capitals framework includes all EXCEPT:', options: ['Financial Capital', 'Human Capital', 'Political Capital', 'Intellectual Capital'], correct: 2 },
+              { q: 'Ward\'s research suggests successful leadership transitions typically occur over:', options: ['A single planned event', '1-2 years', '5-15 years of gradual transition', 'Only after the senior generation passes away'], correct: 2 },
+            ]},
+          ],
+        },
+        {
+          id: 'sg-m2',
+          title: 'Governance Architecture',
+          description: 'Design the structures — family council, board, constitution, meeting cadence — that will guide the enterprise long after you step back.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'sg-m3',
+          title: 'The Mentor\'s Mindset',
+          description: 'Shift from doing the work to developing others. Learn coaching, facilitation, and the art of letting the next generation make (and learn from) their own decisions.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'sg-m4',
+          title: 'Transition Planning',
+          description: 'Build the succession roadmap — timelines, role transitions, ownership transfer mechanics, and the emotional readiness that makes it all work.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'sg-m5',
+          title: 'Family Communication',
+          description: 'Master the conversations most families avoid — about money, fairness, capability, and what happens when family members disagree about the future.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'sg-m6',
+          title: 'Legacy Capstone',
+          description: 'Integration project — draft your family\'s governance charter and transition roadmap, incorporating everything from the program.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+      ],
+    },
+    {
+      id: 'advisor',
+      title: 'Family Enterprise Advisor',
+      subtitle: 'From Specialist to Trusted Advisor',
+      description: 'For professionals serving family enterprises — deepen your understanding of family systems, governance, and the unique dynamics that make this work different from any other advisory engagement.',
+      color: '#E05B6F',
+      icon: 'briefcase',
+      inspired: 'Informed by the Family Firm Institute\'s body of knowledge, Jaffe\'s advisor education, and Begalla\'s practitioner insights',
+      modules: [
+        {
+          id: 'adv-m1',
+          title: 'Understanding Family Systems',
+          description: 'The family enterprise is not a normal business client. Learn the system dynamics, emotional undercurrents, and multi-generational patterns that shape every engagement.',
+          status: 'available',
+          lessons: [
+            { id: 'adv-m1-l1', title: 'Why Family Enterprises Are Different', type: 'learn', content: 'When you advise a family enterprise, you\'re not just advising a business — you\'re entering a system where love, money, power, and identity are deeply intertwined. A tax strategy that makes perfect financial sense can destroy a family relationship. A governance structure that works on paper can fail because it doesn\'t account for a 30-year-old sibling rivalry.\n\nPeter Begalla, who has trained hundreds of family enterprise professionals, emphasizes that the advisor\'s first job is to understand the family system before offering solutions. The technical answer is rarely the hard part. The hard part is understanding who needs to be in the room, what hasn\'t been said, and what emotional dynamics are driving the "business" decision.\n\nThe best family enterprise advisors operate at the intersection of technical expertise and emotional intelligence.' },
+            { id: 'adv-m1-l2', title: 'The Advisor\'s Ethical Framework', type: 'reflect', content: 'Family enterprise advisory work creates unique ethical tensions. Who is your client — the business, the senior generation, the family as a whole? What do you do when one family member confides something that affects the others? How do you handle it when the "right" business advice conflicts with family harmony?\n\nJaffe has written extensively about the advisor\'s role as a "trusted outsider" — someone who can see patterns the family can\'t see because they\'re inside them. But that trust is earned slowly and lost instantly.\n\nReflect: Think about your most challenging family enterprise engagement. What made it difficult? Was the core challenge technical or relational? What would you do differently knowing what you know now?' },
+            { id: 'adv-m1-l3', title: 'Mapping the Family System', type: 'exercise', content: 'Before you can advise a family, you need to understand its structure. This exercise walks you through creating a basic family enterprise map.\n\nStep 1: Draw the family genogram — who is related to whom, across generations.\nStep 2: Overlay the business roles — who works in the enterprise, who owns shares, who sits on the board.\nStep 3: Map the influence lines — who has informal power? Who are the connectors? Who are the gatekeepers?\nStep 4: Identify the unspoken rules — what topics are off-limits? What decisions have been deferred for years?\n\nThis exercise, adapted from Jaffe\'s governance consulting methodology, gives you a diagnostic tool you\'ll use in every family enterprise engagement.' },
+            { id: 'adv-m1-l4', title: 'Module Assessment', type: 'quiz', questions: [
+              { q: 'According to Begalla, the family enterprise advisor\'s first job is to:', options: ['Deliver the technical solution as quickly as possible', 'Understand the family system before offering solutions', 'Align with the senior generation\'s preferences', 'Focus exclusively on the business financials'], correct: 1 },
+              { q: 'Jaffe describes the ideal advisor role as:', options: ['An authority figure who directs the family', 'A trusted outsider who sees patterns the family cannot', 'A mediator who resolves all family conflicts', 'A technician who avoids emotional dynamics'], correct: 1 },
+              { q: 'When mapping a family enterprise system, the most commonly overlooked element is:', options: ['Financial statements', 'Formal org chart', 'Informal influence and unspoken rules', 'Legal entity structure'], correct: 2 },
+            ]},
+          ],
+        },
+        {
+          id: 'adv-m2',
+          title: 'Multi-Generational Dynamics',
+          description: 'Understand how family enterprises evolve across generations and the predictable challenges that emerge at each transition.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'adv-m3',
+          title: 'Governance Best Practices',
+          description: 'Learn to design and facilitate family councils, boards, and constitutions that actually work — not just documents that sit in a drawer.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'adv-m4',
+          title: 'The Trusted Advisor Role',
+          description: 'Navigate the unique ethical and relational challenges of advising families — boundaries, confidentiality, multi-party dynamics, and knowing when to step back.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'adv-m5',
+          title: 'Facilitation & Difficult Conversations',
+          description: 'Master the art of facilitating family meetings, mediating disagreements, and helping families have the conversations they\'ve been avoiding.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+        {
+          id: 'adv-m6',
+          title: 'Advisor Capstone',
+          description: 'Integration project — develop a comprehensive family enterprise advisory engagement plan incorporating systems thinking, governance design, and facilitation.',
+          status: 'coming-soon',
+          lessons: [],
+        },
+      ],
+    },
+  ];
+
+  // ── Helper functions ──
+  const isLessonComplete = (lessonId) => progress.completedLessons.includes(lessonId);
+  const getModuleProgress = (mod) => {
+    if (!mod.lessons || mod.lessons.length === 0) return 0;
+    const completed = mod.lessons.filter(l => isLessonComplete(l.id)).length;
+    return Math.round((completed / mod.lessons.length) * 100);
+  };
+  const isModuleComplete = (mod) => mod.lessons.length > 0 && mod.lessons.every(l => isLessonComplete(l.id));
+  const getTrackProgress = (track) => {
+    const availableModules = track.modules.filter(m => m.status === 'available');
+    if (availableModules.length === 0) return 0;
+    const totalLessons = availableModules.reduce((sum, m) => sum + m.lessons.length, 0);
+    const completedLessons = availableModules.reduce((sum, m) => sum + m.lessons.filter(l => isLessonComplete(l.id)).length, 0);
+    return totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  };
+  const isTrackComplete = (track) => {
+    const availableModules = track.modules.filter(m => m.status === 'available');
+    return availableModules.length > 0 && availableModules.every(m => isModuleComplete(m));
+  };
+  const getTotalBadges = () => TRACKS.reduce((sum, t) => sum + t.modules.filter(m => isModuleComplete(m)).length, 0);
+
+  const completeLesson = (lessonId) => {
+    if (!isLessonComplete(lessonId)) {
+      setProgress(prev => ({ ...prev, completedLessons: [...prev.completedLessons, lessonId] }));
+    }
+  };
+
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizSubmitted, setQuizSubmitted] = useState({});
+
+  const handleQuizSubmit = (lessonId, questions) => {
+    setQuizSubmitted(prev => ({ ...prev, [lessonId]: true }));
+    const answers = quizAnswers[lessonId] || {};
+    const allCorrect = questions.every((q, i) => answers[i] === q.correct);
+    if (allCorrect) completeLesson(lessonId);
+  };
+
+  // ── Styles ──
+  const cardStyle = { background: 'white', borderRadius: '16px', padding: '28px', marginBottom: '16px', border: '1px solid #DDE3EB', transition: 'all 0.2s ease' };
+
+  // ── LESSON VIEW ──
+  if (activeLesson && activeModule) {
+    const lesson = activeModule.lessons.find(l => l.id === activeLesson);
+    if (!lesson) return null;
+
+    return (
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+        <button onClick={() => { setActiveLesson(null); setReflectionText(''); }} style={{ background: 'none', border: 'none', color: '#5AAFB5', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginBottom: '20px', padding: 0 }}>
+          ← Back to {activeModule.title}
+        </button>
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.08em', color: lesson.type === 'learn' ? '#5AAFB5' : lesson.type === 'reflect' ? '#8B5CF6' : lesson.type === 'exercise' ? '#E05B6F' : '#2B4C6F', background: lesson.type === 'learn' ? '#E8F8F5' : lesson.type === 'reflect' ? '#F3E8FF' : lesson.type === 'exercise' ? '#FDE8EC' : '#E8F0F8', padding: '3px 10px', borderRadius: '20px' }}>
+              {lesson.type === 'learn' ? 'Lesson' : lesson.type === 'reflect' ? 'Reflection' : lesson.type === 'exercise' ? 'Exercise' : 'Assessment'}
+            </span>
+            {isLessonComplete(lesson.id) && <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#0D9F6E', background: '#E8F8F0', padding: '3px 10px', borderRadius: '20px' }}>Completed</span>}
+          </div>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '20px' }}>{lesson.title}</h2>
+
+          {lesson.type !== 'quiz' && (
+            <>
+              <div style={{ fontSize: '0.92rem', color: '#4A5E73', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{lesson.content}</div>
+              {(lesson.type === 'reflect' || lesson.type === 'exercise') && (
+                <div style={{ marginTop: '24px', borderTop: '1px solid #DDE3EB', paddingTop: '20px' }}>
+                  <label style={{ fontSize: '0.82rem', fontWeight: '600', color: '#2B4C6F', display: 'block', marginBottom: '8px' }}>Your Response</label>
+                  <textarea value={reflectionText} onChange={e => setReflectionText(e.target.value)} rows={6} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #DDE3EB', fontSize: '0.9rem', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} placeholder="Take your time with this reflection..." />
+                </div>
+              )}
+              {!isLessonComplete(lesson.id) && (
+                <button onClick={() => completeLesson(lesson.id)} style={{ marginTop: '20px', background: '#5AAFB5', color: 'white', border: 'none', borderRadius: '10px', padding: '12px 28px', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer' }}>
+                  {lesson.type === 'learn' ? 'Mark as Read' : 'Save & Complete'}
+                </button>
+              )}
+            </>
+          )}
+
+          {lesson.type === 'quiz' && lesson.questions && (
+            <div>
+              {lesson.questions.map((q, qi) => (
+                <div key={qi} style={{ marginBottom: '24px', padding: '20px', background: '#F5F7FA', borderRadius: '12px' }}>
+                  <p style={{ fontSize: '0.92rem', fontWeight: '600', color: '#2B4C6F', marginBottom: '12px' }}>{qi + 1}. {q.q}</p>
+                  {q.options.map((opt, oi) => {
+                    const selected = (quizAnswers[lesson.id] || {})[qi] === oi;
+                    const submitted = quizSubmitted[lesson.id];
+                    const isCorrect = oi === q.correct;
+                    let optBg = selected ? '#E0F2FE' : 'white';
+                    let optBorder = selected ? '#5AAFB5' : '#DDE3EB';
+                    if (submitted && selected && isCorrect) { optBg = '#E8F8F0'; optBorder = '#0D9F6E'; }
+                    if (submitted && selected && !isCorrect) { optBg = '#FDE8EC'; optBorder = '#E05B6F'; }
+                    if (submitted && !selected && isCorrect) { optBg = '#E8F8F0'; optBorder = '#0D9F6E'; }
+                    return (
+                      <div key={oi} onClick={() => { if (!submitted) setQuizAnswers(prev => ({ ...prev, [lesson.id]: { ...(prev[lesson.id] || {}), [qi]: oi } })); }} style={{ padding: '10px 14px', marginBottom: '6px', borderRadius: '8px', border: `2px solid ${optBorder}`, background: optBg, cursor: submitted ? 'default' : 'pointer', fontSize: '0.88rem', color: '#4A5E73', transition: 'all 0.15s ease' }}>
+                        {opt}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+              {!quizSubmitted[lesson.id] ? (
+                <button onClick={() => handleQuizSubmit(lesson.id, lesson.questions)} style={{ background: '#2B4C6F', color: 'white', border: 'none', borderRadius: '10px', padding: '12px 28px', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer' }} disabled={!lesson.questions.every((_, qi) => (quizAnswers[lesson.id] || {})[qi] !== undefined)}>
+                  Submit Assessment
+                </button>
+              ) : (
+                <div style={{ padding: '16px', borderRadius: '10px', background: isLessonComplete(lesson.id) ? '#E8F8F0' : '#FDE8EC', fontSize: '0.9rem', fontWeight: '600', color: isLessonComplete(lesson.id) ? '#0D9F6E' : '#E05B6F' }}>
+                  {isLessonComplete(lesson.id) ? 'All correct — module assessment complete!' : 'Some answers were incorrect. Review the material and try again.'}
+                  {!isLessonComplete(lesson.id) && (
+                    <button onClick={() => { setQuizSubmitted(prev => ({ ...prev, [lesson.id]: false })); setQuizAnswers(prev => ({ ...prev, [lesson.id]: {} })); }} style={{ display: 'block', marginTop: '10px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer' }}>
+                      Retry
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── MODULE VIEW ──
+  if (activeModule && activeTrack) {
+    const track = TRACKS.find(t => t.id === activeTrack);
+    const mod = track?.modules.find(m => m.id === activeModule.id);
+    if (!mod) return null;
+    const modProg = getModuleProgress(mod);
+
+    return (
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+        <button onClick={() => { setActiveModule(null); }} style={{ background: 'none', border: 'none', color: '#5AAFB5', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginBottom: '20px', padding: 0 }}>
+          ← Back to {track.title}
+        </button>
+        <div style={{ ...cardStyle, borderTop: `4px solid ${track.color}` }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <div>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '4px' }}>{mod.title}</h2>
+              <p style={{ fontSize: '0.88rem', color: '#7A8BA0', lineHeight: 1.5 }}>{mod.description}</p>
+            </div>
+            {isModuleComplete(mod) && (
+              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px', background: '#E8F8F0', color: '#0D9F6E', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700' }}>
+                <Icon name="award" size={16} color="#0D9F6E" /> Badge Earned
+              </div>
+            )}
+          </div>
+          {/* Progress bar */}
+          <div style={{ background: '#F0F4F8', borderRadius: '6px', height: '8px', marginBottom: '24px' }}>
+            <div style={{ background: track.color, borderRadius: '6px', height: '8px', width: `${modProg}%`, transition: 'width 0.4s ease' }} />
+          </div>
+          {/* Lessons */}
+          {mod.lessons.map((lesson, li) => {
+            const complete = isLessonComplete(lesson.id);
+            return (
+              <div key={lesson.id} onClick={() => setActiveLesson(lesson.id)} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', marginBottom: '8px', borderRadius: '12px', border: `1px solid ${complete ? '#C6F0E0' : '#DDE3EB'}`, background: complete ? '#FAFFFE' : 'white', cursor: 'pointer', transition: 'all 0.15s ease' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: complete ? '#0D9F6E' : '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {complete ? <Icon name="check-circle" size={18} color="white" /> : <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#7A8BA0' }}>{li + 1}</span>}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '600', fontSize: '0.92rem', color: '#2B4C6F' }}>{lesson.title}</div>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', color: lesson.type === 'learn' ? '#5AAFB5' : lesson.type === 'reflect' ? '#8B5CF6' : lesson.type === 'exercise' ? '#E05B6F' : '#2B4C6F' }}>
+                    {lesson.type === 'learn' ? 'Lesson' : lesson.type === 'reflect' ? 'Reflection' : lesson.type === 'exercise' ? 'Exercise' : 'Assessment'}
+                  </span>
+                </div>
+                <Icon name="compass" size={16} color="#7A8BA0" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── TRACK VIEW ──
+  if (activeTrack) {
+    const track = TRACKS.find(t => t.id === activeTrack);
+    if (!track) return null;
+    const trackProg = getTrackProgress(track);
+
+    return (
+      <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+        <button onClick={() => setActiveTrack(null)} style={{ background: 'none', border: 'none', color: '#5AAFB5', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', marginBottom: '20px', padding: 0 }}>
+          ← All Tracks
+        </button>
+        {/* Track header */}
+        <div style={{ ...cardStyle, borderTop: `4px solid ${track.color}`, position: 'relative' }}>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `${track.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name={track.icon} size={26} color={track.color} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '2px' }}>{track.title}</h2>
+              <p style={{ fontSize: '0.88rem', color: track.color, fontWeight: '600', fontStyle: 'italic', marginBottom: '8px' }}>{track.subtitle}</p>
+              <p style={{ fontSize: '0.88rem', color: '#7A8BA0', lineHeight: 1.5 }}>{track.description}</p>
+            </div>
+          </div>
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#7A8BA0' }}>Track Progress</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: track.color }}>{trackProg}%</span>
+            </div>
+            <div style={{ background: '#F0F4F8', borderRadius: '6px', height: '8px' }}>
+              <div style={{ background: track.color, borderRadius: '6px', height: '8px', width: `${trackProg}%`, transition: 'width 0.4s ease' }} />
+            </div>
+          </div>
+          {isTrackComplete(track) && (
+            <button onClick={() => setShowCertModal(track.id)} style={{ marginTop: '16px', background: track.color, color: 'white', border: 'none', borderRadius: '10px', padding: '12px 24px', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="award" size={18} color="white" /> View Certificate
+            </button>
+          )}
+        </div>
+        <p style={{ fontSize: '0.78rem', color: '#7A8BA0', fontStyle: 'italic', margin: '0 0 20px 4px' }}>{track.inspired}</p>
+
+        {/* Modules */}
+        {track.modules.map((mod, mi) => {
+          const modProg = getModuleProgress(mod);
+          const available = mod.status === 'available';
+          return (
+            <div key={mod.id} onClick={() => available && setActiveModule(mod)} style={{ ...cardStyle, opacity: available ? 1 : 0.6, cursor: available ? 'pointer' : 'default', display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: isModuleComplete(mod) ? '#0D9F6E' : available ? `${track.color}20` : '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {isModuleComplete(mod) ? <Icon name="check-circle" size={20} color="white" /> : <span style={{ fontSize: '0.9rem', fontWeight: '700', color: available ? track.color : '#7A8BA0' }}>{mi + 1}</span>}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                  <span style={{ fontWeight: '700', fontSize: '0.95rem', color: '#2B4C6F' }}>{mod.title}</span>
+                  {!available && <span style={{ fontSize: '0.68rem', fontWeight: '600', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '10px' }}>Coming Soon</span>}
+                  {isModuleComplete(mod) && <span style={{ fontSize: '0.68rem', fontWeight: '600', background: '#E8F8F0', color: '#0D9F6E', padding: '2px 8px', borderRadius: '10px' }}>Badge Earned</span>}
+                </div>
+                <p style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.4, margin: 0 }}>{mod.description}</p>
+                {available && modProg > 0 && !isModuleComplete(mod) && (
+                  <div style={{ marginTop: '8px', background: '#F0F4F8', borderRadius: '4px', height: '4px', width: '200px' }}>
+                    <div style={{ background: track.color, borderRadius: '4px', height: '4px', width: `${modProg}%` }} />
+                  </div>
+                )}
+              </div>
+              {available && <Icon name="compass" size={18} color="#7A8BA0" />}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── MAIN / TRACK SELECTION VIEW ──
+  return (
+    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      {/* Hero */}
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #2B4C6F 0%, #5AAFB5 100%)', marginBottom: '16px' }}>
+          <Icon name="award" size={32} color="white" strokeWidth={1.6} />
+        </div>
+        <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '8px' }}>Stride Credentialing</h1>
+        <p style={{ fontSize: '0.95rem', color: '#7A8BA0', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+          Structured learning pathways that develop competent, credible family enterprise leaders — informed by the research of Dennis Jaffe, John Ward, and Peter Begalla.
+        </p>
+      </div>
+
+      {/* Stats bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '28px' }}>
+        {[
+          { label: 'Badges Earned', value: getTotalBadges(), icon: 'award', color: '#E05B6F' },
+          { label: 'Lessons Completed', value: progress.completedLessons.length, icon: 'check-circle', color: '#0D9F6E' },
+          { label: 'Tracks Available', value: TRACKS.length, icon: 'compass', color: '#5AAFB5' },
+        ].map(stat => (
+          <div key={stat.label} style={{ ...cardStyle, textAlign: 'center', padding: '20px' }}>
+            <Icon name={stat.icon} size={22} color={stat.color} />
+            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2B4C6F', margin: '4px 0 2px' }}>{stat.value}</div>
+            <div style={{ fontSize: '0.75rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '600' }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Track cards */}
+      {TRACKS.map(track => {
+        const trackProg = getTrackProgress(track);
+        return (
+          <div key={track.id} onClick={() => setActiveTrack(track.id)} style={{ ...cardStyle, cursor: 'pointer', borderLeft: `4px solid ${track.color}`, display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: `${track.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name={track.icon} size={28} color={track.color} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '2px' }}>{track.title}</h3>
+              <p style={{ fontSize: '0.82rem', color: track.color, fontWeight: '600', fontStyle: 'italic', marginBottom: '4px' }}>{track.subtitle}</p>
+              <p style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.4, margin: 0 }}>{track.description}</p>
+              <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ flex: 1, maxWidth: '200px', background: '#F0F4F8', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ background: track.color, borderRadius: '4px', height: '6px', width: `${trackProg}%`, transition: 'width 0.4s ease' }} />
+                </div>
+                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: track.color }}>{trackProg}%</span>
+                <span style={{ fontSize: '0.72rem', color: '#7A8BA0' }}>{track.modules.filter(m => m.status === 'available').length} of {track.modules.length} modules live</span>
+              </div>
+            </div>
+            <Icon name="compass" size={20} color="#7A8BA0" />
+          </div>
+        );
+      })}
+
+      {/* Attribution */}
+      <div style={{ marginTop: '24px', padding: '20px 24px', background: '#F5F7FA', borderRadius: '12px', fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.6 }}>
+        <strong style={{ color: '#2B4C6F' }}>About This Curriculum</strong><br />
+        The Stride credentialing program draws from the life work of Dennis Jaffe (stewardship and 100-year family enterprise research), John Ward and Amy Schuman (family education frameworks), and Peter Begalla (next-generation credibility and marketability). Combined with the STRIDE methodology, these pathways develop family enterprise leaders who are competent, credible, and committed to multi-generational stewardship.
+      </div>
+    </div>
+  );
+}
+
 // ─── SECURITY & PRIVACY PAGE ─────────────────────────────────
 function SecurityPrivacyView() {
   const sectionCard = {
@@ -11710,6 +12225,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
         {currentView === 'professionals' && isMember && <ProfessionalDirectoryView />}
+        {currentView === 'credentialing' && isMember && <CredentialingView />}
         {currentView === 'security' && <SecurityPrivacyView />}
         {/* Membership — always accessible */}
         {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
