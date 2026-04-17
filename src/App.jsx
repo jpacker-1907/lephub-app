@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import { TRACKS } from './credentialingData.js';
+import { MODULE_VIDEOS } from './credentialingVideos.js';
 import './App.css';
 
 // ═══════════════════════════════════════════════════════════════
@@ -11438,6 +11439,19 @@ function CredentialingView() {
           {lesson.type !== 'quiz' && (
             <>
               <div style={{ fontSize: '0.92rem', color: '#4A5E73', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{lesson.content}</div>
+              {/* Embedded video for this lesson */}
+              {(() => { const mv = MODULE_VIDEOS[activeModule.id]; const lv = mv?.lessonVideos?.[lesson.id]; return lv ? (
+                <div style={{ marginTop: '24px', borderTop: '1px solid #DDE3EB', paddingTop: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <Icon name="eye" size={18} color="#5AAFB5" />
+                    <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F' }}>Watch: {lv.title}</span>
+                    {lv.speaker && <span style={{ fontSize: '0.75rem', color: '#7A8BA0' }}>— {lv.speaker}</span>}
+                  </div>
+                  <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+                    <iframe src={`https://www.youtube.com/embed/${lv.id}`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title={lv.title} />
+                  </div>
+                </div>
+              ) : null; })()}
               {(lesson.type === 'reflect' || lesson.type === 'exercise') && (
                 <div style={{ marginTop: '24px', borderTop: '1px solid #DDE3EB', paddingTop: '20px' }}>
                   <label style={{ fontSize: '0.82rem', fontWeight: '600', color: '#2B4C6F', display: 'block', marginBottom: '8px' }}>Your Response</label>
@@ -11542,6 +11556,36 @@ function CredentialingView() {
             );
           })}
         </div>
+
+        {/* Video Playlist */}
+        {MODULE_VIDEOS[mod.id]?.playlist && MODULE_VIDEOS[mod.id].playlist.length > 0 && (
+          <div style={{ ...cardStyle, borderTop: `3px solid ${track.color}20` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${track.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="eye" size={20} color={track.color} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', margin: 0 }}>Recommended Viewing</h3>
+                <p style={{ fontSize: '0.78rem', color: '#7A8BA0', margin: 0 }}>Expert talks and lectures for this module</p>
+              </div>
+            </div>
+            {MODULE_VIDEOS[mod.id].playlist.map((video, vi) => (
+              <a key={vi} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', gap: '14px', padding: '14px', marginBottom: '8px', borderRadius: '12px', border: '1px solid #DDE3EB', background: 'white', textDecoration: 'none', cursor: 'pointer', transition: 'all 0.15s ease', alignItems: 'center' }}>
+                <div style={{ width: '100px', height: '60px', borderRadius: '8px', background: `linear-gradient(135deg, ${track.color}30, ${track.color}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                  <img src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.25)', borderRadius: '8px' }}>
+                    <div style={{ width: 0, height: 0, borderLeft: '12px solid white', borderTop: '7px solid transparent', borderBottom: '7px solid transparent', marginLeft: '2px' }} />
+                  </div>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: '600', fontSize: '0.88rem', color: '#2B4C6F', marginBottom: '2px' }}>{video.title}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#7A8BA0', marginBottom: '3px' }}>{video.speaker} {video.duration && `· ${video.duration}`}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#4A5E73', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{video.description}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
