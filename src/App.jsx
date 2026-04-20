@@ -10247,10 +10247,7 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
 }
 
 // ─── MY FAMILY VIEW (Profile + Dynamics + Meetings) ────────────
-function MyFamilyView({
-  const __sessionSummaries = (() => { try { return JSON.parse(localStorage.getItem('stride_session_summaries') || '{}'); } catch(e) { return {}; } })();
-  const __userOrgName = (() => { try { const u = JSON.parse(localStorage.getItem('stride_current_user') || '{}'); return u.orgName || u.enterpriseName || ''; } catch(e) { return ''; } })();
-  const __mySummary = __sessionSummaries[__userOrgName] || Object.values(__sessionSummaries)[0] || null; familyProfile, setFamilyProfile }) {
+function MyFamilyView({ familyProfile, setFamilyProfile }) {
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabStyle = (isActive) => ({
@@ -10267,30 +10264,6 @@ function MyFamilyView({
 
   return (
     <div>
-      {__mySummary && (
-        <div style={{ background: 'linear-gradient(135deg, #2B4C6F 0%, #5AAFB5 100%)', color: 'white', borderRadius: 16, padding: '24px 28px', marginBottom: 24, boxShadow: '0 4px 20px rgba(43, 76, 111, 0.15)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 6 }}>Your Most Recent LEP Session</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 4 }}>{__mySummary.familyName}</div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: 14 }}>Session date: {__mySummary.sessionDate || '—'}</div>
-          {__mySummary.summary && (
-            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, opacity: 0.85, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
-              <div style={{ fontSize: '0.92rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{__mySummary.summary}</div>
-            </div>
-          )}
-          {__mySummary.actionItems && (
-            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 10, padding: '14px 18px' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, opacity: 0.85, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>Action Items</div>
-              {__mySummary.actionItems.split('\n').filter(l => l.trim()).map((l, i) => (
-                <div key={i} style={{ fontSize: '0.88rem', lineHeight: 1.6, paddingLeft: 14, position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0 }}>•</span>{l.trim()}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Tab navigation */}
       <div style={{ display: 'flex', borderBottom: '1px solid #DDE3EB', marginBottom: '24px', background: '#F5F7FA', borderRadius: '12px 12px 0 0' }}>
         <button style={tabStyle(activeTab === 'profile')} onClick={() => setActiveTab('profile')}>
