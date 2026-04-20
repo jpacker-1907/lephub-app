@@ -2903,12 +2903,6 @@ function ActivityFeed({ setCurrentView }) {
   });
 
   const AVATARS = {
-    'Sarah Mitchell': { initials: 'SM', color: '#5AAFB5' },
-    'James Chen': { initials: 'JC', color: '#E05B6F' },
-    'Margaret Thompson': { initials: 'MT', color: '#7C6BBF' },
-    'David Williams': { initials: 'DW', color: '#E8913A' },
-    'Patricia Gonzalez': { initials: 'PG', color: '#4A9B6F' },
-    'Robert Khan': { initials: 'RK', color: '#2B4C6F' },
     'Jason Packer': { initials: 'JP', color: '#E05B6F' },
     'You': { initials: 'ME', color: '#5AAFB5' },
   };
@@ -8706,112 +8700,7 @@ function ProfessionalDirectoryView() {
     'family-therapist': 'Family Therapy & Mediation',
   };
 
-  const seedProfessionals = [
-    {
-      id: 'p1',
-      name: 'Catherine Wells',
-      title: 'Wealth Advisor',
-      firm: 'Beacon Wealth Partners',
-      specialty: 'wealth-advisor',
-      location: 'Boston, MA',
-      bio: 'Catherine specializes in comprehensive wealth planning for multi-generational families. With 22 years of experience managing family portfolios and estates, she brings deep expertise in tax-efficient wealth transfer and succession planning.',
-      email: 'catherine@beaconwealth.com',
-      yearsExperience: 22,
-      tier: 'firm',
-      specialties: ['wealth-advisor', 'family-business'],
-    },
-    {
-      id: 'p2',
-      name: 'Richard Torres',
-      title: 'Estate Attorney',
-      firm: 'Torres & Associates',
-      specialty: 'estate-attorney',
-      location: 'New York, NY',
-      bio: 'Richard is a leading estate planning attorney with 18 years of experience drafting trusts, wills, and family governance documents. He has worked with some of the region\'s most prominent family enterprises.',
-      email: 'rtorres@torresassociates.com',
-      yearsExperience: 18,
-      tier: 'professional',
-      specialties: ['estate-attorney', 'family-business'],
-    },
-    {
-      id: 'p3',
-      name: 'Amanda Liu',
-      title: 'Family Business Consultant',
-      firm: 'Liu Advisory Group',
-      specialty: 'family-business',
-      location: 'San Francisco, CA',
-      bio: 'Amanda guides families through complex business transitions and governance challenges. Her 15 years working with manufacturing, retail, and professional services families inform her pragmatic, systems-based approach.',
-      email: 'amanda@liuadvisory.com',
-      yearsExperience: 15,
-      tier: 'professional',
-      specialties: ['family-business', 'wealth-advisor'],
-    },
-    {
-      id: 'p4',
-      name: 'Jonathan Burke',
-      title: 'Insurance Advisor',
-      firm: 'Northeast Risk Partners',
-      specialty: 'insurance',
-      location: 'Albany, NY',
-      bio: 'Jonathan structures risk management and insurance strategies for family enterprises. Over 20 years, he\'s designed coverage plans protecting business continuity, succession, and family wealth preservation.',
-      email: 'jburke@northeastrisk.com',
-      yearsExperience: 20,
-      tier: 'professional',
-      specialties: ['insurance', 'family-business'],
-    },
-    {
-      id: 'p5',
-      name: 'Patricia Chen',
-      title: 'CPA',
-      firm: 'Chen & Associates CPAs',
-      specialty: 'cpa',
-      location: 'Chicago, IL',
-      bio: 'Patricia advises family enterprises on tax strategy, entity structuring, and compliance. Her 16 years of experience include advising on intergenerational wealth transfer and business succession tax planning.',
-      email: 'pchen@chenassociates.com',
-      yearsExperience: 16,
-      tier: 'sponsor',
-      specialties: ['cpa', 'wealth-advisor'],
-    },
-    {
-      id: 'p6',
-      name: 'Michael Sato',
-      title: 'Investment Banker',
-      firm: 'Atlas Family Capital',
-      specialty: 'investment-banker',
-      location: 'Boston, MA',
-      bio: 'Michael structures exits, acquisitions, and recapitalizations for family businesses. With 25 years in investment banking, he brings institutional expertise to mid-market family enterprise transactions.',
-      email: 'msato@atlasfamilycapital.com',
-      yearsExperience: 25,
-      tier: 'professional',
-      specialties: ['investment-banker', 'family-business'],
-    },
-    {
-      id: 'p7',
-      name: 'Elizabeth Hartwell',
-      title: 'Family Office Director',
-      firm: 'Hartwell Family Office',
-      specialty: 'family-office',
-      location: 'Greenwich, CT',
-      bio: 'Elizabeth directs operations for multi-family offices and single-family offices. Her 19 years include governance, investment oversight, and family dynamics facilitation for ultra-high-net-worth families.',
-      email: 'ehartwell@hartwellfamilyoffice.com',
-      yearsExperience: 19,
-      tier: 'professional',
-      specialties: ['family-office', 'wealth-advisor'],
-    },
-    {
-      id: 'p8',
-      name: 'Dr. Karen Okonkwo',
-      title: 'Family Therapist',
-      firm: 'Okonkwo Family Systems',
-      specialty: 'family-therapist',
-      location: 'Philadelphia, PA',
-      bio: 'Dr. Okonkwo brings systems thinking to family enterprise dynamics. With 14 years specialized in family business conflict, succession transitions, and next-gen development, she integrates psychology with business strategy.',
-      email: 'kokonkwo@okonkowfamilysystems.com',
-      yearsExperience: 14,
-      tier: 'professional',
-      specialties: ['family-therapist', 'family-business'],
-    },
-  ];
+  const seedProfessionals = [];
 
   const [professionals, setProfessionals] = useState(() => {
     const saved = localStorage.getItem('stride_professionals');
@@ -8825,24 +8714,7 @@ function ProfessionalDirectoryView() {
   const [reviews, setReviews] = useState(() => {
     const saved = localStorage.getItem('stride_professional_reviews');
     if (saved) return JSON.parse(saved);
-    const seedReviews = {
-      'p1': [ // Catherine Wells
-        { id: '1', rating: 5, review: 'Excellent wealth planning advisor. Very thorough and responsive.', category: 'responsiveness', date: '2026-02-15', anonymous: true },
-        { id: '2', rating: 4, review: 'Deep expertise in tax-efficient strategies. Highly recommended.', category: 'expertise', date: '2026-03-01', anonymous: true },
-        { id: '3', rating: 5, review: 'Great value for comprehensive planning. Worth every penny.', category: 'value', date: '2026-03-10', anonymous: true },
-      ],
-      'p2': [ // Richard Torres
-        { id: '1', rating: 4, review: 'Clear communication about complex estate documents.', category: 'communication', date: '2026-02-20', anonymous: true },
-      ],
-      'p3': [ // Amanda Liu
-        { id: '1', rating: 5, review: 'Outstanding family business consultant. Pragmatic approach.', category: 'expertise', date: '2026-01-15', anonymous: true },
-        { id: '2', rating: 5, review: 'Very responsive and effective facilitation. Highly professional.', category: 'responsiveness', date: '2026-02-28', anonymous: true },
-      ],
-      'p8': [ // Dr. Karen Okonkwo
-        { id: '1', rating: 5, review: 'Exceptional at helping families work through difficult dynamics.', category: 'expertise', date: '2026-03-05', anonymous: true },
-        { id: '2', rating: 5, review: 'Brilliant systems thinking. Transformed how we approach succession.', category: 'value', date: '2026-03-12', anonymous: true },
-      ],
-    };
+    const seedReviews = {};
     localStorage.setItem('stride_professional_reviews', JSON.stringify(seedReviews));
     return seedReviews;
   });
@@ -9362,17 +9234,8 @@ function CommunityView() {
   ];
 
   const AVATARS = {
-    'Sarah Mitchell': { initials: 'SM', color: '#5AAFB5' },
-    'James Chen': { initials: 'JC', color: '#E05B6F' },
-    'Margaret Thompson': { initials: 'MT', color: '#7C6BBF' },
-    'David Williams': { initials: 'DW', color: '#E8913A' },
-    'Patricia Gonzalez': { initials: 'PG', color: '#4A9B6F' },
-    'Robert Khan': { initials: 'RK', color: '#2B4C6F' },
     'Jason Packer': { initials: 'JP', color: '#E05B6F' },
     'You': { initials: 'ME', color: '#5AAFB5' },
-    'Catherine Wells': { initials: 'CW', color: '#5AAFB5' },
-    'Richard Torres': { initials: 'RT', color: '#2B4C6F' },
-    'Amanda Liu': { initials: 'AL', color: '#7C6BBF' },
   };
 
   // ─── STATE ────────────────────────────────────────────────
@@ -9382,55 +9245,19 @@ function CommunityView() {
     const saved = localStorage.getItem('stride_community_channels');
     if (saved && savedVersion === COMMUNITY_VERSION) return JSON.parse(saved);
 
-    // Seed data — Slack-style messages per channel (v2: includes reactions)
+    // Seed data — empty channels (v40: removed demo content; real members will populate via Community)
     const seed = {
-      'general': [
-        { id: 'm1', author: 'Jason Packer', text: 'Welcome to The STRIDE Way community! This is your space to connect with other families navigating the complexities of enterprise continuity. Introduce yourself and share what brought you here.', ts: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), thread: [], reactions: { '❤️': ['Sarah Mitchell', 'David Williams', 'Patricia Gonzalez', 'Robert Khan'], '🔥': ['James Chen', 'Margaret Thompson'] } },
-        { id: 'm2', author: 'Sarah Mitchell', text: 'Thanks Jason! Excited to be here. We\'re a 3rd-gen manufacturing family in the Midwest — just started having the "what\'s next" conversation and it\'s been... a lot. Looking forward to learning from everyone.', ts: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), thread: [
-          { id: 't1', author: 'Margaret Thompson', text: 'Welcome Sarah! We\'re in a similar spot. The conversation can feel overwhelming but having a peer group makes all the difference.', ts: new Date(Date.now() - 8.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-        { id: 'm3', author: 'David Williams', text: 'Quick heads up — the governance workshop next month looks excellent. Anyone else planning to attend?', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), reactions: { '👍': ['Patricia Gonzalez', 'Robert Khan', 'Sarah Mitchell'] }, thread: [
-          { id: 't2', author: 'Patricia Gonzalez', text: 'Signed up! Governance has been our biggest growing pain this year.', ts: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000).toISOString() },
-          { id: 't3', author: 'Robert Khan', text: 'Same here. We just established our first advisory board and have a lot of questions.', ts: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
-      'next-gen': [
-        { id: 'm4', author: 'Sarah Mitchell', text: 'How are other families assessing next-gen readiness? We have three members interested in the business but aren\'t sure how to evaluate who\'s prepared. Anyone created formal assessment criteria?', ts: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), thread: [
-          { id: 't4', author: 'James Chen', text: 'We used a combination of board interviews and external assessment. Worth the investment to get objective perspective. Happy to share our rubric if helpful.', ts: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
-          { id: 't5', author: 'David Williams', text: 'External assessment was key for us too. Removed a lot of the emotion from the process.', ts: new Date(Date.now() - 5.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
-      'governance': [
-        { id: 'm5', author: 'David Williams', text: 'We\'re establishing our first formal board. Any recommendations on size, composition, or how to handle family members vs. outside directors?', ts: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), thread: [
-          { id: 't6', author: 'Patricia Gonzalez', text: 'Start with a smaller board (5-7 people) with clear role definitions. We added independent directors early and it raised the caliber of our conversations significantly.', ts: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
-          { id: 't7', author: 'Robert Khan', text: 'Agree. Also critical: define decision-making authority upfront. Ambiguity creates friction.', ts: new Date(Date.now() - 6.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
-      'succession': [
-        { id: 'm6', author: 'Margaret Thompson', text: 'Our founder is struggling with the idea of stepping back. The business and his identity are deeply intertwined. How have other families navigated this emotional dimension of succession?', ts: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), thread: [
-          { id: 't8', author: 'Jason Packer', text: 'This is one of the most common — and hardest — challenges in family enterprise. It\'s not just about a transition plan, it\'s about identity work. We cover this deeply in the Purpose & Identity pillar. Worth doing some of the vision board exercises together.', ts: new Date(Date.now() - 4.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
-      'wins': [
-        { id: 'm7', author: 'Patricia Gonzalez', text: 'Big milestone for us — we just held our first formal family council meeting and it went incredibly well. A year ago we couldn\'t even sit in the same room and discuss the business without someone walking out. Grateful for this community.', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), reactions: { '🙌': ['Sarah Mitchell', 'James Chen', 'Jason Packer', 'Robert Khan', 'David Williams'], '❤️': ['Margaret Thompson', 'Sarah Mitchell'], '🔥': ['Jason Packer'] }, thread: [
-          { id: 't9', author: 'Sarah Mitchell', text: 'That\'s amazing Patricia! Gives me hope for where we\'re headed.', ts: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000).toISOString() },
-          { id: 't10', author: 'James Chen', text: 'Incredible progress. Proof the work pays off.', ts: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
+      'general': [],
+      'next-gen': [],
+      'governance': [],
+      'succession': [],
+      'wins': [],
       'family-dynamics': [],
-      'resources': [
-        { id: 'm8', author: 'James Chen', text: 'Just finished reading "Borrowed from Your Grandchildren" — the best framing of stewardship vs. ownership I\'ve encountered. Highly recommend for anyone working through the ownership identity questions.', ts: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
-      ],
-      'pro-lounge': [
-        { id: 'm9', author: 'Catherine Wells', text: 'Interesting trend I\'m seeing across my book: more families are consolidating advisors rather than fragmenting across 5+ firms. They want integrated advice on wealth, tax, and succession. The siloed model doesn\'t serve complexity well. Anyone else noticing this shift?', ts: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), thread: [
-          { id: 't11', author: 'Richard Torres', text: 'Absolutely. And it creates real planning challenges. When wealth and estate advice are disconnected from business transition planning, you miss critical opportunities. We\'ve been pushing toward integrated family advisory teams.', ts: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ] },
-      ],
-      'pro-referrals': [
-        { id: 'm10', author: 'Amanda Liu', text: 'Looking for a referral to a top-tier estate attorney for a 3rd-gen manufacturing family in the Midwest. They\'re mid-market ($150M+ revenue) and need someone who understands business succession from an estate planning lens. Would appreciate recommendations.', ts: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), thread: [] },
-      ],
+      'resources': [],
+      'pro-lounge': [],
+      'pro-referrals': [],
     };
-    localStorage.setItem('stride_community_channels', JSON.stringify(seed));
+        localStorage.setItem('stride_community_channels', JSON.stringify(seed));
     localStorage.setItem('stride_community_version', COMMUNITY_VERSION);
     return seed;
   });
@@ -10236,107 +10063,8 @@ export default function App() {
 
 // ─── SESSIONS VIEW (Replaces broken LearnView) ────────────────
 function getDefaultSessions() {
-  const now = new Date();
-  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const twoWeeks = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-  const threeWeeks = new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000);
-  const monthOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-  const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-  return [
-    {
-      id: 's1',
-      type: 'peer-group',
-      title: 'Peer Group Session: Succession Planning',
-      description: 'This month\'s peer group focuses on succession readiness. We\'ll explore timelines, candidate assessment, and family alignment strategies.',
-      date: nextWeek.toISOString().split('T')[0],
-      time: '2:00 PM - 3:30 PM ET',
-      facilitator: 'Jason Packer',
-      prepRequired: true,
-      prepWork: 'Complete the Succession Readiness reflection in your Workbook before the session. Think about: Who are your succession candidates? What\'s the timeline? What\'s the biggest blocker?',
-      recording: false,
-      takeaways: false,
-    },
-    {
-      id: 's2',
-      type: 'education',
-      title: 'Guest Speaker: Navigating Family Dynamics During Transition',
-      description: 'Dr. Dennis Jaffe joins us to discuss how family relationships evolve during ownership and leadership transitions.',
-      date: twoWeeks.toISOString().split('T')[0],
-      time: '12:00 PM - 1:00 PM ET',
-      facilitator: null,
-      prepRequired: false,
-      prepWork: null,
-      recording: false,
-      takeaways: false,
-    },
-    {
-      id: 's3',
-      type: 'workshop',
-      title: 'Workshop: Building Your Family Governance Framework',
-      description: 'Hands-on workshop to design your family council structure, meeting cadence, and decision-making protocols.',
-      date: threeWeeks.toISOString().split('T')[0],
-      time: '10:00 AM - 12:00 PM ET',
-      facilitator: 'Jason Packer',
-      prepRequired: true,
-      prepWork: 'Review the Governance Architecture section in your workbook. Bring a draft of your current (or ideal) family governance structure.',
-      recording: false,
-      takeaways: false,
-    },
-    {
-      id: 's4',
-      type: 'education',
-      title: 'Stride Masterclass: Estate Planning & Wealth Transfer',
-      description: 'How to align your estate plan with your succession plan and family values. Common mistakes and best practices.',
-      date: monthOut.toISOString().split('T')[0],
-      time: '1:00 PM - 2:00 PM ET',
-      facilitator: null,
-      prepRequired: false,
-      prepWork: null,
-      recording: false,
-      takeaways: false,
-    },
-    {
-      id: 's7',
-      type: 'workshop',
-      title: 'Workshop: Family Enterprise Vision Board',
-      description: 'A two-part facilitated workshop using vision board techniques adapted from career counseling research (Waalkes et al., 2019). Create a visual representation of your family enterprise\'s future — exploring legacy, values, roles, and aspirations. Materials provided.',
-      date: new Date(now.getTime() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '10:00 AM - 12:00 PM ET',
-      facilitator: 'Jason Packer',
-      prepRequired: true,
-      prepWork: 'Complete the "Vision Board Pre-Reflection" exercise in your Workbook under Purpose & Identity. Bring: magazines/printed images, scissors, glue sticks, and a poster board. Think about your family enterprise 10 years from now — what does it look like? What role do you play?',
-      recording: false,
-      takeaways: false,
-    },
-    {
-      id: 's5',
-      type: 'peer-group',
-      title: 'Peer Group Session: Communication & Family Meetings',
-      description: 'How to structure family meetings that actually work. We shared templates and discussed facilitation techniques.',
-      date: lastWeek.toISOString().split('T')[0],
-      time: '2:00 PM - 3:30 PM ET',
-      facilitator: 'Jason Packer',
-      prepRequired: false,
-      prepWork: null,
-      recording: true,
-      takeaways: true,
-    },
-    {
-      id: 's6',
-      type: 'peer-group',
-      title: 'Peer Group Session: Defining Ownership Rights',
-      description: 'Deep dive into ownership structures, transfer mechanisms, and how to have the difficult conversations about equity.',
-      date: twoWeeksAgo.toISOString().split('T')[0],
-      time: '2:00 PM - 3:30 PM ET',
-      facilitator: 'Jason Packer',
-      prepRequired: false,
-      prepWork: null,
-      recording: true,
-      takeaways: true,
-    },
-  ];
+  // v40: Return empty list — events are added through Admin CMS, not seeded
+  return [];
 }
 
 function SessionsView({ scores, setCurrentView, familyProfile }) {
@@ -10850,8 +10578,8 @@ function AdminView({ currentUser }) {
     <div style={{ ...cardStyle, border: '2px solid #5AAFB5' }}>
       <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '20px'}}>{editingMember ? 'Edit Member' : 'Add New Member'}</h3>
       <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 20px'}}>
-        <div style={fieldGroup}><label style={labelStyle}>Full Name *</label><input style={inputStyle} value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} placeholder="Sarah Mitchell" /></div>
-        <div style={fieldGroup}><label style={labelStyle}>Email *</label><input style={inputStyle} value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} placeholder="sarah@mitchell.com" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Full Name *</label><input style={inputStyle} value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} placeholder="Full name" /></div>
+        <div style={fieldGroup}><label style={labelStyle}>Email *</label><input style={inputStyle} value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} placeholder="email@family.com" /></div>
         <div style={fieldGroup}><label style={labelStyle}>Phone</label><input style={inputStyle} value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} placeholder="(555) 123-4567" /></div>
         <div style={fieldGroup}><label style={labelStyle}>Enterprise Name</label><input style={inputStyle} value={newMember.enterpriseName} onChange={e => setNewMember({...newMember, enterpriseName: e.target.value})} placeholder="Mitchell Family Enterprises" /></div>
         <div style={fieldGroup}><label style={labelStyle}>Location</label><input style={inputStyle} value={newMember.location} onChange={e => setNewMember({...newMember, location: e.target.value})} placeholder="Albany, NY" /></div>
