@@ -10247,7 +10247,10 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
 }
 
 // ─── MY FAMILY VIEW (Profile + Dynamics + Meetings) ────────────
-function MyFamilyView({ familyProfile, setFamilyProfile }) {
+function MyFamilyView({
+  const __sessionSummaries = (() => { try { return JSON.parse(localStorage.getItem('stride_session_summaries') || '{}'); } catch(e) { return {}; } })();
+  const __userOrgName = (() => { try { const u = JSON.parse(localStorage.getItem('stride_current_user') || '{}'); return u.orgName || u.enterpriseName || ''; } catch(e) { return ''; } })();
+  const __mySummary = __sessionSummaries[__userOrgName] || Object.values(__sessionSummaries)[0] || null; familyProfile, setFamilyProfile }) {
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabStyle = (isActive) => ({
@@ -10264,6 +10267,30 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
 
   return (
     <div>
+      {__mySummary && (
+        <div style={{ background: 'linear-gradient(135deg, #2B4C6F 0%, #5AAFB5 100%)', color: 'white', borderRadius: 16, padding: '24px 28px', marginBottom: 24, boxShadow: '0 4px 20px rgba(43, 76, 111, 0.15)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 6 }}>Your Most Recent LEP Session</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 4 }}>{__mySummary.familyName}</div>
+          <div style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: 14 }}>Session date: {__mySummary.sessionDate || '—'}</div>
+          {__mySummary.summary && (
+            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, opacity: 0.85, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
+              <div style={{ fontSize: '0.92rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{__mySummary.summary}</div>
+            </div>
+          )}
+          {__mySummary.actionItems && (
+            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 10, padding: '14px 18px' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, opacity: 0.85, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>Action Items</div>
+              {__mySummary.actionItems.split('\n').filter(l => l.trim()).map((l, i) => (
+                <div key={i} style={{ fontSize: '0.88rem', lineHeight: 1.6, paddingLeft: 14, position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: 0 }}>•</span>{l.trim()}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Tab navigation */}
       <div style={{ display: 'flex', borderBottom: '1px solid #DDE3EB', marginBottom: '24px', background: '#F5F7FA', borderRadius: '12px 12px 0 0' }}>
         <button style={tabStyle(activeTab === 'profile')} onClick={() => setActiveTab('profile')}>
@@ -10296,6 +10323,7 @@ function AdminView({ currentUser }) {
     { id: 'members', name: 'Members', icon: '👥' },
     { id: 'events', name: 'Events', icon: '📅' },
     { id: 'community', name: 'Community', icon: '💬' },
+    { id: 'sessions', name: 'Session Notes', icon: '📝' },
     { id: 'settings', name: 'Settings', icon: '⚙' },
   ];
 
@@ -10303,6 +10331,8 @@ function AdminView({ currentUser }) {
 
   // ─── MEMBERS STATE ────────────────────────────────────────
   const [applications, setApplications] = useState(() => JSON.parse(localStorage.getItem('stride_membership_applications') || '[]'));
+  const [sessionSummaries, setSessionSummaries] = useState(() => JSON.parse(localStorage.getItem('stride_session_summaries') || '{}'));
+  useEffect(() => { try { localStorage.setItem('stride_session_summaries', JSON.stringify(sessionSummaries)); } catch (e) {} }, [sessionSummaries]);
   const [members, setMembers] = useState(() => JSON.parse(localStorage.getItem('stride_members') || '[]'));
   const [showAddMember, setShowAddMember] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
@@ -10313,6 +10343,42 @@ function AdminView({ currentUser }) {
   const csvInputRef = useRef(null);
 
   const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
+
+  // ─── SESSION NOTES STATE (v41) ────────────────────────────
+  const [sessionForm, setSessionForm] = useState({ familyName: '', sessionDate: new Date().toISOString().split('T')[0], summary: '', actionItems: '', transcript: '' });
+  const [editingSessionKey, setEditingSessionKey] = useState(null);
+  const saveSessionSummary = () => {
+    if (!sessionForm.familyName.trim()) { alert('Please enter a family name.'); return; }
+    const key = sessionForm.familyName.trim();
+    const payload = { ...sessionForm, familyName: key, updatedAt: new Date().toISOString() };
+    setSessionSummaries(prev => ({ ...prev, [key]: payload }));
+    setSessionForm({ familyName: '', sessionDate: new Date().toISOString().split('T')[0], summary: '', actionItems: '', transcript: '' });
+    setEditingSessionKey(null);
+  };
+  const editSession = (key) => {
+    const s = sessionSummaries[key];
+    if (!s) return;
+    setSessionForm({ familyName: s.familyName || key, sessionDate: s.sessionDate || new Date().toISOString().split('T')[0], summary: s.summary || '', actionItems: s.actionItems || '', transcript: s.transcript || '' });
+    setEditingSessionKey(key);
+  };
+  const deleteSession = (key) => {
+    if (!window.confirm('Delete session notes for ' + key + '?')) return;
+    setSessionSummaries(prev => { const next = { ...prev }; delete next[key]; return next; });
+  };
+  const exportSessionAsDocx = async (key) => {
+    const s = sessionSummaries[key]; if (!s) return;
+    const para = (text, opts = {}) => new Paragraph({ children: [new TextRun({ text: text || '', ...opts })], spacing: { after: 200 } });
+    const heading = (text, level) => new Paragraph({ children: [new TextRun({ text, bold: true, size: level === 1 ? 32 : 26 })], spacing: { before: 300, after: 200 } });
+    const sections = [];
+    sections.push(heading(s.familyName + ' — LEP Session Summary', 1));
+    sections.push(para('Session Date: ' + (s.sessionDate || '—'), { italics: true }));
+    if (s.summary) { sections.push(heading('Summary', 2)); s.summary.split(/\n\n+/).forEach(p => sections.push(para(p))); }
+    if (s.actionItems) { sections.push(heading('Action Items', 2)); s.actionItems.split(/\n/).forEach(l => { if (l.trim()) sections.push(para('• ' + l.trim())); }); }
+    if (s.transcript) { sections.push(heading('Full Transcript', 2)); s.transcript.split(/\n\n+/).forEach(p => sections.push(para(p))); }
+    const docObj = new Document({ sections: [{ properties: {}, children: sections }] });
+    const blob = await Packer.toBlob(docObj);
+    saveAs(blob, (s.familyName.replace(/[^a-zA-Z0-9-]/g, '_')) + '_LEP_Session_' + (s.sessionDate || '') + '.docx');
+  };
 
   // ─── EVENTS STATE ─────────────────────────────────────────
   const [sessions, setSessions] = useState(() => {
@@ -11024,7 +11090,68 @@ function AdminView({ currentUser }) {
       )}
 
       {/* ═══ SETTINGS TAB ═══ */}
-      {activeTab === 'settings' && (
+      {activeTab === 'sessions' && (
+          <div>
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#2B4C6F', margin: 0 }}>Session Notes</h2>
+              <p style={{ fontSize: '0.88rem', color: '#7A8BA0', marginTop: 4 }}>Import Otter.ai summaries for each family. Notes become visible to the family in their portal.</p>
+            </div>
+            <div style={{ background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16 }}>{editingSessionKey ? 'Editing: ' + editingSessionKey : 'New Session Notes'}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 12 }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Family Name *</label>
+                  <input type="text" value={sessionForm.familyName} onChange={e => setSessionForm({...sessionForm, familyName: e.target.value})} placeholder="e.g., Haase Family" style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                  <p style={{ fontSize: '0.72rem', color: '#7A8BA0', marginTop: 4 }}>Must match the enterpriseName on family members</p>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Session Date</label>
+                  <input type="date" value={sessionForm.sessionDate} onChange={e => setSessionForm({...sessionForm, sessionDate: e.target.value})} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Summary (paste Otter summary here)</label>
+                <textarea value={sessionForm.summary} onChange={e => setSessionForm({...sessionForm, summary: e.target.value})} rows={8} placeholder="Key themes, decisions, moments..." style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', lineHeight: 1.55, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Action Items (one per line)</label>
+                <textarea value={sessionForm.actionItems} onChange={e => setSessionForm({...sessionForm, actionItems: e.target.value})} rows={5} placeholder="Each line becomes a bullet" style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', lineHeight: 1.55, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Full Transcript (optional, paste Otter transcript)</label>
+                <textarea value={sessionForm.transcript} onChange={e => setSessionForm({...sessionForm, transcript: e.target.value})} rows={6} placeholder="Full transcript — visible only to admin and family" style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.88rem', lineHeight: 1.55, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={saveSessionSummary} style={{ background: '#5AAFB5', color: 'white', border: 'none', borderRadius: 8, padding: '10px 20px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>{editingSessionKey ? 'Update Session Notes' : 'Save Session Notes'}</button>
+                {editingSessionKey && <button onClick={() => { setEditingSessionKey(null); setSessionForm({ familyName: '', sessionDate: new Date().toISOString().split('T')[0], summary: '', actionItems: '', transcript: '' }); }} style={{ background: 'white', color: '#4A5E73', border: '1px solid #DDE3EB', borderRadius: 8, padding: '10px 20px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Cancel</button>}
+              </div>
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 12 }}>Saved Session Notes ({Object.keys(sessionSummaries).length})</h3>
+              {Object.keys(sessionSummaries).length === 0 ? (
+                <div style={{ padding: 24, textAlign: 'center', color: '#7A8BA0', background: '#F5F7FA', borderRadius: 12, border: '1px dashed #DDE3EB' }}>No session notes yet. Import your first Otter summary above.</div>
+              ) : (
+                Object.entries(sessionSummaries).map(([key, s]) => (
+                  <div key={key} style={{ background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 18, marginBottom: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                      <div>
+                        <div style={{ fontSize: '0.98rem', fontWeight: 700, color: '#2B4C6F' }}>{s.familyName}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#7A8BA0' }}>{s.sessionDate} · updated {new Date(s.updatedAt).toLocaleString()}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button onClick={() => exportSessionAsDocx(key)} style={{ background: '#2B4C6F', color: 'white', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>Export Word</button>
+                        <button onClick={() => editSession(key)} style={{ background: 'white', color: '#4A5E73', border: '1px solid #DDE3EB', borderRadius: 6, padding: '6px 12px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>Edit</button>
+                        <button onClick={() => deleteSession(key)} style={{ background: 'white', color: '#E05B6F', border: '1px solid #E05B6F40', borderRadius: 6, padding: '6px 12px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                      </div>
+                    </div>
+                    {s.summary && <div style={{ fontSize: '0.86rem', color: '#4A5E73', lineHeight: 1.55, whiteSpace: 'pre-wrap', marginTop: 8 }}>{s.summary.length > 300 ? s.summary.substring(0, 300) + '...' : s.summary}</div>}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+        {activeTab === 'settings' && (
         <>
           <div style={cardStyle}>
             <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Portal Settings</h3>
