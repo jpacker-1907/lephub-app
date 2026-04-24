@@ -9,5 +9,26 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Hidden forms so Netlify detects them at build time.
+         React renders the real forms at runtime; these are just here so
+         Netlify knows about them. The JSX forms post to '/' and Netlify
+         matches them by the form-name hidden field. -->
+    <form name="lep-overview-download" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="firstName" />
+      <input type="email" name="email" />
+      <input type="hidden" name="form-name" value="lep-overview-download" />
+      <input name="bot-field" />
+    </form>
+    <form name="lephub-inquiry" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="firstName" />
+      <input type="text" name="lastName" />
+      <input type="email" name="email" />
+      <input type="text" name="organization" />
+      <select name="inquiryType"><option value=""></option></select>
+      <textarea name="message"></textarea>
+      <input type="hidden" name="form-name" value="lephub-inquiry" />
+      <input name="bot-field" />
+    </form>
   </body>
 </html>

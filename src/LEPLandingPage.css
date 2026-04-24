@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════════════
+   LEP Landing Page — scoped under .lep-landing
+   Matches the LEP web builder creative brief design system
+   ═══════════════════════════════════════════════════════════════ */
+
+.lep-landing {
+  --lep-navy: #0F2440;
+  --lep-teal: #5BBCBF;
+  --lep-coral: #D94F6B;
+  --lep-gold: #C4933F;
+  --lep-slate: #4A6580;
+  --lep-light-gray: #F5F5F5;
+  --lep-light-navy: #EDF0F5;
+  --lep-pillar-roots: #2D6A4F;
+  --lep-body-text: #444444;
+  --lep-max-width: 1100px;
+  --lep-gutter: 48px;
+  --lep-gutter-mobile: 24px;
+
+  font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--lep-body-text);
+  background: #FFFFFF;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.lep-landing * {
+  box-sizing: border-box;
+}
+
+.lep-landing .container {
+  max-width: var(--lep-max-width);
+  margin: 0 auto;
+  padding: 0 var(--lep-gutter);
+}
+
+.lep-landing .section {
+  padding: 80px 0;
+}
+
+.lep-landing h1,
+.lep-landing h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--lep-navy);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+}
+.lep-landing h1 { font-size: 52px; }
+.lep-landing h2 { font-size: 30px; font-weight: 400; }
+.lep-landing h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--lep-teal);
+  margin: 0;
+}
+.lep-landing .eyebrow {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--lep-teal);
+}
+.lep-landing a { color: var(--lep-teal); text-decoration: none; }
+.lep-landing p { margin: 0; }
+
+.lep-landing .btn {
+  display: inline-block;
+  padding: 14px 28px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.2s, transform 0.2s;
+  border: 2px solid var(--lep-teal);
+  text-decoration: none;
+}
+.lep-landing .btn:hover { transform: translateY(-1px); opacity: 0.92; }
+.lep-landing .btn-primary { background: var(--lep-teal); color: #FFFFFF; }
+.lep-landing .btn-secondary { background: transparent; color: var(--lep-teal); }
+.lep-landing .btn-outline-on-navy { background: transparent; color: #FFFFFF; border-color: var(--lep-teal); }
+
+/* ─── Sticky Top Header with Member Login ─── */
+.lep-landing .top-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 36, 64, 0.98);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(91, 188, 191, 0.25);
+}
+.lep-landing .top-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--lep-max-width);
+  margin: 0 auto;
+  padding: 0 var(--lep-gutter);
+}
+.lep-landing .top-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
+}
+.lep-landing .top-header-brand .wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+}
+.lep-landing .top-header-brand .tagline {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 3px;
+  line-height: 1;
+}
+.lep-landing .member-login-btn {
+  background: transparent;
+  border: 1px solid var(--lep-teal);
+  color: var(--lep-teal);
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.lep-landing .member-login-btn:hover {
+  background: var(--lep-teal);
+  color: var(--lep-navy);
+}
+
+/* ─── Section 1 · Hero ─── */
+.lep-landing .hero {
+  background: var(--lep-navy);
+  color: #FFFFFF;
+  padding: 96px 0;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+}
+.lep-landing .hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.lep-landing .hero .eyebrow { color: var(--lep-teal); }
+.lep-landing .hero h1 {
+  color: #FFFFFF;
+  margin: 16px 0 20px;
+  font-size: 52px;
+}
+.lep-landing .hero .subheadline {
+  font-size: 18px;
+  color: #AACCCC;
+  margin-bottom: 32px;
+  max-width: 540px;
+  line-height: 1.55;
+}
+.lep-landing .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.lep-landing .pillar-stack { display: flex; flex-direction: column; gap: 8px; }
+.lep-landing .pillar-stack-item {
+  padding: 20px 24px;
+  font-weight: 600;
+  font-size: 18px;
+  color: #FFFFFF;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.lep-landing .pillar-stack-item .num {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-right: 14px;
+  letter-spacing: 0.15em;
+}
+.lep-landing .pillar-stack-1 { background: var(--lep-pillar-roots); }
+.lep-landing .pillar-stack-2 { background: #1B3558; }
+.lep-landing .pillar-stack-3 { background: var(--lep-coral); }
+.lep-landing .pillar-stack-4 { background: var(--lep-teal); color: var(--lep-navy); }
+.lep-landing .pillar-stack-5 { background: var(--lep-gold); }
+
+/* ─── Section 2 · Problem ─── */
+.lep-landing .problem-section {
+  background: var(--lep-light-gray);
+  text-align: center;
+}
+.lep-landing .problem-inner { max-width: 780px; margin: 0 auto; }
+.lep-landing .pull-quote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-style: italic;
+  color: var(--lep-navy);
+  line-height: 1.3;
+  border-left: 4px solid var(--lep-teal);
+  padding: 8px 0 8px 32px;
+  text-align: left;
+  margin: 24px 0 40px;
+}
+.lep-landing .problem-body p { margin-bottom: 20px; font-size: 17px; text-align: left; }
+
+/* ─── Section 3 · Five Pillars ─── */
+.lep-landing .pillars-section { background: #FFFFFF; text-align: center; }
+.lep-landing .pillars-section h2 { margin: 12px 0 16px; }
+.lep-landing .section-subtext {
+  font-size: 16px; color: var(--lep-slate); max-width: 720px;
+  margin: 0 auto 56px; line-height: 1.55;
+}
+.lep-landing .pillar-stack-cards { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+.lep-landing .pillar-card {
+  display: grid;
+  grid-template-columns: 120px 240px 1fr;
+  min-height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(15, 36, 64, 0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.lep-landing .pillar-card:hover {
+  box-shadow: 0 10px 24px rgba(15, 36, 64, 0.10);
+  transform: translateY(-1px);
+}
+.lep-landing .pillar-left {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  color: #FFFFFF; padding: 24px; text-align: center;
+}
+.lep-landing .pillar-left .num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 52px; font-weight: 700; line-height: 1; margin-bottom: 6px;
+}
+.lep-landing .pillar-left .name { font-weight: 700; font-size: 16px; letter-spacing: 0.12em; }
+.lep-landing .pillar-middle {
+  display: flex; flex-direction: column; justify-content: center; padding: 24px 28px;
+}
+.lep-landing .pillar-middle .pillar-name {
+  font-weight: 700; font-size: 20px; letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.lep-landing .pillar-middle .pillar-question {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic; font-size: 20px; color: var(--lep-slate);
+}
+.lep-landing .pillar-right {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 24px 32px; background: var(--lep-light-gray);
+}
+.lep-landing .pillar-right .tool-name {
+  font-weight: 700; color: var(--lep-teal); font-size: 15px; margin-bottom: 6px;
+}
+.lep-landing .pillar-right .desc { font-size: 15px; line-height: 1.55; }
+
+.lep-landing .p-roots .pillar-left { background: var(--lep-pillar-roots); }
+.lep-landing .p-roots .pillar-middle { background: rgba(45, 106, 79, 0.08); }
+.lep-landing .p-roots .pillar-middle .pillar-name { color: var(--lep-pillar-roots); }
+.lep-landing .p-order .pillar-left { background: var(--lep-navy); }
+.lep-landing .p-order .pillar-middle { background: rgba(15, 36, 64, 0.05); }
+.lep-landing .p-order .pillar-middle .pillar-name { color: var(--lep-navy); }
+.lep-landing .p-momentum .pillar-left { background: var(--lep-coral); }
+.lep-landing .p-momentum .pillar-middle { background: rgba(217, 79, 107, 0.08); }
+.lep-landing .p-momentum .pillar-middle .pillar-name { color: var(--lep-coral); }
+.lep-landing .p-continuity .pillar-left { background: var(--lep-teal); }
+.lep-landing .p-continuity .pillar-middle { background: rgba(91, 188, 191, 0.12); }
+.lep-landing .p-continuity .pillar-middle .pillar-name { color: var(--lep-teal); }
+.lep-landing .p-legacy .pillar-left { background: var(--lep-gold); }
+.lep-landing .p-legacy .pillar-middle { background: rgba(196, 147, 63, 0.10); }
+.lep-landing .p-legacy .pillar-middle .pillar-name { color: var(--lep-gold); }
+
+/* ─── Download Gate ─── */
+.lep-landing .download-gate {
+  background: rgba(91, 188, 191, 0.12);
+  padding: 40px 0;
+}
+.lep-landing .download-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.lep-landing .download-gate h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px; font-weight: 700; color: var(--lep-navy);
+  text-transform: none; letter-spacing: 0; margin: 8px 0 10px;
+}
+.lep-landing .download-gate p { font-size: 16px; }
+.lep-landing .download-form { display: flex; gap: 8px; flex-wrap: wrap; }
+.lep-landing .download-form input {
+  flex: 1; min-width: 140px; padding: 12px 14px;
+  border: 1px solid #D0D8E0; border-radius: 4px; font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.lep-landing .download-success {
+  padding: 16px 0; color: var(--lep-navy); font-weight: 600; font-size: 16px;
+}
+
+/* ─── Section 4 · How It Works ─── */
+.lep-landing .how-section { background: var(--lep-light-navy); text-align: center; }
+.lep-landing .how-section h2 { margin-bottom: 56px; }
+.lep-landing .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; text-align: left; }
+.lep-landing .how-card {
+  background: #FFFFFF; border-radius: 8px; padding: 32px 28px;
+  position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(15, 36, 64, 0.06);
+}
+.lep-landing .how-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.lep-landing .how-card-1::before { background: var(--lep-teal); }
+.lep-landing .how-card-2::before { background: var(--lep-navy); }
+.lep-landing .how-card-3::before { background: var(--lep-coral); }
+.lep-landing .how-card .step {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 44px; color: var(--lep-navy); opacity: 0.15;
+  font-weight: 700; line-height: 1; margin-bottom: 8px;
+}
+.lep-landing .how-card h4 {
+  font-size: 22px; font-weight: 700; color: var(--lep-navy); margin: 0 0 8px;
+}
+.lep-landing .how-card .meta {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--lep-slate); margin-bottom: 16px;
+}
+.lep-landing .how-card p { font-size: 15px; line-height: 1.55; }
+
+/* ─── Section 5 · Who + Differentiator ─── */
+.lep-landing .who-section { background: #FFFFFF; }
+.lep-landing .who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.lep-landing .who-col h3 { color: var(--lep-teal); margin-bottom: 20px; }
+.lep-landing .who-col .subheading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px; color: var(--lep-navy); font-weight: 700;
+  margin-bottom: 24px; text-transform: none; letter-spacing: 0;
+}
+.lep-landing .who-col ul { list-style: none; padding: 0; margin: 0; }
+.lep-landing .who-col ul li {
+  padding: 12px 0 12px 32px; border-bottom: 1px solid #E8ECF0;
+  position: relative; font-size: 16px;
+}
+.lep-landing .who-col ul li::before {
+  content: '\2713'; position: absolute; left: 0; top: 12px;
+  color: var(--lep-teal); font-weight: 700; font-size: 18px;
+}
+.lep-landing .contrast { padding: 16px 0; border-bottom: 1px solid #E8ECF0; }
+.lep-landing .contrast:last-child { border-bottom: none; }
+.lep-landing .contrast .not-this {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--lep-coral); margin-bottom: 4px;
+}
+.lep-landing .contrast .not-this-text { font-size: 15px; color: var(--lep-slate); margin-bottom: 10px; }
+.lep-landing .contrast .this-instead {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--lep-teal); margin-bottom: 4px;
+}
+.lep-landing .contrast .this-instead-text { font-size: 16px; color: var(--lep-navy); font-weight: 600; }
+
+/* ─── Section 6 · Two CTAs ─── */
+.lep-landing .two-ctas-section { background: var(--lep-navy); color: #FFFFFF; }
+.lep-landing .two-ctas-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; position: relative;
+}
+.lep-landing .two-ctas-grid::before {
+  content: ''; position: absolute; left: 50%; top: 8%; bottom: 8%;
+  width: 1px; background: rgba(91, 188, 191, 0.3);
+}
+.lep-landing .cta-panel { padding: 24px 16px; }
+.lep-landing .cta-panel .eyebrow { color: var(--lep-teal); }
+.lep-landing .cta-panel h3 {
+  font-size: 22px; font-weight: 700; color: #FFFFFF;
+  text-transform: none; letter-spacing: 0; margin: 10px 0 14px;
+}
+.lep-landing .cta-panel p {
+  font-size: 15px; color: #D0DCE0; line-height: 1.55;
+  margin-bottom: 24px; max-width: 420px;
+}
+
+/* ─── Section 7 · Contact Form ─── */
+.lep-landing .contact-section { background: var(--lep-light-gray); }
+.lep-landing .contact-inner { max-width: 780px; margin: 0 auto; }
+.lep-landing .contact-inner .eyebrow {
+  color: var(--lep-teal); display: block; text-align: center; margin-bottom: 10px;
+}
+.lep-landing .contact-inner h2 { text-align: center; margin-bottom: 16px; }
+.lep-landing .contact-inner .lead {
+  text-align: center; max-width: 620px; margin: 0 auto 40px;
+  color: var(--lep-slate); font-size: 16px;
+}
+.lep-landing .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.lep-landing .form-field { display: flex; flex-direction: column; gap: 6px; }
+.lep-landing .form-field.full { grid-column: span 2; }
+.lep-landing .form-field label {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--lep-navy); text-transform: uppercase;
+}
+.lep-landing .form-field input,
+.lep-landing .form-field select,
+.lep-landing .form-field textarea {
+  padding: 12px 14px; border: 1px solid #D0D8E0; border-radius: 4px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 15px;
+  color: var(--lep-body-text); background: #FFFFFF;
+}
+.lep-landing .form-field textarea { resize: vertical; min-height: 96px; }
+.lep-landing .submit-row { grid-column: span 2; text-align: center; margin-top: 8px; }
+.lep-landing .inquiry-success {
+  grid-column: 1 / -1; text-align: center; padding: 32px 24px;
+  background: #FFFFFF; border-radius: 8px; font-size: 18px;
+  color: var(--lep-navy); font-weight: 600;
+}
+
+/* ─── Footer Strip ─── */
+.lep-landing .footer-strip {
+  background: var(--lep-light-navy); padding: 16px 0;
+  text-align: center; font-size: 13px; color: var(--lep-slate);
+}
+.lep-landing .footer-strip a { color: var(--lep-teal); }
+
+/* ─── Back-to-LEP link shown when auth is displayed ─── */
+.lep-landing-auth-wrapper {
+  min-height: 100vh;
+  background: #1A2A3F;
+}
+.lep-back-link {
+  position: fixed; top: 20px; left: 20px; z-index: 1000;
+  background: transparent; border: 1px solid rgba(91, 188, 191, 0.5);
+  color: #5BBCBF; padding: 8px 16px; border-radius: 4px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: background 0.2s;
+}
+.lep-back-link:hover { background: rgba(91, 188, 191, 0.15); }
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .lep-landing .container { padding: 0 var(--lep-gutter-mobile); }
+  .lep-landing .top-header-inner { padding: 0 var(--lep-gutter-mobile); }
+  .lep-landing .section { padding: 48px 0; }
+  .lep-landing h1 { font-size: 36px; }
+  .lep-landing h2 { font-size: 26px; }
+  .lep-landing .hero { padding: 64px 0; }
+  .lep-landing .hero h1 { font-size: 36px; }
+  .lep-landing .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .lep-landing .pillar-card { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+  .lep-landing .pillar-left,
+  .lep-landing .pillar-middle,
+  .lep-landing .pillar-right { padding: 20px; }
+  .lep-landing .download-grid { grid-template-columns: 1fr; gap: 24px; }
+  .lep-landing .how-grid { grid-template-columns: 1fr; }
+  .lep-landing .who-grid { grid-template-columns: 1fr; gap: 48px; }
+  .lep-landing .two-ctas-grid { grid-template-columns: 1fr; gap: 0; }
+  .lep-landing .two-ctas-grid::before { display: none; }
+  .lep-landing .cta-panel { padding: 24px 0; border-bottom: 1px solid rgba(91, 188, 191, 0.2); }
+  .lep-landing .cta-panel:last-child { border-bottom: none; }
+  .lep-landing .form-grid { grid-template-columns: 1fr; }
+  .lep-landing .form-field.full { grid-column: span 1; }
+  .lep-landing .submit-row { grid-column: span 1; }
+  .lep-landing .pull-quote { font-size: 24px; padding-left: 20px; }
+}

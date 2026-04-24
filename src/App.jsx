@@ -6,6 +6,7 @@ import { auth, db, payments, hasSupabase, hasStripe } from './backend.js';
 import { TRACKS } from './credentialingData.js';
 import { MODULE_VIDEOS } from './credentialingVideos.js';
 import './App.css';
+import LEPLandingPage from './LEPLandingPage.jsx';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -10055,7 +10056,7 @@ export default function App() {
   }
 
   if (!currentUser) {
-    return <AuthScreen onLogin={handleLogin} />;
+    return <LEPLandingPage onLogin={handleLogin} AuthScreen={AuthScreen} />;
   }
 
   return <AppShell currentUser={currentUser} onLogout={handleLogout} />;
