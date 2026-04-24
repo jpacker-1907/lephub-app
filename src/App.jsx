@@ -6194,7 +6194,7 @@ function VaultView({ vaultDocuments }) {
         </div>
       </header>
 
-      {\!dismissedBanner && (
+      {!dismissedBanner && (
         <div style={{background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)', border: '1px solid #F59E0B', borderRadius: '10px', padding: '16px 20px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '14px'}}>
           <span style={{fontSize: '1.4rem', lineHeight: 1, flexShrink: 0}}>⚠️</span>
           <div style={{flex: 1}}>
