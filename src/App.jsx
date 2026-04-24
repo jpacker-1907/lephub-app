@@ -5973,8 +5973,37 @@ function MeetingsView({ familyProfile }) {
                     }}
                     placeholder="Paste here — parser runs automatically on paste..."
                     rows={3}
-                    style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #5AAFB5', fontSize: '0.85rem', fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', background: 'white'}}
+                    style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #5AAFB5', fontSize: '0.85rem', fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', background: 'white', marginBottom: '12px'}}
                   />
+
+                  <div style={{display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap'}}>
+                    <span style={{fontSize: '0.78rem', color: '#4A5E73', fontWeight: '600'}}>or upload an Otter export file:</span>
+                    <label style={{background: '#FFFFFF', border: '1px solid #5AAFB5', color: '#2B4C6F', padding: '7px 16px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px'}}>
+                      <span>📄</span> Choose file…
+                      <input
+                        type="file"
+                        accept=".txt,.vtt,.srt,.md,text/plain"
+                        style={{display: 'none'}}
+                        onChange={(e) => {
+                          const file = e.target.files && e.target.files[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const content = ev.target.result;
+                            if (typeof content === 'string' && content.trim()) {
+                              runSmartImport(content);
+                            } else {
+                              alert('Could not read this file as text. Otter exports as .txt work best — try exporting again from Otter as Plain Text.');
+                            }
+                          };
+                          reader.onerror = () => alert('Failed to read the file. Try again, or paste the contents into the box above.');
+                          reader.readAsText(file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>Supported: .txt, .vtt, .srt, .md</span>
+                  </div>
                 </div>
 
                 <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '12px'}}>
