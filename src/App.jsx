@@ -3851,6 +3851,7 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
 const MEETING_TEMPLATES = {
   board: {
     name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#34597A',
+    category: 'family',
     agenda: [
       { id: 'opening', name: 'Opening & Check-In', duration: '5 min', desc: 'Personal check-in. How is each board member doing — personally and professionally?' },
       { id: 'pulse-check', name: 'Pulse Check', duration: '10 min', desc: 'Review key metrics: revenue, EBITDA, cash position, succession milestones, LEP scores.' },
@@ -3863,6 +3864,7 @@ const MEETING_TEMPLATES = {
   },
   'family-council': {
     name: 'Family Council', icon: '👥', frequency: 'Monthly', duration: '60 min', color: '#E05B6F',
+    category: 'family',
     agenda: [
       { id: 'opening', name: 'Opening & Gratitude', duration: '5 min', desc: 'Start with something positive. What are we grateful for as a family this month?' },
       { id: 'policy-review', name: 'Policy & Governance Review', duration: '10 min', desc: 'Any policies that need updating? Family employment, compensation, conflict resolution.' },
@@ -3874,6 +3876,7 @@ const MEETING_TEMPLATES = {
   },
   shareholder: {
     name: 'Shareholder Meeting', icon: '📊', frequency: 'Annual', duration: '120 min', color: '#5AAFB5',
+    category: 'family',
     agenda: [
       { id: 'call-to-order', name: 'Call to Order & Quorum', duration: '5 min', desc: 'Confirm quorum. Record attendance. Approve prior meeting minutes.' },
       { id: 'financial-report', name: 'Financial Report', duration: '20 min', desc: 'Annual financials: revenue, profit, distributions, valuation update, debt position.' },
@@ -3886,6 +3889,7 @@ const MEETING_TEMPLATES = {
   },
   'family-meeting': {
     name: 'Family Meeting', icon: '🏠', frequency: 'Annual', duration: '180 min', color: '#E05B6F',
+    category: 'family',
     agenda: [
       { id: 'welcome', name: 'Welcome & Values Recitation', duration: '10 min', desc: 'Read the family mission statement and core values together.' },
       { id: 'family-story', name: 'Family Story Moment', duration: '15 min', desc: 'A family member shares a story about the enterprise — past, present, or future.' },
@@ -3899,6 +3903,7 @@ const MEETING_TEMPLATES = {
   },
   nextgen: {
     name: 'Next-Gen Gathering', icon: '🌱', frequency: 'Semi-Annual', duration: '90 min', color: '#E05B6F',
+    category: 'family',
     agenda: [
       { id: 'icebreaker', name: 'Icebreaker & Connection', duration: '10 min', desc: 'Fun opening activity. Build relationships between next-gen members.' },
       { id: 'education', name: 'Education Session', duration: '25 min', desc: 'A topic relevant to next-gen development: financial literacy, governance, leadership, industry knowledge.' },
@@ -3906,6 +3911,28 @@ const MEETING_TEMPLATES = {
       { id: 'discussion', name: 'Open Discussion', duration: '20 min', desc: 'What are you curious about? Worried about? Excited about? Safe space — no senior gen in the room.' },
       { id: 'development', name: 'Personal Development Check-In', duration: '10 min', desc: 'Each member shares one thing they\'re working on and one way they need support.' },
       { id: 'closing', name: 'Closing & Next Steps', duration: '10 min', desc: 'Action items. Set the next gathering date. End with energy.' },
+    ],
+  },
+  'peer-group-session': {
+    name: 'Peer Group Session', icon: '🤝', frequency: 'Monthly', duration: '90 min', color: '#5AAFB5',
+    category: 'peer-group',
+    agenda: [
+      { id: 'opening', name: 'Opening & Check-In', duration: '10 min', desc: 'Each member: one personal update, one professional update, one win since last session.' },
+      { id: 'hot-seat', name: 'Member Spotlight / Hot Seat', duration: '30 min', desc: 'One member presents a current challenge or decision. Peers listen first, then ask clarifying questions, then offer perspective.' },
+      { id: 'theme', name: 'Group Theme Discussion', duration: '20 min', desc: 'Facilitated conversation on a shared theme — succession, governance, family dynamics, growth.' },
+      { id: 'commitments', name: 'Commitments', duration: '15 min', desc: 'Each member names one specific commitment to act on before the next session.' },
+      { id: 'closing', name: 'Closing Round', duration: '10 min', desc: 'Each member: what landed for you today? Appreciation for the group.' },
+      { id: 'admin', name: 'Admin & Next Meeting', duration: '5 min', desc: 'Schedule next session. Any logistics. Close.' },
+    ],
+  },
+  'hot-seat': {
+    name: 'Hot Seat Session', icon: '🔥', frequency: 'Ad Hoc', duration: '60 min', color: '#E05B6F',
+    category: 'peer-group',
+    agenda: [
+      { id: 'frame', name: 'Frame the Challenge', duration: '10 min', desc: 'The member presents the situation, decision, or problem they need help thinking through.' },
+      { id: 'clarify', name: 'Clarifying Questions', duration: '15 min', desc: 'Peers ask clarifying questions only. No advice yet. Just understanding.' },
+      { id: 'perspectives', name: 'Peer Perspectives', duration: '25 min', desc: 'Peers share relevant experience and perspectives one at a time. The member listens without interrupting.' },
+      { id: 'synthesis', name: 'Member Synthesis', duration: '10 min', desc: 'The member reflects back what landed, what resonated, and what they will take forward.' },
     ],
   },
 };
@@ -5330,6 +5357,7 @@ function MeetingsView({ familyProfile }) {
   });
   const [newIssue, setNewIssue] = useState('');
   const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
+  const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -5540,17 +5568,38 @@ function MeetingsView({ familyProfile }) {
       {/* ─── MEETINGS TAB ─── */}
       {activeTab === 'meetings' && !activeMeeting && (
         <div>
+          {/* Category sub-tabs: Family Sessions vs Peer Groups */}
+          <div style={{display: 'flex', gap: '8px', marginBottom: '20px', padding: '4px', background: '#F5F7FA', borderRadius: '10px', width: 'fit-content'}}>
+            {[
+              { id: 'family', label: 'Family Sessions' },
+              { id: 'peer-group', label: 'Peer Groups' },
+            ].map(cat => (
+              <button key={cat.id} onClick={() => { setMeetingCategory(cat.id); setShowNewMeeting(false); setActiveMeeting(null); }}
+                style={{
+                  padding: '8px 18px', border: 'none', cursor: 'pointer', fontSize: '0.88rem', fontWeight: '600',
+                  background: meetingCategory === cat.id ? 'white' : 'transparent',
+                  color: meetingCategory === cat.id ? '#2B4C6F' : '#7A8BA0',
+                  borderRadius: '8px',
+                  boxShadow: meetingCategory === cat.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
           {/* New meeting selector */}
           <div style={{marginBottom: '28px'}}>
             <button onClick={() => setShowNewMeeting(!showNewMeeting)}
               style={{background: '#2B4C6F', color: 'white', padding: '10px 24px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}>
-              + New Meeting
+              + New {meetingCategory === 'peer-group' ? 'Peer Group' : 'Family'} Meeting
             </button>
           </div>
 
           {showNewMeeting && (
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '12px', marginBottom: '28px'}}>
-              {Object.entries(MEETING_TEMPLATES).map(([key, tmpl]) => (
+              {Object.entries(MEETING_TEMPLATES).filter(([key, tmpl]) => (tmpl.category || 'family') === meetingCategory).map(([key, tmpl]) => (
                 <div key={key} onClick={() => createMeeting(key)}
                   style={{background: 'white', borderRadius: '12px', padding: '20px', border: `2px solid ${tmpl.color}22`, cursor: 'pointer', transition: 'all 0.15s', ':hover': {borderColor: tmpl.color}}}
                 >
@@ -5568,7 +5617,7 @@ function MeetingsView({ familyProfile }) {
           )}
 
           {/* Meeting history */}
-          {meetings.length === 0 ? (
+          {meetings.filter(m => { const tmpl = MEETING_TEMPLATES[m.type]; return (tmpl?.category || 'family') === meetingCategory; }).length === 0 ? (
             <div style={{textAlign: 'center', padding: '60px 20px', color: '#7A8BA0'}}>
               <p style={{fontSize: '1.1rem', marginBottom: '8px'}}>No meetings yet.</p>
               <p style={{fontSize: '0.88rem'}}>Click "+ New Meeting" to start your first governance meeting with a structured agenda.</p>
@@ -5576,7 +5625,7 @@ function MeetingsView({ familyProfile }) {
           ) : (
             <div>
               <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>Meeting History</h3>
-              {meetings.map(m => {
+              {meetings.filter(m => { const tmpl = MEETING_TEMPLATES[m.type]; return (tmpl?.category || 'family') === meetingCategory; }).map(m => {
                 const tmpl = MEETING_TEMPLATES[m.type];
                 const actionCount = (m.actionItems || []).length;
                 const doneCount = (m.actionItems || []).filter(a => a.done).length;
