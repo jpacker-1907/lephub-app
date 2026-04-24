@@ -2562,6 +2562,10 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
   const [showUserMenu, setShowUserMenu] = useState(false);
   const allNavItems = [
     { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
+    { id: 'lep-journey', icon: 'compass', name: 'LEP Journey', memberOnly: true },
+    { id: 'pillars', icon: 'bar-chart', name: 'Pillars', memberOnly: true },
+    { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
+    { id: 'transitions', icon: 'trending-up', name: 'Transitions', memberOnly: true },
     { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
     { id: 'credentialing', icon: 'award', name: 'Credentials', memberOnly: true },
     { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
@@ -11880,6 +11884,11 @@ function AppShell({ currentUser, onLogout }) {
       <main className="app-main">
         {/* Member-only views — gate behind membership */}
         {currentView === 'dashboard' && isMember && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
+        {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
+        {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
+        {currentView === 'transitions' && isMember && <TransitionsView setCurrentView={setCurrentView} />}
+        {currentView === 'decision-engine' && isMember && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'sessions' && isMember && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && isMember && <WorkbookView />}
