@@ -5359,6 +5359,7 @@ function MeetingsView({ familyProfile }) {
   const [newIssue, setNewIssue] = useState('');
   const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
   const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
+  const [showOtterPanel, setShowOtterPanel] = useState(false);
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -5644,6 +5645,7 @@ function MeetingsView({ familyProfile }) {
                         {doneCount}/{actionCount} actions
                       </span>
                     )}
+                    {m.otterImportedAt && <span title="Otter recording attached" style={{fontSize: '0.72rem', background: '#E6F3F4', color: '#5AAFB5', padding: '2px 8px', borderRadius: '100px', fontWeight: '600'}}>🎙️ Otter</span>}
                     {m.rating && <span style={{fontSize: '0.75rem', color: '#7A8BA0'}}>{m.rating}/10</span>}
                     <span style={{color: '#7A8BA0', fontSize: '0.85rem'}}>→</span>
                   </div>
@@ -5854,6 +5856,85 @@ function MeetingsView({ familyProfile }) {
                     />
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Otter.ai integration panel */}
+          <div style={{background: 'white', borderRadius: '10px', padding: '20px', border: '1px solid #DDE3EB', marginBottom: '16px'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
+                <span style={{fontSize: '1.3rem'}}>🎙️</span>
+                <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#34597A', margin: 0}}>Otter.ai Recording</h4>
+                {meeting.otterImportedAt && <span style={{fontSize: '0.72rem', color: '#5AAFB5', fontWeight: '600', background: '#E6F3F4', padding: '3px 10px', borderRadius: '100px'}}>✓ Imported {new Date(meeting.otterImportedAt).toLocaleDateString()}</span>}
+              </div>
+              <button onClick={() => setShowOtterPanel(!showOtterPanel)} style={{background: 'none', border: '1px solid #2B4C6F', color: '#2B4C6F', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', padding: '6px 14px', borderRadius: '6px'}}>
+                {showOtterPanel ? 'Hide' : meeting.otterImportedAt ? 'View / Edit' : '+ Attach Otter Recording'}
+              </button>
+            </div>
+            {!showOtterPanel && !meeting.otterImportedAt && (
+              <p style={{fontSize: '0.82rem', color: '#7A8BA0', margin: 0}}>
+                For peer groups and multi-person sessions, record in Otter.ai on your phone. When the session ends, paste the summary, action items, and transcript here.
+              </p>
+            )}
+            {showOtterPanel && (
+              <div>
+                <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '14px', lineHeight: 1.5}}>
+                  <strong>How:</strong> Open Otter.ai on your phone and record the session. When it ends, copy the AI-generated Summary, Action Items, and Transcript and paste each below. Clicking <em>Import to Action Items</em> parses your list and adds each line as a tracked action item on this meeting.
+                </p>
+                <label style={{fontSize: '0.8rem', fontWeight: '600', color: '#4A5E73', display: 'block', marginBottom: '6px'}}>Summary</label>
+                <textarea
+                  value={meeting.otterSummary || ''}
+                  onChange={(e) => updateMeeting(meeting.id, { otterSummary: e.target.value })}
+                  placeholder="Paste Otter's AI-generated summary here..."
+                  rows={5}
+                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.88rem', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', marginBottom: '14px'}}
+                />
+                <label style={{fontSize: '0.8rem', fontWeight: '600', color: '#4A5E73', display: 'block', marginBottom: '6px'}}>Action Items from Otter (one per line)</label>
+                <textarea
+                  id={`otter-actions-${meeting.id}`}
+                  placeholder={"e.g.\nJason to draft family charter by Friday\nMitch to confirm board meeting date\nRiley to review the succession timeline"}
+                  rows={5}
+                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.88rem', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', marginBottom: '8px'}}
+                />
+                <button onClick={() => {
+                  const textarea = document.getElementById(`otter-actions-${meeting.id}`);
+                  if (textarea && textarea.value.trim()) {
+                    const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l);
+                    const newActions = lines.map(line => ({ id: Date.now() + Math.random(), text: line, owner: '', due: '', done: false }));
+                    setMeetings(prev => prev.map(m => m.id === meeting.id ? { ...m, actionItems: [...(m.actionItems || []), ...newActions] } : m));
+                    textarea.value = '';
+                    alert(`${newActions.length} action item${newActions.length === 1 ? '' : 's'} imported. Fill in owners and due dates in the Action Items section above.`);
+                  }
+                }} style={{background: '#5AAFB5', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 18px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', marginBottom: '16px'}}>
+                  Import to Action Items →
+                </button>
+                <label style={{fontSize: '0.8rem', fontWeight: '600', color: '#4A5E73', display: 'block', marginBottom: '6px', marginTop: '4px'}}>Full Transcript (optional, for archival)</label>
+                <textarea
+                  value={meeting.otterTranscript || ''}
+                  onChange={(e) => updateMeeting(meeting.id, { otterTranscript: e.target.value })}
+                  placeholder="Paste the full Otter transcript here for archival..."
+                  rows={6}
+                  style={{width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.82rem', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', marginBottom: '14px'}}
+                />
+                <div style={{display: 'flex', gap: '10px'}}>
+                  <button onClick={() => {
+                    updateMeeting(meeting.id, { otterImportedAt: new Date().toISOString() });
+                    setShowOtterPanel(false);
+                  }} style={{background: '#2B4C6F', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '0.88rem', fontWeight: '600', cursor: 'pointer'}}>
+                    Save Otter Import
+                  </button>
+                  {meeting.otterImportedAt && (
+                    <button onClick={() => {
+                      if (confirm('Clear Otter import from this meeting? Summary and transcript will be deleted. Action items already imported will remain.')) {
+                        updateMeeting(meeting.id, { otterSummary: '', otterTranscript: '', otterImportedAt: null });
+                        setShowOtterPanel(false);
+                      }
+                    }} style={{background: 'white', color: '#E05B6F', border: '1px solid #E05B6F40', borderRadius: '8px', padding: '10px 20px', fontSize: '0.88rem', fontWeight: '600', cursor: 'pointer'}}>
+                      Clear Otter Data
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
