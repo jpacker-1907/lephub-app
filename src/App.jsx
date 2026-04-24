@@ -2566,6 +2566,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'pillars', icon: 'bar-chart', name: 'Pillars', memberOnly: true },
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
     { id: 'transitions', icon: 'trending-up', name: 'Transitions', memberOnly: true },
+    { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
     { id: 'credentialing', icon: 'award', name: 'Credentials', memberOnly: true },
     { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
@@ -6066,6 +6067,9 @@ function analyzeFinancialData(parsed) {
 
 function VaultView({ vaultDocuments }) {
   const [expandedPillar, setExpandedPillar] = useState(null);
+  const [dismissedBanner, setDismissedBanner] = useState(() => {
+    try { return localStorage.getItem('vault_banner_dismissed') === 'true'; } catch { return false; }
+  });
   const [activeVaultTab, setActiveVaultTab] = useState('uploaded'); // uploaded | generated | analysis
   const [uploadedDocs, setUploadedDocs] = useState(() => {
     try { const s = localStorage.getItem('lep_vault_uploads'); return s ? JSON.parse(s) : []; } catch { return []; }
