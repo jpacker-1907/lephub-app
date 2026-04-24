@@ -6190,9 +6190,22 @@ function VaultView({ vaultDocuments }) {
       <header className="page-header">
         <div>
           <h1>Document Vault</h1>
-          <p className="subtitle">Upload, organize, and analyze your family enterprise documents. Your secure digital filing cabinet.</p>
+          <p className="subtitle">Upload, organize, and analyze your family enterprise documents. Personal working files — enterprise-grade secure storage coming soon.</p>
         </div>
       </header>
+
+      {\!dismissedBanner && (
+        <div style={{background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)', border: '1px solid #F59E0B', borderRadius: '10px', padding: '16px 20px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '14px'}}>
+          <span style={{fontSize: '1.4rem', lineHeight: 1, flexShrink: 0}}>⚠️</span>
+          <div style={{flex: 1}}>
+            <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#92400E', margin: 0, marginBottom: '6px'}}>Vault — Personal Working Files (Beta)</h4>
+            <p style={{fontSize: '0.85rem', color: '#78350F', lineHeight: 1.5, margin: 0, marginBottom: '8px'}}>
+              This vault currently stores documents in your browser (localStorage). Appropriate for your own working files, drafts, and reference material. <strong>Not yet enterprise-grade</strong> — do not upload actual client family documents (estate papers, financial statements, buy-sell agreements) until the Supabase-backed secure vault ships with encryption, family-scoped access, and audit logging.
+            </p>
+            <button onClick={() => { setDismissedBanner(true); try { localStorage.setItem('vault_banner_dismissed', 'true'); } catch {} }} style={{background: 'transparent', border: '1px solid #92400E', color: '#92400E', padding: '4px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer'}}>I understand — dismiss this notice</button>
+          </div>
+        </div>
+      )}
 
       {/* Document Health Score */}
       <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #1e3a5f 100%)', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px', color: 'white', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap'}}>
