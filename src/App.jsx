@@ -5952,7 +5952,33 @@ function MeetingsView({ familyProfile }) {
             {showOtterPanel && (
               <div>
                 <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '14px', lineHeight: 1.5}}>
-                  <strong>How:</strong> Open Otter.ai on your phone and record the session. When it ends, copy the AI-generated Summary, Action Items, and Transcript and paste each below. Clicking <em>Import to Action Items</em> parses your list and adds each line as a tracked action item on this meeting.
+                  <strong>Fastest path:</strong> paste Otter's full output into Smart Import below &mdash; Summary, Action Items, and Transcript fields will auto-fill. Edit individual fields manually if the parser misses something.
+                </p>
+
+                <div style={{background: 'linear-gradient(135deg, #E6F3F4 0%, #D4EEF0 100%)', borderRadius: '10px', padding: '16px', marginBottom: '18px', border: '1px dashed #5AAFB5'}}>
+                  <label style={{fontSize: '0.88rem', fontWeight: '700', color: '#2B4C6F', display: 'block', marginBottom: '4px'}}>
+                    Smart Import &mdash; paste Otter's full output once
+                  </label>
+                  <p style={{fontSize: '0.74rem', color: '#4A5E73', marginBottom: '10px', lineHeight: 1.5}}>
+                    Copy your entire Otter conversation. The parser looks for Summary, Action Items, and Transcript section headers and fills matching fields automatically.
+                  </p>
+                  <textarea
+                    onPaste={(e) => {
+                      const text = e.clipboardData.getData('text');
+                      if (text && text.trim()) {
+                        e.preventDefault();
+                        runSmartImport(text);
+                        e.target.value = '';
+                      }
+                    }}
+                    placeholder="Paste here — parser runs automatically on paste..."
+                    rows={3}
+                    style={{width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #5AAFB5', fontSize: '0.85rem', fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical', background: 'white'}}
+                  />
+                </div>
+
+                <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: '12px'}}>
+                  Or paste into individual fields below:
                 </p>
                 <label style={{fontSize: '0.8rem', fontWeight: '600', color: '#4A5E73', display: 'block', marginBottom: '6px'}}>Summary</label>
                 <textarea
