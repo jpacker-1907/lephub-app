@@ -5711,22 +5711,22 @@ function MeetingsView({ familyProfile }) {
                 )}
                 <div>
                   <h4 style={{fontSize: '0.9rem', fontWeight: '700', color: '#34597A', marginBottom: '2px'}}>
-                    {isRecording ? (isPaused ? 'Recording Paused' : 'Recording...') : processingDone ? 'Recording Processed' : 'Meeting Recorder'}
+                    {isRecording ? (isPaused ? 'Recording Paused' : 'Recording...') : processingDone ? 'Recording Processed' : 'Record This Meeting'}
                   </h4>
                   <p style={{fontSize: '0.75rem', color: '#7A8BA0'}}>
                     {isRecording ? `${formatTime(recordingTime)} — Speak naturally, we\'ll capture notes and action items.` :
                      processingDone ? 'Transcript has been processed into your agenda notes, action items, and resolution queue.' :
-                     'Record your meeting to auto-populate agenda notes, action items, and issues.'}
+                     'Record this session in Otter.ai (phone or desktop). When done, paste the summary into the Otter Recording panel below.'}
                   </p>
                 </div>
               </div>
               <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
                 {isRecording && <span style={{fontSize: '1rem', fontFamily: 'monospace', fontWeight: '700', color: '#dc2626', minWidth: '50px'}}>{formatTime(recordingTime)}</span>}
                 {!isRecording && !transcript && (
-                  <button onClick={startRecording}
-                    style={{background: '#dc2626', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'}}>
-                    <span style={{width: '10px', height: '10px', borderRadius: '50%', background: 'white', flexShrink: 0}} /> Start Recording
-                  </button>
+                  <a href="https://otter.ai/home" target="_blank" rel="noopener noreferrer"
+                    style={{background: '#5AAFB5', color: 'white', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none'}}>
+                    <span style={{fontSize: '1rem'}}>🎙️</span> Record in Otter <span style={{opacity: 0.7, fontSize: '0.8rem'}}>↗</span>
+                  </a>
                 )}
                 {isRecording && !isPaused && (
                   <>
