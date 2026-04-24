@@ -5538,6 +5538,78 @@ function MeetingsView({ familyProfile }) {
   const meeting = meetings.find(m => m.id === activeMeeting);
   const template = meeting ? MEETING_TEMPLATES[meeting.type] : null;
 
+  // ─── Parse Otter.ai output into Summary / Action Items / Transcript ───
+  const parseOtterContent = (text) => {
+    const result = { summary: '', actionItems: [], transcript: '' };
+    if (!text || !text.trim()) return result;
+
+    // Recognize common Otter section headers
+    const sectionMap = {
+      'summary': 'summary', 'abstract': 'summary', 'overview': 'summary',
+      'key takeaways': 'summary', 'key points': 'summary',
+      'action items': 'actions', 'actions': 'actions', 'next steps': 'actions',
+      'follow-ups': 'actions', 'follow ups': 'actions', 'todos': 'actions', 'to-dos': 'actions',
+      'transcript': 'transcript', 'full transcript': 'transcript', 'conversation': 'transcript',
+    };
+
+    const lines = text.split(/\r?\n/);
+    let currentSection = null;
+    const buffers = { summary: [], actions: [], transcript: [] };
+
+    for (const rawLine of lines) {
+      const trimmed = rawLine.trim();
+      const lower = trimmed.toLowerCase().replace(/:$/, '');
+      if (sectionMap[lower]) {
+        currentSection = sectionMap[lower];
+        continue;
+      }
+      if (currentSection) {
+        buffers[currentSection].push(rawLine);
+      }
+    }
+
+    result.summary = buffers.summary.join('\n').trim();
+    result.transcript = buffers.transcript.join('\n').trim();
+    result.actionItems = buffers.actions
+      .join('\n')
+      .split(/\n/)
+      .map(l => l.replace(/^[\-\*\u2022\u25CF\d]+[.\)\s]*/, '').trim())
+      .filter(l => l.length > 2);
+
+    // Fallback: if we found nothing structured, check for speaker-timestamp pattern (it's a transcript)
+    if (!result.summary && !result.transcript && result.actionItems.length === 0) {
+      const hasSpeakerFormat = /^[\d:]+\s|^[A-Z][a-z]+\s?[A-Z]?[a-z]*:\s/m.test(text);
+      if (hasSpeakerFormat) {
+        result.transcript = text.trim();
+      } else {
+        // Otherwise treat the whole thing as summary
+        result.summary = text.trim();
+      }
+    }
+    return result;
+  };
+
+  const runSmartImport = (text) => {
+    if (!meeting) return;
+    const parsed = parseOtterContent(text);
+    const updates = {};
+    if (parsed.summary) updates.otterSummary = parsed.summary;
+    if (parsed.transcript) updates.otterTranscript = parsed.transcript;
+    if (Object.keys(updates).length > 0) updateMeeting(meeting.id, updates);
+    if (parsed.actionItems.length > 0) {
+      const newActions = parsed.actionItems.map(actionText => ({
+        id: Date.now() + Math.random(), text: actionText, owner: '', due: '', done: false,
+      }));
+      setMeetings(prev => prev.map(m => m.id === meeting.id
+        ? { ...m, actionItems: [...(m.actionItems || []), ...newActions] } : m));
+    }
+    const parts = [];
+    if (parsed.summary) parts.push('Summary filled');
+    if (parsed.actionItems.length > 0) parts.push(`${parsed.actionItems.length} action item${parsed.actionItems.length === 1 ? '' : 's'} added`);
+    if (parsed.transcript) parts.push('Transcript filled');
+    alert(parts.length > 0 ? `Smart Import: ${parts.join(', ')}. Review the fields below.` : 'Smart Import: could not detect Summary / Action Items / Transcript headers. Paste into the individual fields below manually.');
+  };
+
   return (
     <div className="meetings-view">
       <header className="page-header">
