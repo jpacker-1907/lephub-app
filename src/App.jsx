@@ -8956,7 +8956,7 @@ function ReviewForm({ profId, onSubmit, onCancel }) {
 // ═══════════════════════════════════════════════════════════════
 
 function ProfessionalDirectoryView() {
-  const PROFESSIONALS_VERSION = 'v1';
+  const PROFESSIONALS_VERSION = 'v2'; // bumped to v2: wipe any cached fake professionals
   const SPECIALTY_ICONS = {
     'wealth-advisor': '💰',
     'estate-attorney': '⚖️',
@@ -8985,8 +8985,10 @@ function ProfessionalDirectoryView() {
     const saved = localStorage.getItem('stride_professionals');
     const version = localStorage.getItem('stride_professionals_version');
     if (saved && version === PROFESSIONALS_VERSION) return JSON.parse(saved);
+    // Version mismatch -> wipe stale data including reviews tied to pre-existing fake pros
     localStorage.setItem('stride_professionals', JSON.stringify(seedProfessionals));
     localStorage.setItem('stride_professionals_version', PROFESSIONALS_VERSION);
+    localStorage.removeItem('stride_professional_reviews');
     return seedProfessionals;
   });
 
@@ -9518,7 +9520,7 @@ function CommunityView() {
   };
 
   // ─── STATE ────────────────────────────────────────────────
-  const COMMUNITY_VERSION = 'v3'; // bump to re-seed community data with professional channels
+  const COMMUNITY_VERSION = 'v4'; // bumped to v4: wipe any cached demo users/messages
   const [channels, setChannels] = useState(() => {
     const savedVersion = localStorage.getItem('stride_community_version');
     const saved = localStorage.getItem('stride_community_channels');
