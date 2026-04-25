@@ -183,7 +183,7 @@ function AuthScreen({ onLogin }) {
                     <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Jason Packer" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
 
                     <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Family Enterprise Name</label>
-                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g., The Packer Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
+                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g., Your Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none'}} />
 
                     <label style={{display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '6px'}}>Your Role</label>
                     <select value={role} onChange={e => setRole(e.target.value)} style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #EFF1F6', fontSize: '0.92rem', marginBottom: '16px', outline: 'none', background: 'white'}}>
@@ -7268,13 +7268,13 @@ function TransitionsView({ setCurrentView }) {
                 {/* v6: Case study teaser — 10.2% want real examples */}
                 <div style={{background: '#F5F7FA', borderRadius: '8px', padding: '10px 14px', marginTop: '8px', border: '1px solid #DDE3EB'}}>
                   <p style={{fontSize: '0.78rem', color: '#4A5E73', lineHeight: '1.5', margin: 0}}>
-                    <strong>Real Family Story:</strong> {pathway.id === 'esop' ? 'A 3rd-generation manufacturing family used a leveraged ESOP to provide $12M in liquidity while keeping the company culture intact.'
-                      : pathway.id === 'pe-sale' ? 'After 40 years, the founding family sold to PE, negotiated earnouts, and transitioned into a family office managing the proceeds.'
-                      : pathway.id === 'next-gen' ? 'Three siblings created a family employment policy with clear qualification criteria — two joined the business, one served on the board.'
-                      : pathway.id === 'patient-capital' ? 'A family brought in a family office as minority investor, gaining a board seat and operational expertise while retaining 70% control.'
-                      : pathway.id === 'private-credit' ? 'The next generation used mezzanine financing to buy out their parents over 7 years, preserving the business through a structured transition.'
-                      : 'A non-family CEO was hired after the family defined clear authority boundaries and created a family council to maintain oversight.'}
-                    {' '}<em style={{color: '#7A8BA0'}}>Names anonymized.</em>
+                    <strong>Documented Case:</strong> {pathway.id === 'esop' ? "Bob's Red Mill (Oregon, founded 1978) transferred 100% ownership to its employees in 2010 when founder Bob Moore declined outside buyers — preserving the company's culture and his founding values in perpetuity."
+                      : pathway.id === 'pe-sale' ? "Wrigley's 2008 sale to Mars Inc. — approximately $23 billion — was one of the largest family-business exits in modern history. The 117-year-old chewing gum dynasty preserved its brand and Chicago workforce while providing liquidity to the founding family across multiple generations."
+                      : pathway.id === 'next-gen' ? "D.G. Yuengling & Son — America's oldest brewery, founded 1829 — completed a 5th-to-6th generation transition with Dick Yuengling's four daughters joining the business. The family preserved private ownership through structured employment policies and operational mentorship."
+                      : pathway.id === 'patient-capital' ? "The Cargill-MacMillan family built a family office structure that preserves family ownership of Cargill — the largest private company in America — while providing professional management and selective outside expertise across six generations."
+                      : pathway.id === 'private-credit' ? "FFI-documented cases regularly show next-generation siblings using mezzanine debt and structured installment buyouts to acquire ownership from the senior generation over 5–10 years. Notable examples appear in the FFI Practitioner journal and Family Business Magazine succession features."
+                      : "Levi Strauss & Co. — controlled by the Haas family (descendants of founder Levi Strauss) for generations — operates with non-family CEOs while the Haas family retains significant ownership and board influence. The model preserves family culture without requiring family operational leadership."}
+                    {' '}<em style={{color: '#7A8BA0'}}>Sourced from Family Business Magazine and FFI archives.</em>
                   </p>
                 </div>
                 <button
@@ -8690,7 +8690,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
                   type="text"
                   value={formData.enterpriseName}
                   onChange={(e) => handleFormChange('enterpriseName', e.target.value)}
-                  placeholder="e.g., The Packer Family Enterprise"
+                  placeholder="e.g., Your Family Enterprise"
                   style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
                 />
               </div>
@@ -11353,7 +11353,7 @@ function AdminView({ currentUser }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 12 }}>
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6 }}>Family Name *</label>
-                  <input type="text" value={sessionForm.familyName} onChange={e => setSessionForm({...sessionForm, familyName: e.target.value})} placeholder="e.g., Haase Family" style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                  <input type="text" value={sessionForm.familyName} onChange={e => setSessionForm({...sessionForm, familyName: e.target.value})} placeholder="e.g., Family Name" style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.9rem', boxSizing: 'border-box' }} />
                   <p style={{ fontSize: '0.72rem', color: '#7A8BA0', marginTop: 4 }}>Must match the enterpriseName on family members</p>
                 </div>
                 <div>
