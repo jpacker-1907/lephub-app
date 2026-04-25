@@ -10731,7 +10731,10 @@ function AdminView({ currentUser }) {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Send failed');
+      if (!response.ok) {
+        const detail = result.error || (result.errors && result.errors[0] && result.errors[0].error) || `HTTP ${response.status}`;
+        throw new Error(detail);
+      }
 
       const historyEntry = {
         id: Date.now(),

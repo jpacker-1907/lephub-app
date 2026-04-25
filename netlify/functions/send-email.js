@@ -84,14 +84,20 @@ exports.handler = async function (event) {
     }
   }
 
+  // Surface a top-level error string when all sends failed, so the client
+  // shows something useful (e.g., the actual Resend rejection reason)
+  const allFailed = errors.length === messages.length;
+  const topLevelError = allFailed && errors[0] ? errors[0].error : undefined;
+
   return {
-    statusCode: errors.length === messages.length ? 502 : 200,
+    statusCode: allFailed ? 502 : 200,
     headers: cors,
     body: JSON.stringify({
       provider: 'resend',
       sentCount: sendIds.length,
       failedCount: errors.length,
       sendIds,
+      error: topLevelError,
       errors: errors.length > 0 ? errors : undefined,
     }),
   };
