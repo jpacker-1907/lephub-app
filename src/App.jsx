@@ -10575,6 +10575,7 @@ function AdminView({ currentUser }) {
   const ADMIN_TABS = [
     { id: 'overview', name: 'Overview', icon: '📊' },
     { id: 'members', name: 'Members', icon: '👥' },
+    { id: 'connect', name: 'Connect', icon: '✉️' },
     { id: 'events', name: 'Events', icon: '📅' },
     { id: 'community', name: 'Community', icon: '💬' },
     { id: 'sessions', name: 'Session Notes', icon: '📝' },
@@ -10633,6 +10634,142 @@ function AdminView({ currentUser }) {
     const blob = await Packer.toBlob(docObj);
     saveAs(blob, (s.familyName.replace(/[^a-zA-Z0-9-]/g, '_')) + '_LEP_Session_' + (s.sessionDate || '') + '.docx');
   };
+
+  // ─── STRIDE CONNECT STATE (CRM + Email) ────────────────────
+  const [composeFrom, setComposeFrom] = useState(() => localStorage.getItem('stride_connect_from') || 'Jason Packer <jpacker@stridefba.com>');
+  const [composeSubject, setComposeSubject] = useState('');
+  const [composeBody, setComposeBody] = useState('');
+  const [recipientFilter, setRecipientFilter] = useState('all'); // 'all' | 'peer-group' | 'tier' | 'individual'
+  const [recipientPeerGroup, setRecipientPeerGroup] = useState('');
+  const [recipientTier, setRecipientTier] = useState('');
+  const [selectedMemberIds, setSelectedMemberIds] = useState([]);
+  const [connectDrafts, setConnectDrafts] = useState(() => JSON.parse(localStorage.getItem('stride_connect_drafts') || '[]'));
+  const [connectHistory, setConnectHistory] = useState(() => JSON.parse(localStorage.getItem('stride_connect_history') || '[]'));
+  const [sendStatus, setSendStatus] = useState(null); // null | 'sending' | 'sent' | 'error'
+
+  useEffect(() => { localStorage.setItem('stride_connect_drafts', JSON.stringify(connectDrafts)); }, [connectDrafts]);
+  useEffect(() => { localStorage.setItem('stride_connect_history', JSON.stringify(connectHistory)); }, [connectHistory]);
+  useEffect(() => { localStorage.setItem('stride_connect_from', composeFrom); }, [composeFrom]);
+
+  const computeRecipients = () => {
+    if (recipientFilter === 'all') return members;
+    if (recipientFilter === 'peer-group') return members.filter(m => m.peerGroup === recipientPeerGroup);
+    if (recipientFilter === 'tier') return members.filter(m => m.tier === recipientTier);
+    if (recipientFilter === 'individual') return members.filter(m => selectedMemberIds.includes(m.id));
+    return [];
+  };
+
+  const saveConnectDraft = () => {
+    if (!composeSubject.trim() && !composeBody.trim()) return;
+    const draft = {
+      id: Date.now(),
+      from: composeFrom,
+      subject: composeSubject,
+      body: composeBody,
+      recipientFilter,
+      recipientPeerGroup,
+      recipientTier,
+      selectedMemberIds: [...selectedMemberIds],
+      savedAt: new Date().toISOString(),
+    };
+    setConnectDrafts(prev => [draft, ...prev]);
+    alert('Draft saved. Find it in Drafts below.');
+  };
+
+  const loadConnectDraft = (draftId) => {
+    const d = connectDrafts.find(x => x.id === draftId);
+    if (!d) return;
+    setComposeFrom(d.from || composeFrom);
+    setComposeSubject(d.subject || '');
+    setComposeBody(d.body || '');
+    setRecipientFilter(d.recipientFilter || 'all');
+    setRecipientPeerGroup(d.recipientPeerGroup || '');
+    setRecipientTier(d.recipientTier || '');
+    setSelectedMemberIds(d.selectedMemberIds || []);
+  };
+
+  const deleteConnectDraft = (draftId) => {
+    setConnectDrafts(prev => prev.filter(d => d.id !== draftId));
+  };
+
+  const sendConnectMessage = async () => {
+    const recipients = computeRecipients();
+    if (recipients.length === 0) { alert('No recipients selected.'); return; }
+    if (!composeSubject.trim()) { alert('Subject is required.'); return; }
+    if (!composeBody.trim()) { alert('Message body is required.'); return; }
+    setSendStatus('sending');
+
+    // Family-aware personalization — replace variables per-recipient
+    const personalize = (text, member) => {
+      const firstName = (member.name || '').split(' ')[0] || '';
+      return (text || '')
+        .replace(/\{\{firstName\}\}/g, firstName)
+        .replace(/\{\{lastName\}\}/g, (member.name || '').split(' ').slice(1).join(' '))
+        .replace(/\{\{name\}\}/g, member.name || '')
+        .replace(/\{\{enterpriseName\}\}/g, member.enterpriseName || 'your family enterprise')
+        .replace(/\{\{peerGroup\}\}/g, member.peerGroup || '')
+        .replace(/\{\{tier\}\}/g, member.tier || '');
+    };
+
+    const payload = {
+      from: composeFrom,
+      subject: composeSubject,
+      messages: recipients.map(m => ({
+        to: m.email,
+        toName: m.name,
+        memberId: m.id,
+        subject: personalize(composeSubject, m),
+        html: personalize(composeBody, m).replace(/\n/g, '<br/>'),
+        text: personalize(composeBody, m),
+      })),
+    };
+
+    try {
+      const response = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Send failed');
+
+      const historyEntry = {
+        id: Date.now(),
+        from: composeFrom,
+        subject: composeSubject,
+        body: composeBody,
+        recipientCount: recipients.length,
+        recipientIds: recipients.map(r => r.id),
+        sentAt: new Date().toISOString(),
+        opens: 0,
+        clicks: 0,
+        provider: result.provider || 'resend',
+        sendIds: result.sendIds || [],
+      };
+      setConnectHistory(prev => [historyEntry, ...prev]);
+
+      // Reset compose
+      setComposeSubject('');
+      setComposeBody('');
+      setSelectedMemberIds([]);
+      setSendStatus('sent');
+      setTimeout(() => setSendStatus(null), 3000);
+      alert(`✓ Sent to ${recipients.length} recipient${recipients.length === 1 ? '' : 's'}.`);
+    } catch (err) {
+      setSendStatus('error');
+      // If Resend isn't configured, show the helpful pre-launch message
+      if (err.message && err.message.includes('not configured')) {
+        alert('Stride Connect is ready. Add RESEND_API_KEY in Netlify → Site Settings → Environment Variables to enable sending.');
+      } else {
+        alert('Send failed: ' + err.message);
+      }
+      setTimeout(() => setSendStatus(null), 4000);
+    }
+  };
+
+  // List unique peer groups and tiers from members for dropdowns
+  const uniquePeerGroups = Array.from(new Set(members.map(m => m.peerGroup).filter(Boolean)));
+  const uniqueTiers = Array.from(new Set(members.map(m => m.tier).filter(Boolean)));
 
   // ─── EVENTS STATE ─────────────────────────────────────────
   const [sessions, setSessions] = useState(() => {
@@ -11341,6 +11478,157 @@ function AdminView({ currentUser }) {
             </div>
           </div>
         </>
+      )}
+
+      {/* ═══ STRIDE CONNECT TAB ═══ */}
+      {activeTab === 'connect' && (
+        <div>
+          <div style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#2B4C6F', margin: 0 }}>Stride Connect</h2>
+            <p style={{ fontSize: '0.92rem', color: '#7A8BA0', marginTop: 6, lineHeight: 1.55 }}>
+              Send messages to your members with family-aware personalization. Use variables like <code style={{background: '#EFF1F6', padding: '1px 6px', borderRadius: 4, fontSize: '0.85rem'}}>{'{{firstName}}'}</code>, <code style={{background: '#EFF1F6', padding: '1px 6px', borderRadius: 4, fontSize: '0.85rem'}}>{'{{enterpriseName}}'}</code>, <code style={{background: '#EFF1F6', padding: '1px 6px', borderRadius: 4, fontSize: '0.85rem'}}>{'{{peerGroup}}'}</code> in your subject or body — they'll be replaced for each recipient.
+            </p>
+          </div>
+
+          <div style={{display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24}}>
+            {/* COMPOSE PANEL */}
+            <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 24}}>
+              <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Compose</h3>
+
+              <div style={{marginBottom: 14}}>
+                <label style={{fontSize: '0.78rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em'}}>From</label>
+                <input type="text" value={composeFrom} onChange={e => setComposeFrom(e.target.value)} placeholder="Jason Packer <jpacker@stridefba.com>" style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box'}} />
+              </div>
+
+              <div style={{marginBottom: 14}}>
+                <label style={{fontSize: '0.78rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em'}}>Subject</label>
+                <input type="text" value={composeSubject} onChange={e => setComposeSubject(e.target.value)} placeholder="e.g., Welcome to Stride, {'{{firstName}}'}" style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box'}} />
+              </div>
+
+              <div style={{marginBottom: 14}}>
+                <label style={{fontSize: '0.78rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em'}}>Message</label>
+                <textarea value={composeBody} onChange={e => setComposeBody(e.target.value)} placeholder="Hi {'{{firstName}}'},&#10;&#10;Quick note about {'{{enterpriseName}}'}'s next peer group session…" rows={12} style={{width: '100%', padding: '12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', lineHeight: 1.55, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical'}} />
+              </div>
+
+              <div style={{display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap'}}>
+                <button onClick={sendConnectMessage} disabled={sendStatus === 'sending'} style={{background: sendStatus === 'sending' ? '#7A8BA0' : '#5AAFB5', color: 'white', border: 'none', borderRadius: 8, padding: '10px 24px', fontWeight: 700, fontSize: '0.92rem', cursor: sendStatus === 'sending' ? 'wait' : 'pointer'}}>
+                  {sendStatus === 'sending' ? 'Sending…' : sendStatus === 'sent' ? '✓ Sent' : 'Send Now'}
+                </button>
+                <button onClick={saveConnectDraft} style={{background: 'white', color: '#4A5E73', border: '1px solid #DDE3EB', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: '0.88rem', cursor: 'pointer'}}>Save Draft</button>
+                <span style={{fontSize: '0.78rem', color: '#7A8BA0', marginLeft: 'auto'}}>
+                  Recipients: <strong style={{color: '#2B4C6F'}}>{computeRecipients().length}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* RECIPIENT PANEL */}
+            <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 24}}>
+              <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Recipients</h3>
+
+              <div style={{marginBottom: 14}}>
+                <select value={recipientFilter} onChange={e => setRecipientFilter(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                  <option value="all">All Members ({members.length})</option>
+                  <option value="peer-group">By Peer Group</option>
+                  <option value="tier">By Tier</option>
+                  <option value="individual">Pick Individuals</option>
+                </select>
+              </div>
+
+              {recipientFilter === 'peer-group' && (
+                <div style={{marginBottom: 14}}>
+                  <select value={recipientPeerGroup} onChange={e => setRecipientPeerGroup(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                    <option value="">Select a peer group...</option>
+                    {uniquePeerGroups.map(pg => <option key={pg} value={pg}>{pg}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {recipientFilter === 'tier' && (
+                <div style={{marginBottom: 14}}>
+                  <select value={recipientTier} onChange={e => setRecipientTier(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                    <option value="">Select a tier...</option>
+                    {uniqueTiers.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {recipientFilter === 'individual' && (
+                <div style={{marginBottom: 14, maxHeight: 280, overflowY: 'auto', border: '1px solid #EFF1F6', borderRadius: 8, padding: 8}}>
+                  {members.length === 0 ? (
+                    <p style={{fontSize: '0.85rem', color: '#7A8BA0', padding: 12}}>No members yet — add them in the Members tab.</p>
+                  ) : (
+                    members.map(m => (
+                      <label key={m.id} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 6px', cursor: 'pointer', borderRadius: 6}}>
+                        <input
+                          type="checkbox"
+                          checked={selectedMemberIds.includes(m.id)}
+                          onChange={() => setSelectedMemberIds(prev => prev.includes(m.id) ? prev.filter(id => id !== m.id) : [...prev, m.id])}
+                        />
+                        <div style={{flex: 1, fontSize: '0.85rem'}}>
+                          <div style={{color: '#2B4C6F', fontWeight: 600}}>{m.name}</div>
+                          <div style={{color: '#7A8BA0', fontSize: '0.75rem'}}>{m.email}{m.peerGroup ? ' · ' + m.peerGroup : ''}</div>
+                        </div>
+                      </label>
+                    ))
+                  )}
+                </div>
+              )}
+
+              <div style={{background: '#F5F7FA', borderRadius: 8, padding: 12, marginTop: 12}}>
+                <p style={{fontSize: '0.78rem', color: '#4A5E73', margin: 0, lineHeight: 1.55}}>
+                  <strong>Sending to {computeRecipients().length} member{computeRecipients().length === 1 ? '' : 's'}.</strong>
+                  {computeRecipients().length > 0 && <span style={{color: '#7A8BA0'}}>{' '}({computeRecipients().slice(0, 3).map(m => m.name).join(', ')}{computeRecipients().length > 3 ? `, +${computeRecipients().length - 3} more` : ''})</span>}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* DRAFTS */}
+          {connectDrafts.length > 0 && (
+            <div style={{marginTop: 28}}>
+              <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 12}}>Drafts ({connectDrafts.length})</h3>
+              {connectDrafts.map(d => (
+                <div key={d.id} style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 10, padding: '14px 18px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 14}}>
+                  <div style={{flex: 1}}>
+                    <div style={{fontSize: '0.92rem', fontWeight: 600, color: '#2B4C6F'}}>{d.subject || '(no subject)'}</div>
+                    <div style={{fontSize: '0.75rem', color: '#7A8BA0'}}>Saved {new Date(d.savedAt).toLocaleString()}</div>
+                  </div>
+                  <button onClick={() => loadConnectDraft(d.id)} style={{background: '#2B4C6F', color: 'white', border: 'none', borderRadius: 6, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer'}}>Load</button>
+                  <button onClick={() => deleteConnectDraft(d.id)} style={{background: 'white', color: '#E05B6F', border: '1px solid #E05B6F40', borderRadius: 6, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer'}}>Delete</button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* SEND HISTORY */}
+          <div style={{marginTop: 28}}>
+            <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 12}}>Send History ({connectHistory.length})</h3>
+            {connectHistory.length === 0 ? (
+              <div style={{background: '#F5F7FA', border: '1px dashed #DDE3EB', borderRadius: 10, padding: 24, textAlign: 'center', color: '#7A8BA0', fontSize: '0.88rem'}}>
+                No sends yet. Compose a message above and click Send.
+              </div>
+            ) : (
+              connectHistory.map(h => (
+                <div key={h.id} style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 10, padding: '14px 18px', marginBottom: 8}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+                    <div style={{flex: 1}}>
+                      <div style={{fontSize: '0.92rem', fontWeight: 600, color: '#2B4C6F'}}>{h.subject}</div>
+                      <div style={{fontSize: '0.75rem', color: '#7A8BA0'}}>Sent {new Date(h.sentAt).toLocaleString()} · {h.recipientCount} recipient{h.recipientCount === 1 ? '' : 's'} · {h.opens} open{h.opens === 1 ? '' : 's'} · {h.clicks} click{h.clicks === 1 ? '' : 's'}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* SETUP PROMPT — visible until RESEND_API_KEY is configured */}
+          <div style={{marginTop: 28, background: 'linear-gradient(135deg, #EBF7F8 0%, #D4EEF0 100%)', border: '1px solid #5AAFB5', borderRadius: 12, padding: 20}}>
+            <h4 style={{fontSize: '0.95rem', fontWeight: 700, color: '#2B4C6F', margin: 0, marginBottom: 8}}>⚡ One-time setup to enable sending</h4>
+            <p style={{fontSize: '0.85rem', color: '#4A5E73', margin: 0, lineHeight: 1.55}}>
+              1. Sign up free at <strong>resend.com</strong>. 2. Verify your sending domain (stridefba.com or lephub.com). 3. Generate an API key. 4. In Netlify → Site Settings → Environment Variables, add <code style={{background: 'white', padding: '1px 6px', borderRadius: 4, fontSize: '0.85rem'}}>RESEND_API_KEY</code> with the key value. 5. Trigger a fresh deploy. After that, every Send Now goes live to real inboxes.
+            </p>
+          </div>
+        </div>
       )}
 
       {/* ═══ SETTINGS TAB ═══ */}
