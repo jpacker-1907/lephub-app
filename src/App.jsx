@@ -10570,6 +10570,105 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
 
 // ─── APP SHELL (post-auth) ────────────────────────────────────
 // ─── ADMIN VIEW ──────────────────────────────────────────────
+
+// ════════════════════════════════════════════════════════════════════
+// STRIDE CONNECT — Built-in Libraries
+// ════════════════════════════════════════════════════════════════════
+
+const STRIDE_TEMPLATES = [
+  {
+    id: 'tmpl-welcome',
+    name: 'Welcome New Member',
+    category: 'Onboarding',
+    subject: 'Welcome to Stride, {{firstName}}',
+    body: `Hi {{firstName}},\n\nWelcome to the Stride Family Business Alliance. You've joined a community of multigenerational family business leaders working through the same questions you're working through — how to lead, govern, and pass on what your family has built.\n\nA few things to do this week to get the most out of your membership:\n\n1. Complete your LEP Discovery Assessment (about 20 min) — it tells us where {{enterpriseName}} stands today across the five pillars.\n2. Schedule your peer group orientation call.\n3. Browse the LEP Journey to see the path ahead.\n\nReply to this email any time. I read every reply personally.\n\nJason`,
+  },
+  {
+    id: 'tmpl-peer-reminder',
+    name: 'Peer Group Session Reminder',
+    category: 'Peer Groups',
+    subject: 'This Tuesday — your peer group session',
+    body: `Hi {{firstName}},\n\nQuick reminder: your {{peerGroup}} peer group session is this Tuesday.\n\nA few prep items:\n• Bring one challenge or decision you're sitting with at {{enterpriseName}}\n• Review last session's commitments — we'll check in on those first\n• Be ready to be in the hot seat if your turn comes around\n\nThe Zoom link is in your member portal under Sessions.\n\nSee you Tuesday.\n\nJason`,
+  },
+  {
+    id: 'tmpl-assessment-nudge',
+    name: 'LEP Assessment Nudge',
+    category: 'Engagement',
+    subject: 'Quick nudge — your LEP Assessment',
+    body: `Hi {{firstName}},\n\nNoticed you haven't yet completed the LEP Assessment for {{enterpriseName}}. It's the foundation for everything else we'll do together — without it, peer group conversations and family work happen without context.\n\nIt takes about 20 minutes. Most members say they learn something about their own enterprise just by working through the questions.\n\nLog in at lephub.com → LEP Journey → Assess.\n\nReply if anything is blocking you on this.\n\nJason`,
+  },
+  {
+    id: 'tmpl-newsletter',
+    name: 'Monthly Stride Newsletter',
+    category: 'Newsletter',
+    subject: 'Stride Monthly — {{month}}',
+    body: `Hi {{firstName}},\n\nWelcome to this month's Stride update.\n\n— What's happening across the community —\n[Add highlights from peer group sessions, member milestones, content]\n\n— Upcoming sessions —\n[List events with dates and Zoom links]\n\n— Resource of the month —\n[Article, book, podcast, or framework worth attention]\n\n— A note from me —\n[Personal reflection or invitation]\n\nReply with what's on your mind at {{enterpriseName}} this month.\n\nJason`,
+  },
+  {
+    id: 'tmpl-event-invite',
+    name: 'Event Invitation',
+    category: 'Events',
+    subject: "You're invited — {{eventName}}",
+    body: `Hi {{firstName}},\n\nI'd like to personally invite you to {{eventName}}.\n\nDate: [DATE]\nLocation: [LOCATION]\nTime: [TIME]\n\nWhy this matters for {{enterpriseName}}:\n[2-3 lines on relevance to this member specifically]\n\nWho will be there:\n[Names that matter — peer group members, special guests]\n\nReply with a yes/no/maybe by [DEADLINE]. RSVP link in your member portal.\n\nLooking forward to seeing you there.\n\nJason`,
+  },
+  {
+    id: 'tmpl-discovery-followup',
+    name: 'Discovery Call Follow-Up',
+    category: 'Onboarding',
+    subject: 'Following up on our conversation',
+    body: `Hi {{firstName}},\n\nThank you for the conversation today. A few quick recap items:\n\nWhat I heard:\n• [KEY THEME 1]\n• [KEY THEME 2]\n• [KEY THEME 3]\n\nWhat I'm proposing:\n[ONE PARAGRAPH WITH RECOMMENDATION]\n\nNext steps:\n1. [ACTION ITEM 1]\n2. [ACTION ITEM 2]\n\nLooking forward to continuing the work.\n\nJason`,
+  },
+  {
+    id: 'tmpl-milestone',
+    name: 'Family Milestone Recognition',
+    category: 'Engagement',
+    subject: 'Congratulations from Stride',
+    body: `Hi {{firstName}},\n\nWanted to send a personal note about [MILESTONE — e.g., the next-gen joining the business, anniversary, succession announcement, sale of the company, etc.] at {{enterpriseName}}.\n\nThis is one of the moments that defines who a family becomes. The work you've put in to get here matters.\n\nIf there's anything we can do as a community to support what's next, you know where to find us.\n\nProud to know you.\n\nJason`,
+  },
+  {
+    id: 'tmpl-sponsor-update',
+    name: 'Sponsor Quarterly Update',
+    category: 'Sponsors',
+    subject: 'Stride sponsor update — Q[X]',
+    body: `Hi {{firstName}},\n\nQuick update on Stride this quarter as part of our sponsor partnership.\n\n— Member growth: [N members, up from M]\n— Engagement: [PEER GROUP SESSIONS RUN, AVERAGE ATTENDANCE]\n— Content: [WHAT YOUR SPONSORSHIP MADE POSSIBLE]\n— Family stories: [1-2 anonymized member outcomes]\n\nUpcoming things to know about:\n• Stride Summit 2026 — Sept 8-10, Berkshires\n• [OTHER MILESTONES]\n\nThank you for your continued partnership.\n\nJason`,
+  },
+  {
+    id: 'tmpl-reengagement',
+    name: 'Re-engagement (Inactive Member)',
+    category: 'Engagement',
+    subject: 'Checking in, {{firstName}}',
+    body: `Hi {{firstName}},\n\nNoticed it's been a while since you've engaged with Stride — no portal logins, no peer group sessions in the last 60 days. No judgment; life moves fast for family business leaders.\n\nA few questions just to take your pulse:\n\n1. Is there something specific that's pulled you away — and is there anything we can do?\n2. What would make Stride genuinely useful for {{enterpriseName}} right now?\n3. Are you still in the right peer group?\n\nReply with even one sentence and I'll get the right person back to you within a day.\n\nJason`,
+  },
+  {
+    id: 'tmpl-summit-rsvp',
+    name: 'Summit 2026 RSVP Request',
+    category: 'Events',
+    subject: 'Stride Summit 2026 — your seat awaits',
+    body: `Hi {{firstName}},\n\nThe inaugural Stride Summit is September 8–10, 2026 in the Berkshires. As a member, your spot is reserved — but I need you to confirm by [DATE] so we can plan numbers.\n\nWhat to expect:\n• 2.5 days with multigenerational family business leaders\n• Keynote from [SPEAKER]\n• A live peer group session you can sit in on\n• A full day at Hancock Shaker Village — including the Awards Dinner in the Round Stone Barn\n\nDetails and RSVP at lephub.com → Sessions.\n\nLooking forward to seeing you and {{enterpriseName}} represented.\n\nJason`,
+  },
+];
+
+const STRIDE_SNIPPETS = [
+  { id: 'snip-sig-jason', name: 'Jason — full signature', text: 'Jason Packer\nFounder, Stride Family Business Alliance\nDeveloper, Legacy Enterprise Process™\njpacker@stridefba.com · stridefba.com' },
+  { id: 'snip-sig-short', name: 'Jason — short', text: 'Jason\nStride Family Business Alliance' },
+  { id: 'snip-zoom-promise', name: 'Zoom session prep', text: 'A few things to bring to the call:\n• One challenge or decision you are sitting with right now\n• Last session\'s commitments and where you stand on each\n• Any updates from your family enterprise that the group should know' },
+  { id: 'snip-cta-portal', name: 'CTA: Member portal', text: 'Log in at lephub.com to access this in your member portal.' },
+  { id: 'snip-cta-discovery', name: 'CTA: Discovery Conversation', text: 'If you would like to talk through this, schedule a Discovery Conversation at lephub.com.' },
+  { id: 'snip-confidentiality', name: 'Confidentiality footer', text: 'This message is part of your confidential Stride membership. Please do not forward outside the community without permission.' },
+  { id: 'snip-summit', name: 'Summit save-the-date', text: 'Save the date: Stride Summit 2026, September 8-10, in the Berkshires. Member RSVP details coming soon.' },
+];
+
+// LEP Lifecycle stages — pipeline view
+const STRIDE_LIFECYCLE_STAGES = [
+  { id: 'discovery', name: 'Discovery', color: '#7A8BA0', desc: 'New member, hasn\'t completed LEP Assessment' },
+  { id: 'roots', name: 'ROOTS', color: '#2D6A4F', desc: 'Working on Family Enterprise Charter' },
+  { id: 'order', name: 'ORDER', color: '#0F2440', desc: 'Working on Council Map / governance' },
+  { id: 'momentum', name: 'MOMENTUM', color: '#D94F6B', desc: 'Working on Enterprise Rhythm / sales engine' },
+  { id: 'continuity', name: 'CONTINUITY', color: '#5BBCBF', desc: 'Working on succession / Continuity Roadmap' },
+  { id: 'legacy', name: 'LEGACY', color: '#C4933F', desc: 'Working on Legacy Blueprint / generational design' },
+  { id: 'complete', name: 'Stewardship', color: '#10B981', desc: 'Full LEP framework in place — annual review cadence' },
+];
+
 function AdminView({ currentUser }) {
   // ─── ADMIN TABS ───────────────────────────────────────────
   const ADMIN_TABS = [
@@ -10597,7 +10696,7 @@ function AdminView({ currentUser }) {
   const [csvPreview, setCsvPreview] = useState(null);
   const csvInputRef = useRef(null);
 
-  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
+  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false });
 
   // ─── SESSION NOTES STATE (v41) ────────────────────────────
   const [sessionForm, setSessionForm] = useState({ familyName: '', sessionDate: new Date().toISOString().split('T')[0], summary: '', actionItems: '', transcript: '' });
@@ -10652,11 +10751,15 @@ function AdminView({ currentUser }) {
   useEffect(() => { localStorage.setItem('stride_connect_from', composeFrom); }, [composeFrom]);
 
   const computeRecipients = () => {
-    if (recipientFilter === 'all') return members;
-    if (recipientFilter === 'peer-group') return members.filter(m => m.peerGroup === recipientPeerGroup);
-    if (recipientFilter === 'tier') return members.filter(m => m.tier === recipientTier);
-    if (recipientFilter === 'individual') return members.filter(m => selectedMemberIds.includes(m.id));
-    return [];
+    let filtered = [];
+    if (recipientFilter === 'all') filtered = members;
+    else if (recipientFilter === 'peer-group') filtered = members.filter(m => m.peerGroup === recipientPeerGroup);
+    else if (recipientFilter === 'tier') filtered = members.filter(m => m.tier === recipientTier);
+    else if (recipientFilter === 'family') filtered = members.filter(m => m.enterpriseName === recipientPeerGroup);
+    else if (recipientFilter === 'lifecycle') filtered = members.filter(m => (m.lifecycleStage || 'discovery') === recipientPeerGroup);
+    else if (recipientFilter === 'individual') filtered = members.filter(m => selectedMemberIds.includes(m.id));
+    // Always exclude unsubscribed members from outbound
+    return filtered.filter(m => !m.unsubscribed);
   };
 
   const saveConnectDraft = () => {
@@ -10776,9 +10879,153 @@ function AdminView({ currentUser }) {
     }
   };
 
-  // List unique peer groups and tiers from members for dropdowns
+  // Templates / Snippets / Signature / Schedule
+  const [customTemplates, setCustomTemplates] = useState(() => JSON.parse(localStorage.getItem('stride_connect_templates') || '[]'));
+  const [customSnippets, setCustomSnippets] = useState(() => JSON.parse(localStorage.getItem('stride_connect_snippets') || '[]'));
+  const [emailSignature, setEmailSignature] = useState(() => localStorage.getItem('stride_connect_signature') || '');
+  const [includeSignature, setIncludeSignature] = useState(() => localStorage.getItem('stride_connect_include_sig') !== 'false');
+  const [savedSegments, setSavedSegments] = useState(() => JSON.parse(localStorage.getItem('stride_connect_segments') || '[]'));
+  const [scheduledSends, setScheduledSends] = useState(() => JSON.parse(localStorage.getItem('stride_connect_scheduled') || '[]'));
+  const [scheduleAt, setScheduleAt] = useState('');
+  const [showTemplatesDropdown, setShowTemplatesDropdown] = useState(false);
+  const [showSnippetsDropdown, setShowSnippetsDropdown] = useState(false);
+  const [showVariablesDropdown, setShowVariablesDropdown] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+
+  useEffect(() => { localStorage.setItem('stride_connect_templates', JSON.stringify(customTemplates)); }, [customTemplates]);
+  useEffect(() => { localStorage.setItem('stride_connect_snippets', JSON.stringify(customSnippets)); }, [customSnippets]);
+  useEffect(() => { localStorage.setItem('stride_connect_signature', emailSignature); }, [emailSignature]);
+  useEffect(() => { localStorage.setItem('stride_connect_include_sig', String(includeSignature)); }, [includeSignature]);
+  useEffect(() => { localStorage.setItem('stride_connect_segments', JSON.stringify(savedSegments)); }, [savedSegments]);
+  useEffect(() => { localStorage.setItem('stride_connect_scheduled', JSON.stringify(scheduledSends)); }, [scheduledSends]);
+
+  const allTemplates = [...STRIDE_TEMPLATES, ...customTemplates];
+  const allSnippets = [...STRIDE_SNIPPETS, ...customSnippets];
+
+  const PERSONALIZATION_VARS = [
+    { token: '{{firstName}}', label: 'First Name' },
+    { token: '{{lastName}}', label: 'Last Name' },
+    { token: '{{name}}', label: 'Full Name' },
+    { token: '{{enterpriseName}}', label: 'Family Enterprise Name' },
+    { token: '{{peerGroup}}', label: 'Peer Group' },
+    { token: '{{tier}}', label: 'Membership Tier' },
+    { token: '{{generation}}', label: 'Generation (G1-G4+)' },
+    { token: '{{lifecycleStage}}', label: 'LEP Lifecycle Stage' },
+    { token: '{{month}}', label: 'Current Month' },
+    { token: '{{year}}', label: 'Current Year' },
+  ];
+
+  const loadTemplate = (template) => {
+    setComposeSubject(template.subject || '');
+    setComposeBody(template.body || '');
+    setShowTemplatesDropdown(false);
+    alert(`Loaded template: ${template.name}`);
+  };
+
+  const saveAsTemplate = () => {
+    const name = prompt('Template name:');
+    if (!name) return;
+    const newTemplate = {
+      id: 'custom-' + Date.now(),
+      name,
+      category: 'Custom',
+      subject: composeSubject,
+      body: composeBody,
+    };
+    setCustomTemplates(prev => [newTemplate, ...prev]);
+    alert(`Saved as template: ${name}`);
+  };
+
+  const insertSnippet = (snippet) => {
+    setComposeBody(prev => (prev || '') + (prev && !prev.endsWith('\n') ? '\n\n' : '') + snippet.text);
+    setShowSnippetsDropdown(false);
+  };
+
+  const insertVariable = (token) => {
+    setComposeBody(prev => (prev || '') + token);
+    setShowVariablesDropdown(false);
+  };
+
+  const saveCurrentAsSegment = () => {
+    const name = prompt('Segment name:');
+    if (!name) return;
+    const segment = {
+      id: 'seg-' + Date.now(),
+      name,
+      criteria: { filter: recipientFilter, peerGroup: recipientPeerGroup, tier: recipientTier, memberIds: [...selectedMemberIds] },
+      createdAt: new Date().toISOString(),
+    };
+    setSavedSegments(prev => [segment, ...prev]);
+    alert(`Saved segment: ${name}`);
+  };
+
+  const loadSegment = (seg) => {
+    setRecipientFilter(seg.criteria.filter || 'all');
+    setRecipientPeerGroup(seg.criteria.peerGroup || '');
+    setRecipientTier(seg.criteria.tier || '');
+    setSelectedMemberIds(seg.criteria.memberIds || []);
+  };
+
+  const deleteSegment = (id) => {
+    setSavedSegments(prev => prev.filter(s => s.id !== id));
+  };
+
+  const renderEmailPreview = (forMember) => {
+    const m = forMember || members[0] || { name: 'Sample Member', email: 'preview@example.com', enterpriseName: 'Sample Enterprise', peerGroup: '', tier: '', generation: '' };
+    const firstName = (m.name || '').split(' ')[0] || '';
+    const lastName = (m.name || '').split(' ').slice(1).join(' ');
+    const now = new Date();
+    const fullBody = composeBody + (includeSignature && emailSignature ? '\n\n' + emailSignature : '');
+    const sub = (text) => (text || '')
+      .replace(/\{\{firstName\}\}/g, firstName)
+      .replace(/\{\{lastName\}\}/g, lastName)
+      .replace(/\{\{name\}\}/g, m.name || '')
+      .replace(/\{\{enterpriseName\}\}/g, m.enterpriseName || 'your family enterprise')
+      .replace(/\{\{peerGroup\}\}/g, m.peerGroup || '')
+      .replace(/\{\{tier\}\}/g, m.tier || '')
+      .replace(/\{\{generation\}\}/g, m.generation || '')
+      .replace(/\{\{lifecycleStage\}\}/g, (STRIDE_LIFECYCLE_STAGES.find(st => st.id === m.lifecycleStage) || {}).name || '')
+      .replace(/\{\{month\}\}/g, now.toLocaleString('en-US', { month: 'long' }))
+      .replace(/\{\{year\}\}/g, String(now.getFullYear()));
+    return { subject: sub(composeSubject), body: sub(fullBody), to: m.email };
+  };
+
+  const scheduleSend = () => {
+    if (!scheduleAt) { alert('Pick a future date and time first.'); return; }
+    const sendDate = new Date(scheduleAt);
+    if (sendDate <= new Date()) { alert('Scheduled time must be in the future.'); return; }
+    const recipients = computeRecipients().filter(m => m.email && !m.unsubscribed);
+    if (recipients.length === 0) { alert('No valid recipients (or all selected members have unsubscribed).'); return; }
+    if (!composeSubject.trim() || !composeBody.trim()) { alert('Subject and message body are required.'); return; }
+    const scheduled = {
+      id: 'sched-' + Date.now(),
+      scheduledFor: sendDate.toISOString(),
+      status: 'pending',
+      from: composeFrom,
+      subject: composeSubject,
+      body: composeBody + (includeSignature && emailSignature ? '\n\n' + emailSignature : ''),
+      recipientIds: recipients.map(r => r.id),
+      recipientCount: recipients.length,
+      createdAt: new Date().toISOString(),
+    };
+    setScheduledSends(prev => [scheduled, ...prev]);
+    setComposeSubject('');
+    setComposeBody('');
+    setScheduleAt('');
+    alert(`Scheduled to send ${recipients.length} message${recipients.length === 1 ? '' : 's'} on ${sendDate.toLocaleString()}.`);
+  };
+
+  // List unique peer groups, tiers, families for dropdowns
   const uniquePeerGroups = Array.from(new Set(members.map(m => m.peerGroup).filter(Boolean)));
   const uniqueTiers = Array.from(new Set(members.map(m => m.tier).filter(Boolean)));
+  const uniqueFamilies = Array.from(new Set(members.map(m => m.enterpriseName).filter(Boolean)));
+
+  // Compute lifecycle stage counts for pipeline view
+  const membersByStage = STRIDE_LIFECYCLE_STAGES.map(stage => ({
+    stage,
+    members: members.filter(m => (m.lifecycleStage || 'discovery') === stage.id),
+  }));
 
   // ─── EVENTS STATE ─────────────────────────────────────────
   const [sessions, setSessions] = useState(() => {
@@ -11072,7 +11319,7 @@ function AdminView({ currentUser }) {
       </div>
       <div style={{display: 'flex', gap: '10px', marginTop: '8px'}}>
         <button onClick={saveMember} style={btnPrimary}>{editingMember ? 'Save Changes' : 'Add Member'}</button>
-        <button onClick={() => { setShowAddMember(false); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() }); }} style={btnSecondary}>Cancel</button>
+        <button onClick={() => { setShowAddMember(false); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false }); }} style={btnSecondary}>Cancel</button>
       </div>
     </div>
   );
@@ -11502,7 +11749,67 @@ function AdminView({ currentUser }) {
           <div style={{display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24}}>
             {/* COMPOSE PANEL */}
             <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 24}}>
-              <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Compose</h3>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8}}>
+                <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', margin: 0}}>Compose</h3>
+                <button onClick={() => setShowSettingsPanel(!showSettingsPanel)} style={{background: 'none', border: '1px solid #DDE3EB', color: '#7A8BA0', borderRadius: 6, padding: '4px 12px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer'}}>⚙ Settings</button>
+              </div>
+
+              {/* SETTINGS PANEL — collapsible */}
+              {showSettingsPanel && (
+                <div style={{background: '#F5F7FA', borderRadius: 8, padding: 14, marginBottom: 14, border: '1px solid #DDE3EB'}}>
+                  <label style={{fontSize: '0.78rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6}}>Email Signature</label>
+                  <textarea value={emailSignature} onChange={e => setEmailSignature(e.target.value)} placeholder="Your signature — appears at the bottom of every email when toggle is on..." rows={4} style={{width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #DDE3EB', fontSize: '0.85rem', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box', marginBottom: 8}} />
+                  <label style={{display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.82rem', color: '#4A5E73', cursor: 'pointer'}}>
+                    <input type="checkbox" checked={includeSignature} onChange={e => setIncludeSignature(e.target.checked)} />
+                    Auto-append signature to every send
+                  </label>
+                </div>
+              )}
+
+              {/* TOOLBAR — Templates / Snippets / Variables / Save Template / Preview */}
+              <div style={{display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14, paddingBottom: 14, borderBottom: '1px solid #EFF1F6'}}>
+                <div style={{position: 'relative'}}>
+                  <button onClick={() => { setShowTemplatesDropdown(!showTemplatesDropdown); setShowSnippetsDropdown(false); setShowVariablesDropdown(false); }} style={{background: 'white', border: '1px solid #DDE3EB', color: '#2B4C6F', borderRadius: 6, padding: '6px 14px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer'}}>📄 Templates ▾</button>
+                  {showTemplatesDropdown && (
+                    <div style={{position: 'absolute', top: '100%', left: 0, marginTop: 4, background: 'white', border: '1px solid #DDE3EB', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', zIndex: 100, minWidth: 280, maxHeight: 380, overflowY: 'auto'}}>
+                      {allTemplates.map(t => (
+                        <div key={t.id} onClick={() => loadTemplate(t)} style={{padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #EFF1F6'}} onMouseEnter={e => e.currentTarget.style.background = '#F5F7FA'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                          <div style={{fontSize: '0.85rem', fontWeight: 600, color: '#2B4C6F'}}>{t.name}</div>
+                          <div style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{t.category} · {(t.subject || '').slice(0, 50)}</div>
+                        </div>
+                      ))}
+                      <div onClick={saveAsTemplate} style={{padding: '10px 14px', cursor: 'pointer', background: '#EBF7F8', fontSize: '0.82rem', fontWeight: 600, color: '#5AAFB5', textAlign: 'center'}}>+ Save current as template</div>
+                    </div>
+                  )}
+                </div>
+                <div style={{position: 'relative'}}>
+                  <button onClick={() => { setShowSnippetsDropdown(!showSnippetsDropdown); setShowTemplatesDropdown(false); setShowVariablesDropdown(false); }} style={{background: 'white', border: '1px solid #DDE3EB', color: '#2B4C6F', borderRadius: 6, padding: '6px 14px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer'}}>✂ Snippets ▾</button>
+                  {showSnippetsDropdown && (
+                    <div style={{position: 'absolute', top: '100%', left: 0, marginTop: 4, background: 'white', border: '1px solid #DDE3EB', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', zIndex: 100, minWidth: 280, maxHeight: 380, overflowY: 'auto'}}>
+                      {allSnippets.map(sn => (
+                        <div key={sn.id} onClick={() => insertSnippet(sn)} style={{padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #EFF1F6'}} onMouseEnter={e => e.currentTarget.style.background = '#F5F7FA'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                          <div style={{fontSize: '0.85rem', fontWeight: 600, color: '#2B4C6F'}}>{sn.name}</div>
+                          <div style={{fontSize: '0.72rem', color: '#7A8BA0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{sn.text.slice(0, 80)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div style={{position: 'relative'}}>
+                  <button onClick={() => { setShowVariablesDropdown(!showVariablesDropdown); setShowTemplatesDropdown(false); setShowSnippetsDropdown(false); }} style={{background: 'white', border: '1px solid #DDE3EB', color: '#2B4C6F', borderRadius: 6, padding: '6px 14px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer'}}>{'{ } Variables ▾'}</button>
+                  {showVariablesDropdown && (
+                    <div style={{position: 'absolute', top: '100%', left: 0, marginTop: 4, background: 'white', border: '1px solid #DDE3EB', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', zIndex: 100, minWidth: 240, maxHeight: 380, overflowY: 'auto'}}>
+                      {PERSONALIZATION_VARS.map(v => (
+                        <div key={v.token} onClick={() => insertVariable(v.token)} style={{padding: '8px 14px', cursor: 'pointer', borderBottom: '1px solid #EFF1F6', display: 'flex', justifyContent: 'space-between', gap: 12}} onMouseEnter={e => e.currentTarget.style.background = '#F5F7FA'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                          <span style={{fontSize: '0.82rem', color: '#2B4C6F'}}>{v.label}</span>
+                          <code style={{fontSize: '0.72rem', color: '#5AAFB5', background: '#EBF7F8', padding: '1px 6px', borderRadius: 3}}>{v.token}</code>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => setShowPreview(true)} style={{background: 'white', border: '1px solid #DDE3EB', color: '#2B4C6F', borderRadius: 6, padding: '6px 14px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto'}}>👁 Preview</button>
+              </div>
 
               <div style={{marginBottom: 14}}>
                 <label style={{fontSize: '0.78rem', fontWeight: 600, color: '#4A5E73', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em'}}>From</label>
@@ -11519,7 +11826,7 @@ function AdminView({ currentUser }) {
                 <textarea value={composeBody} onChange={e => setComposeBody(e.target.value)} placeholder="Hi {'{{firstName}}'},&#10;&#10;Quick note about {'{{enterpriseName}}'}'s next peer group session…" rows={12} style={{width: '100%', padding: '12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', lineHeight: 1.55, fontFamily: 'inherit', boxSizing: 'border-box', resize: 'vertical'}} />
               </div>
 
-              <div style={{display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap'}}>
+              <div style={{display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12}}>
                 <button onClick={sendConnectMessage} disabled={sendStatus === 'sending'} style={{background: sendStatus === 'sending' ? '#7A8BA0' : '#5AAFB5', color: 'white', border: 'none', borderRadius: 8, padding: '10px 24px', fontWeight: 700, fontSize: '0.92rem', cursor: sendStatus === 'sending' ? 'wait' : 'pointer'}}>
                   {sendStatus === 'sending' ? 'Sending…' : sendStatus === 'sent' ? '✓ Sent' : 'Send Now'}
                 </button>
@@ -11528,6 +11835,13 @@ function AdminView({ currentUser }) {
                   Recipients: <strong style={{color: '#2B4C6F'}}>{computeRecipients().length}</strong>
                 </span>
               </div>
+
+              {/* SCHEDULE SEND ROW */}
+              <div style={{background: '#F5F7FA', borderRadius: 8, padding: 12, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap'}}>
+                <span style={{fontSize: '0.82rem', color: '#4A5E73', fontWeight: 600}}>📅 Schedule send for later:</span>
+                <input type="datetime-local" value={scheduleAt} onChange={e => setScheduleAt(e.target.value)} style={{padding: '6px 10px', borderRadius: 6, border: '1px solid #DDE3EB', fontSize: '0.85rem'}} />
+                <button onClick={scheduleSend} disabled={!scheduleAt} style={{background: scheduleAt ? '#2B4C6F' : '#DDE3EB', color: scheduleAt ? 'white' : '#7A8BA0', border: 'none', borderRadius: 6, padding: '7px 16px', fontWeight: 600, fontSize: '0.82rem', cursor: scheduleAt ? 'pointer' : 'not-allowed'}}>Schedule</button>
+              </div>
             </div>
 
             {/* RECIPIENT PANEL */}
@@ -11535,13 +11849,33 @@ function AdminView({ currentUser }) {
               <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Recipients</h3>
 
               <div style={{marginBottom: 14}}>
-                <select value={recipientFilter} onChange={e => setRecipientFilter(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
-                  <option value="all">All Members ({members.length})</option>
+                <select value={recipientFilter} onChange={e => { setRecipientFilter(e.target.value); setRecipientPeerGroup(''); setRecipientTier(''); }} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                  <option value="all">All Members ({members.filter(m => !m.unsubscribed).length})</option>
                   <option value="peer-group">By Peer Group</option>
                   <option value="tier">By Tier</option>
+                  <option value="family">By Family Enterprise</option>
+                  <option value="lifecycle">By LEP Lifecycle Stage</option>
                   <option value="individual">Pick Individuals</option>
                 </select>
               </div>
+
+              {recipientFilter === 'family' && (
+                <div style={{marginBottom: 14}}>
+                  <select value={recipientPeerGroup} onChange={e => setRecipientPeerGroup(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                    <option value="">Select a family enterprise...</option>
+                    {uniqueFamilies.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {recipientFilter === 'lifecycle' && (
+                <div style={{marginBottom: 14}}>
+                  <select value={recipientPeerGroup} onChange={e => setRecipientPeerGroup(e.target.value)} style={{width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #DDE3EB', fontSize: '0.92rem', boxSizing: 'border-box', background: 'white'}}>
+                    <option value="">Select a stage...</option>
+                    {STRIDE_LIFECYCLE_STAGES.map(st => <option key={st.id} value={st.id}>{st.name} — {st.desc}</option>)}
+                  </select>
+                </div>
+              )}
 
               {recipientFilter === 'peer-group' && (
                 <div style={{marginBottom: 14}}>
@@ -11589,6 +11923,24 @@ function AdminView({ currentUser }) {
                   {computeRecipients().length > 0 && <span style={{color: '#7A8BA0'}}>{' '}({computeRecipients().slice(0, 3).map(m => m.name).join(', ')}{computeRecipients().length > 3 ? `, +${computeRecipients().length - 3} more` : ''})</span>}
                 </p>
               </div>
+
+              {/* SAVED SEGMENTS */}
+              <div style={{marginTop: 18, paddingTop: 14, borderTop: '1px solid #EFF1F6'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10}}>
+                  <span style={{fontSize: '0.78rem', fontWeight: 700, color: '#4A5E73', textTransform: 'uppercase', letterSpacing: '0.04em'}}>Saved Segments</span>
+                  <button onClick={saveCurrentAsSegment} style={{background: 'transparent', border: '1px solid #5AAFB5', color: '#5AAFB5', borderRadius: 6, padding: '4px 10px', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer'}}>+ Save current</button>
+                </div>
+                {savedSegments.length === 0 ? (
+                  <p style={{fontSize: '0.78rem', color: '#7A8BA0', fontStyle: 'italic', margin: 0}}>No saved segments yet — set up your filter above and click Save current.</p>
+                ) : (
+                  savedSegments.map(seg => (
+                    <div key={seg.id} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', background: '#F5F7FA', borderRadius: 6, marginBottom: 4}}>
+                      <span style={{fontSize: '0.82rem', color: '#2B4C6F', cursor: 'pointer', flex: 1}} onClick={() => loadSegment(seg)}>{seg.name}</span>
+                      <button onClick={() => deleteSegment(seg.id)} style={{background: 'transparent', border: 'none', color: '#E05B6F', cursor: 'pointer', fontSize: '0.78rem', padding: '0 6px'}}>×</button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 
@@ -11630,7 +11982,82 @@ function AdminView({ currentUser }) {
             )}
           </div>
 
-          {/* SETUP PROMPT — visible until RESEND_API_KEY is configured */}
+          {/* SCHEDULED SENDS */}
+          {scheduledSends.length > 0 && (
+            <div style={{marginTop: 28}}>
+              <h3 style={{fontSize: '1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 12}}>📅 Scheduled Sends ({scheduledSends.filter(s => s.status === 'pending').length} pending)</h3>
+              {scheduledSends.map(sched => (
+                <div key={sched.id} style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 10, padding: '14px 18px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 14}}>
+                  <div style={{flex: 1}}>
+                    <div style={{fontSize: '0.92rem', fontWeight: 600, color: '#2B4C6F'}}>{sched.subject}</div>
+                    <div style={{fontSize: '0.75rem', color: '#7A8BA0'}}>
+                      Scheduled for {new Date(sched.scheduledFor).toLocaleString()} · {sched.recipientCount} recipient{sched.recipientCount === 1 ? '' : 's'} ·
+                      <span style={{color: sched.status === 'sent' ? '#10B981' : sched.status === 'failed' ? '#E05B6F' : '#FB923C', fontWeight: 600, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.05em'}}>{sched.status}</span>
+                    </div>
+                  </div>
+                  {sched.status === 'pending' && (
+                    <button onClick={() => setScheduledSends(prev => prev.filter(x => x.id !== sched.id))} style={{background: 'white', color: '#E05B6F', border: '1px solid #E05B6F40', borderRadius: 6, padding: '6px 12px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer'}}>Cancel</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* LIFECYCLE PIPELINE — kanban view of where each member is in the LEP framework */}
+          <div style={{marginTop: 32}}>
+            <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 6}}>🧭 LEP Lifecycle Pipeline</h3>
+            <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: 16, lineHeight: 1.5}}>
+              See every member's position in the Stride Way framework. This is the family-business intelligence HubSpot doesn't have. Click a member to email just that group.
+            </p>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10, overflowX: 'auto'}}>
+              {membersByStage.map(({ stage, members: stageMembers }) => (
+                <div key={stage.id} style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 10, overflow: 'hidden', minWidth: 0}}>
+                  <div style={{background: stage.color, color: 'white', padding: '10px 12px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase'}}>
+                    {stage.name}
+                    <span style={{float: 'right', background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: 100, fontSize: '0.7rem'}}>{stageMembers.length}</span>
+                  </div>
+                  <div style={{padding: 8, minHeight: 100, maxHeight: 280, overflowY: 'auto'}}>
+                    {stageMembers.length === 0 ? (
+                      <p style={{fontSize: '0.7rem', color: '#9AA8B8', fontStyle: 'italic', textAlign: 'center', margin: '12px 0'}}>No members</p>
+                    ) : (
+                      stageMembers.map(m => (
+                        <div key={m.id} onClick={() => { setRecipientFilter('lifecycle'); setRecipientPeerGroup(stage.id); setActiveTab('connect'); }} style={{padding: '6px 8px', background: '#F5F7FA', borderRadius: 4, marginBottom: 4, fontSize: '0.78rem', cursor: 'pointer'}}>
+                          <div style={{color: '#2B4C6F', fontWeight: 600}}>{m.name}</div>
+                          <div style={{color: '#7A8BA0', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.enterpriseName || ''}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* PREVIEW MODAL */}
+          {showPreview && (
+            <div onClick={() => setShowPreview(false)} style={{position: 'fixed', inset: 0, background: 'rgba(15,36,64,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: 24}}>
+              <div onClick={e => e.stopPropagation()} style={{background: 'white', borderRadius: 12, padding: 28, maxWidth: 640, width: '100%', maxHeight: '85vh', overflowY: 'auto'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16}}>
+                  <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', margin: 0}}>Email Preview</h3>
+                  <button onClick={() => setShowPreview(false)} style={{background: 'none', border: 'none', fontSize: '1.5rem', color: '#7A8BA0', cursor: 'pointer', padding: 0, lineHeight: 1}}>×</button>
+                </div>
+                <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: 16}}>Showing how the email will look to {computeRecipients()[0]?.name || 'the first recipient'} (variables substituted with their data):</p>
+                {(() => {
+                  const preview = renderEmailPreview(computeRecipients()[0]);
+                  return (
+                    <div style={{border: '1px solid #DDE3EB', borderRadius: 8, padding: 18, background: '#FAFBFC'}}>
+                      <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: 4}}><strong>To:</strong> {preview.to}</div>
+                      <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginBottom: 4}}><strong>From:</strong> {composeFrom}</div>
+                      <div style={{fontSize: '0.95rem', color: '#2B4C6F', fontWeight: 700, marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid #EFF1F6'}}>{preview.subject}</div>
+                      <div style={{fontSize: '0.92rem', color: '#2B3A52', whiteSpace: 'pre-wrap', lineHeight: 1.6}}>{preview.body}</div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* SETUP PROMPT — visible until RESEND_API_KEY is configured */}          {/* SETUP PROMPT — visible until RESEND_API_KEY is configured */}
           <div style={{marginTop: 28, background: 'linear-gradient(135deg, #EBF7F8 0%, #D4EEF0 100%)', border: '1px solid #5AAFB5', borderRadius: 12, padding: 20}}>
             <h4 style={{fontSize: '0.95rem', fontWeight: 700, color: '#2B4C6F', margin: 0, marginBottom: 8}}>⚡ One-time setup to enable sending</h4>
             <p style={{fontSize: '0.85rem', color: '#4A5E73', margin: 0, lineHeight: 1.55}}>
