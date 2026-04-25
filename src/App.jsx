@@ -10693,10 +10693,16 @@ function AdminView({ currentUser }) {
   };
 
   const sendConnectMessage = async () => {
-    const recipients = computeRecipients();
-    if (recipients.length === 0) { alert('No recipients selected.'); return; }
+    const recipients = computeRecipients().filter(m => m.email && m.email.trim());
+    if (recipients.length === 0) { alert('No recipients selected (or selected members have no email on file).'); return; }
     if (!composeSubject.trim()) { alert('Subject is required.'); return; }
     if (!composeBody.trim()) { alert('Message body is required.'); return; }
+
+    // Confirmation showing exact emails — eliminates "I thought I picked X" confusion
+    const emailList = recipients.map(r => r.email.trim().toLowerCase()).join(', ');
+    const confirmed = window.confirm(`Send to ${recipients.length} recipient(s)?\n\n${emailList}\n\nFrom: ${composeFrom}`);
+    if (!confirmed) return;
+
     setSendStatus('sending');
 
     // Family-aware personalization — replace variables per-recipient

@@ -55,6 +55,9 @@ exports.handler = async function (event) {
       continue;
     }
     try {
+      // Bare email only — strip any "Name <email>" formatting and whitespace.
+      // Resend's free-tier testing restriction matches strictly on email string.
+      const cleanTo = String(msg.to || '').trim().toLowerCase();
       const res = await fetch(RESEND_API, {
         method: 'POST',
         headers: {
@@ -63,7 +66,7 @@ exports.handler = async function (event) {
         },
         body: JSON.stringify({
           from,
-          to: msg.toName ? `${msg.toName} <${msg.to}>` : msg.to,
+          to: cleanTo,
           subject: msg.subject,
           html: msg.html || msg.text || '',
           text: msg.text || undefined,
@@ -80,9 +83,9 @@ exports.handler = async function (event) {
       });
       const data = await res.json();
       if (!res.ok) {
-        errors.push({ to: msg.to, error: data.message || data.name || 'Send failed' });
+        errors.push({ to: cleanTo, originalTo: msg.to, error: data.message || data.name || 'Send failed' });
       } else {
-        sendIds.push({ to: msg.to, memberId: msg.memberId, resendId: data.id });
+        sendIds.push({ to: cleanTo, memberId: msg.memberId, resendId: data.id });
       }
     } catch (err) {
       errors.push({ to: msg.to, error: err.message });
