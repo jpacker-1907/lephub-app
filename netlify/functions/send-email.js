@@ -69,7 +69,12 @@ exports.handler = async function (event) {
           text: msg.text || undefined,
           tags: [
             { name: 'app', value: 'stride-connect' },
-            ...(msg.memberId ? [{ name: 'member_id', value: String(msg.memberId) }] : []),
+            ...(msg.memberId ? [{
+              name: 'member_id',
+              // Resend tags only allow [A-Za-z0-9_-]. Sanitize any other chars
+              // (e.g. dots from Date.now()+Math.random() or @ in email-style ids).
+              value: String(msg.memberId).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 256),
+            }] : []),
           ],
         }),
       });
