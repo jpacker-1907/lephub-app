@@ -8506,15 +8506,13 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleJoinNow = async () => {
+  const handleApplySubmit = () => {
     if (!formData.name.trim() || !formData.email.trim() || !formData.enterpriseName.trim() || !formData.location.trim()) {
       alert('Please fill in all required fields.');
       return;
     }
 
-    setProcessing(true);
-
-    // Save application
+    // Save application as pending (no payment yet — Jason reviews first)
     const application = {
       ...formData,
       tier: 'member',
@@ -8525,46 +8523,139 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
     existing.push(application);
     localStorage.setItem('stride_membership_applications', JSON.stringify(existing));
 
+    const status = { tier: 'member', appliedAt: new Date().toISOString(), status: 'pending_review' };
+    localStorage.setItem('stride_membership_status', JSON.stringify(status));
+    setMembershipStatus(status);
+    setSubmitted(true);
+    if (onMembershipChange) onMembershipChange(status);
+  };
+
+  const handlePayNow = async () => {
+    setProcessing(true);
     try {
-      // Attempt Stripe checkout
       const result = await payments.checkout(currentUser?.email, currentUser?.id);
       if (result?.simulated) {
-        // No Stripe configured — save as pending review
-        const status = { tier: 'member', appliedAt: new Date().toISOString(), status: 'pending_review' };
+        // No Stripe configured — simulate payment, activate immediately
+        const status = { tier: 'member', appliedAt: membershipStatus?.appliedAt, status: 'active' };
         localStorage.setItem('stride_membership_status', JSON.stringify(status));
+        localStorage.setItem('stride_member_since', new Date().toISOString());
         setMembershipStatus(status);
-        setSubmitted(true);
         if (onMembershipChange) onMembershipChange(status);
       }
       // If Stripe is configured, user gets redirected to Stripe Checkout
     } catch (err) {
-      alert('Something went wrong: ' + (err.message || 'Please try again.'));
+      alert('Payment failed: ' + (err.message || 'Please try again or contact jpacker@stridefba.com'));
     } finally {
       setProcessing(false);
     }
   };
 
-  // ─── ACTIVE MEMBER VIEW ───
+  // ─── STATUS-BASED VIEWS ───
   if (membershipStatus) {
-    const isPending = membershipStatus.status === 'pending_review';
+    const status = membershipStatus.status;
+    const isPending = status === 'pending_review';
+    const isApproved = status === 'approved';
+    const isRejected = status === 'rejected';
+    const isActive = status === 'active';
     const memberSince = localStorage.getItem('stride_member_since') || membershipStatus.appliedAt;
     const renewalDate = new Date(memberSince);
     renewalDate.setFullYear(renewalDate.getFullYear() + 1);
 
+    // ─── PENDING REVIEW ───
+    if (isPending) {
+      return (
+        <div style={{maxWidth: '700px', margin: '0 auto', padding: '32px 20px'}}>
+          <header style={{marginBottom: '32px', textAlign: 'center'}}>
+            <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>Application Submitted</h1>
+          </header>
+          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
+            <div style={{width: '56px', height: '56px', borderRadius: '50%', background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '1.5rem'}}>&#9202;</div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Under Review</h2>
+            <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
+              Your application has been received. Jason Packer will personally review it and reach out within 48 hours to discuss next steps and peer group placement.
+            </p>
+            <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
+              Applied {new Date(membershipStatus.appliedAt).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── APPROVED — PAY NOW ───
+    if (isApproved) {
+      return (
+        <div style={{maxWidth: '700px', margin: '0 auto', padding: '32px 20px'}}>
+          <header style={{marginBottom: '32px', textAlign: 'center'}}>
+            <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>You're Approved!</h1>
+          </header>
+          <div style={{background: 'white', borderRadius: '16px', border: '2px solid #2D5A3D', padding: '36px', textAlign: 'center'}}>
+            <div style={{width: '56px', height: '56px', borderRadius: '50%', background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '1.5rem', color: '#2D5A3D'}}>&#10003;</div>
+            <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Welcome to Stride FBA</h2>
+            <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
+              Your application has been approved. Complete your membership by paying the annual fee below. Once payment is confirmed, you'll have full access to the Stride member portal.
+            </p>
+
+            <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginBottom: '24px'}}>
+              <div style={{fontSize: '2rem', fontWeight: '800', color: '#1A2A3F'}}>$500</div>
+              <div style={{color: '#7A8BA0', fontSize: '0.9rem'}}>/year — starting June 1, 2026</div>
+            </div>
+
+            <div style={{textAlign: 'left', marginBottom: '24px'}}>
+              <div style={{fontSize: '0.85rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Your membership includes:</div>
+              {MEMBERSHIP_FEATURES.map((f, i) => (
+                <div key={i} style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.88rem', color: '#4A5E73', padding: '3px 0'}}>
+                  <span style={{color: '#2D5A3D', flexShrink: 0}}>&#10003;</span> {f}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handlePayNow}
+              disabled={processing}
+              style={{
+                width: '100%', padding: '14px', background: '#2D5A3D', color: 'white', border: 'none',
+                borderRadius: '10px', fontWeight: '700', fontSize: '1rem', cursor: processing ? 'default' : 'pointer',
+                opacity: processing ? 0.6 : 1, transition: 'all 0.2s',
+              }}
+            >
+              {processing ? 'Redirecting to payment...' : 'Pay $500 — Complete Membership'}
+            </button>
+
+            <p style={{color: '#7A8BA0', fontSize: '0.78rem', marginTop: '12px'}}>
+              Secure payment via Stripe. Questions? Email jpacker@stridefba.com
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── REJECTED ───
+    if (isRejected) {
+      return (
+        <div style={{maxWidth: '700px', margin: '0 auto', padding: '32px 20px'}}>
+          <header style={{marginBottom: '32px', textAlign: 'center'}}>
+            <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>Application Update</h1>
+          </header>
+          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
+            <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
+              Thank you for your interest in Stride FBA. After reviewing your application, we're unable to offer membership at this time. If you have questions or would like to discuss further, please reach out directly.
+            </p>
+            <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
+              Contact Jason Packer at <strong>jpacker@stridefba.com</strong>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── ACTIVE MEMBER ───
     return (
       <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
         <header style={{marginBottom: '32px'}}>
           <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>My Membership</h1>
           <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Manage your Stride membership and account settings</p>
         </header>
-
-        {isPending && (
-          <div style={{background: '#FDF0F2', borderRadius: '12px', padding: '20px', marginBottom: '24px', borderLeft: '4px solid #E05B6F'}}>
-            <p style={{color: '#C44A5C', fontSize: '0.9rem', margin: 0}}>
-              <strong>Application under review.</strong> Jason Packer will personally reach out within 48 hours to discuss next steps and peer group placement.
-            </p>
-          </div>
-        )}
 
         {/* Membership Card */}
         <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px', marginBottom: '24px'}}>
@@ -8774,8 +8865,8 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
                 <textarea value={formData.goals} onChange={(e) => handleFormChange('goals', e.target.value)} placeholder="Succession planning? Governance? Family dynamics? Something else?" rows="3" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}} />
               </div>
               <div style={{display: 'flex', gap: '12px'}}>
-                <button onClick={handleJoinNow} disabled={processing} style={{flex: 1, padding: '13px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: processing ? 'default' : 'pointer', opacity: processing ? 0.6 : 1}}>
-                  {processing ? 'Processing...' : 'Submit Application — $500/year'}
+                <button onClick={handleApplySubmit} style={{flex: 1, padding: '13px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer'}}>
+                  Submit Application
                 </button>
                 <button onClick={() => setShowForm(false)} style={{flex: 1, padding: '13px', background: 'white', color: '#2B4C6F', border: '1px solid #DDE3EB', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'}}>
                   Cancel
@@ -9539,9 +9630,13 @@ export default function App() {
     // Check for Stripe checkout return
     const checkoutResult = payments.checkReturnFromCheckout();
     if (checkoutResult?.success) {
-      // Update tier after successful checkout
+      // Activate membership after successful Stripe payment
+      const activeStatus = { tier: 'member', appliedAt: new Date().toISOString(), status: 'active' };
+      localStorage.setItem('stride_membership_status', JSON.stringify(activeStatus));
+      localStorage.setItem('stride_member_since', new Date().toISOString());
+      setMembershipStatus(activeStatus);
       auth.getCurrentUser().then(user => {
-        if (user) setCurrentUser({ ...user, tier: checkoutResult.tier });
+        if (user) setCurrentUser({ ...user, tier: 'member' });
       });
     }
   }, []);
@@ -10280,18 +10375,45 @@ function AdminView({ currentUser }) {
   const handleApprove = (index) => {
     const updated = [...applications];
     updated[index].status = 'approved';
+    updated[index].approvedAt = new Date().toISOString();
     setApplications(updated);
-    // Add to members list
-    const app = updated[index];
-    const member = { id: String(Date.now()), name: app.name, email: app.email, phone: '', enterpriseName: app.enterpriseName, location: app.location, tier: app.tier, status: 'active', peerGroup: '', notes: app.goals || '', joinedAt: new Date().toISOString() };
-    setMembers(prev => [...prev, member]);
-    localStorage.setItem('stride_membership_status', JSON.stringify({ tier: app.tier, appliedAt: app.submittedAt, status: 'active' }));
+    localStorage.setItem('stride_membership_applications', JSON.stringify(updated));
+    // Update their membership status to approved (awaiting payment)
+    // In production with Supabase, this would update their user record
+    // For localStorage mode, we update the shared status key
+    localStorage.setItem('stride_membership_status', JSON.stringify({
+      tier: 'member',
+      appliedAt: updated[index].submittedAt,
+      approvedAt: updated[index].approvedAt,
+      status: 'approved',
+    }));
   };
 
   const handleReject = (index) => {
     const updated = [...applications];
     updated[index].status = 'rejected';
+    updated[index].rejectedAt = new Date().toISOString();
     setApplications(updated);
+    localStorage.setItem('stride_membership_applications', JSON.stringify(updated));
+    localStorage.setItem('stride_membership_status', JSON.stringify({
+      tier: 'member',
+      appliedAt: updated[index].submittedAt,
+      status: 'rejected',
+    }));
+  };
+
+  const handleActivateMember = (index) => {
+    // Manually activate a member (e.g., after confirming payment outside the app)
+    const updated = [...applications];
+    updated[index].status = 'active';
+    updated[index].activatedAt = new Date().toISOString();
+    setApplications(updated);
+    localStorage.setItem('stride_membership_applications', JSON.stringify(updated));
+    const app = updated[index];
+    const member = { id: String(Date.now()), name: app.name, email: app.email, phone: '', enterpriseName: app.enterpriseName, location: app.location, tier: 'member', status: 'active', peerGroup: '', notes: app.goals || '', joinedAt: new Date().toISOString() };
+    setMembers(prev => [...prev, member]);
+    localStorage.setItem('stride_membership_status', JSON.stringify({ tier: 'member', appliedAt: app.submittedAt, status: 'active' }));
+    localStorage.setItem('stride_member_since', new Date().toISOString());
   };
 
   const saveMember = () => {
@@ -10495,6 +10617,7 @@ function AdminView({ currentUser }) {
   // ─── COMPUTED ─────────────────────────────────────────────
   const pendingApps = applications.filter(a => a.status === 'pending');
   const approvedApps = applications.filter(a => a.status === 'approved');
+  const rejectedApps = applications.filter(a => a.status === 'rejected');
   const tierPrices = { member: 500 };
   const totalRevenue = members.filter(m => m.status === 'active').reduce((sum, m) => sum + (tierPrices[m.tier] || 0), 0);
   const filteredMembers = members.filter(m => {
@@ -10778,6 +10901,30 @@ function AdminView({ currentUser }) {
           {showAddMember && renderMemberForm()}
 
           {/* Pending Applications */}
+          {/* Approved — Awaiting Payment */}
+          {approvedApps.length > 0 && (
+            <div style={{...cardStyle, borderLeft: '4px solid #2D5A3D'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>
+                Approved — Awaiting Payment <span style={{background: '#D1FAE5', color: '#065f46', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem'}}>{approvedApps.length}</span>
+              </h3>
+              {applications.map((app, i) => app.status === 'approved' && (
+                <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px'}}>
+                  <div>
+                    <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '2px'}}>{app.name}</div>
+                    <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName}</div>
+                    <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>
+                      Approved {app.approvedAt ? new Date(app.approvedAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'} · Waiting for $500 payment
+                    </div>
+                  </div>
+                  <div style={{display: 'flex', gap: '8px'}}>
+                    <button onClick={() => handleActivateMember(i)} style={{background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer'}}>Payment Received — Activate</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pending Applications */}
           {pendingApps.length > 0 && (
             <div style={{...cardStyle, borderLeft: '4px solid #f59e0b'}}>
               <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>
@@ -10789,10 +10936,10 @@ function AdminView({ currentUser }) {
                     <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '2px'}}>{app.name}</div>
                     <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.location}</div>
                     <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>
-                      <span style={{background: '#F0F4F8', padding: '2px 8px', borderRadius: '6px', marginRight: '6px'}}>{app.tier?.toUpperCase()}</span>
                       Applied {new Date(app.submittedAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}
                     </div>
                     {app.goals && <div style={{fontSize: '0.82rem', color: '#4A5E73', marginTop: '6px', fontStyle: 'italic'}}>"{app.goals}"</div>}
+                    {app.description && <div style={{fontSize: '0.82rem', color: '#4A5E73', marginTop: '4px'}}>{app.description}</div>}
                   </div>
                   <div style={{display: 'flex', gap: '8px'}}>
                     <button onClick={() => handleApprove(i)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
