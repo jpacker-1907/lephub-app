@@ -308,7 +308,7 @@ export const payments = {
   // Tier gating — check if user has access to a feature
   hasAccess(tier, feature) {
     const FREE_FEATURES = ['assessment', 'dashboard', 'family-profile-basic'];
-    const PRO_FEATURES = [...FREE_FEATURES, 'lep-journey', 'family-dynamics', 'valuation-engine', 'meetings', 'vault', 'decision-engine', 'pillars'];
+    const PRO_FEATURES = [...FREE_FEATURES, 'lep-journey', 'family-dynamics', 'valuation-engine', 'meetings', 'vault', 'decision-engine', 'pillars', 'priorities'];
     const ENTERPRISE_FEATURES = [...PRO_FEATURES, 'advisor-portal', 'multi-entity', 'api-access', 'custom-reporting'];
 
     if (tier === 'enterprise') return ENTERPRISE_FEATURES.includes(feature) || true; // enterprise gets everything

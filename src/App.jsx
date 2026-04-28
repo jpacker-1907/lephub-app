@@ -7,6 +7,7 @@ import { TRACKS } from './credentialingData.js';
 import { MODULE_VIDEOS } from './credentialingVideos.js';
 import './App.css';
 import LEPLandingPage from './LEPLandingPage.jsx';
+import PriorityTracker from './PriorityTracker.jsx';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -2565,6 +2566,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'lep-journey', icon: 'compass', name: 'LEP Journey', memberOnly: true },
     { id: 'pillars', icon: 'bar-chart', name: 'Pillars', memberOnly: true },
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
+    { id: 'priorities', icon: 'check-circle', name: 'Priorities', memberOnly: true },
     { id: 'transitions', icon: 'trending-up', name: 'Transitions', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
@@ -12887,6 +12889,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
+        {currentView === 'priorities' && isMember && <PriorityTracker user={currentUser} />}
         {currentView === 'transitions' && isMember && <TransitionsView setCurrentView={setCurrentView} />}
         {currentView === 'decision-engine' && isMember && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'sessions' && isMember && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
