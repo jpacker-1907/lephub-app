@@ -8,13 +8,14 @@ import { MODULE_VIDEOS } from './credentialingVideos.js';
 import './App.css';
 import LEPLandingPage from './LEPLandingPage.jsx';
 import PriorityTracker from './PriorityTracker.jsx';
-import { rocksDashboard } from './rocksBackend.js';
+// import { rocksDashboard } from './rocksBackend.js'; // Rhythm System — hidden for MVP
 import EnterpriseRoleMap from './EnterpriseRoleMap.jsx';
 import CommunityView from './CommunityView.jsx';
 import DeliverableWorkshop from './DeliverableWorkshop.jsx';
 import ContentLibrary from './ContentLibrary.jsx';
 import Communications from './Communications.jsx';
 import EventOperations from './EventOperations.jsx';
+import FacilitatorDashboard from './FacilitatorDashboard.jsx';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -5389,10 +5390,9 @@ function MeetingsView({ familyProfile }) {
     try { const s = localStorage.getItem('lep_issues'); return s ? JSON.parse(s) : []; } catch { return []; }
   });
   const [newIssue, setNewIssue] = useState('');
-  const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions | rhythm
+  const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
   const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
   const [showOtterPanel, setShowOtterPanel] = useState(false);
-  const [flaggedRocks, setFlaggedRocks] = useState([]);
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -5409,13 +5409,6 @@ function MeetingsView({ familyProfile }) {
   useEffect(() => { localStorage.setItem('lep_meetings', JSON.stringify(meetings)); }, [meetings]);
   useEffect(() => { localStorage.setItem('lep_issues', JSON.stringify(issuesList)); }, [issuesList]);
 
-  // Load flagged rocks from Priority Tracker for meeting agendas
-  useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem('lep_current_user') || '{}')?.id;
-    if (userId) {
-      rocksDashboard.getFlaggedRocks(userId).then(setFlaggedRocks).catch(() => {});
-    }
-  }, [meetings]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -5553,12 +5546,82 @@ function MeetingsView({ familyProfile }) {
       attendees: '',
       agendaNotes: {},
       actionItems: [],
+      decisions: '',
+      summary: '',
       rating: null,
       minutes: '',
     };
     setMeetings(prev => [meeting, ...prev]);
     setActiveMeeting(meeting.id);
     setShowNewMeeting(false);
+  };
+
+  const generateMeetingSummary = (meeting, template) => {
+    if (!meeting || !template) return '';
+
+    const lines = [];
+    lines.push(`MEETING SUMMARY`);
+    lines.push(`===============`);
+    lines.push('');
+    lines.push(`Meeting: ${template.name}`);
+    lines.push(`Date: ${meeting.date}`);
+    lines.push(`Duration: ${template.duration}`);
+
+    if (meeting.attendees) {
+      lines.push(`Attendees: ${meeting.attendees}`);
+    }
+
+    lines.push('');
+    lines.push(`AGENDA NOTES`);
+    lines.push(`------------`);
+    template.agenda.forEach(item => {
+      const notes = (meeting.agendaNotes || {})[item.id];
+      if (notes) {
+        lines.push(`• ${item.name}`);
+        lines.push(`  ${notes}`);
+      }
+    });
+
+    if (meeting.decisions && meeting.decisions.trim()) {
+      lines.push('');
+      lines.push(`KEY DECISIONS`);
+      lines.push(`-------------`);
+      lines.push(meeting.decisions);
+    }
+
+    if (meeting.actionItems && meeting.actionItems.length > 0) {
+      lines.push('');
+      lines.push(`ACTION ITEMS`);
+      lines.push(`-----------`);
+      meeting.actionItems.forEach(item => {
+        if (item.text) {
+          const owner = item.owner ? ` (${item.owner})` : '';
+          const due = item.due ? ` — Due: ${item.due}` : '';
+          lines.push(`• ${item.text}${owner}${due}`);
+        }
+      });
+    }
+
+    const meetingIssues = issuesList.filter(issue =>
+      (meeting.agendaNotes || {})['resolve']?.includes(issue.text) ||
+      issue.date === meeting.date
+    );
+
+    if (meetingIssues.length > 0) {
+      lines.push('');
+      lines.push(`ISSUES ADDRESSED`);
+      lines.push(`----------------`);
+      meetingIssues.forEach(issue => {
+        lines.push(`• ${issue.text} [${issue.priority.toUpperCase()}]`);
+      });
+    }
+
+    if (meeting.rating) {
+      lines.push('');
+      lines.push(`MEETING RATING: ${meeting.rating}/10`);
+    }
+
+    return lines.join('\n');
   };
 
   const updateMeeting = (id, updates) => {
@@ -5655,8 +5718,8 @@ function MeetingsView({ familyProfile }) {
     <div className="meetings-view">
       <header className="page-header">
         <div>
-          <h1>LEP Rhythm System</h1>
-          <p className="subtitle">Three-circle meeting rhythm. Business weekly. Family monthly. Ownership quarterly. Structured agendas. Real accountability.</p>
+          <h1>Meetings</h1>
+          <p className="subtitle">Peer group sessions, family meetings, and action tracking — all in one place.</p>
         </div>
       </header>
 
@@ -5664,7 +5727,6 @@ function MeetingsView({ familyProfile }) {
       <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
         {[
           { id: 'meetings', label: 'Meetings', count: meetings.length },
-          { id: 'rhythm', label: 'Rhythm', count: null },
           { id: 'issues', label: 'Resolution Queue', count: issuesList.filter(i => !i.resolved).length },
           { id: 'actions', label: 'Action Items', count: openActions.length },
         ].map(tab => (
@@ -5937,6 +5999,23 @@ function MeetingsView({ familyProfile }) {
             </div>
           ))}
 
+          {/* Key Decisions section */}
+          <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
+              <div>
+                <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#34597A'}}>Key Decisions</h4>
+                <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '2px'}}>Record critical decisions made during this meeting</p>
+              </div>
+            </div>
+            <textarea
+              rows="3"
+              placeholder="e.g.,&#10;• Approved Q4 budget increase&#10;• Decided to delay succession planning review to next quarter"
+              value={meeting.decisions || ''}
+              onChange={(e) => updateMeeting(meeting.id, { decisions: e.target.value })}
+              style={{width: '100%', padding: '8px 12px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
+            />
+          </div>
+
           {/* Action Items section */}
           <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginTop: '20px', marginBottom: '16px', border: '1px solid #DDE3EB'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
@@ -6127,6 +6206,51 @@ function MeetingsView({ familyProfile }) {
               {meeting.rating >= 8 ? 'Great meeting!' : meeting.rating >= 6 ? 'Good — room to improve.' : 'Below standard — let\'s fix it.'}
             </span>}
           </div>
+
+          {/* Meeting Summary section */}
+          <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginTop: '20px', border: '1px solid #DDE3EB'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
+              <h3 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A', margin: 0}}>Meeting Summary</h3>
+              <button onClick={() => {
+                const generated = generateMeetingSummary(meeting, template);
+                updateMeeting(meeting.id, { summary: generated });
+              }}
+                style={{background: '#2B4C6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                Generate Summary
+              </button>
+            </div>
+
+            {meeting.summary ? (
+              <div>
+                <div style={{background: 'white', borderRadius: '8px', padding: '14px 16px', marginBottom: '12px', border: '1px solid #DDE3EB', maxHeight: '300px', overflow: 'auto', fontSize: '0.82rem', color: '#34597A', lineHeight: '1.6', whiteSpace: 'pre-wrap', fontFamily: 'monospace'}}>
+                  {meeting.summary}
+                </div>
+                <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(meeting.summary);
+                    alert('Summary copied to clipboard!');
+                  }}
+                    style={{background: '#5AAFB5', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                    Copy Summary
+                  </button>
+                  <button onClick={() => {
+                    const element = document.createElement('a');
+                    const file = new Blob([meeting.summary], {type: 'text/plain'});
+                    element.href = URL.createObjectURL(file);
+                    element.download = `${template.name.replace(/\s+/g, '_')}_${meeting.date}.txt`;
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                  }}
+                    style={{background: '#E05B6F', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600'}}>
+                    Export Summary
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p style={{fontSize: '0.85rem', color: '#7A8BA0', textAlign: 'center', padding: '12px 0', margin: 0}}>Click "Generate Summary" to compile meeting notes, decisions, action items, and issues into a formatted summary.</p>
+            )}
+          </div>
         </div>
       )}
 
@@ -6259,104 +6383,7 @@ function MeetingsView({ familyProfile }) {
         </div>
       )}
 
-      {/* ─── RHYTHM TAB — Meeting Cadence & Enterprise Health ─── */}
-      {activeTab === 'rhythm' && (
-        <div>
-          <div style={{background: 'linear-gradient(135deg, #2d5a3d 0%, #1a3a5c 100%)', borderRadius: '12px', padding: '24px', color: 'white', marginBottom: '24px'}}>
-            <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: 'white', marginBottom: '6px'}}>LEP Rhythm System</h3>
-            <p style={{fontSize: '0.85rem', opacity: 0.8}}>
-              Family enterprises need three meeting rhythms — business, family, and ownership. Track your cadence, stay accountable, and never let governance slip.
-            </p>
-          </div>
-
-          {/* Three-Circle Meeting Cadence */}
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '28px'}}>
-            {[
-              { circle: 'Business', color: '#2d5a3d', icon: '⚡', types: ['business-l10', 'board'], cadence: 'Weekly L10 + Quarterly Board', description: 'Operational pulse. Scorecard, rocks, IDS.' },
-              { circle: 'Family', color: '#E05B6F', icon: '👥', types: ['family-council', 'family-meeting', 'nextgen'], cadence: 'Monthly Council + Annual Meeting', description: 'Family alignment. Values, communication, next-gen.' },
-              { circle: 'Ownership', color: '#1a3a5c', icon: '🏛️', types: ['ownership-review', 'shareholder'], cadence: 'Quarterly Review + Annual Shareholder', description: 'Governance & stewardship. Financials, distributions, structure.' },
-            ].map(circle => {
-              const circleMeetings = meetings.filter(m => circle.types.includes(m.type));
-              const lastMeeting = circleMeetings.length > 0 ? circleMeetings.sort((a, b) => b.date.localeCompare(a.date))[0] : null;
-              const daysSince = lastMeeting ? Math.floor((new Date() - new Date(lastMeeting.date)) / (1000 * 60 * 60 * 24)) : null;
-              const isOverdue = circle.circle === 'Business' ? (daysSince === null || daysSince > 10) : circle.circle === 'Family' ? (daysSince === null || daysSince > 45) : (daysSince === null || daysSince > 100);
-
-              return (
-                <div key={circle.circle} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', overflow: 'hidden'}}>
-                  <div style={{padding: '16px 20px', background: circle.color + '0d', borderBottom: '1px solid #DDE3EB', borderLeft: `4px solid ${circle.color}`}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                      <span style={{fontSize: '1.2rem'}}>{circle.icon}</span>
-                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: circle.color}}>{circle.circle}</h4>
-                    </div>
-                    <p style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{circle.cadence}</p>
-                  </div>
-                  <div style={{padding: '16px 20px'}}>
-                    <p style={{fontSize: '0.82rem', color: '#475569', marginBottom: '12px'}}>{circle.description}</p>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                      <div>
-                        <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Last Meeting</div>
-                        <div style={{fontSize: '0.88rem', fontWeight: '600', color: isOverdue ? '#dc2626' : '#2d5a3d'}}>
-                          {lastMeeting ? `${daysSince}d ago` : 'Never'}
-                        </div>
-                      </div>
-                      <div style={{textAlign: 'right'}}>
-                        <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Total</div>
-                        <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#34597A'}}>{circleMeetings.length}</div>
-                      </div>
-                      {isOverdue && (
-                        <span style={{fontSize: '0.72rem', fontWeight: '600', background: '#fef2f2', color: '#dc2626', padding: '3px 10px', borderRadius: '100px'}}>
-                          Overdue
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Flagged Rocks — Issues from Priority Tracker */}
-          {flaggedRocks.length > 0 && (
-            <div style={{marginBottom: '28px'}}>
-              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>
-                🚩 Flagged Priorities — Needs Discussion ({flaggedRocks.length})
-              </h3>
-              <div style={{background: '#fffbeb', borderRadius: '10px', padding: '16px', border: '1px solid #fde68a'}}>
-                {flaggedRocks.map(rock => (
-                  <div key={rock.id} style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: '1px solid #fef3c7'}}>
-                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: rock.flag === 'off_track' ? '#dc2626' : rock.flag === 'at_risk' ? '#f59e0b' : '#94a3b8', flexShrink: 0}} />
-                    <span style={{fontSize: '0.85rem', color: '#34597A', flex: 1}}>{rock.title}</span>
-                    <span style={{fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: rock.domain === 'business' ? '#2d5a3d15' : rock.domain === 'family' ? '#8b5e3c15' : '#1a3a5c15', color: rock.domain === 'business' ? '#2d5a3d' : rock.domain === 'family' ? '#8b5e3c' : '#1a3a5c', fontWeight: '600', textTransform: 'capitalize'}}>{rock.domain}</span>
-                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{rock.message}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Quick Launch Meetings */}
-          <div>
-            <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>
-              Quick Start
-            </h3>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px'}}>
-              {['business-l10', 'family-council', 'ownership-review', 'board'].map(key => {
-                const tmpl = MEETING_TEMPLATES[key];
-                return (
-                  <button key={key} onClick={() => { createMeeting(key); setActiveTab('meetings'); }}
-                    style={{background: 'white', borderRadius: '10px', padding: '14px 18px', border: `1px solid ${tmpl.color}33`, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s'}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                      <span style={{fontSize: '1.2rem'}}>{tmpl.icon}</span>
-                      <span style={{fontSize: '0.88rem', fontWeight: '700', color: tmpl.color}}>{tmpl.name}</span>
-                    </div>
-                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{tmpl.frequency} · {tmpl.duration}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Rhythm tab removed — code preserved in git history */}
     </div>
   );
 }
@@ -12235,7 +12262,8 @@ function AppShell({ currentUser, onLogout }) {
       <Nav currentView={currentView} setCurrentView={setCurrentView} user={user} onLogout={onLogout} currentUser={currentUser} isMember={isMember} isAdmin={isAdmin} />
       <main className="app-main">
         {/* Member-only views — gate behind membership */}
-        {currentView === 'dashboard' && isMember && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
+        {currentView === 'dashboard' && isMember && isAdmin && <FacilitatorDashboard setCurrentView={setCurrentView} />}
+        {currentView === 'dashboard' && isMember && !isAdmin && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
         {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
