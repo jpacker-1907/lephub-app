@@ -8,6 +8,7 @@ import { MODULE_VIDEOS } from './credentialingVideos.js';
 import './App.css';
 import LEPLandingPage from './LEPLandingPage.jsx';
 import PriorityTracker from './PriorityTracker.jsx';
+import { rocksDashboard } from './rocksBackend.js';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -3852,6 +3853,32 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
 // ═══════════════════════════════════════════════════════════════
 
 const MEETING_TEMPLATES = {
+  'business-l10': {
+    name: 'Business L10', icon: '⚡', frequency: 'Weekly', duration: '60 min', color: '#2d5a3d',
+    category: 'family',
+    agenda: [
+      { id: 'segue', name: 'Segue — Personal & Professional Best', duration: '5 min', desc: 'Each person shares one personal and one professional win from the past week. Sets a positive tone.' },
+      { id: 'scorecard', name: 'Scorecard Review', duration: '5 min', desc: 'Review 5-15 key metrics. Are we on track or off track? No discussion — just flag the off-track numbers.' },
+      { id: 'rock-review', name: 'Rocks Check-In', duration: '5 min', desc: 'Quick on-track / off-track / at-risk for each 90-day priority. Flagged rocks from the Priority Tracker auto-populate here.' },
+      { id: 'headlines', name: 'Customer & Employee Headlines', duration: '5 min', desc: 'Quick good news and bad news. One headline per person. No deep dives yet — just surface what matters.' },
+      { id: 'todo-review', name: 'To-Do Review', duration: '5 min', desc: 'Review last week\'s action items. Done or not done? No excuses — just accountability.' },
+      { id: 'resolve', name: 'IDS — Identify, Discuss, Solve', duration: '30 min', desc: 'The core of the L10. Take the top 3 issues from the list. Identify the root cause. Discuss. Solve with a clear action item. Move on.' },
+      { id: 'conclude', name: 'Conclude — Recap & Rating', duration: '5 min', desc: 'Recap all new to-dos. Cascade any messages to the team. Rate the meeting 1-10.' },
+    ],
+  },
+  'ownership-review': {
+    name: 'Ownership Review', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#1a3a5c',
+    category: 'family',
+    agenda: [
+      { id: 'opening', name: 'Opening & Fiduciary Check-In', duration: '5 min', desc: 'Remind the group of fiduciary duties. Confirm any conflicts of interest. Set the tone for governance.' },
+      { id: 'financial-review', name: 'Financial Performance Review', duration: '20 min', desc: 'Key financials: revenue, EBITDA, cash position, debt ratios. Compare to plan and prior year.' },
+      { id: 'rock-review', name: 'Ownership Rocks Check-In', duration: '10 min', desc: 'Review quarterly ownership priorities — governance documents, buy-sell updates, estate planning progress.' },
+      { id: 'distribution', name: 'Distribution & Compensation Review', duration: '15 min', desc: 'Dividend/distribution decisions. Executive compensation review. Family employment policy compliance.' },
+      { id: 'governance', name: 'Governance Health Check', duration: '10 min', desc: 'Are governance structures working? Board effectiveness. Family council compliance. Any amendments needed?' },
+      { id: 'resolve', name: 'Ownership IDS', duration: '20 min', desc: 'Ownership-level issues only. Liquidity events, estate changes, ownership transfers, strategic direction disagreements.' },
+      { id: 'action-items', name: 'Action Items & Next Meeting', duration: '10 min', desc: 'Recap action items with owners and deadlines. Set next meeting date. Formal close.' },
+    ],
+  },
   board: {
     name: 'Board Meeting', icon: '🏛️', frequency: 'Quarterly', duration: '90 min', color: '#34597A',
     category: 'family',
@@ -5359,9 +5386,10 @@ function MeetingsView({ familyProfile }) {
     try { const s = localStorage.getItem('lep_issues'); return s ? JSON.parse(s) : []; } catch { return []; }
   });
   const [newIssue, setNewIssue] = useState('');
-  const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
+  const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions | rhythm
   const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
   const [showOtterPanel, setShowOtterPanel] = useState(false);
+  const [flaggedRocks, setFlaggedRocks] = useState([]);
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -5377,6 +5405,14 @@ function MeetingsView({ familyProfile }) {
   // Auto-save
   useEffect(() => { localStorage.setItem('lep_meetings', JSON.stringify(meetings)); }, [meetings]);
   useEffect(() => { localStorage.setItem('lep_issues', JSON.stringify(issuesList)); }, [issuesList]);
+
+  // Load flagged rocks from Priority Tracker for meeting agendas
+  useEffect(() => {
+    const userId = JSON.parse(localStorage.getItem('lep_current_user') || '{}')?.id;
+    if (userId) {
+      rocksDashboard.getFlaggedRocks(userId).then(setFlaggedRocks).catch(() => {});
+    }
+  }, [meetings]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -5616,8 +5652,8 @@ function MeetingsView({ familyProfile }) {
     <div className="meetings-view">
       <header className="page-header">
         <div>
-          <h1>Meeting Center</h1>
-          <p className="subtitle">Structured governance meetings. Agenda. Issues. Action items. Accountability.</p>
+          <h1>LEP Rhythm System</h1>
+          <p className="subtitle">Three-circle meeting rhythm. Business weekly. Family monthly. Ownership quarterly. Structured agendas. Real accountability.</p>
         </div>
       </header>
 
@@ -5625,6 +5661,7 @@ function MeetingsView({ familyProfile }) {
       <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
         {[
           { id: 'meetings', label: 'Meetings', count: meetings.length },
+          { id: 'rhythm', label: 'Rhythm', count: null },
           { id: 'issues', label: 'Resolution Queue', count: issuesList.filter(i => !i.resolved).length },
           { id: 'actions', label: 'Action Items', count: openActions.length },
         ].map(tab => (
@@ -6098,12 +6135,17 @@ function MeetingsView({ familyProfile }) {
             <p style={{fontSize: '0.85rem', color: '#7A8BA0', lineHeight: '1.5', marginBottom: '16px'}}>
               The master resolution queue. Any family member can add an issue anytime. Issues get prioritized and resolved in your next meeting using the ICA process: Identify the real issue, Clarify it openly, Act with a clear commitment.
             </p>
-            <div style={{display: 'flex', gap: '8px'}}>
+            <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
               <input type="text" placeholder="Add an issue..." value={newIssue}
                 onChange={(e) => setNewIssue(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && newIssue.trim()) { setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority: 'medium', addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]); setNewIssue(''); }}}
-                style={{flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem'}}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newIssue.trim()) { const priority = document.getElementById('issue-priority')?.value || 'medium'; const domain = document.getElementById('issue-domain')?.value || 'business'; setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority, domain, addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]); setNewIssue(''); }}}
+                style={{flex: 1, minWidth: '200px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem'}}
               />
+              <select id="issue-domain" style={{padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.85rem'}}>
+                <option value="business">📊 Business</option>
+                <option value="family">🌳 Family</option>
+                <option value="ownership">🏛️ Ownership</option>
+              </select>
               <select id="issue-priority" style={{padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.85rem'}}>
                 <option value="high">High</option>
                 <option value="medium" selected>Medium</option>
@@ -6112,7 +6154,8 @@ function MeetingsView({ familyProfile }) {
               <button onClick={() => {
                 if (newIssue.trim()) {
                   const priority = document.getElementById('issue-priority')?.value || 'medium';
-                  setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority, addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]);
+                  const domain = document.getElementById('issue-domain')?.value || 'business';
+                  setIssuesList(prev => [...prev, { id: Date.now(), text: newIssue.trim(), priority, domain, addedBy: '', date: new Date().toISOString().split('T')[0], resolved: false, resolution: '' }]);
                   setNewIssue('');
                 }
               }} style={{background: '#2B4C6F', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', whiteSpace: 'nowrap'}}>
@@ -6135,6 +6178,7 @@ function MeetingsView({ familyProfile }) {
                   background: issue.priority === 'high' ? '#dc2626' : issue.priority === 'medium' ? '#E05B6F' : '#7A8BA0',
                 }} />
                 <span style={{flex: 1, fontSize: '0.88rem', color: '#34597A'}}>{issue.text}</span>
+                {issue.domain && <span style={{fontSize: '0.68rem', padding: '2px 8px', borderRadius: '4px', background: issue.domain === 'business' ? '#2d5a3d15' : issue.domain === 'family' ? '#8b5e3c15' : '#1a3a5c15', color: issue.domain === 'business' ? '#2d5a3d' : issue.domain === 'family' ? '#8b5e3c' : '#1a3a5c', fontWeight: '600', textTransform: 'capitalize'}}>{issue.domain}</span>}
                 <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{issue.date}</span>
                 <button onClick={() => setIssuesList(prev => prev.map(i => i.id === issue.id ? { ...i, resolved: true } : i))}
                   style={{background: '#FDF0F2', color: '#E05B6F', padding: '4px 12px', borderRadius: '6px', border: '1px solid #E05B6F33', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600'}}>
@@ -6209,6 +6253,105 @@ function MeetingsView({ familyProfile }) {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ─── RHYTHM TAB — Meeting Cadence & Enterprise Health ─── */}
+      {activeTab === 'rhythm' && (
+        <div>
+          <div style={{background: 'linear-gradient(135deg, #2d5a3d 0%, #1a3a5c 100%)', borderRadius: '12px', padding: '24px', color: 'white', marginBottom: '24px'}}>
+            <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: 'white', marginBottom: '6px'}}>LEP Rhythm System</h3>
+            <p style={{fontSize: '0.85rem', opacity: 0.8}}>
+              Family enterprises need three meeting rhythms — business, family, and ownership. Track your cadence, stay accountable, and never let governance slip.
+            </p>
+          </div>
+
+          {/* Three-Circle Meeting Cadence */}
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '28px'}}>
+            {[
+              { circle: 'Business', color: '#2d5a3d', icon: '⚡', types: ['business-l10', 'board'], cadence: 'Weekly L10 + Quarterly Board', description: 'Operational pulse. Scorecard, rocks, IDS.' },
+              { circle: 'Family', color: '#E05B6F', icon: '👥', types: ['family-council', 'family-meeting', 'nextgen'], cadence: 'Monthly Council + Annual Meeting', description: 'Family alignment. Values, communication, next-gen.' },
+              { circle: 'Ownership', color: '#1a3a5c', icon: '🏛️', types: ['ownership-review', 'shareholder'], cadence: 'Quarterly Review + Annual Shareholder', description: 'Governance & stewardship. Financials, distributions, structure.' },
+            ].map(circle => {
+              const circleMeetings = meetings.filter(m => circle.types.includes(m.type));
+              const lastMeeting = circleMeetings.length > 0 ? circleMeetings.sort((a, b) => b.date.localeCompare(a.date))[0] : null;
+              const daysSince = lastMeeting ? Math.floor((new Date() - new Date(lastMeeting.date)) / (1000 * 60 * 60 * 24)) : null;
+              const isOverdue = circle.circle === 'Business' ? (daysSince === null || daysSince > 10) : circle.circle === 'Family' ? (daysSince === null || daysSince > 45) : (daysSince === null || daysSince > 100);
+
+              return (
+                <div key={circle.circle} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', overflow: 'hidden'}}>
+                  <div style={{padding: '16px 20px', background: circle.color + '0d', borderBottom: '1px solid #DDE3EB', borderLeft: `4px solid ${circle.color}`}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                      <span style={{fontSize: '1.2rem'}}>{circle.icon}</span>
+                      <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: circle.color}}>{circle.circle}</h4>
+                    </div>
+                    <p style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{circle.cadence}</p>
+                  </div>
+                  <div style={{padding: '16px 20px'}}>
+                    <p style={{fontSize: '0.82rem', color: '#475569', marginBottom: '12px'}}>{circle.description}</p>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <div>
+                        <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Last Meeting</div>
+                        <div style={{fontSize: '0.88rem', fontWeight: '600', color: isOverdue ? '#dc2626' : '#2d5a3d'}}>
+                          {lastMeeting ? `${daysSince}d ago` : 'Never'}
+                        </div>
+                      </div>
+                      <div style={{textAlign: 'right'}}>
+                        <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Total</div>
+                        <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#34597A'}}>{circleMeetings.length}</div>
+                      </div>
+                      {isOverdue && (
+                        <span style={{fontSize: '0.72rem', fontWeight: '600', background: '#fef2f2', color: '#dc2626', padding: '3px 10px', borderRadius: '100px'}}>
+                          Overdue
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Flagged Rocks — Issues from Priority Tracker */}
+          {flaggedRocks.length > 0 && (
+            <div style={{marginBottom: '28px'}}>
+              <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>
+                🚩 Flagged Priorities — Needs Discussion ({flaggedRocks.length})
+              </h3>
+              <div style={{background: '#fffbeb', borderRadius: '10px', padding: '16px', border: '1px solid #fde68a'}}>
+                {flaggedRocks.map(rock => (
+                  <div key={rock.id} style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: '1px solid #fef3c7'}}>
+                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: rock.flag === 'off_track' ? '#dc2626' : rock.flag === 'at_risk' ? '#f59e0b' : '#94a3b8', flexShrink: 0}} />
+                    <span style={{fontSize: '0.85rem', color: '#34597A', flex: 1}}>{rock.title}</span>
+                    <span style={{fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: rock.domain === 'business' ? '#2d5a3d15' : rock.domain === 'family' ? '#8b5e3c15' : '#1a3a5c15', color: rock.domain === 'business' ? '#2d5a3d' : rock.domain === 'family' ? '#8b5e3c' : '#1a3a5c', fontWeight: '600', textTransform: 'capitalize'}}>{rock.domain}</span>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{rock.message}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Launch Meetings */}
+          <div>
+            <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px'}}>
+              Quick Start
+            </h3>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px'}}>
+              {['business-l10', 'family-council', 'ownership-review', 'board'].map(key => {
+                const tmpl = MEETING_TEMPLATES[key];
+                return (
+                  <button key={key} onClick={() => { createMeeting(key); setActiveTab('meetings'); }}
+                    style={{background: 'white', borderRadius: '10px', padding: '14px 18px', border: `1px solid ${tmpl.color}33`, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                      <span style={{fontSize: '1.2rem'}}>{tmpl.icon}</span>
+                      <span style={{fontSize: '0.88rem', fontWeight: '700', color: tmpl.color}}>{tmpl.name}</span>
+                    </div>
+                    <span style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{tmpl.frequency} · {tmpl.duration}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
     </div>
