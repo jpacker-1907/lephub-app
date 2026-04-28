@@ -15,8 +15,7 @@ import { loadStripe } from '@stripe/stripe-js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
-const STRIPE_PRICE_PRO = import.meta.env.VITE_STRIPE_PRICE_PRO || '';
-const STRIPE_PRICE_ENTERPRISE = import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE || '';
+const STRIPE_PRICE_MEMBERSHIP = import.meta.env.VITE_STRIPE_PRICE_MEMBERSHIP || '';
 
 // ─── FEATURE FLAGS ────────────────────────────────────────────
 export const hasSupabase = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
@@ -251,26 +250,24 @@ export const db = {
 // ═══════════════════════════════════════════════════════════════
 
 export const payments = {
-  // Redirect to Stripe Checkout for subscription
-  async checkout(tier, userEmail, userId) {
+  // Redirect to Stripe Checkout for membership ($500/year)
+  async checkout(userEmail, userId) {
     if (!hasStripe) {
-      console.log('Stripe not configured — upgrade simulated');
-      // Simulate upgrade in localStorage
+      console.log('Stripe not configured — membership simulated');
+      // Simulate membership in localStorage
       const currentUser = JSON.parse(localStorage.getItem('lep_current_user') || '{}');
-      currentUser.tier = tier;
+      currentUser.tier = 'member';
       localStorage.setItem('lep_current_user', JSON.stringify(currentUser));
-      return { simulated: true, tier };
+      return { simulated: true, tier: 'member' };
     }
 
     const stripe = await getStripe();
-    const priceId = tier === 'pro' ? STRIPE_PRICE_PRO : STRIPE_PRICE_ENTERPRISE;
+    const priceId = STRIPE_PRICE_MEMBERSHIP;
 
-    // In production, this would call a serverless function to create a Checkout Session
-    // For now, we use Stripe's client-only Checkout (requires Stripe Dashboard config)
     const { error } = await stripe.redirectToCheckout({
       lineItems: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      successUrl: `${window.location.origin}?checkout=success&tier=${tier}`,
+      successUrl: `${window.location.origin}?checkout=success&tier=member`,
       cancelUrl: `${window.location.origin}?checkout=cancel`,
       customerEmail: userEmail,
       clientReferenceId: userId,
@@ -305,21 +302,15 @@ export const payments = {
     return null;
   },
 
-  // Tier gating — check if user has access to a feature
+  // Tier gating — members get everything, non-members get membership page only
   hasAccess(tier, feature) {
-    const FREE_FEATURES = ['assessment', 'dashboard', 'family-profile-basic'];
-    const PRO_FEATURES = [...FREE_FEATURES, 'lep-journey', 'family-dynamics', 'valuation-engine', 'meetings', 'vault', 'decision-engine', 'pillars', 'priorities'];
-    const ENTERPRISE_FEATURES = [...PRO_FEATURES, 'advisor-portal', 'multi-entity', 'api-access', 'custom-reporting'];
-
-    if (tier === 'enterprise') return ENTERPRISE_FEATURES.includes(feature) || true; // enterprise gets everything
-    if (tier === 'pro') return PRO_FEATURES.includes(feature);
-    return FREE_FEATURES.includes(feature);
+    if (tier === 'member' || tier === 'pro' || tier === 'enterprise') return true;
+    return ['assessment', 'dashboard', 'membership'].includes(feature);
   },
 
   TIER_DETAILS: {
-    free: { name: 'Explorer', price: 'Free', color: '#64748b' },
-    pro: { name: 'Pro', price: '$99/mo', color: '#2d5a3d' },
-    enterprise: { name: 'Enterprise', price: '$499/mo', color: '#1a3a5c' },
+    free: { name: 'Free', price: 'Free', color: '#64748b' },
+    member: { name: 'Stride Member', price: '$500/yr', color: '#2D5A3D' },
   }
 };
 

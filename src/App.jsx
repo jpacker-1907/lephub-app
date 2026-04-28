@@ -145,7 +145,7 @@ function AuthScreen({ onLogin }) {
           <div><strong style={{color: 'rgba(255,255,255,0.8)', fontSize: '1.4rem', display: 'block'}}>1</strong>Family</div>
         </div>
         <div style={{marginTop: '24px'}}>
-          <p style={{fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px'}}>Founding memberships from $250/year</p>
+          <p style={{fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px'}}>Annual membership — $500/year starting June 1, 2026</p>
         </div>
       </div>
 
@@ -2647,7 +2647,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
         <div className="user-avatar">{user?.initials || 'JP'}</div>
         <div className="user-info">
           <span className="user-name">{user?.name || 'User'}</span>
-          <span className="user-role">{currentUser?.tier === 'enterprise' ? 'Enterprise' : currentUser?.tier === 'pro' ? 'Pro' : 'Free Plan'}</span>
+          <span className="user-role">{currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? 'Stride Member' : 'Free'}</span>
         </div>
         <span style={{color: '#7A8BA0', fontSize: '0.7rem', marginLeft: 'auto'}}>▾</span>
 
@@ -6895,32 +6895,9 @@ function VaultView({ vaultDocuments }) {
 
 // ─── SETTINGS VIEW ──────────────────────────────────────────
 function SettingsView({ currentUser, onLogout, onTierChange }) {
-  const [upgrading, setUpgrading] = useState(false);
-  const TIERS = [
-    { id: 'free', name: 'Explorer', price: 'Free', features: ['LEP Assessment', 'LEP Score & Dashboard', 'Family Profile (Basic)', '1 Family Member'], color: '#7A8BA0', current: currentUser?.tier === 'free' },
-    { id: 'pro', name: 'Pro', price: '$99/mo', features: ['Everything in Explorer', 'Full LEP Journey (3 Phases)', 'Family Dynamics Module', 'Valuation Engine', 'Document Vault', 'Up to 10 Family Members', 'Meeting Recorder & Notes', 'Priority Support'], color: '#E05B6F', current: currentUser?.tier === 'pro', recommended: true },
-    { id: 'enterprise', name: 'Enterprise', price: '$499/mo', features: ['Everything in Pro', 'Unlimited Family Members', 'Advisor Portal Access', 'Multi-Entity Management', 'Custom Reporting', 'White-Glove Onboarding', 'Dedicated Account Manager', 'API Access'], color: '#34597A', current: currentUser?.tier === 'enterprise' },
-  ];
-
-  const handleUpgrade = async (tierId) => {
-    setUpgrading(true);
-    try {
-      const result = await payments.checkout(tierId, currentUser?.email, currentUser?.id);
-      if (result?.simulated) {
-        // localStorage mode — instant upgrade
-        if (onTierChange) onTierChange(tierId);
-      }
-      // If Stripe is configured, user gets redirected to Stripe Checkout
-    } catch (err) {
-      alert('Upgrade failed: ' + (err.message || 'Please try again.'));
-    } finally {
-      setUpgrading(false);
-    }
-  };
-
   return (
     <div style={{maxWidth: '900px'}}>
-      <div className="page-header"><div><h1>Settings</h1><p className="subtitle">Manage your account, team, and subscription.</p></div></div>
+      <div className="page-header"><div><h1>Settings</h1><p className="subtitle">Manage your account and platform settings.</p></div></div>
 
       {/* Account Info */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
@@ -6933,25 +6910,18 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
         </div>
       </div>
 
-      {/* Subscription Tiers */}
+      {/* Membership Status */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
-        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '6px'}}>Subscription</h3>
-        <p style={{fontSize: '0.85rem', color: '#7A8BA0', marginBottom: '24px'}}>Choose the plan that fits your family enterprise.</p>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
-          {TIERS.map(tier => (
-            <div key={tier.id} style={{border: tier.current ? `2px solid ${tier.color}` : '1.5px solid #EFF1F6', borderRadius: '12px', padding: '24px', position: 'relative', background: tier.current ? `${tier.color}08` : 'white'}}>
-              {tier.recommended && <div style={{position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: '#E05B6F', color: 'white', fontSize: '0.7rem', fontWeight: 700, padding: '3px 12px', borderRadius: '10px', letterSpacing: '0.5px'}}>RECOMMENDED</div>}
-              <h4 style={{fontSize: '1.1rem', fontWeight: 700, color: tier.color, marginBottom: '4px'}}>{tier.name}</h4>
-              <div style={{fontSize: '1.6rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '16px'}}>{tier.price}</div>
-              <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
-                {tier.features.map((f, i) => <li key={i} style={{fontSize: '0.82rem', color: '#4A5E73', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '8px'}}><span style={{color: tier.color, flexShrink: 0}}>✓</span>{f}</li>)}
-              </ul>
-              <button onClick={() => !tier.current && handleUpgrade(tier.id)} style={{width: '100%', marginTop: '20px', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: tier.current ? 'default' : 'pointer', background: tier.current ? '#F0F3F8' : tier.color, color: tier.current ? '#7A8BA0' : 'white', border: 'none', opacity: upgrading ? 0.6 : 1}} disabled={tier.current || upgrading}>
-                {tier.current ? 'Current Plan' : upgrading ? 'Processing...' : `Upgrade to ${tier.name}`}
-              </button>
-            </div>
-          ))}
+        <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '12px'}}>Membership</h3>
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
+          <span style={{width: '8px', height: '8px', borderRadius: '50%', background: currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? '#10b981' : '#f59e0b'}}></span>
+          <span style={{fontWeight: 600, color: '#2B4C6F'}}>{currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? 'Active — Stride FBA Member ($500/year)' : 'Free Account'}</span>
         </div>
+        {hasStripe && currentUser?.tier !== 'free' && (
+          <button onClick={() => payments.openPortal()} style={{marginTop: '12px', padding: '8px 16px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
+            Manage Billing
+          </button>
+        )}
       </div>
 
       {/* Platform Status */}
@@ -6967,11 +6937,6 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
             <span style={{fontSize: '0.85rem', color: '#4A5E73'}}>{hasStripe ? 'Payments active' : 'Payments ready (add Stripe keys to activate)'}</span>
           </div>
         </div>
-        {currentUser?.tier !== 'free' && (
-          <button onClick={() => payments.openPortal()} style={{marginTop: '16px', padding: '8px 16px', background: '#F0F3F8', color: '#4A5E73', border: '1px solid #EFF1F6', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
-            Manage Subscription
-          </button>
-        )}
       </div>
 
       {/* ═══ YOUR DATA — Open Platform Export ═══ */}
@@ -8513,9 +8478,9 @@ function WorkbookView() {
 // ═══════════════════════════════════════════════════════════════
 
 function MembershipView({ currentUser, isMember, membershipStatus: externalStatus, onMembershipChange }) {
-  const [selectedTier, setSelectedTier] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [membershipStatus, setMembershipStatus] = useState(() => {
     return externalStatus || null;
   });
@@ -8527,89 +8492,32 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
     location: '',
     description: '',
     goals: '',
-    tier: '',
   });
 
-  const tiers = [
-    {
-      id: 'founding',
-      name: 'Founding Member',
-      price: 250,
-      period: '/year',
-      badge: 'FOUNDING RATE',
-      badgeColor: '#E05B6F',
-      highlight: true,
-      expiry: 'Rate expires May 1, 2026',
-      description: 'Lock in the founding rate before May 1, 2026. Limited availability.',
-      features: [
-        'Peer group placement with facilitated sessions',
-        'Full access to Stride member portal',
-        'LEP Assessment & Workbook',
-        'Education sessions & workshops',
-        'Community access',
-        'Session recordings & takeaways',
-      ],
-    },
-    {
-      id: 'albany',
-      name: 'Albany Area',
-      price: 500,
-      period: '/year',
-      badge: 'STANDARD',
-      badgeColor: '#E05B6F',
-      highlight: false,
-      description: 'For family enterprises in the Capital Region. Peer groups meet locally.',
-      features: [
-        'Peer group placement with facilitated sessions',
-        'Full access to Stride member portal',
-        'LEP Assessment & Workbook',
-        'Education sessions & workshops',
-        'Community access',
-        'Session recordings & takeaways',
-      ],
-    },
-    {
-      id: 'regional',
-      name: 'Regional',
-      price: 1000,
-      period: '/first year',
-      badge: 'REGIONAL',
-      badgeColor: '#5AAFB5',
-      highlight: false,
-      renewalNote: '$1,500/yr after first year',
-      description: 'For family enterprises outside the Albany area. Virtual + in-person programming.',
-      features: [
-        'Peer group placement with facilitated sessions',
-        'Full access to Stride member portal',
-        'LEP Assessment & Workbook',
-        'Education sessions & workshops',
-        'Community access',
-        'Session recordings & takeaways',
-        'Travel support for in-person events',
-        'Priority virtual session scheduling',
-        'Regional cohort matching',
-      ],
-    },
+  const MEMBERSHIP_FEATURES = [
+    'All Stride local panel events — monthly expert-led sessions',
+    'Stride peer groups — Senior Gen (monthly) & Next Gen (quarterly)',
+    'Monthly Stride newsletter',
+    'Full access to the LEP process — assessment, workbook & tools',
+    'Discounted registration to the Stride Regional Summit',
   ];
-
-  const handleApply = (tierId) => {
-    setSelectedTier(tierId);
-    setFormData(prev => ({ ...prev, tier: tierId }));
-    setShowForm(true);
-  };
 
   const handleFormChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    if (!formData.name.trim() || !formData.email.trim() || !formData.enterpriseName.trim() || !formData.location.trim() || !formData.tier) {
+  const handleJoinNow = async () => {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.enterpriseName.trim() || !formData.location.trim()) {
       alert('Please fill in all required fields.');
       return;
     }
 
+    setProcessing(true);
+
+    // Save application
     const application = {
       ...formData,
+      tier: 'member',
       submittedAt: new Date().toISOString(),
       status: 'pending',
     };
@@ -8617,19 +8525,27 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
     existing.push(application);
     localStorage.setItem('stride_membership_applications', JSON.stringify(existing));
 
-    const status = {
-      tier: formData.tier,
-      appliedAt: new Date().toISOString(),
-      status: 'pending_review',
-    };
-    localStorage.setItem('stride_membership_status', JSON.stringify(status));
-    setMembershipStatus(status);
-    setSubmitted(true);
-    if (onMembershipChange) onMembershipChange(status);
+    try {
+      // Attempt Stripe checkout
+      const result = await payments.checkout(currentUser?.email, currentUser?.id);
+      if (result?.simulated) {
+        // No Stripe configured — save as pending review
+        const status = { tier: 'member', appliedAt: new Date().toISOString(), status: 'pending_review' };
+        localStorage.setItem('stride_membership_status', JSON.stringify(status));
+        setMembershipStatus(status);
+        setSubmitted(true);
+        if (onMembershipChange) onMembershipChange(status);
+      }
+      // If Stripe is configured, user gets redirected to Stripe Checkout
+    } catch (err) {
+      alert('Something went wrong: ' + (err.message || 'Please try again.'));
+    } finally {
+      setProcessing(false);
+    }
   };
 
+  // ─── ACTIVE MEMBER VIEW ───
   if (membershipStatus) {
-    const currentTier = tiers.find(t => t.id === membershipStatus.tier);
     const isPending = membershipStatus.status === 'pending_review';
     const memberSince = localStorage.getItem('stride_member_since') || membershipStatus.appliedAt;
     const renewalDate = new Date(memberSince);
@@ -8655,14 +8571,14 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
             <div>
               <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
-                <span style={{background: currentTier?.badgeColor || '#E05B6F', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em'}}>{currentTier?.badge || 'MEMBER'}</span>
+                <span style={{background: '#2D5A3D', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em'}}>STRIDE MEMBER</span>
               </div>
-              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{currentTier?.name || 'Stride Member'}</h2>
+              <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>Stride FBA Membership</h2>
               <p style={{color: '#7A8BA0', fontSize: '0.88rem'}}>{isPending ? 'Pending approval' : 'Active membership'}</p>
             </div>
             <div style={{textAlign: 'right'}}>
-              <div style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F'}}>${currentTier?.price || '—'}</div>
-              <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>{currentTier?.period || '/year'}</div>
+              <div style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F'}}>$500</div>
+              <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>/year</div>
             </div>
           </div>
 
@@ -8690,7 +8606,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
 
           <h3 style={{fontSize: '0.9rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Your Membership Includes</h3>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '8px'}}>
-            {(currentTier?.features || []).map((feature, i) => (
+            {MEMBERSHIP_FEATURES.map((feature, i) => (
               <div key={i} style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', color: '#4A5E73', padding: '4px 0'}}>
                 <span style={{color: '#10b981', fontSize: '0.9rem'}}>&#10003;</span> {feature}
               </div>
@@ -8713,124 +8629,111 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           </div>
         </div>
 
-        {/* Billing Info placeholder */}
+        {/* Billing */}
         <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '32px'}}>
           <h3 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Billing & Payments</h3>
-          <p style={{color: '#7A8BA0', fontSize: '0.9rem', marginBottom: '16px'}}>Payment processing will be available once the backend is connected. For now, Jason handles billing directly.</p>
-          <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
-            Questions about billing? Reach out to <strong>jpacker@stridefba.com</strong>
-          </div>
+          {hasStripe ? (
+            <button onClick={() => payments.openPortal()} style={{padding: '10px 20px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '0.9rem'}}>
+              Manage Billing
+            </button>
+          ) : (
+            <div style={{background: '#F5F7FA', borderRadius: '10px', padding: '16px', fontSize: '0.88rem', color: '#4A5E73'}}>
+              Questions about billing? Reach out to <strong>jpacker@stridefba.com</strong>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
+  // ─── SIGNUP VIEW (not yet a member) ───
   return (
-    <div style={{maxWidth: '1000px', margin: '0 auto', padding: '32px 20px'}}>
-      <header style={{marginBottom: '16px', textAlign: 'center'}}>
-        <h1 style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Stride Membership</h1>
-        <p style={{fontSize: '1rem', color: '#7A8BA0', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6}}>
-          Join a peer group of family enterprise leaders navigating succession, governance, and transition — together.
+    <div style={{maxWidth: '800px', margin: '0 auto', padding: '32px 20px'}}>
+      <header style={{marginBottom: '32px', textAlign: 'center'}}>
+        <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2.2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>Join Stride FBA</h1>
+        <p style={{fontSize: '1rem', color: '#7A8BA0', maxWidth: '560px', margin: '0 auto', lineHeight: 1.7}}>
+          A peer community for family enterprise leaders navigating succession, governance, and generational transition — together.
         </p>
       </header>
 
-      {/* Urgency Banner */}
-      <div style={{background: 'linear-gradient(135deg, #FDF0F2 0%, #FCE4E8 100%)', borderRadius: '12px', padding: '16px 20px', marginBottom: '32px', border: '1px solid #fcd34d', display: 'flex', alignItems: 'center', gap: '12px'}}>
-        <span style={{fontSize: '1.5rem'}}>⏰</span>
-        <div>
-          <div style={{fontWeight: '700', color: '#C44A5C', fontSize: '0.95rem'}}>Founding rate expires May 1, 2026</div>
-          <div style={{fontSize: '0.82rem', color: '#b45309'}}>Lock in $250/year before the rate increases</div>
+      {/* Single Membership Card */}
+      <div style={{background: 'white', borderRadius: '16px', border: '2px solid #2D5A3D', padding: '36px', marginBottom: '32px', boxShadow: '0 8px 24px rgba(45,90,61,0.08)'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
+          <div>
+            <span style={{background: '#2D5A3D', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em'}}>MEMBERSHIP</span>
+            <h2 style={{fontSize: '1.5rem', fontWeight: '700', color: '#1A2A3F', marginTop: '12px', marginBottom: '4px'}}>Stride FBA Annual Membership</h2>
+            <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>Everything you need, all in one place. Effective June 1, 2026.</p>
+          </div>
+          <div style={{textAlign: 'right'}}>
+            <div style={{fontSize: '2.5rem', fontWeight: '800', color: '#1A2A3F'}}>$500</div>
+            <div style={{color: '#7A8BA0', fontSize: '0.9rem'}}>/year</div>
+          </div>
         </div>
+
+        <div style={{borderTop: '1px solid #DDE3EB', paddingTop: '24px', marginBottom: '24px'}}>
+          <div style={{fontSize: '0.85rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Everything included:</div>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px'}}>
+            {MEMBERSHIP_FEATURES.map((feature, idx) => (
+              <div key={idx} style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.88rem', color: '#4A5E73', padding: '3px 0'}}>
+                <span style={{color: '#2D5A3D', flexShrink: 0, marginTop: '1px'}}>&#10003;</span>
+                {feature}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowForm(true)}
+          style={{
+            width: '100%',
+            padding: '14px',
+            background: '#2D5A3D',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontWeight: '700',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#234A31'}
+          onMouseLeave={(e) => e.target.style.background = '#2D5A3D'}
+        >
+          Apply for Membership
+        </button>
       </div>
 
-      {/* Tier Cards */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '40px'}}>
-        {tiers.map((tier) => (
-          <div
-            key={tier.id}
-            style={{
-              background: 'white',
-              borderRadius: '16px',
-              border: tier.highlight ? '2px solid #E05B6F' : '1px solid #DDE3EB',
-              padding: '28px',
-              position: 'relative',
-              boxShadow: tier.highlight ? '0 8px 24px rgba(217,118,6,0.1)' : '0 1px 3px rgba(0,0,0,0.1)',
-            }}
-          >
-            {tier.highlight && (
-              <div style={{position: 'absolute', top: '-12px', left: '20px', background: '#E05B6F', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
-                🌟 Best Value
-              </div>
-            )}
-
-            <div style={{marginBottom: '20px'}}>
-              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
-                <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>{tier.name}</h3>
-                <span style={{background: tier.badgeColor, color: 'white', padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em'}}>
-                  {tier.badge}
-                </span>
-              </div>
-              <div style={{fontSize: '1.6rem', fontWeight: '800', color: '#2B4C6F', marginBottom: '4px'}}>
-                ${tier.price}<span style={{fontSize: '0.9rem', color: '#7A8BA0'}}>{tier.period}</span>
-              </div>
-              {tier.renewalNote && (
-                <div style={{fontSize: '0.8rem', color: '#7A8BA0', fontStyle: 'italic'}}>{tier.renewalNote}</div>
-              )}
-            </div>
-
-            <p style={{fontSize: '0.9rem', color: '#7A8BA0', marginBottom: '20px', lineHeight: 1.5}}>{tier.description}</p>
-
-            <div style={{borderTop: '1px solid #DDE3EB', paddingTop: '20px', marginBottom: '20px'}}>
-              <div style={{fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Includes:</div>
-              <ul style={{margin: 0, padding: 0, listStyle: 'none'}}>
-                {tier.features.map((feature, idx) => (
-                  <li key={idx} style={{fontSize: '0.82rem', color: '#4A5E73', marginBottom: '8px', paddingLeft: '20px', position: 'relative'}}>
-                    <span style={{position: 'absolute', left: 0}}>✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <button
-              onClick={() => handleApply(tier.id)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: tier.highlight ? 'linear-gradient(135deg, #E05B6F, #f97316)' : 'linear-gradient(135deg, #E05B6F, #5AAFB5)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '10px',
-                fontWeight: '700',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => e.target.style.opacity = '0.9'}
-              onMouseLeave={(e) => e.target.style.opacity = '1'}
-            >
-              Apply Now
-            </button>
+      {/* How It Works */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px'}}>
+        {[
+          { step: '1', title: 'Apply', desc: 'Fill out a brief application so we can learn about your family enterprise.' },
+          { step: '2', title: 'Connect', desc: 'Jason Packer will reach out personally to discuss fit and peer group placement.' },
+          { step: '3', title: 'Begin', desc: 'Join your peer group, access the portal, and start building your family\'s future.' },
+        ].map((item) => (
+          <div key={item.step} style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', textAlign: 'center'}}>
+            <div style={{width: '32px', height: '32px', borderRadius: '50%', background: '#2D5A3D', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '0.85rem', fontWeight: '700'}}>{item.step}</div>
+            <h4 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '6px'}}>{item.title}</h4>
+            <p style={{fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5}}>{item.desc}</p>
           </div>
         ))}
       </div>
 
       {/* Application Form */}
       {showForm && (
-        <div style={{background: '#F5F7FA', borderRadius: '16px', border: '1px solid #EFF1F6', padding: '32px', maxWidth: '700px', margin: '0 auto'}}>
+        <div style={{background: '#F5F7FA', borderRadius: '16px', border: '1px solid #EFF1F6', padding: '32px'}}>
           <h2 style={{fontSize: '1.4rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Membership Application</h2>
           <p style={{color: '#7A8BA0', marginBottom: '24px'}}>Tell us about your family enterprise and what you're hoping to achieve with Stride.</p>
 
           {submitted ? (
             <div style={{textAlign: 'center', padding: '32px'}}>
-              <div style={{fontSize: '3rem', marginBottom: '16px'}}>✅</div>
+              <div style={{width: '48px', height: '48px', borderRadius: '50%', background: '#2D5A3D', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '1.5rem'}}>&#10003;</div>
               <h3 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Application Received!</h3>
               <p style={{color: '#7A8BA0', fontSize: '0.95rem', marginBottom: '20px', lineHeight: 1.6}}>
-                Application received! Jason Packer will personally review your application and reach out within 48 hours to discuss next steps and peer group placement.
+                Jason Packer will personally review your application and reach out within 48 hours to discuss next steps and peer group placement.
               </p>
               <button
                 onClick={() => { setShowForm(false); setSubmitted(false); }}
-                style={{background: '#E05B6F', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
+                style={{background: '#2D5A3D', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
               >
                 Done
               </button>
@@ -8839,95 +8742,42 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
             <>
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Full Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleFormChange('name', e.target.value)}
-                  placeholder="Your full name"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
-                />
+                <input type="text" value={formData.name} onChange={(e) => handleFormChange('name', e.target.value)} placeholder="Your full name" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}} />
               </div>
-
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Email *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleFormChange('email', e.target.value)}
-                  placeholder="you@family.com"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
-                />
+                <input type="email" value={formData.email} onChange={(e) => handleFormChange('email', e.target.value)} placeholder="you@family.com" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}} />
               </div>
-
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Family Enterprise Name *</label>
-                <input
-                  type="text"
-                  value={formData.enterpriseName}
-                  onChange={(e) => handleFormChange('enterpriseName', e.target.value)}
-                  placeholder="e.g., Your Family Enterprise"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
-                />
+                <input type="text" value={formData.enterpriseName} onChange={(e) => handleFormChange('enterpriseName', e.target.value)} placeholder="e.g., The Smith Family Enterprise" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}} />
               </div>
-
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Your Role *</label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => handleFormChange('role', e.target.value)}
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', background: 'white'}}
-                >
+                <select value={formData.role} onChange={(e) => handleFormChange('role', e.target.value)} style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', background: 'white'}}>
                   <option value="Current Owner / Patriarch / Matriarch">Current Owner / Patriarch / Matriarch</option>
                   <option value="Next Generation">Next Generation Leader</option>
                   <option value="Advisor">Advisor / Consultant</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
-
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Location *</label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleFormChange('location', e.target.value)}
-                  placeholder="City, State or Region"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}}
-                />
+                <input type="text" value={formData.location} onChange={(e) => handleFormChange('location', e.target.value)} placeholder="City, State or Region" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none'}} />
               </div>
-
               <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>Brief description of your family enterprise</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleFormChange('description', e.target.value)}
-                  placeholder="Tell us about your business and family..."
-                  rows="3"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
-                />
+                <textarea value={formData.description} onChange={(e) => handleFormChange('description', e.target.value)} placeholder="Tell us about your business and family..." rows="3" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}} />
               </div>
-
               <div style={{marginBottom: '24px'}}>
                 <label style={{display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '8px'}}>What are you hoping to get from Stride?</label>
-                <textarea
-                  value={formData.goals}
-                  onChange={(e) => handleFormChange('goals', e.target.value)}
-                  placeholder="Succession planning? Governance? Family dynamics? Something else?"
-                  rows="3"
-                  style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}}
-                />
+                <textarea value={formData.goals} onChange={(e) => handleFormChange('goals', e.target.value)} placeholder="Succession planning? Governance? Family dynamics? Something else?" rows="3" style={{width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #EFF1F6', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical'}} />
               </div>
-
               <div style={{display: 'flex', gap: '12px'}}>
-                <button
-                  onClick={handleSubmit}
-                  style={{flex: 1, padding: '13px', background: 'linear-gradient(135deg, #E05B6F, #5AAFB5)', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer'}}
-                >
-                  Submit Application
+                <button onClick={handleJoinNow} disabled={processing} style={{flex: 1, padding: '13px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', cursor: processing ? 'default' : 'pointer', opacity: processing ? 0.6 : 1}}>
+                  {processing ? 'Processing...' : 'Submit Application — $500/year'}
                 </button>
-                <button
-                  onClick={() => { setShowForm(false); setSelectedTier(null); }}
-                  style={{flex: 1, padding: '13px', background: 'white', color: '#2B4C6F', border: '1px solid #DDE3EB', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'}}
-                >
+                <button onClick={() => setShowForm(false)} style={{flex: 1, padding: '13px', background: 'white', color: '#2B4C6F', border: '1px solid #DDE3EB', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'}}>
                   Cancel
                 </button>
               </div>
