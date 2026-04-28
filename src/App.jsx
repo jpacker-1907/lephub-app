@@ -9,6 +9,7 @@ import './App.css';
 import LEPLandingPage from './LEPLandingPage.jsx';
 import PriorityTracker from './PriorityTracker.jsx';
 import { rocksDashboard } from './rocksBackend.js';
+import EnterpriseRoleMap from './EnterpriseRoleMap.jsx';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -2573,6 +2574,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
     { id: 'credentialing', icon: 'award', name: 'Credentials', memberOnly: true },
     { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
+    { id: 'role-map', icon: 'globe', name: 'Role Map', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     { id: 'professionals', icon: 'briefcase', name: 'Professionals', memberOnly: true },
     { id: 'security', icon: 'shield', name: 'Security', memberOnly: false },
@@ -13037,6 +13039,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'decision-engine' && isMember && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'sessions' && isMember && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
+        {currentView === 'role-map' && isMember && <EnterpriseRoleMap familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
         {currentView === 'professionals' && isMember && <ProfessionalDirectoryView />}
