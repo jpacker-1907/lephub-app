@@ -11,6 +11,10 @@ import PriorityTracker from './PriorityTracker.jsx';
 import { rocksDashboard } from './rocksBackend.js';
 import EnterpriseRoleMap from './EnterpriseRoleMap.jsx';
 import CommunityView from './CommunityView.jsx';
+import DeliverableWorkshop from './DeliverableWorkshop.jsx';
+import ContentLibrary from './ContentLibrary.jsx';
+import Communications from './Communications.jsx';
+import EventOperations from './EventOperations.jsx';
 
 // ═══════════════════════════════════════════════════════════════
 // THE STRIDE WAY — Member Portal v23
@@ -2564,22 +2568,18 @@ async function downloadDocument(moduleId, data, title) {
 function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser, isMember, isAdmin }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  // ─── MVP NAV (v2) ─────────────────────────────────────────
+  // 9 features: Meetings, Workshop, Content, Events, Vault, Community, Membership, Communications + Admin
   const allNavItems = [
     { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
-    { id: 'lep-journey', icon: 'compass', name: 'LEP Journey', memberOnly: true },
-    { id: 'pillars', icon: 'bar-chart', name: 'Pillars', memberOnly: true },
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
-    { id: 'priorities', icon: 'check-circle', name: 'Priorities', memberOnly: true },
-    { id: 'transitions', icon: 'trending-up', name: 'Transitions', memberOnly: true },
+    { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
+    { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
+    { id: 'sessions', icon: 'calendar', name: 'Events', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
-    { id: 'sessions', icon: 'calendar', name: 'Sessions', memberOnly: true },
-    { id: 'credentialing', icon: 'award', name: 'Credentials', memberOnly: true },
-    { id: 'my-family', icon: 'heart', name: 'My Family', memberOnly: true },
-    { id: 'role-map', icon: 'globe', name: 'Role Map', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
-    { id: 'professionals', icon: 'briefcase', name: 'Professionals', memberOnly: true },
-    { id: 'security', icon: 'shield', name: 'Security', memberOnly: false },
     { id: 'membership', icon: 'award', name: 'Membership', memberOnly: false },
+    { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
   ];
   const navItems = allNavItems.filter(item => {
@@ -12242,11 +12242,14 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'priorities' && isMember && <PriorityTracker user={currentUser} />}
         {currentView === 'transitions' && isMember && <TransitionsView setCurrentView={setCurrentView} />}
         {currentView === 'decision-engine' && isMember && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
-        {currentView === 'sessions' && isMember && <SessionsView scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
+        {currentView === 'sessions' && isMember && <EventOperations />}
         {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'role-map' && isMember && <EnterpriseRoleMap familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
+        {currentView === 'workshop' && isMember && <DeliverableWorkshop />}
+        {currentView === 'content' && isMember && <ContentLibrary />}
+        {currentView === 'communications' && isAdmin && <Communications />}
         {currentView === 'professionals' && isMember && <ProfessionalDirectoryView />}
         {currentView === 'credentialing' && isMember && <CredentialingView />}
         {currentView === 'security' && <SecurityPrivacyView />}
