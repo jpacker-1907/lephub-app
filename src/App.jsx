@@ -9925,7 +9925,7 @@ function AdminView({ currentUser }) {
   const [csvPreview, setCsvPreview] = useState(null);
   const csvInputRef = useRef(null);
 
-  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false });
+  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'member', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false });
 
   // ─── SESSION NOTES STATE (v41) ────────────────────────────
   const [sessionForm, setSessionForm] = useState({ familyName: '', sessionDate: new Date().toISOString().split('T')[0], summary: '', actionItems: '', transcript: '' });
@@ -10301,7 +10301,7 @@ function AdminView({ currentUser }) {
     } else {
       setMembers(prev => [...prev, { ...newMember, id: String(Date.now()) }]);
     }
-    setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
+    setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'member', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() });
     setShowAddMember(false);
     setEditingMember(null);
   };
@@ -10364,7 +10364,7 @@ function AdminView({ currentUser }) {
           enterpriseName: get(companyIdx),
           title: get(titleIdx),
           location,
-          tier: get(tierIdx).toLowerCase() || 'founding',
+          tier: get(tierIdx).toLowerCase() || 'member',
           notes: get(notesIdx),
           isActive: activeVal === 'yes' || activeVal === 'active' || activeVal === 'true',
         };
@@ -10420,7 +10420,7 @@ function AdminView({ currentUser }) {
       phone: r.phone || '',
       enterpriseName: r.enterpriseName || '',
       location: r.location || '',
-      tier: r.tier && r.tier !== 'founding' ? r.tier : 'founding',
+      tier: r.tier || 'member',
       status: r.isActive ? 'active' : 'inactive',
       peerGroup: '',
       notes: [r.title, r.notes].filter(Boolean).join(' — '),
@@ -10495,7 +10495,7 @@ function AdminView({ currentUser }) {
   // ─── COMPUTED ─────────────────────────────────────────────
   const pendingApps = applications.filter(a => a.status === 'pending');
   const approvedApps = applications.filter(a => a.status === 'approved');
-  const tierPrices = { founding: 250, albany: 500, regional: 1000, 'regional-plus': 1500 };
+  const tierPrices = { member: 500 };
   const totalRevenue = members.filter(m => m.status === 'active').reduce((sum, m) => sum + (tierPrices[m.tier] || 0), 0);
   const filteredMembers = members.filter(m => {
     const matchSearch = !memberSearch || m.name.toLowerCase().includes(memberSearch.toLowerCase()) || m.email.toLowerCase().includes(memberSearch.toLowerCase()) || (m.enterpriseName || '').toLowerCase().includes(memberSearch.toLowerCase());
@@ -10528,10 +10528,7 @@ function AdminView({ currentUser }) {
         <div style={fieldGroup}>
           <label style={labelStyle}>Membership Tier</label>
           <select style={inputStyle} value={newMember.tier} onChange={e => setNewMember({...newMember, tier: e.target.value})}>
-            <option value="founding">Founding ($250/yr)</option>
-            <option value="albany">Albany ($500/yr)</option>
-            <option value="regional">Regional ($1,000/yr)</option>
-            <option value="regional-plus">Regional+ ($1,500/yr)</option>
+            <option value="member">Stride Member ($500/yr)</option>
           </select>
         </div>
         <div style={fieldGroup}>
@@ -10548,7 +10545,7 @@ function AdminView({ currentUser }) {
       </div>
       <div style={{display: 'flex', gap: '10px', marginTop: '8px'}}>
         <button onClick={saveMember} style={btnPrimary}>{editingMember ? 'Save Changes' : 'Add Member'}</button>
-        <button onClick={() => { setShowAddMember(false); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false }); }} style={btnSecondary}>Cancel</button>
+        <button onClick={() => { setShowAddMember(false); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'member', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString(), lifecycleStage: 'discovery', generation: '', unsubscribed: false }); }} style={btnSecondary}>Cancel</button>
       </div>
     </div>
   );
@@ -10706,7 +10703,7 @@ function AdminView({ currentUser }) {
         <>
           {/* Toolbar */}
           <div style={{display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center'}}>
-            <button onClick={() => { setShowAddMember(true); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'founding', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() }); }} style={btnPrimary}>+ Add Member</button>
+            <button onClick={() => { setShowAddMember(true); setEditingMember(null); setNewMember({ name: '', email: '', phone: '', enterpriseName: '', location: '', tier: 'member', status: 'active', peerGroup: '', notes: '', joinedAt: new Date().toISOString() }); }} style={btnPrimary}>+ Add Member</button>
             <button onClick={() => setShowImportCSV(!showImportCSV)} style={btnSecondary}>Import CSV</button>
             <div style={{flex: 1}} />
             <input value={memberSearch} onChange={e => setMemberSearch(e.target.value)} placeholder="Search members..." style={{...inputStyle, width: '220px', flex: 'none'}} />
@@ -10715,9 +10712,7 @@ function AdminView({ currentUser }) {
               <option value="active">Active</option>
               <option value="pending">Pending</option>
               <option value="inactive">Inactive</option>
-              <option value="founding">Founding</option>
-              <option value="albany">Albany</option>
-              <option value="regional">Regional</option>
+              <option value="member">Member</option>
             </select>
           </div>
 
