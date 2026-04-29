@@ -86,13 +86,21 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
                 <a href="#lep-inquiry" className="btn btn-outline-on-navy">Become a Certified Implementer</a>
               </div>
             </div>
-            <div className="pillar-stack" aria-label="The Five Pillars of LEP">
-              <div className="pillar-stack-item pillar-stack-1"><span className="num">01</span>ROOTS</div>
-              <div className="pillar-stack-item pillar-stack-2"><span className="num">02</span>ORDER</div>
-              <div className="pillar-stack-item pillar-stack-3"><span className="num">03</span>MOMENTUM</div>
-              <div className="pillar-stack-item pillar-stack-4"><span className="num">04</span>CONTINUITY</div>
-              <div className="pillar-stack-item pillar-stack-5"><span className="num">05</span>LEGACY</div>
-            </div>
+            <figure className="hero-photo">
+              <img
+                src="/images/stride-retreat-facilitation.jpg"
+                alt="Jason Packer facilitating an LEP retreat with family enterprise leaders"
+                loading="eager"
+              />
+              <figcaption>LEP Retreat · Adirondack Pavilion</figcaption>
+            </figure>
+          </div>
+          <div className="pillar-strip" aria-label="The Five Pillars of LEP">
+            <div className="pillar-strip-item pillar-strip-1"><span className="num">01</span>ROOTS</div>
+            <div className="pillar-strip-item pillar-strip-2"><span className="num">02</span>ORDER</div>
+            <div className="pillar-strip-item pillar-strip-3"><span className="num">03</span>MOMENTUM</div>
+            <div className="pillar-strip-item pillar-strip-4"><span className="num">04</span>CONTINUITY</div>
+            <div className="pillar-strip-item pillar-strip-5"><span className="num">05</span>LEGACY</div>
           </div>
         </div>
       </section>
@@ -183,6 +191,39 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
         </div>
       </section>
 
+      {/* ────────── SECTION · STRIDE IN ACTION (Photo Gallery) ────────── */}
+      <section className="section in-action-section">
+        <div className="container">
+          <span className="eyebrow">Stride in Action</span>
+          <h2>This is what LEP looks like in the room.</h2>
+          <p className="section-subtext">
+            Working sessions, retreats, and Stride Family Business Alliance gatherings — where the Five Pillars stop being a framework and start being a working system.
+          </p>
+          <div className="gallery-grid">
+            <figure className="gallery-item gallery-feature">
+              <img src="/images/stride-retreat-group.jpg" alt="Stride retreat group at the Adirondack pavilion" loading="lazy" />
+              <figcaption>The cohort, end of a two-day LEP Roots retreat.</figcaption>
+            </figure>
+            <figure className="gallery-item">
+              <img src="/images/stride-retreat-whiteboard.jpg" alt="Working session on group norms during an LEP retreat" loading="lazy" />
+              <figcaption>Naming the rules of engagement — a Pillar Work session.</figcaption>
+            </figure>
+            <figure className="gallery-item">
+              <img src="/images/stride-fba-march.jpg" alt="Stride FBA member event in March" loading="lazy" />
+              <figcaption>Stride FBA · Quarterly member gathering.</figcaption>
+            </figure>
+            <figure className="gallery-item">
+              <img src="/images/stride-fba-evening.jpg" alt="Stride FBA Evening of Comedy 2025" loading="lazy" />
+              <figcaption>Stride FBA · Evening of Comedy, 2025.</figcaption>
+            </figure>
+            <figure className="gallery-item">
+              <img src="/images/stride-retreat-teaching.jpg" alt="Jason Packer teaching at an LEP retreat" loading="lazy" />
+              <figcaption>Teaching the Council Map — Pillar 02, Order.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
       {/* ────────── SECTION 5 · WHO + DIFFERENTIATOR ────────── */}
       <section className="section who-section">
         <div className="container">
@@ -218,6 +259,32 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
                 <div className="this-instead">THIS INSTEAD</div>
                 <div className="this-instead-text">A living operating system that runs — and is reviewed — every year</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ────────── SECTION · FOUNDER / OPERATOR CREDIBILITY ────────── */}
+      <section className="section founder-section">
+        <div className="container">
+          <div className="founder-grid">
+            <figure className="founder-photo">
+              <img
+                src="/images/hill-and-markes-family.jpg"
+                alt="Four generations of the Packer family at Hill &amp; Markes, the family's wholesale distribution business in Amsterdam, NY"
+                loading="lazy"
+              />
+              <figcaption>The Packer family at Hill &amp; Markes — Amsterdam, NY · est. 1906.</figcaption>
+            </figure>
+            <div className="founder-copy">
+              <span className="eyebrow">Built by an operator who's lived it.</span>
+              <h2>LEP wasn't designed in a classroom.</h2>
+              <p>
+                Jason Packer is a fourth-generation operator at Hill &amp; Markes, the wholesale distribution business his great-grandfather founded in 1906. LEP is the system he wished existed when his own family was navigating governance, succession, and the question of what the enterprise is actually for.
+              </p>
+              <p>
+                Every pillar, every tool, every session has been pressure-tested with real family enterprises through Stride Family Business Alliance — not in theory.
+              </p>
             </div>
           </div>
         </div>
