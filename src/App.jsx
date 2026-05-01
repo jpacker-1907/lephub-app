@@ -2576,7 +2576,6 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
     { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
-    { id: 'sessions', icon: 'calendar', name: 'Events', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
@@ -3154,11 +3153,6 @@ function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, on
           <div style={{marginBottom: '8px'}}><Icon name="message-circle" size={24} color="#5AAFB5" /></div>
           <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Community</div>
           <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Discuss & connect</div>
-        </button>
-        <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '8px'}}><Icon name="calendar" size={24} color="#E05B6F" /></div>
-          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Events</div>
-          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Panels & summit</div>
         </button>
       </div>
 
