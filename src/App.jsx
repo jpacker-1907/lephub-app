@@ -2579,7 +2579,6 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'sessions', icon: 'calendar', name: 'Events', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
-    { id: 'membership', icon: 'award', name: 'Membership', memberOnly: false },
     { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
   ];
@@ -3042,117 +3041,153 @@ function ActivityFeed({ setCurrentView }) {
 }
 
 function Dashboard({ scores, setCurrentView, setActivePillar, vaultDocuments, onGenerateLepReport }) {
-  const [memberSince] = useState(() => {
-    const saved = localStorage.getItem('stride_member_since');
-    if (saved) return saved;
-    const date = new Date().toISOString().split('T')[0];
-    localStorage.setItem('stride_member_since', date);
-    return date;
-  });
-
-  const [sessions] = useState(() => {
-    const saved = localStorage.getItem('stride_sessions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [meetings] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_meetings') || '[]'); } catch { return []; } });
+  const [deliverables] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_workshop_deliverables') || '[]'); } catch { return []; } });
+  const [contentAssignments] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_content_assignments') || '[]'); } catch { return []; } });
+  const [sessions] = useState(() => { try { return JSON.parse(localStorage.getItem('stride_sessions') || '[]'); } catch { return []; } });
 
   const nextSession = sessions.find(s => new Date(s.date) >= new Date());
+  const openActions = meetings.flatMap(m => (m.actionItems || []).filter(a => !a.done));
+  const activeDeliverables = deliverables.filter(d => d.status !== 'completed');
+  const pendingContent = contentAssignments.filter(a => a.status !== 'completed');
+  const recentMeetings = [...meetings].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
 
   return (
     <div style={{maxWidth: '900px', margin: '0 auto', padding: '32px 20px'}}>
-      <header style={{marginBottom: '32px'}}>
-        <h1 style={{fontSize: '1.8rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '6px'}}>Welcome back</h1>
-        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>The STRIDE Way — your family enterprise work, all in one place.</p>
+      <header style={{marginBottom: '28px'}}>
+        <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.8rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '6px'}}>Your LEP Journey</h1>
+        <p style={{fontSize: '0.9rem', color: '#7A8BA0'}}>Meetings, deliverables, and resources — everything in one place.</p>
       </header>
-
-      {/* Peer Group Card */}
-      <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '16px', padding: '28px', marginBottom: '20px', color: 'white'}}>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
-          <div>
-            <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A8BA0', marginBottom: '8px', fontWeight: '600'}}>Your Peer Group</div>
-            <h2 style={{fontSize: '1.3rem', fontWeight: '700', marginBottom: '6px'}}>Family Enterprise Cohort</h2>
-            <p style={{fontSize: '0.88rem', color: '#cbd5e1'}}>Facilitated by Jason Packer</p>
-          </div>
-          <div style={{background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 16px', textAlign: 'center'}}>
-            <div style={{fontSize: '1.6rem', fontWeight: '800'}}>7</div>
-            <div style={{fontSize: '0.72rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.03em'}}>Families</div>
-          </div>
-        </div>
-      </div>
 
       {/* Next Session Card */}
       {nextSession ? (
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px 24px', marginBottom: '20px', cursor: 'pointer'}} onClick={() => setCurrentView('sessions')}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap'}}>
-            <div>
-              <div style={{fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#E05B6F', marginBottom: '6px', fontWeight: '700'}}>Next Session</div>
-              <h3 style={{fontSize: '1.05rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '4px'}}>{nextSession.title}</h3>
-              <div style={{display: 'flex', gap: '16px', fontSize: '0.82rem', color: '#7A8BA0', marginTop: '8px'}}>
-                <span>{new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-                <span>{nextSession.time}</span>
-              </div>
-              {nextSession.prepRequired && (
-                <div style={{marginTop: '10px', display: 'inline-block', background: '#FDF0F2', color: '#C44A5C', fontSize: '0.78rem', padding: '4px 12px', borderRadius: '20px', fontWeight: '600'}}>
-                  Prep work required
-                </div>
-              )}
-            </div>
-            <span style={{color: '#7A8BA0', fontSize: '1.2rem'}}>→</span>
+        <div style={{background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 100%)', borderRadius: '16px', padding: '24px', marginBottom: '20px', color: 'white', cursor: 'pointer'}} onClick={() => setCurrentView('sessions')}>
+          <div style={{fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.6)', marginBottom: '8px', fontWeight: '700'}}>Next Session</div>
+          <h2 style={{fontSize: '1.2rem', fontWeight: '700', marginBottom: '6px'}}>{nextSession.title}</h2>
+          <div style={{display: 'flex', gap: '16px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)'}}>
+            <span>{new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+            {nextSession.time && <span>{nextSession.time}</span>}
           </div>
+          {nextSession.prepRequired && (
+            <div style={{marginTop: '10px', display: 'inline-block', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: '0.78rem', padding: '4px 12px', borderRadius: '20px', fontWeight: '600'}}>
+              Prep work required
+            </div>
+          )}
         </div>
       ) : (
         <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '24px', marginBottom: '20px', textAlign: 'center', color: '#7A8BA0'}}>
-          <p style={{fontWeight: '600', color: '#7A8BA0'}}>No upcoming sessions scheduled</p>
-          <p style={{fontSize: '0.85rem'}}>Your facilitator will post the next session soon.</p>
+          <p style={{fontWeight: '600'}}>No upcoming sessions scheduled</p>
+          <p style={{fontSize: '0.85rem'}}>Check back soon — your facilitator will post the next session.</p>
         </div>
       )}
 
-      {/* Membership Card */}
-      <div style={{background: '#FDF0F2', borderRadius: '12px', border: '1px solid #FCE4E8', padding: '16px 24px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <div>
-          <div style={{fontSize: '0.88rem', fontWeight: '700', color: '#C44A5C'}}>Stride Member</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0'}}>Member since {new Date(memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+      {/* What Needs Your Attention */}
+      {(openActions.length > 0 || activeDeliverables.length > 0 || pendingContent.length > 0) && (
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '24px', marginBottom: '20px'}}>
+          <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '16px'}}>What needs your attention</h3>
+
+          {openActions.length > 0 && (
+            <div style={{marginBottom: '16px'}}>
+              <div onClick={() => setCurrentView('meetings')} style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: '#FEF3C7', borderRadius: '10px', cursor: 'pointer'}}>
+                <span style={{fontSize: '1.1rem'}}>&#9888;</span>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '600', color: '#92400e', fontSize: '0.88rem'}}>{openActions.length} open action item{openActions.length !== 1 ? 's' : ''} from meetings</div>
+                  <div style={{fontSize: '0.78rem', color: '#b45309', marginTop: '2px'}}>{openActions.slice(0, 2).map(a => a.text).filter(Boolean).join(' · ') || 'Review and complete your action items'}</div>
+                </div>
+                <span style={{color: '#92400e'}}>&#8594;</span>
+              </div>
+            </div>
+          )}
+
+          {activeDeliverables.length > 0 && (
+            <div style={{marginBottom: '16px'}}>
+              <div onClick={() => setCurrentView('workshop')} style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: '#EDE9FE', borderRadius: '10px', cursor: 'pointer'}}>
+                <span style={{fontSize: '1.1rem'}}>&#9998;</span>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '600', color: '#5B21B6', fontSize: '0.88rem'}}>{activeDeliverables.length} deliverable{activeDeliverables.length !== 1 ? 's' : ''} in progress</div>
+                  <div style={{fontSize: '0.78rem', color: '#6D28D9', marginTop: '2px'}}>{activeDeliverables.slice(0, 2).map(d => d.title || d.templateName).join(' · ')}</div>
+                </div>
+                <span style={{color: '#5B21B6'}}>&#8594;</span>
+              </div>
+            </div>
+          )}
+
+          {pendingContent.length > 0 && (
+            <div>
+              <div onClick={() => setCurrentView('content')} style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: '#DBEAFE', borderRadius: '10px', cursor: 'pointer'}}>
+                <span style={{fontSize: '1.1rem'}}>&#9655;</span>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '600', color: '#1E40AF', fontSize: '0.88rem'}}>{pendingContent.length} assigned resource{pendingContent.length !== 1 ? 's' : ''} to review</div>
+                  <div style={{fontSize: '0.78rem', color: '#1D4ED8', marginTop: '2px'}}>{pendingContent.slice(0, 2).map(c => c.contentTitle).filter(Boolean).join(' · ')}</div>
+                </div>
+                <span style={{color: '#1E40AF'}}>&#8594;</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div style={{background: '#E05B6F', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700'}}>Active</div>
-      </div>
-
-      {/* Daily Pulse Check-in Widget */}
-      <DailyPulseWidget />
-
-      {/* Engagement Stats Bar */}
-      <EngagementStatsBar sessions={sessions} />
+      )}
 
       {/* Quick Actions */}
-      <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '14px'}}>Quick Actions</h3>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '32px'}}>
-        <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '10px'}}><Icon name="calendar" size={28} color="#5AAFB5" /></div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Sessions</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>View & register</div>
+      <h3 style={{fontSize: '0.85rem', fontWeight: '700', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px'}}>Your Tools</h3>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '28px'}}>
+        <button onClick={() => setCurrentView('meetings')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="book-open" size={24} color="#2B4C6F" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Meetings</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>{meetings.length} recorded</div>
         </button>
-        <button onClick={() => setCurrentView('credentialing')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '10px'}}><Icon name="award" size={28} color="#5AAFB5" /></div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Credentials</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Learning pathways</div>
+        <button onClick={() => setCurrentView('workshop')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="edit" size={24} color="#5B21B6" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Workshop</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Build deliverables</div>
         </button>
-        <button onClick={() => setCurrentView('my-family')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '10px'}}><Icon name="heart" size={28} color="#E05B6F" /></div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>My Family</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Profile & dynamics</div>
+        <button onClick={() => setCurrentView('content')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="play-circle" size={24} color="#1E40AF" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Learn</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Resources & content</div>
         </button>
-        <button onClick={() => setCurrentView('community')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '10px'}}><Icon name="message-circle" size={28} color="#5AAFB5" /></div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Community</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Discuss & connect</div>
+        <button onClick={() => setCurrentView('vault')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="lock" size={24} color="#2D5A3D" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Vault</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Family documents</div>
         </button>
-        <button onClick={() => setCurrentView('membership')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
-          <div style={{marginBottom: '10px'}}><Icon name="award" size={28} color="#E05B6F" /></div>
-          <div style={{fontSize: '0.88rem', fontWeight: '600', color: '#2B4C6F'}}>Membership</div>
-          <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>Join or manage</div>
+        <button onClick={() => setCurrentView('community')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="message-circle" size={24} color="#5AAFB5" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Community</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Discuss & connect</div>
+        </button>
+        <button onClick={() => setCurrentView('sessions')} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '18px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s'}}>
+          <div style={{marginBottom: '8px'}}><Icon name="calendar" size={24} color="#E05B6F" /></div>
+          <div style={{fontSize: '0.85rem', fontWeight: '600', color: '#2B4C6F'}}>Events</div>
+          <div style={{fontSize: '0.75rem', color: '#7A8BA0', marginTop: '3px'}}>Panels & summit</div>
         </button>
       </div>
 
-      {/* Activity Feed */}
-      <ActivityFeed setCurrentView={setCurrentView} />
+      {/* Recent Meetings */}
+      {recentMeetings.length > 0 && (
+        <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '24px', marginBottom: '20px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+            <h3 style={{fontSize: '0.92rem', fontWeight: '700', color: '#1A2A3F', margin: 0}}>Recent Meetings</h3>
+            <button onClick={() => setCurrentView('meetings')} style={{background: 'none', border: 'none', color: '#5AAFB5', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer'}}>View all &#8594;</button>
+          </div>
+          {recentMeetings.map(m => {
+            const doneCount = (m.actionItems || []).filter(a => a.done).length;
+            const totalCount = (m.actionItems || []).length;
+            return (
+              <div key={m.id} onClick={() => setCurrentView('meetings')} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #F0F3F8', cursor: 'pointer'}}>
+                <div style={{flex: 1}}>
+                  <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.88rem'}}>{m.type?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+                  <div style={{fontSize: '0.78rem', color: '#7A8BA0'}}>{m.date}</div>
+                </div>
+                {totalCount > 0 && (
+                  <span style={{fontSize: '0.75rem', background: doneCount === totalCount ? '#D1FAE5' : '#FEF3C7', color: doneCount === totalCount ? '#065f46' : '#92400e', padding: '3px 10px', borderRadius: '20px', fontWeight: '600'}}>
+                    {doneCount}/{totalCount} actions
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
