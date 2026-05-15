@@ -164,20 +164,17 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
             <div className="how-card how-card-1">
               <div className="step">01</div>
               <h4>Discovery</h4>
-              <div className="meta">$2,500–$5,000</div>
               <p>A structured diagnostic across all five pillars. Surfaces where you are, what's most urgent, and the right sequence for your engagement. Includes a full debrief session.</p>
             </div>
             <div className="how-card how-card-2">
               <div className="step">02</div>
               <h4>Pillar Work</h4>
-              <div className="meta">6–18 Months</div>
               <p>Facilitated sessions, one per pillar. Each session produces a completed LEP tool. ROOTS always comes first. The remaining sequence follows your Discovery results.</p>
             </div>
             <div className="how-card how-card-3">
               <div className="step">03</div>
               <h4>Integration &amp; Rhythm</h4>
-              <div className="meta">Ongoing</div>
-              <p>Quarterly retainer to keep the system alive — councils meeting, cadences holding, succession milestones advancing. Annual full-system review.</p>
+              <p>A retainer to keep the system alive — councils meeting, cadences holding, succession milestones advancing. Regular full-system reviews.</p>
             </div>
           </div>
         </div>
@@ -406,7 +403,7 @@ function InquiryForm() {
 
           {status === 'done' ? (
             <div className="inquiry-success">
-              Thank you — Jason or an LEP Implementer will be in touch within 2 business days.
+              Thank you — Jason or an LEP Implementer will be in touch soon.
             </div>
           ) : (
             <form

@@ -145,7 +145,7 @@ function AuthScreen({ onLogin }) {
           <div><strong style={{color: 'rgba(255,255,255,0.8)', fontSize: '1.4rem', display: 'block'}}>1</strong>Family</div>
         </div>
         <div style={{marginTop: '24px'}}>
-          <p style={{fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px'}}>Annual membership — $500/year starting June 1, 2026</p>
+          <p style={{fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px'}}>Exclusive membership for multigenerational family enterprises</p>
         </div>
       </div>
 
@@ -7341,7 +7341,7 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
         <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '12px'}}>Membership</h3>
         <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px'}}>
           <span style={{width: '8px', height: '8px', borderRadius: '50%', background: currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? '#10b981' : '#f59e0b'}}></span>
-          <span style={{fontWeight: 600, color: '#2B4C6F'}}>{currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? 'Active — Stride FBA Member ($500/year)' : 'Free Account'}</span>
+          <span style={{fontWeight: 600, color: '#2B4C6F'}}>{currentUser?.tier === 'member' || currentUser?.tier === 'pro' || currentUser?.tier === 'enterprise' ? 'Active — Stride FBA Member' : 'Free Account'}</span>
         </div>
         {hasStripe && currentUser?.tier !== 'free' && (
           <button onClick={() => payments.openPortal()} style={{marginTop: '12px', padding: '8px 16px', background: '#2D5A3D', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer'}}>
@@ -9023,8 +9023,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
             </p>
 
             <div style={{background: '#F5F7FA', borderRadius: '12px', padding: '20px', marginBottom: '24px'}}>
-              <div style={{fontSize: '2rem', fontWeight: '800', color: '#1A2A3F'}}>$500</div>
-              <div style={{color: '#7A8BA0', fontSize: '0.9rem'}}>/year — starting June 1, 2026</div>
+              <div style={{fontSize: '1.1rem', fontWeight: '700', color: '#1A2A3F'}}>Annual Membership</div>
             </div>
 
             <div style={{textAlign: 'left', marginBottom: '24px'}}>
@@ -9045,7 +9044,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
                 opacity: processing ? 0.6 : 1, transition: 'all 0.2s',
               }}
             >
-              {processing ? 'Redirecting to payment...' : 'Pay $500 — Complete Membership'}
+              {processing ? 'Redirecting to payment...' : 'Complete Membership'}
             </button>
 
             <p style={{color: '#7A8BA0', fontSize: '0.78rem', marginTop: '12px'}}>
@@ -9094,8 +9093,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
               <p style={{color: '#7A8BA0', fontSize: '0.88rem'}}>{isPending ? 'Pending approval' : 'Active membership'}</p>
             </div>
             <div style={{textAlign: 'right'}}>
-              <div style={{fontSize: '2rem', fontWeight: '700', color: '#2B4C6F'}}>$500</div>
-              <div style={{color: '#7A8BA0', fontSize: '0.8rem'}}>/year</div>
+              <div style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F'}}>Annual Membership</div>
             </div>
           </div>
 
@@ -9178,12 +9176,8 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
           <div>
             <span style={{background: '#2D5A3D', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em'}}>MEMBERSHIP</span>
-            <h2 style={{fontSize: '1.5rem', fontWeight: '700', color: '#1A2A3F', marginTop: '12px', marginBottom: '4px'}}>Stride FBA Annual Membership</h2>
-            <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>Everything you need, all in one place. Effective June 1, 2026.</p>
-          </div>
-          <div style={{textAlign: 'right'}}>
-            <div style={{fontSize: '2.5rem', fontWeight: '800', color: '#1A2A3F'}}>$500</div>
-            <div style={{color: '#7A8BA0', fontSize: '0.9rem'}}>/year</div>
+            <h2 style={{fontSize: '1.5rem', fontWeight: '700', color: '#1A2A3F', marginTop: '12px', marginBottom: '4px'}}>Stride FBA Membership</h2>
+            <p style={{color: '#7A8BA0', fontSize: '0.9rem'}}>Everything you need, all in one place.</p>
           </div>
         </div>
 
@@ -11078,7 +11072,7 @@ function AdminView({ currentUser }) {
         <div style={fieldGroup}>
           <label style={labelStyle}>Membership Tier</label>
           <select style={inputStyle} value={newMember.tier} onChange={e => setNewMember({...newMember, tier: e.target.value})}>
-            <option value="member">Stride Member ($500/yr)</option>
+            <option value="member">Stride Member</option>
           </select>
         </div>
         <div style={fieldGroup}>
@@ -11290,7 +11284,7 @@ function AdminView({ currentUser }) {
                     <div style={{fontWeight: '700', color: '#2B4C6F', marginBottom: '2px'}}>{app.name}</div>
                     <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName}</div>
                     <div style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '4px'}}>
-                      Approved {app.approvedAt ? new Date(app.approvedAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'} · Waiting for $500 payment
+                      Approved {app.approvedAt ? new Date(app.approvedAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'} · Waiting for payment
                     </div>
                   </div>
                   <div style={{display: 'flex', gap: '8px'}}>
