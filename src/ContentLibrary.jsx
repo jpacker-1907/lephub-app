@@ -810,6 +810,35 @@ const ContentLibrary = () => {
         <div style={subtitleStyle}>{isAdmin ? 'Facilitator View' : 'Member View'}</div>
       </div>
 
+      {/* Featured Video — hardcoded at top, always visible */}
+      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(224,91,111,0.08)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'inline-block', background: 'rgba(224,91,111,0.2)', border: '1px solid rgba(224,91,111,0.4)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#F8C8CF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Featured</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>Food Fight: Inside The Battle For Market Basket</h3>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>The remarkable true story of how a family business feud at Market Basket triggered the largest non-union employee walkout in U.S. history. Essential viewing for any family in business.</p>
+          <div style={{ width: '100%', maxWidth: '720px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <iframe
+              width="720"
+              height="405"
+              src="https://www.youtube.com/embed/8-K7G9aA_70"
+              title="Food Fight: Inside The Battle For Market Basket"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ display: 'block', width: '100%', height: '405px' }}
+            ></iframe>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Family Dynamics</span>
+            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Governance</span>
+            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Leadership</span>
+            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Succession</span>
+            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>90 min documentary</span>
+          </div>
+        </div>
+      </div>
+
       <div style={tabsStyle}>
         {isAdmin ? (
           <>
