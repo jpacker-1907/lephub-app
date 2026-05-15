@@ -2598,18 +2598,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
       >
         {mobileOpen ? '✕' : '☰'}
       </button>
-      <style>{`
-        @media (max-width: 768px) {
-          .app-nav { transform: translateX(${mobileOpen ? '0' : '-100%'}) !important; }
-        }
-      `}</style>
-      {mobileOpen && (
-        <div
-          className="mobile-nav-overlay"
-          onClick={() => setMobileOpen(false)}
-          style={{display: 'none', position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999}}
-        />
-      )}
+      {/* mobile overlay — kept for future use but hidden by bottom-tab pattern */}
     <nav className="app-nav">
       <div className="nav-brand">
         <StrideLogo size={32} />
@@ -2632,7 +2621,7 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
         ))}
       </div>
 
-      <div style={{flex: 1}} />
+      <div className="nav-spacer" style={{flex: 1}} />
 
       <div className="nav-user" style={{position: 'relative', cursor: 'pointer'}} onClick={() => setShowUserMenu(!showUserMenu)}>
         <div className="user-avatar">{user?.initials || 'JP'}</div>
