@@ -2578,8 +2578,9 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
-    { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
-    { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
+    // SAVED FOR LATER — Community & Communications
+    // { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
+    // { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
   ];
   const navItems = allNavItems.filter(item => {
