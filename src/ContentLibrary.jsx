@@ -195,6 +195,8 @@ const ContentLibrary = () => {
 
   const filterContent = () => {
     return contentItems.filter(item => {
+      // Exclude seed/featured items — they're shown hardcoded at the top of the page
+      if (item.featured || (item.id && item.id.startsWith('seed-'))) return false;
       const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            item.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesTopic = !selectedTopic || item.topics.includes(selectedTopic);
@@ -351,7 +353,7 @@ const ContentLibrary = () => {
       </div>
 
       <div style={gridStyle}>
-        {contentItems.map(item => (
+        {contentItems.filter(item => !item.featured && !(item.id && item.id.startsWith('seed-'))).map(item => (
           <div key={item.id} style={cardStyle}>
             <div style={{ fontSize: '18px', marginBottom: '12px' }}>
               <span style={{ marginRight: '8px' }}>{getTypeIcon(item.type)}</span>
