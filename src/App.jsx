@@ -2575,7 +2575,8 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
     { id: 'lep-framework', icon: 'book', name: 'LEP', memberOnly: true },
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
-    { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
+    // SAVED FOR LATER — Workshop (accessible via LEP → Pillar Work flow)
+    // { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
     { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     // SAVED FOR LATER — Community & Communications

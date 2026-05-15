@@ -38,6 +38,21 @@ const ContentLibrary = () => {
 
   const topics = ['governance', 'succession', 'communication', 'family-dynamics', 'leadership', 'finance', 'next-gen'];
 
+  // Seed content — shown when the library is empty
+  const SEED_CONTENT = [
+    {
+      id: 'seed-market-basket',
+      title: 'Food Fight: The Battle For Market Basket',
+      description: 'The remarkable true story of how a family business feud at Market Basket triggered the largest non-union employee walkout in U.S. history. When CEO Arthur T. Demoulas was fired by a board controlled by his cousin, thousands of employees and customers mobilized for six weeks — shutting down 71 stores and proving that a family enterprise built on values can inspire extraordinary loyalty. Essential viewing for any family in business.',
+      type: 'Video',
+      url: 'https://www.youtube.com/watch?v=fFexn45saow',
+      topics: ['family-dynamics', 'governance', 'leadership', 'succession'],
+      estimatedTime: '90 min documentary',
+      createdAt: '2026-05-14T00:00:00.000Z',
+      featured: true,
+    },
+  ];
+
   // Load data from localStorage
   useEffect(() => {
     const user = localStorage.getItem('lep_current_user');
@@ -49,7 +64,19 @@ const ContentLibrary = () => {
     }
 
     const content = localStorage.getItem('lep_content_library');
-    if (content) setContentItems(JSON.parse(content));
+    if (content) {
+      const parsed = JSON.parse(content);
+      // Merge seed content — add any seed items not already present
+      const existingIds = new Set(parsed.map(i => i.id));
+      const merged = [...parsed, ...SEED_CONTENT.filter(s => !existingIds.has(s.id))];
+      if (merged.length !== parsed.length) {
+        localStorage.setItem('lep_content_library', JSON.stringify(merged));
+      }
+      setContentItems(merged);
+    } else {
+      localStorage.setItem('lep_content_library', JSON.stringify(SEED_CONTENT));
+      setContentItems(SEED_CONTENT);
+    }
 
     const assign = localStorage.getItem('lep_content_assignments');
     if (assign) setAssignments(JSON.parse(assign));
@@ -472,9 +499,38 @@ const ContentLibrary = () => {
   // ===== MEMBER BROWSE LIBRARY TAB =====
   const MemberBrowseLibraryTab = () => {
     const filtered = filterContent();
+    const featured = contentItems.filter(i => i.featured);
 
     return (
       <div>
+        {/* Featured content */}
+        {featured.length > 0 && (
+          <div style={{ marginBottom: '32px' }}>
+            {featured.map(item => (
+              <div key={item.id} style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '32px', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(224,91,111,0.08)' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'inline-block', background: 'rgba(224,91,111,0.2)', border: '1px solid rgba(224,91,111,0.4)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#F8C8CF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Featured</div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>{item.title}</h3>
+                  <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '16px', maxWidth: '600px' }}>{item.description}</p>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                    {item.topics.map(t => (
+                      <span key={t} style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px', textTransform: 'capitalize' }}>{t.replace('-', ' ')}</span>
+                    ))}
+                    <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>{item.estimatedTime}</span>
+                  </div>
+                  <button
+                    onClick={() => window.open(item.url, '_blank')}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700, transition: 'all 0.2s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                  >Watch Now ▶</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div style={{ marginBottom: '24px' }}>
           <input
             type="text"
