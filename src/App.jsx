@@ -4723,7 +4723,7 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 // Educational view teaching the LEP™ methodology
 // ═══════════════════════════════════════════════════════════════
 
-function LEPFrameworkView() {
+function LEPFrameworkView({ setCurrentView, setActivePillar }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedPillar, setExpandedPillar] = useState(null);
   const [hoveredPillar, setHoveredPillar] = useState(null);
@@ -4739,6 +4739,11 @@ function LEPFrameworkView() {
       outcome: 'Every family member, from G1 to G4, can answer the same question the same way.',
       whyItMatters: 'By G2, the founder\'s clarity has become assumption. By G3, it has dissolved into competing narratives. Every downstream conflict is a values conflict dressed up as a business debate.',
       elements: ['Family Mission', 'Generational Vision', 'Core Values', 'Family Compact'],
+      pillarId: 'purpose-identity',
+      modules: [
+        { id: 'shared-purpose', name: 'Shared Purpose, Values & Family Narrative' },
+        { id: 'vision-board', name: 'Family Enterprise Vision Board' },
+      ],
     },
     {
       num: 2, name: 'ORDER', question: 'How do we decide?', color: '#2B4C6F', icon: 'shield',
@@ -4750,6 +4755,11 @@ function LEPFrameworkView() {
         { name: 'OWNERSHIP', desc: 'Decides about the asset' },
         { name: 'FAMILY', desc: 'Decides about relationships' },
         { name: 'MANAGEMENT', desc: 'Decides about operations' },
+      ],
+      pillarId: 'ownership-governance',
+      modules: [
+        { id: 'governance', name: 'Governance Architecture' },
+        { id: 'decisions', name: 'Decision-Making & Conflict Resolution' },
       ],
     },
     {
@@ -4767,6 +4777,12 @@ function LEPFrameworkView() {
         { meeting: 'Strategic Planning', freq: 'Annual' },
         { meeting: 'Family Assembly', freq: 'Annual' },
       ],
+      pillarId: 'business-operations',
+      modules: [
+        { id: 'roles', name: 'Roles, Responsibilities & Family Employment' },
+        { id: 'compensation', name: 'Compensation & Benefits' },
+        { id: 'professionalize', name: 'Non-Family Leadership & Professionalizing' },
+      ],
     },
     {
       num: 4, name: 'CONTINUITY', question: 'Who leads next?', color: '#3A8A8C', icon: 'compass',
@@ -4778,6 +4794,11 @@ function LEPFrameworkView() {
         { name: 'Leadership Track', desc: 'Who runs the business day-to-day?' },
         { name: 'Ownership Track', desc: 'Who owns the business and in what structure?' },
       ],
+      pillarId: 'strategy-legacy',
+      modules: [
+        { id: 'succession', name: 'Succession Planning' },
+        { id: 'transitions', name: 'Family Transitions & Integration' },
+      ],
     },
     {
       num: 5, name: 'LEGACY', question: 'What endures?', color: '#B8860B', icon: 'globe',
@@ -4786,6 +4807,12 @@ function LEPFrameworkView() {
       outcome: 'Future generations know what they inherited and why.',
       whyItMatters: null,
       sections: ['Financial Legacy', 'Values Legacy', 'Enterprise Legacy', 'Community Legacy'],
+      pillarId: 'strategy-legacy',
+      modules: [
+        { id: 'strategy', name: 'Family Enterprise Strategy' },
+        { id: 'estate', name: 'Estate Planning & Wealth Transfer' },
+        { id: 'philanthropy', name: 'Philanthropy & Social Impact' },
+      ],
     },
   ];
 
@@ -4858,6 +4885,39 @@ function LEPFrameworkView() {
             </div>
           ))}
         </div>
+      </div>
+      {/* Quick action cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginTop: '24px' }}>
+        <button onClick={() => setCurrentView && setCurrentView('lep-journey')}
+          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '24px 20px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#34597A'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(52,89,122,0.1)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #34597A, #2B4C6F)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+            <Icon name="compass" size={20} color="#fff" />
+          </div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Take the Assessment</div>
+          <div style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5 }}>Discover where your family enterprise stands across the five pillars.</div>
+        </button>
+        <button onClick={() => { if (setActivePillar) setActivePillar('purpose-identity'); setCurrentView && setCurrentView('pillars'); }}
+          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '24px 20px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#E05B6F'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(224,91,111,0.1)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #E05B6F, #C23B4C)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+            <Icon name="edit" size={20} color="#fff" />
+          </div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Start Pillar Workbooks</div>
+          <div style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5 }}>Interactive exercises that produce real deliverables for your family.</div>
+        </button>
+        <button onClick={() => setCurrentView && setCurrentView('workshop')}
+          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '24px 20px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4A7C59'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(74,124,89,0.1)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #4A7C59, #3A6A49)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+            <Icon name="file-text" size={20} color="#fff" />
+          </div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Build Deliverables</div>
+          <div style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5 }}>Generate your Charter, Council Map, and other family documents.</div>
+        </button>
       </div>
     </div>
   );
@@ -4954,6 +5014,38 @@ function LEPFrameworkView() {
                       </div>
                     </div>
                   </div>
+                  {/* Interactive modules linked to this pillar */}
+                  {p.modules && p.modules.length > 0 && (
+                    <div style={{ paddingTop: '20px' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '12px' }}>Interactive Workbooks</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {p.modules.map(m => (
+                          <button key={m.id} onClick={() => { if (setActivePillar) setActivePillar(p.pillarId); if (setCurrentView) setCurrentView('pillars'); }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'white', border: `1px solid ${p.color}30`, borderRadius: '10px', padding: '12px 16px', cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'left', width: '100%' }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = p.color; e.currentTarget.style.boxShadow = `0 4px 12px ${p.color}18`; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = `${p.color}30`; e.currentTarget.style.boxShadow = 'none'; }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${p.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Icon name="edit" size={15} color={p.color} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#2B3A52' }}>{m.name}</div>
+                            </div>
+                            <Icon name="arrow-right" size={16} color={p.color} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* CTA to start pillar work */}
+                  <div style={{ paddingTop: '16px' }}>
+                    <button onClick={() => { if (setActivePillar) setActivePillar(p.pillarId); if (setCurrentView) setCurrentView('pillars'); }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px 24px', background: `linear-gradient(135deg, ${p.color}, ${p.color}DD)`, color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '0.92rem', fontWeight: 700, transition: 'all 0.2s ease', boxShadow: `0 4px 16px ${p.color}33` }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px ${p.color}44`; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = `0 4px 16px ${p.color}33`; }}>
+                      Start {p.name} Pillar Work
+                      <Icon name="arrow-right" size={18} color="#fff" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -4981,9 +5073,42 @@ function LEPFrameworkView() {
               </div>
               <h3 style={{ fontFamily: serif, fontSize: '1.3rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '8px' }}>{phase.name}</h3>
               <p style={{ fontSize: '0.92rem', color: '#5A6B80', lineHeight: 1.65, margin: 0 }}>{phase.desc}</p>
+              {phase.num === 1 && (
+                <button onClick={() => setCurrentView && setCurrentView('lep-journey')}
+                  style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: phase.color, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                  Take the Discovery Assessment <Icon name="arrow-right" size={15} color="#fff" />
+                </button>
+              )}
+              {phase.num === 2 && (
+                <button onClick={() => { if (setActivePillar) setActivePillar('purpose-identity'); setCurrentView && setCurrentView('pillars'); }}
+                  style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: phase.color, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                  Start Pillar Workbooks <Icon name="arrow-right" size={15} color="#fff" />
+                </button>
+              )}
+              {phase.num === 3 && (
+                <button onClick={() => setCurrentView && setCurrentView('workshop')}
+                  style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: phase.color, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                  Open Workshop <Icon name="arrow-right" size={15} color="#fff" />
+                </button>
+              )}
             </div>
           </div>
         ))}
+      </div>
+      {/* Full journey CTA */}
+      <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #1A2A3F, #2B4C6F)', borderRadius: '14px', padding: '32px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
+        <div>
+          <h3 style={{ fontFamily: serif, fontSize: '1.3rem', fontWeight: 700, color: 'white', marginBottom: '6px' }}>Ready to begin?</h3>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', margin: 0 }}>Start with the Discovery Assessment — it takes one conversation to see where your family enterprise stands.</p>
+        </div>
+        <button onClick={() => setCurrentView && setCurrentView('lep-journey')}
+          style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 28px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 700, transition: 'all 0.2s ease', boxShadow: '0 4px 16px rgba(224,91,111,0.3)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}>
+          Begin LEP Journey <Icon name="arrow-right" size={18} color="#fff" />
+        </button>
       </div>
     </div>
   );
@@ -12639,7 +12764,7 @@ function AppShell({ currentUser, onLogout }) {
         {/* Member-only views — gate behind membership */}
         {currentView === 'dashboard' && isMember && isAdmin && <FacilitatorDashboard setCurrentView={setCurrentView} />}
         {currentView === 'dashboard' && isMember && !isAdmin && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
-        {currentView === 'lep-framework' && isMember && <LEPFrameworkView />}
+        {currentView === 'lep-framework' && isMember && <LEPFrameworkView setCurrentView={setCurrentView} setActivePillar={setActivePillar} />}
         {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
