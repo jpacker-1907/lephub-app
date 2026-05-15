@@ -2572,15 +2572,13 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
   // ─── MVP NAV (v2) ─────────────────────────────────────────
   // 9 features: Meetings, Workshop, Content, Events, Vault, Community, Membership, Communications + Admin
   const allNavItems = [
-    { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
-    { id: 'lep-framework', icon: 'book', name: 'LEP', memberOnly: true },
+    { id: 'lep-framework', icon: 'home', name: 'LEP', memberOnly: true },
     { id: 'meetings', icon: 'book-open', name: 'Meetings', memberOnly: true },
-    // SAVED FOR LATER — Workshop (accessible via LEP → Pillar Work flow)
-    // { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
-    // SAVED FOR LATER — Vault
+    // SAVED FOR LATER — Home Dashboard, Workshop, Vault, Community, Communications
+    // { id: 'dashboard', icon: 'home', name: 'Home', memberOnly: true },
+    // { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     // { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
-    // SAVED FOR LATER — Community & Communications
     // { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     // { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
     { id: 'admin', icon: 'settings', name: 'Admin', adminOnly: true },
@@ -4726,9 +4724,27 @@ function FamilyProfileView({ familyProfile, setFamilyProfile }) {
 // Educational view teaching the LEP™ methodology
 // ═══════════════════════════════════════════════════════════════
 
-function LEPFrameworkView({ setCurrentView, setActivePillar }) {
+function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}, scores }) {
   const [expandedPillar, setExpandedPillar] = useState(null);
   const [hoveredPillar, setHoveredPillar] = useState(null);
+
+  // Dashboard data — pulled from localStorage so LEP page doubles as home
+  const [meetings] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_meetings') || '[]'); } catch { return []; } });
+  const [deliverables] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_workshop_deliverables') || '[]'); } catch { return []; } });
+  const [contentAssignments] = useState(() => { try { return JSON.parse(localStorage.getItem('lep_content_assignments') || '[]'); } catch { return []; } });
+  const [sessions] = useState(() => { try { return JSON.parse(localStorage.getItem('stride_sessions') || '[]'); } catch { return []; } });
+
+  const nextSession = sessions.find(s => new Date(s.date) >= new Date());
+  const openActions = meetings.flatMap(m => (m.actionItems || []).filter(a => !a.done));
+  const activeDeliverables = deliverables.filter(d => d.status !== 'completed');
+  const pendingContent = contentAssignments.filter(a => a.status !== 'completed');
+  const attentionCount = openActions.length + activeDeliverables.length + pendingContent.length;
+
+  // Find the last-worked-on module for "Continue" card
+  const lastModule = (() => {
+    const inProgressModules = Object.entries(moduleProgress).filter(([_, status]) => status === 'in-progress');
+    return inProgressModules.length > 0 ? inProgressModules[inProgressModules.length - 1][0] : null;
+  })();
 
   const serif = "'Instrument Serif', Georgia, serif";
 
@@ -4823,33 +4839,102 @@ function LEPFrameworkView({ setCurrentView, setActivePillar }) {
     { num: 3, name: 'Integration', desc: 'Quarterly reviews — the family owns the system', color: '#4A7C59', duration: 'Ongoing' },
   ];
 
+  // Helper: get module completion stats for a pillar
+  const getPillarProgress = (p) => {
+    if (!p.modules || p.modules.length === 0) return { done: 0, started: 0, total: 0 };
+    let done = 0, started = 0;
+    p.modules.forEach(m => {
+      const status = moduleProgress[m.id];
+      if (status === 'completed') done++;
+      else if (status === 'in-progress') started++;
+    });
+    return { done, started, total: p.modules.length };
+  };
+
+  // Helper: find which pillar a module belongs to
+  const findPillarForModule = (moduleId) => pillars.find(p => p.modules && p.modules.some(m => m.id === moduleId));
+
   return (
     <div style={{ padding: '28px', maxWidth: '900px', margin: '0 auto' }}>
 
+      {/* ── CONTINUE WHERE YOU LEFT OFF ── */}
+      {lastModule && (() => {
+        const pillar = findPillarForModule(lastModule);
+        const mod = pillar && pillar.modules.find(m => m.id === lastModule);
+        if (!pillar || !mod) return null;
+        return (
+          <div onClick={() => { if (setActivePillar) setActivePillar(pillar.pillarId); setCurrentView('pillars'); }}
+            style={{ background: `linear-gradient(135deg, ${pillar.color}12, ${pillar.color}06)`, border: `1px solid ${pillar.color}30`, borderRadius: '14px', padding: '18px 22px', marginBottom: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.2s ease' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: pillar.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="play" size={18} color="#fff" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', color: pillar.color, textTransform: 'uppercase' }}>Continue where you left off</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1A2A3F', marginTop: '2px' }}>{pillar.name}: {mod.name}</div>
+            </div>
+            <Icon name="arrow-right" size={18} color={pillar.color} />
+          </div>
+        );
+      })()}
+
+      {/* ── ATTENTION ITEMS + NEXT SESSION — compact row ── */}
+      {(nextSession || attentionCount > 0) && (
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+          {nextSession && (
+            <div onClick={() => setCurrentView('sessions')} style={{ flex: '1 1 280px', background: 'linear-gradient(135deg, #2B4C6F, #34597A)', borderRadius: '12px', padding: '16px 20px', color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}>
+              <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontWeight: 700, marginBottom: '4px' }}>Next Session</div>
+              <div style={{ fontSize: '0.92rem', fontWeight: 700 }}>{nextSession.title}</div>
+              <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.65)', marginTop: '2px' }}>
+                {new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                {nextSession.time && ` · ${nextSession.time}`}
+              </div>
+            </div>
+          )}
+          {openActions.length > 0 && (
+            <div onClick={() => setCurrentView('meetings')} style={{ flex: '1 1 160px', background: '#FEF3C7', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#92400e' }}>{openActions.length}</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#92400e' }}>open action{openActions.length !== 1 ? 's' : ''}</div>
+            </div>
+          )}
+          {activeDeliverables.length > 0 && (
+            <div onClick={() => setCurrentView('workshop')} style={{ flex: '1 1 160px', background: '#EDE9FE', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#5B21B6' }}>{activeDeliverables.length}</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#5B21B6' }}>deliverable{activeDeliverables.length !== 1 ? 's' : ''} in progress</div>
+            </div>
+          )}
+          {pendingContent.length > 0 && (
+            <div onClick={() => setCurrentView('content')} style={{ flex: '1 1 160px', background: '#DBEAFE', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1E40AF' }}>{pendingContent.length}</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1E40AF' }}>resource{pendingContent.length !== 1 ? 's' : ''} to review</div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── HERO ── */}
-      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '48px 44px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '28px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '40px 40px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '24px' }}>
         <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(90,175,181,0.08)' }} />
         <div style={{ position: 'absolute', bottom: '-80px', right: '120px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(224,91,111,0.06)' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
             {pillars.map(p => (<div key={p.num} style={{ width: '32px', height: '4px', borderRadius: '2px', background: p.color, opacity: 0.9 }} />))}
           </div>
-          <h1 style={{ fontFamily: serif, fontSize: '2.4rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '10px' }}>Five Pillars. Five Tools. One System.</h1>
-          <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: '0', maxWidth: '560px' }}>The Operating System Built for Multigenerational Family Enterprise</p>
+          <h1 style={{ fontFamily: serif, fontSize: '2rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '8px' }}>Five Pillars. Five Tools. One System.</h1>
+          <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, marginBottom: '0', maxWidth: '520px' }}>The Operating System Built for Multigenerational Family Enterprise</p>
         </div>
       </div>
 
       {/* ── HOW IT WORKS — 3-step strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '28px' }}>
         {journeySteps.map((step, i) => (
-          <div key={step.num} style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '12px', padding: '18px 20px', position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>{step.num}</div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1A2A3F' }}>{step.name}</div>
-              <div style={{ fontSize: '0.68rem', fontWeight: 600, color: step.color, background: `${step.color}12`, padding: '2px 8px', borderRadius: '4px', marginLeft: 'auto' }}>{step.duration}</div>
+          <div key={step.num} style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px 16px', position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>{step.num}</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1A2A3F' }}>{step.name}</div>
+              <div style={{ fontSize: '0.65rem', fontWeight: 600, color: step.color, background: `${step.color}12`, padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>{step.duration}</div>
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5 }}>{step.desc}</div>
-            {i < 2 && <div style={{ position: 'absolute', right: '-8px', top: '50%', transform: 'translateY(-50%)', color: '#DDE3EB', fontSize: '1.1rem', fontWeight: 700, zIndex: 1 }}>&rsaquo;</div>}
+            <div style={{ fontSize: '0.75rem', color: '#7A8BA0', lineHeight: 1.45 }}>{step.desc}</div>
+            {i < 2 && <div style={{ position: 'absolute', right: '-7px', top: '50%', transform: 'translateY(-50%)', color: '#DDE3EB', fontSize: '1rem', fontWeight: 700, zIndex: 1 }}>&rsaquo;</div>}
           </div>
         ))}
       </div>
@@ -4874,7 +4959,24 @@ function LEPFrameworkView({ setCurrentView, setActivePillar }) {
                   </div>
                   <div style={{ fontSize: '0.75rem', color: p.color, fontWeight: 600, marginTop: '2px' }}>{p.tool}</div>
                 </div>
-                {p.modules && <span style={{ fontSize: '0.7rem', color: '#7A8BA0', background: '#F0F4F8', padding: '3px 8px', borderRadius: '4px', flexShrink: 0 }}>{p.modules.length} workbook{p.modules.length !== 1 ? 's' : ''}</span>}
+                {p.modules && (() => {
+                  const prog = getPillarProgress(p);
+                  const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
+                  const hasActivity = prog.done > 0 || prog.started > 0;
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                      {/* Mini progress ring */}
+                      <svg width="26" height="26" viewBox="0 0 26 26" style={{ flexShrink: 0 }}>
+                        <circle cx="13" cy="13" r="10" fill="none" stroke="#E8ECF1" strokeWidth="2.5" />
+                        {hasActivity && <circle cx="13" cy="13" r="10" fill="none" stroke={p.color} strokeWidth="2.5"
+                          strokeDasharray={`${(pct / 100) * 62.83} 62.83`}
+                          strokeLinecap="round" transform="rotate(-90 13 13)" style={{ transition: 'stroke-dasharray 0.4s ease' }} />}
+                        {pct === 100 && <path d="M9 13l2.5 2.5L17 10.5" fill="none" stroke={p.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+                      </svg>
+                      <span style={{ fontSize: '0.68rem', color: hasActivity ? p.color : '#7A8BA0', fontWeight: 600 }}>{prog.done}/{prog.total}</span>
+                    </div>
+                  );
+                })()}
                 <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: isExpanded ? p.color : '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', flexShrink: 0 }}>
                   <span style={{ fontSize: '0.95rem', color: isExpanded ? 'white' : '#7A8BA0', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', display: 'inline-block' }}>▾</span>
                 </div>
@@ -8432,8 +8534,8 @@ function DecisionEngineView({ setCurrentView, scores }) {
                 <button onClick={() => { updateField('roadmapGenerated', true); }} style={{background: '#E05B6F', color: 'white', padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
                   Mark Complete ✓
                 </button>
-                <button onClick={() => setCurrentView('dashboard')} style={{background: 'white', color: '#2B3A52', padding: '12px 28px', borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
-                  Return to Dashboard
+                <button onClick={() => setCurrentView('lep-framework')} style={{background: 'white', color: '#2B3A52', padding: '12px 28px', borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.92rem', fontWeight: '600'}}>
+                  Return to LEP
                 </button>
               </div>
             </div>
@@ -12405,7 +12507,7 @@ function AppShell({ currentUser, onLogout }) {
     return saved ? JSON.parse(saved) : null;
   });
   const isMember = isAdmin || (membershipStatus && (membershipStatus.status === 'active' || membershipStatus.status === 'pending_review'));
-  const [currentView, setCurrentView] = useState(isMember ? 'dashboard' : 'membership');
+  const [currentView, setCurrentView] = useState(isMember ? 'lep-framework' : 'membership');
   const [scores, setScores] = useState(null);
   const [activePillar, setActivePillar] = useState('roots');
   const [moduleProgress, setModuleProgress] = useState({});
@@ -12445,7 +12547,7 @@ function AppShell({ currentUser, onLogout }) {
 
   const handleAssessmentComplete = (newScores) => {
     setScores(newScores);
-    setCurrentView('dashboard');
+    setCurrentView('lep-framework');
   };
 
   const handleGenerateLepReport = (assessmentScores) => {
@@ -12483,7 +12585,7 @@ function AppShell({ currentUser, onLogout }) {
         {/* Member-only views — gate behind membership */}
         {currentView === 'dashboard' && isMember && isAdmin && <FacilitatorDashboard setCurrentView={setCurrentView} />}
         {currentView === 'dashboard' && isMember && !isAdmin && <Dashboard scores={scores} setCurrentView={setCurrentView} setActivePillar={setActivePillar} vaultDocuments={vaultDocuments} onGenerateLepReport={handleGenerateLepReport} />}
-        {currentView === 'lep-framework' && isMember && <LEPFrameworkView setCurrentView={setCurrentView} setActivePillar={setActivePillar} />}
+        {currentView === 'lep-framework' && isMember && <LEPFrameworkView setCurrentView={setCurrentView} setActivePillar={setActivePillar} moduleProgress={moduleProgress} scores={scores} />}
         {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
         {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
@@ -12502,7 +12604,7 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'credentialing' && isMember && <CredentialingView />}
         {currentView === 'security' && <SecurityPrivacyView />}
         {/* Membership — always accessible */}
-        {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('dashboard'); }} />}
+        {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('lep-framework'); }} />}
         {currentView === 'admin' && isAdmin && <AdminView currentUser={currentUser} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
