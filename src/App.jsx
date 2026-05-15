@@ -3936,12 +3936,13 @@ const MEETING_TEMPLATES = {
     name: 'Peer Group Session', icon: '🤝', frequency: 'Monthly', duration: '90 min', color: '#5AAFB5',
     category: 'peer-group',
     agenda: [
-      { id: 'opening', name: 'Opening & Check-In', duration: '10 min', desc: 'Each member: one personal update, one professional update, one win since last session.' },
-      { id: 'hot-seat', name: 'Member Spotlight / Hot Seat', duration: '30 min', desc: 'One member presents a current challenge or decision. Peers listen first, then ask clarifying questions, then offer perspective.' },
-      { id: 'theme', name: 'Group Theme Discussion', duration: '20 min', desc: 'Facilitated conversation on a shared theme — succession, governance, family dynamics, growth.' },
-      { id: 'commitments', name: 'Commitments', duration: '15 min', desc: 'Each member names one specific commitment to act on before the next session.' },
-      { id: 'closing', name: 'Closing Round', duration: '10 min', desc: 'Each member: what landed for you today? Appreciation for the group.' },
-      { id: 'admin', name: 'Admin & Next Meeting', duration: '5 min', desc: 'Schedule next session. Any logistics. Close.' },
+      { id: 'opening', name: 'Opening & Commitment Review', duration: '10 min', desc: 'Each member: one personal win, one professional win. Then review — did you follow through on last session\'s LEP commitment? What happened?' },
+      { id: 'lep-pulse', name: 'LEP Pulse Check', duration: '10 min', desc: 'Quick round: which LEP pillar are you actively working in? What\'s moved since last session? Any breakthroughs or blockers? (Roots · Order · Momentum · Continuity · Legacy)' },
+      { id: 'hot-seat', name: 'Member Spotlight', duration: '20 min', desc: 'One member presents a current challenge or decision — framed through the LEP lens. Which pillar does this fall under? Peers listen, ask clarifying questions, then offer perspective.' },
+      { id: 'lep-deep-dive', name: 'LEP Pillar Deep Dive', duration: '25 min', desc: 'Facilitated work on this session\'s rotating pillar. Could be a workbook exercise, assessment debrief, governance design, succession mapping, or ownership structure review. The facilitator prepares pillar-specific content for each session.' },
+      { id: 'commitments', name: 'LEP Commitments', duration: '10 min', desc: 'Each member names one specific LEP-aligned action to take before next session. Tied to a pillar. Written down and tracked.' },
+      { id: 'closing', name: 'Closing & Pillar Preview', duration: '10 min', desc: 'What landed for you today? Appreciation for the group. Facilitator previews next session\'s pillar focus.' },
+      { id: 'admin', name: 'Admin & Next Meeting', duration: '5 min', desc: 'Schedule next session. Confirm next pillar rotation. Any logistics.' },
     ],
   },
   'hot-seat': {
@@ -5799,6 +5800,7 @@ function MeetingsView({ familyProfile }) {
   const [activeTab, setActiveTab] = useState('meetings'); // meetings | issues | actions
   const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
   const [showOtterPanel, setShowOtterPanel] = useState(false);
+  const [activeAgendaIdx, setActiveAgendaIdx] = useState(0);
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -5959,6 +5961,7 @@ function MeetingsView({ familyProfile }) {
     };
     setMeetings(prev => [meeting, ...prev]);
     setActiveMeeting(meeting.id);
+    setActiveAgendaIdx(0);
     setShowNewMeeting(false);
   };
 
@@ -6214,7 +6217,7 @@ function MeetingsView({ familyProfile }) {
                 const actionCount = (m.actionItems || []).length;
                 const doneCount = (m.actionItems || []).filter(a => a.done).length;
                 return (
-                  <div key={m.id} onClick={() => setActiveMeeting(m.id)}
+                  <div key={m.id} onClick={() => { setActiveMeeting(m.id); setActiveAgendaIdx(0); }}
                     style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.15s'}}
                   >
                     <span style={{fontSize: '1.4rem'}}>{tmpl?.icon || '📋'}</span>
@@ -6382,28 +6385,85 @@ function MeetingsView({ familyProfile }) {
             )}
           </div>
 
-          {/* Agenda items */}
-          {template.agenda.map((item, idx) => (
-            <div key={item.id} style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB'}}>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  <span style={{background: template.color, color: 'white', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: '700', flexShrink: 0}}>{idx + 1}</span>
-                  <div>
-                    <h4 style={{fontSize: '0.92rem', fontWeight: '700', color: '#34597A'}}>{item.name}</h4>
-                    <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: '2px'}}>{item.desc}</p>
-                  </div>
+          {/* Agenda section navigator — step through one at a time */}
+          {(() => {
+            const totalSteps = template.agenda.length;
+            const clampedIdx = Math.min(activeAgendaIdx, totalSteps - 1);
+            const item = template.agenda[clampedIdx];
+            const hasNotes = (meeting.agendaNotes || {})[item.id]?.trim();
+            return (
+              <div style={{marginBottom: '12px'}}>
+                {/* Progress bar — clickable dots */}
+                <div style={{display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '16px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                  {template.agenda.map((step, i) => {
+                    const stepHasNotes = (meeting.agendaNotes || {})[step.id]?.trim();
+                    return (
+                      <button key={step.id} onClick={() => setActiveAgendaIdx(i)} title={step.name}
+                        style={{
+                          width: i === clampedIdx ? 'auto' : '28px', height: '28px', minWidth: '28px',
+                          borderRadius: '14px', border: 'none', cursor: 'pointer',
+                          padding: i === clampedIdx ? '0 12px' : '0',
+                          background: i === clampedIdx ? template.color : stepHasNotes ? template.color + '40' : '#E8ECF0',
+                          color: i === clampedIdx ? 'white' : stepHasNotes ? template.color : '#7A8BA0',
+                          fontSize: '0.7rem', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          gap: '4px', transition: 'all 0.2s', whiteSpace: 'nowrap',
+                        }}>
+                        {i + 1}{i === clampedIdx && <span style={{fontSize: '0.65rem', fontWeight: '600'}}>/{totalSteps}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
-                <span style={{fontSize: '0.72rem', color: '#7A8BA0', fontWeight: '600', whiteSpace: 'nowrap', marginLeft: '12px'}}>{item.duration}</span>
+
+                {/* Active section card */}
+                <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: `2px solid ${template.color}20`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1}}>
+                      <span style={{background: template.color, color: 'white', width: '28px', height: '28px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '700', flexShrink: 0}}>{clampedIdx + 1}</span>
+                      <div>
+                        <h4 style={{fontSize: '1rem', fontWeight: '700', color: '#34597A', margin: 0}}>{item.name}</h4>
+                      </div>
+                    </div>
+                    <span style={{background: template.color + '15', color: template.color, fontSize: '0.72rem', padding: '4px 10px', borderRadius: '20px', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0}}>{item.duration}</span>
+                  </div>
+                  <p style={{fontSize: '0.85rem', color: '#7A8BA0', lineHeight: '1.6', marginBottom: '14px'}}>{item.desc}</p>
+                  <textarea
+                    rows="4"
+                    placeholder={item.id === 'resolve' ? 'Issue 1: ...\nIssue 2: ...' : `Notes for ${item.name}...`}
+                    value={(meeting.agendaNotes || {})[item.id] || ''}
+                    onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
+                    style={{width: '100%', padding: '10px 14px', border: '1px solid #DDE3EB', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.6', background: '#fafafa', boxSizing: 'border-box'}}
+                  />
+                </div>
+
+                {/* Previous / Next navigation */}
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', gap: '12px'}}>
+                  <button
+                    onClick={() => setActiveAgendaIdx(Math.max(0, clampedIdx - 1))}
+                    disabled={clampedIdx === 0}
+                    style={{
+                      padding: '10px 20px', borderRadius: '8px', border: '1px solid #DDE3EB', cursor: clampedIdx === 0 ? 'default' : 'pointer',
+                      background: clampedIdx === 0 ? '#F5F7FA' : 'white', color: clampedIdx === 0 ? '#B8C4D0' : '#34597A',
+                      fontSize: '0.85rem', fontWeight: '600', transition: 'all 0.15s', minWidth: '100px',
+                    }}>
+                    ← Previous
+                  </button>
+                  <span style={{fontSize: '0.78rem', color: '#7A8BA0', fontWeight: '600'}}>
+                    {clampedIdx + 1} of {totalSteps}
+                  </span>
+                  <button
+                    onClick={() => setActiveAgendaIdx(Math.min(totalSteps - 1, clampedIdx + 1))}
+                    disabled={clampedIdx === totalSteps - 1}
+                    style={{
+                      padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: clampedIdx === totalSteps - 1 ? 'default' : 'pointer',
+                      background: clampedIdx === totalSteps - 1 ? '#B8C4D0' : template.color, color: 'white',
+                      fontSize: '0.85rem', fontWeight: '600', transition: 'all 0.15s', minWidth: '100px',
+                    }}>
+                    Next →
+                  </button>
+                </div>
               </div>
-              <textarea
-                rows="2"
-                placeholder={item.id === 'resolve' ? 'Issue 1: ...\nIssue 2: ...' : 'Notes...'}
-                value={(meeting.agendaNotes || {})[item.id] || ''}
-                onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
-                style={{width: '100%', padding: '8px 12px', border: '1px solid #DDE3EB', borderRadius: '6px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', marginTop: '8px', lineHeight: '1.5', background: '#fafafa'}}
-              />
-            </div>
-          ))}
+            );
+          })()}
 
           {/* Key Decisions section */}
           <div style={{background: 'white', borderRadius: '10px', padding: '16px 20px', marginBottom: '8px', border: '1px solid #DDE3EB'}}>
