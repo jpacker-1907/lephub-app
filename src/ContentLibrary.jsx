@@ -799,15 +799,11 @@ const ContentLibrary = () => {
     </div>
   );
 
-  if (!currentUser) {
-    return <div style={containerStyle}><p style={{ color: '#7A8BA0' }}>Loading...</p></div>;
-  }
-
   return (
     <div style={containerStyle}>
       <div style={headerStyle}>
         <div style={titleStyle}>Content Library</div>
-        <div style={subtitleStyle}>{isAdmin ? 'Facilitator View' : 'Member View'}</div>
+        <div style={subtitleStyle}>{isAdmin ? 'Facilitator View' : 'Learning Resources'}</div>
       </div>
 
       {/* Featured Video — hardcoded at top, always visible */}
