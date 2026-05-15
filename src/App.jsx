@@ -4854,6 +4854,36 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
   // Helper: find which pillar a module belongs to
   const findPillarForModule = (moduleId) => pillars.find(p => p.modules && p.modules.some(m => m.id === moduleId));
 
+  // Helper: get the next unfinished module for a pillar
+  const getNextModule = (p) => {
+    if (!p.modules) return null;
+    // First: any in-progress module
+    const inProg = p.modules.find(m => moduleProgress[m.id] === 'in-progress');
+    if (inProg) return { mod: inProg, label: 'Continue' };
+    // Next: first not-started module
+    const notStarted = p.modules.find(m => !moduleProgress[m.id] || moduleProgress[m.id] === 'not-started');
+    if (notStarted) return { mod: notStarted, label: 'Start' };
+    return null; // all completed
+  };
+
+  // Returning member = has any progress or scores
+  const isReturning = scores || Object.keys(moduleProgress).length > 0 || lastModule;
+
+  // Auto-expand: the pillar with in-progress work, or null
+  const autoExpandPillar = (() => {
+    if (lastModule) {
+      const p = findPillarForModule(lastModule);
+      return p ? p.num : null;
+    }
+    return null;
+  })();
+  // Use auto-expand on first render only
+  const [hasAutoExpanded, setHasAutoExpanded] = useState(false);
+  if (!hasAutoExpanded && autoExpandPillar && expandedPillar === null) {
+    setExpandedPillar(autoExpandPillar);
+    setHasAutoExpanded(true);
+  }
+
   return (
     <div style={{ padding: '28px', maxWidth: '900px', margin: '0 auto' }}>
 
@@ -4864,189 +4894,226 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
         if (!pillar || !mod) return null;
         return (
           <div onClick={() => { if (setActivePillar) setActivePillar(pillar.pillarId); setCurrentView('pillars'); }}
-            style={{ background: `linear-gradient(135deg, ${pillar.color}12, ${pillar.color}06)`, border: `1px solid ${pillar.color}30`, borderRadius: '14px', padding: '18px 22px', marginBottom: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px', transition: 'all 0.2s ease' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: pillar.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon name="play" size={18} color="#fff" />
+            style={{ background: `linear-gradient(135deg, ${pillar.color}12, ${pillar.color}06)`, border: `1px solid ${pillar.color}30`, borderRadius: '14px', padding: '16px 20px', marginBottom: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s ease' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: pillar.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="play" size={16} color="#fff" />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', color: pillar.color, textTransform: 'uppercase' }}>Continue where you left off</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1A2A3F', marginTop: '2px' }}>{pillar.name}: {mod.name}</div>
+              <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', color: pillar.color, textTransform: 'uppercase' }}>Continue where you left off</div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1A2A3F', marginTop: '1px' }}>{pillar.name}: {mod.name}</div>
             </div>
-            <Icon name="arrow-right" size={18} color={pillar.color} />
+            <Icon name="arrow-right" size={16} color={pillar.color} />
           </div>
         );
       })()}
 
       {/* ── ATTENTION ITEMS + NEXT SESSION — compact row ── */}
       {(nextSession || attentionCount > 0) && (
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
           {nextSession && (
-            <div onClick={() => setCurrentView('sessions')} style={{ flex: '1 1 280px', background: 'linear-gradient(135deg, #2B4C6F, #34597A)', borderRadius: '12px', padding: '16px 20px', color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}>
-              <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontWeight: 700, marginBottom: '4px' }}>Next Session</div>
-              <div style={{ fontSize: '0.92rem', fontWeight: 700 }}>{nextSession.title}</div>
-              <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.65)', marginTop: '2px' }}>
+            <div onClick={() => setCurrentView('sessions')} style={{ flex: '1 1 260px', background: 'linear-gradient(135deg, #2B4C6F, #34597A)', borderRadius: '10px', padding: '14px 18px', color: 'white', cursor: 'pointer' }}>
+              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginBottom: '3px' }}>Next Session</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{nextSession.title}</div>
+              <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>
                 {new Date(nextSession.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 {nextSession.time && ` · ${nextSession.time}`}
               </div>
             </div>
           )}
           {openActions.length > 0 && (
-            <div onClick={() => setCurrentView('meetings')} style={{ flex: '1 1 160px', background: '#FEF3C7', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
-              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#92400e' }}>{openActions.length}</div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#92400e' }}>open action{openActions.length !== 1 ? 's' : ''}</div>
+            <div onClick={() => setCurrentView('meetings')} style={{ flex: '0 1 130px', background: '#FEF3C7', borderRadius: '10px', padding: '14px 16px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#92400e' }}>{openActions.length}</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#92400e' }}>open action{openActions.length !== 1 ? 's' : ''}</div>
             </div>
           )}
           {activeDeliverables.length > 0 && (
-            <div onClick={() => setCurrentView('workshop')} style={{ flex: '1 1 160px', background: '#EDE9FE', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
-              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#5B21B6' }}>{activeDeliverables.length}</div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#5B21B6' }}>deliverable{activeDeliverables.length !== 1 ? 's' : ''} in progress</div>
+            <div onClick={() => setCurrentView('workshop')} style={{ flex: '0 1 130px', background: '#EDE9FE', borderRadius: '10px', padding: '14px 16px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#5B21B6' }}>{activeDeliverables.length}</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5B21B6' }}>in-progress</div>
             </div>
           )}
           {pendingContent.length > 0 && (
-            <div onClick={() => setCurrentView('content')} style={{ flex: '1 1 160px', background: '#DBEAFE', borderRadius: '12px', padding: '16px 20px', cursor: 'pointer' }}>
-              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1E40AF' }}>{pendingContent.length}</div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1E40AF' }}>resource{pendingContent.length !== 1 ? 's' : ''} to review</div>
+            <div onClick={() => setCurrentView('content')} style={{ flex: '0 1 130px', background: '#DBEAFE', borderRadius: '10px', padding: '14px 16px', cursor: 'pointer' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1E40AF' }}>{pendingContent.length}</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#1E40AF' }}>to review</div>
             </div>
           )}
         </div>
       )}
 
-      {/* ── HERO ── */}
-      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '40px 40px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '24px' }}>
-        <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(90,175,181,0.08)' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', right: '120px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(224,91,111,0.06)' }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-            {pillars.map(p => (<div key={p.num} style={{ width: '32px', height: '4px', borderRadius: '2px', background: p.color, opacity: 0.9 }} />))}
+      {/* ── HERO — full for new members, slim for returning ── */}
+      {isReturning ? (
+        <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 100%)', borderRadius: '12px', padding: '16px 24px', color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '5px' }}>
+            {pillars.map(p => (<div key={p.num} style={{ width: '20px', height: '3px', borderRadius: '2px', background: p.color, opacity: 0.85 }} />))}
           </div>
-          <h1 style={{ fontFamily: serif, fontSize: '2rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '8px' }}>Five Pillars. Five Tools. One System.</h1>
-          <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, marginBottom: '0', maxWidth: '520px' }}>The Operating System Built for Multigenerational Family Enterprise</p>
+          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>LEP Framework</div>
+          <div style={{ marginLeft: 'auto', fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>Five Pillars · Five Tools · One System</div>
         </div>
-      </div>
-
-      {/* ── HOW IT WORKS — 3-step strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '28px' }}>
-        {journeySteps.map((step, i) => (
-          <div key={step.num} style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px 16px', position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>{step.num}</div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1A2A3F' }}>{step.name}</div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 600, color: step.color, background: `${step.color}12`, padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>{step.duration}</div>
+      ) : (
+        <>
+          <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '40px 40px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
+            <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(90,175,181,0.08)' }} />
+            <div style={{ position: 'absolute', bottom: '-80px', right: '120px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(224,91,111,0.06)' }} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                {pillars.map(p => (<div key={p.num} style={{ width: '32px', height: '4px', borderRadius: '2px', background: p.color, opacity: 0.9 }} />))}
+              </div>
+              <h1 style={{ fontFamily: serif, fontSize: '2rem', fontWeight: 400, lineHeight: 1.15, marginBottom: '8px' }}>Five Pillars. Five Tools. One System.</h1>
+              <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, marginBottom: '0', maxWidth: '520px' }}>The Operating System Built for Multigenerational Family Enterprise</p>
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#7A8BA0', lineHeight: 1.45 }}>{step.desc}</div>
-            {i < 2 && <div style={{ position: 'absolute', right: '-7px', top: '50%', transform: 'translateY(-50%)', color: '#DDE3EB', fontSize: '1rem', fontWeight: 700, zIndex: 1 }}>&rsaquo;</div>}
           </div>
-        ))}
-      </div>
+          {/* How It Works — only for new members */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
+            {journeySteps.map((step, i) => (
+              <div key={step.num} style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px 16px', position: 'relative' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>{step.num}</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1A2A3F' }}>{step.name}</div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 600, color: step.color, background: `${step.color}12`, padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>{step.duration}</div>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#7A8BA0', lineHeight: 1.45 }}>{step.desc}</div>
+                {i < 2 && <div style={{ position: 'absolute', right: '-7px', top: '50%', transform: 'translateY(-50%)', color: '#DDE3EB', fontSize: '1rem', fontWeight: 700, zIndex: 1 }}>&rsaquo;</div>}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* ── THE FIVE PILLARS ── */}
-      <div style={{ marginBottom: '12px' }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', color: '#7A8BA0', textTransform: 'uppercase', marginBottom: '14px' }}>The Five Pillars</div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {pillars.map(p => {
           const isExpanded = expandedPillar === p.num;
+          const prog = getPillarProgress(p);
+          const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
+          const hasActivity = prog.done > 0 || prog.started > 0;
+          const nextMod = getNextModule(p);
           return (
             <div key={p.num} style={{ background: 'white', border: `1px solid ${isExpanded ? p.color : '#E8ECF1'}`, borderRadius: '14px', overflow: 'hidden', transition: 'all 0.3s ease', boxShadow: isExpanded ? `0 12px 36px ${p.color}18` : '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div onClick={() => setExpandedPillar(isExpanded ? null : p.num)} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', cursor: 'pointer', background: isExpanded ? `linear-gradient(135deg, ${p.color}08, ${p.color}03)` : 'transparent', transition: 'background 0.3s ease' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: `linear-gradient(135deg, ${p.color}, ${p.color}CC)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${p.color}33` }}>
-                  <Icon name={p.icon} size={20} color="#fff" />
+              {/* Collapsed pillar header */}
+              <div onClick={() => setExpandedPillar(isExpanded ? null : p.num)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', cursor: 'pointer', background: isExpanded ? `linear-gradient(135deg, ${p.color}08, ${p.color}03)` : 'transparent', transition: 'background 0.3s ease' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: `linear-gradient(135deg, ${p.color}, ${p.color}CC)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 3px 10px ${p.color}33` }}>
+                  <Icon name={p.icon} size={18} color="#fff" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: serif, fontSize: '1.15rem', fontWeight: 700, color: '#1A2A3F' }}>{p.name}</span>
-                    <span style={{ fontSize: '0.82rem', color: '#7A8BA0', fontStyle: 'italic' }}>{p.question}</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                    <span style={{ fontFamily: serif, fontSize: '1.05rem', fontWeight: 700, color: '#1A2A3F' }}>{p.name}</span>
+                    <span style={{ fontSize: '0.78rem', color: '#7A8BA0', fontStyle: 'italic' }}>{p.question}</span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: p.color, fontWeight: 600, marginTop: '2px' }}>{p.tool}</div>
+                  <div style={{ fontSize: '0.72rem', color: p.color, fontWeight: 600, marginTop: '1px' }}>{p.tool}</div>
                 </div>
-                {p.modules && (() => {
-                  const prog = getPillarProgress(p);
-                  const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
-                  const hasActivity = prog.done > 0 || prog.started > 0;
-                  return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                      {/* Mini progress ring */}
-                      <svg width="26" height="26" viewBox="0 0 26 26" style={{ flexShrink: 0 }}>
-                        <circle cx="13" cy="13" r="10" fill="none" stroke="#E8ECF1" strokeWidth="2.5" />
-                        {hasActivity && <circle cx="13" cy="13" r="10" fill="none" stroke={p.color} strokeWidth="2.5"
-                          strokeDasharray={`${(pct / 100) * 62.83} 62.83`}
-                          strokeLinecap="round" transform="rotate(-90 13 13)" style={{ transition: 'stroke-dasharray 0.4s ease' }} />}
-                        {pct === 100 && <path d="M9 13l2.5 2.5L17 10.5" fill="none" stroke={p.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
-                      </svg>
-                      <span style={{ fontSize: '0.68rem', color: hasActivity ? p.color : '#7A8BA0', fontWeight: 600 }}>{prog.done}/{prog.total}</span>
-                    </div>
-                  );
-                })()}
-                <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: isExpanded ? p.color : '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', flexShrink: 0 }}>
-                  <span style={{ fontSize: '0.95rem', color: isExpanded ? 'white' : '#7A8BA0', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', display: 'inline-block' }}>▾</span>
+                {/* Next action button — visible on collapsed card */}
+                {!isExpanded && nextMod && (
+                  <button onClick={(e) => { e.stopPropagation(); if (setActivePillar) setActivePillar(p.pillarId); setCurrentView('pillars'); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', background: `${p.color}10`, border: `1px solid ${p.color}30`, borderRadius: '7px', padding: '6px 12px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700, color: p.color, flexShrink: 0, transition: 'all 0.15s', whiteSpace: 'nowrap' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = p.color; e.currentTarget.style.color = 'white'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = `${p.color}10`; e.currentTarget.style.color = p.color; }}>
+                    {nextMod.label} <Icon name="arrow-right" size={12} color="currentColor" />
+                  </button>
+                )}
+                {!isExpanded && !nextMod && prog.done === prog.total && prog.total > 0 && (
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#10b981', background: '#D1FAE5', padding: '4px 10px', borderRadius: '6px', flexShrink: 0 }}>Complete</span>
+                )}
+                {/* Progress ring */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                  <svg width="24" height="24" viewBox="0 0 26 26" style={{ flexShrink: 0 }}>
+                    <circle cx="13" cy="13" r="10" fill="none" stroke="#E8ECF1" strokeWidth="2.5" />
+                    {hasActivity && <circle cx="13" cy="13" r="10" fill="none" stroke={p.color} strokeWidth="2.5"
+                      strokeDasharray={`${(pct / 100) * 62.83} 62.83`}
+                      strokeLinecap="round" transform="rotate(-90 13 13)" style={{ transition: 'stroke-dasharray 0.4s ease' }} />}
+                    {pct === 100 && <path d="M9 13l2.5 2.5L17 10.5" fill="none" stroke={p.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+                  </svg>
+                  <span style={{ fontSize: '0.65rem', color: hasActivity ? p.color : '#9AA5B4', fontWeight: 600 }}>{prog.done}/{prog.total}</span>
+                </div>
+                <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: isExpanded ? p.color : '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', flexShrink: 0 }}>
+                  <span style={{ fontSize: '0.85rem', color: isExpanded ? 'white' : '#7A8BA0', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', display: 'inline-block' }}>▾</span>
                 </div>
               </div>
+              {/* Expanded detail */}
               {isExpanded && (
-                <div style={{ padding: '0 20px 24px', borderTop: `1px solid ${p.color}15`, animation: 'fadeIn 0.3s ease' }}>
-                  {/* What It Is + Outcome — compact two-column */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', padding: '18px 0', borderBottom: '1px solid #F0F4F8' }}>
+                <div style={{ padding: '0 18px 20px', borderTop: `1px solid ${p.color}15`, animation: 'fadeIn 0.3s ease' }}>
+                  {/* What It Is + Outcome */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #F0F4F8' }}>
                     <div>
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '6px' }}>What It Is</div>
-                      <p style={{ fontSize: '0.88rem', color: '#2B3A52', lineHeight: 1.6, margin: 0 }}>{p.whatItIs}</p>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '5px' }}>What It Is</div>
+                      <p style={{ fontSize: '0.85rem', color: '#2B3A52', lineHeight: 1.55, margin: 0 }}>{p.whatItIs}</p>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '6px' }}>The Outcome</div>
-                      <p style={{ fontSize: '0.88rem', color: '#2B3A52', lineHeight: 1.6, margin: 0, fontWeight: 600 }}>{p.outcome}</p>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '5px' }}>The Outcome</div>
+                      <p style={{ fontSize: '0.85rem', color: '#2B3A52', lineHeight: 1.55, margin: 0, fontWeight: 600 }}>{p.outcome}</p>
                     </div>
                   </div>
-                  {/* Pillar-specific details — compact */}
+                  {/* Pillar-specific details */}
                   {p.elements && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {p.elements.map((el, i) => (<div key={i} style={{ background: `${p.color}0C`, border: `1px solid ${p.color}20`, borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600, color: p.color }}>{el}</div>))}
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {p.elements.map((el, i) => (<div key={i} style={{ background: `${p.color}0C`, border: `1px solid ${p.color}20`, borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem', fontWeight: 600, color: p.color }}>{el}</div>))}
                       </div>
                     </div>
                   )}
                   {p.circles && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                        {p.circles.map((c, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '10px', padding: '12px', textAlign: 'center' }}><div style={{ fontSize: '0.75rem', fontWeight: 700, color: p.color, marginBottom: '2px' }}>{c.name}</div><div style={{ fontSize: '0.78rem', color: '#5A6B80' }}>{c.desc}</div></div>))}
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                        {p.circles.map((c, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}><div style={{ fontSize: '0.72rem', fontWeight: 700, color: p.color, marginBottom: '2px' }}>{c.name}</div><div style={{ fontSize: '0.75rem', color: '#5A6B80' }}>{c.desc}</div></div>))}
                       </div>
                     </div>
                   )}
                   {p.cadence && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {p.cadence.map((c, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: `${p.color}06`, borderRadius: '6px', padding: '6px 12px' }}><span style={{ fontSize: '0.8rem', color: '#2B3A52', fontWeight: 500 }}>{c.meeting}</span><span style={{ fontSize: '0.68rem', fontWeight: 700, color: p.color, background: `${p.color}15`, padding: '2px 6px', borderRadius: '3px' }}>{c.freq}</span></div>))}
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {p.cadence.map((c, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: `${p.color}06`, borderRadius: '5px', padding: '5px 10px' }}><span style={{ fontSize: '0.75rem', color: '#2B3A52', fontWeight: 500 }}>{c.meeting}</span><span style={{ fontSize: '0.65rem', fontWeight: 700, color: p.color, background: `${p.color}15`, padding: '1px 5px', borderRadius: '3px' }}>{c.freq}</span></div>))}
                       </div>
                     </div>
                   )}
                   {p.tracks && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        {p.tracks.map((t, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '10px', padding: '14px' }}><div style={{ fontSize: '0.78rem', fontWeight: 700, color: p.color, marginBottom: '4px' }}>{t.name}</div><div style={{ fontSize: '0.8rem', color: '#5A6B80', lineHeight: 1.45 }}>{t.desc}</div></div>))}
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        {p.tracks.map((t, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '8px', padding: '12px' }}><div style={{ fontSize: '0.75rem', fontWeight: 700, color: p.color, marginBottom: '3px' }}>{t.name}</div><div style={{ fontSize: '0.78rem', color: '#5A6B80', lineHeight: 1.4 }}>{t.desc}</div></div>))}
                       </div>
                     </div>
                   )}
                   {p.sections && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {p.sections.map((s, i) => (<div key={i} style={{ background: `${p.color}0C`, border: `1px solid ${p.color}20`, borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600, color: p.color }}>{s}</div>))}
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {p.sections.map((s, i) => (<div key={i} style={{ background: `${p.color}0C`, border: `1px solid ${p.color}20`, borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem', fontWeight: 600, color: p.color }}>{s}</div>))}
                       </div>
                     </div>
                   )}
                   {p.whyItMatters && (
-                    <div style={{ padding: '14px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <p style={{ fontSize: '0.85rem', color: '#4A5E73', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }}>{p.whyItMatters}</p>
+                    <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
+                      <p style={{ fontSize: '0.82rem', color: '#4A5E73', lineHeight: 1.55, margin: 0, fontStyle: 'italic' }}>{p.whyItMatters}</p>
                     </div>
                   )}
-                  {/* Workbooks + CTA */}
-                  <div style={{ paddingTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    {p.modules && p.modules.map(m => (
-                      <button key={m.id} onClick={() => { if (setActivePillar) setActivePillar(p.pillarId); if (setCurrentView) setCurrentView('pillars'); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', border: `1px solid ${p.color}30`, borderRadius: '8px', padding: '10px 14px', cursor: 'pointer', transition: 'all 0.2s ease', fontSize: '0.82rem', fontWeight: 600, color: '#2B3A52' }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = p.color; e.currentTarget.style.boxShadow = `0 4px 12px ${p.color}18`; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = `${p.color}30`; e.currentTarget.style.boxShadow = 'none'; }}>
-                        <Icon name="edit" size={14} color={p.color} />
-                        {m.name}
-                        <Icon name="arrow-right" size={13} color={p.color} />
-                      </button>
-                    ))}
+                  {/* Workbook modules with status */}
+                  <div style={{ paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {p.modules && p.modules.map(m => {
+                      const mStatus = moduleProgress[m.id] || 'not-started';
+                      const isComplete = mStatus === 'completed';
+                      const isInProgress = mStatus === 'in-progress';
+                      return (
+                        <button key={m.id} onClick={() => { if (setActivePillar) setActivePillar(p.pillarId); setCurrentView('pillars'); }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', background: isInProgress ? `${p.color}08` : 'white', border: `1px solid ${isInProgress ? p.color : isComplete ? '#10b98140' : p.color + '25'}`, borderRadius: '10px', padding: '12px 14px', cursor: 'pointer', transition: 'all 0.15s ease', textAlign: 'left', width: '100%' }}
+                          onMouseEnter={e => { if (!isComplete) { e.currentTarget.style.borderColor = p.color; e.currentTarget.style.boxShadow = `0 4px 12px ${p.color}15`; } }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = isInProgress ? p.color : isComplete ? '#10b98140' : p.color + '25'; e.currentTarget.style.boxShadow = 'none'; }}>
+                          {isComplete ? (
+                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Icon name="check" size={13} color="#fff" />
+                            </div>
+                          ) : isInProgress ? (
+                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Icon name="play" size={11} color="#fff" />
+                            </div>
+                          ) : (
+                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: `2px solid ${p.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} />
+                          )}
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: isComplete ? '#6B7280' : '#2B3A52', textDecoration: isComplete ? 'line-through' : 'none' }}>{m.name}</div>
+                          </div>
+                          {isInProgress && <span style={{ fontSize: '0.68rem', fontWeight: 700, color: p.color, background: `${p.color}15`, padding: '3px 8px', borderRadius: '4px' }}>In Progress</span>}
+                          {!isComplete && <Icon name="arrow-right" size={14} color={isInProgress ? p.color : '#C0C8D2'} />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -5055,39 +5122,20 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
         })}
       </div>
 
-      {/* ── ACTION CARDS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-        <button onClick={() => setCurrentView && setCurrentView('lep-journey')}
-          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '22px 18px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#34597A'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(52,89,122,0.1)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'linear-gradient(135deg, #34597A, #2B4C6F)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-            <Icon name="compass" size={18} color="#fff" />
+      {/* ── ASSESSMENT CTA — only if no scores yet ── */}
+      {!scores && (
+        <div style={{ marginTop: '20px', background: 'linear-gradient(135deg, #1A2A3F, #2B4C6F)', borderRadius: '12px', padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+          <div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'white', marginBottom: '4px' }}>Start with the Discovery Assessment</div>
+            <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>One conversation to see where your family enterprise stands.</div>
           </div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Take the Assessment</div>
-          <div style={{ fontSize: '0.78rem', color: '#7A8BA0', lineHeight: 1.45 }}>See where your family enterprise stands across five pillars.</div>
-        </button>
-        <button onClick={() => { if (setActivePillar) setActivePillar('purpose-identity'); setCurrentView && setCurrentView('pillars'); }}
-          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '22px 18px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#E05B6F'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(224,91,111,0.1)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'linear-gradient(135deg, #E05B6F, #C23B4C)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-            <Icon name="edit" size={18} color="#fff" />
-          </div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Start Pillar Workbooks</div>
-          <div style={{ fontSize: '0.78rem', color: '#7A8BA0', lineHeight: 1.45 }}>Interactive exercises that produce real deliverables.</div>
-        </button>
-        <button onClick={() => setCurrentView && setCurrentView('workshop')}
-          style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '14px', padding: '22px 18px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4A7C59'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(74,124,89,0.1)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8ECF1'; e.currentTarget.style.boxShadow = 'none'; }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'linear-gradient(135deg, #4A7C59, #3A6A49)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-            <Icon name="file-text" size={18} color="#fff" />
-          </div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '4px' }}>Build Deliverables</div>
-          <div style={{ fontSize: '0.78rem', color: '#7A8BA0', lineHeight: 1.45 }}>Generate your Charter, Council Map, and family documents.</div>
-        </button>
-      </div>
+          <button onClick={() => setCurrentView('lep-journey')}
+            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px', padding: '12px 22px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '9px', cursor: 'pointer', fontSize: '0.88rem', fontWeight: 700, transition: 'all 0.15s', boxShadow: '0 4px 12px rgba(224,91,111,0.3)' }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
+            Begin <Icon name="arrow-right" size={16} color="#fff" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
