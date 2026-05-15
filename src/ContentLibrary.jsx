@@ -38,21 +38,6 @@ const ContentLibrary = () => {
 
   const topics = ['governance', 'succession', 'communication', 'family-dynamics', 'leadership', 'finance', 'next-gen'];
 
-  // Seed content — shown when the library is empty
-  const SEED_CONTENT = [
-    {
-      id: 'seed-market-basket-v2',
-      title: 'Food Fight: The Battle For Market Basket',
-      description: 'The remarkable true story of how a family business feud at Market Basket triggered the largest non-union employee walkout in U.S. history. When CEO Arthur T. Demoulas was fired by a board controlled by his cousin, thousands of employees and customers mobilized for six weeks — shutting down 71 stores and proving that a family enterprise built on values can inspire extraordinary loyalty. Essential viewing for any family in business.',
-      type: 'Video',
-      url: 'https://www.youtube.com/watch?v=8-K7G9aA_70',
-      topics: ['family-dynamics', 'governance', 'leadership', 'succession'],
-      estimatedTime: '90 min documentary',
-      createdAt: '2026-05-14T00:00:00.000Z',
-      featured: true,
-    },
-  ];
-
   // Load data from localStorage
   useEffect(() => {
     const user = localStorage.getItem('lep_current_user');
@@ -64,22 +49,7 @@ const ContentLibrary = () => {
     }
 
     const content = localStorage.getItem('lep_content_library');
-    if (content) {
-      const parsed = JSON.parse(content);
-      // Merge seed content — add missing seed items, and update existing ones to ensure featured flag etc.
-      const seedById = {};
-      SEED_CONTENT.forEach(s => { seedById[s.id] = s; });
-      const existingIds = new Set(parsed.map(i => i.id));
-      // Update existing seed items (ensure featured flag is set)
-      const updated = parsed.map(i => seedById[i.id] ? { ...i, ...seedById[i.id] } : i);
-      // Add any new seed items not already present
-      const merged = [...updated, ...SEED_CONTENT.filter(s => !existingIds.has(s.id))];
-      localStorage.setItem('lep_content_library', JSON.stringify(merged));
-      setContentItems(merged);
-    } else {
-      localStorage.setItem('lep_content_library', JSON.stringify(SEED_CONTENT));
-      setContentItems(SEED_CONTENT);
-    }
+    if (content) setContentItems(JSON.parse(content));
 
     const assign = localStorage.getItem('lep_content_assignments');
     if (assign) setAssignments(JSON.parse(assign));
@@ -352,54 +322,12 @@ const ContentLibrary = () => {
 
   // ===== ADMIN LIBRARY TAB =====
   // Shared featured content renderer (used by both admin and member views)
-  const renderFeaturedContent = () => {
-    const featured = contentItems.filter(i => i.featured);
-    if (featured.length === 0) return null;
-    return (
-      <div style={{ marginBottom: '32px' }}>
-        {featured.map(item => {
-          const ytMatch = item.url && item.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-          const ytId = ytMatch ? ytMatch[1] : null;
-          return (
-            <div key={item.id} style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '32px', color: 'white', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(224,91,111,0.08)' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'inline-block', background: 'rgba(224,91,111,0.2)', border: '1px solid rgba(224,91,111,0.4)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#F8C8CF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Featured</div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>{item.title}</h3>
-                <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>{item.description}</p>
-                {ytId && (
-                  <div style={{ position: 'relative', width: '100%', maxWidth: '720px', height: '405px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${ytId}`}
-                      title={item.title}
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {item.topics.map(t => (
-                    <span key={t} style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px', textTransform: 'capitalize' }}>{t.replace('-', ' ')}</span>
-                  ))}
-                  <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>{item.estimatedTime}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   const AdminLibraryTab = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1A2A3F', margin: 0 }}>Content Library</h2>
         <button style={buttonStyle} onClick={() => setShowAddContentModal(true)}>+ Add Content</button>
       </div>
-
-      {renderFeaturedContent()}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
         {topics.map(topic => (
@@ -549,8 +477,6 @@ const ContentLibrary = () => {
 
     return (
       <div>
-        {renderFeaturedContent()}
-
         <div style={{ marginBottom: '24px' }}>
           <input
             type="text"
