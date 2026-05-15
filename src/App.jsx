@@ -3868,16 +3868,16 @@ function PillarsView({ activePillar, setActivePillar, moduleProgress, setModuleP
 // ═══════════════════════════════════════════════════════════════
 
 const MEETING_TEMPLATES = {
-  'business-l10': {
-    name: 'Business L10', icon: '⚡', frequency: 'Weekly', duration: '60 min', color: '#2d5a3d',
+  'business-rhythm': {
+    name: 'Business Rhythm', icon: '⚡', frequency: 'Weekly', duration: '60 min', color: '#2d5a3d',
     category: 'family',
     agenda: [
       { id: 'segue', name: 'Segue — Personal & Professional Best', duration: '5 min', desc: 'Each person shares one personal and one professional win from the past week. Sets a positive tone.' },
-      { id: 'scorecard', name: 'Scorecard Review', duration: '5 min', desc: 'Review 5-15 key metrics. Are we on track or off track? No discussion — just flag the off-track numbers.' },
-      { id: 'rock-review', name: 'Rocks Check-In', duration: '5 min', desc: 'Quick on-track / off-track / at-risk for each 90-day priority. Flagged rocks from the Priority Tracker auto-populate here.' },
+      { id: 'metrics', name: 'Metrics Review', duration: '5 min', desc: 'Review 5-15 key metrics. Are we on track or off track? No discussion — just flag the off-track numbers.' },
+      { id: 'priority-review', name: 'Priority Check-In', duration: '5 min', desc: 'Quick on-track / off-track / at-risk for each 90-day priority. Flagged priorities from the Priority Tracker auto-populate here.' },
       { id: 'headlines', name: 'Customer & Employee Headlines', duration: '5 min', desc: 'Quick good news and bad news. One headline per person. No deep dives yet — just surface what matters.' },
       { id: 'todo-review', name: 'To-Do Review', duration: '5 min', desc: 'Review last week\'s action items. Done or not done? No excuses — just accountability.' },
-      { id: 'resolve', name: 'IDS — Identify, Discuss, Solve', duration: '30 min', desc: 'The core of the L10. Take the top 3 issues from the list. Identify the root cause. Discuss. Solve with a clear action item. Move on.' },
+      { id: 'resolve', name: 'Resolve — Identify, Clarify, Act', duration: '30 min', desc: 'The core of the meeting. Take the top 3 issues from the list. Identify the root cause. Discuss openly. Decide on a clear action item. Move on.' },
       { id: 'conclude', name: 'Conclude — Recap & Rating', duration: '5 min', desc: 'Recap all new to-dos. Cascade any messages to the team. Rate the meeting 1-10.' },
     ],
   },
@@ -3981,8 +3981,8 @@ function parseTranscript(transcript, template) {
       const name = item.name.toLowerCase();
       const desc = item.desc.toLowerCase();
       if (name.includes('check-in') || name.includes('opening') || name.includes('welcome')) kw.push('check-in', 'feeling', 'grateful', 'gratitude', 'personal', 'welcome');
-      if (name.includes('pulse') || name.includes('scorecard') || name.includes('metric')) kw.push('revenue', 'metric', 'kpi', 'number', 'score', 'ebitda', 'cash', 'profit', 'growth');
-      if (name.includes('priorit') || name.includes('90-day') || name.includes('rock')) kw.push('priority', 'goal', 'milestone', 'progress', 'track', 'quarter', 'initiative', 'on track', 'off track');
+      if (name.includes('pulse') || name.includes('metric')) kw.push('revenue', 'metric', 'kpi', 'number', 'score', 'ebitda', 'cash', 'profit', 'growth');
+      if (name.includes('priorit') || name.includes('90-day')) kw.push('priority', 'goal', 'milestone', 'progress', 'track', 'quarter', 'initiative', 'on track', 'off track');
       if (name.includes('headline') || name.includes('update')) kw.push('update', 'news', 'announce', 'headline', 'report', 'development');
       if (name.includes('resolve') || name.includes('forum') || desc.includes('issue')) kw.push('issue', 'discuss', 'resolve', 'debate', 'disagree', 'concern', 'conflict', 'challenge');
       if (name.includes('action') || name.includes('accountability')) kw.push('action', 'to-do', 'assign', 'deadline', 'responsible', 'owner', 'accountab');

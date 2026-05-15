@@ -106,7 +106,7 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
               Most family enterprises run on assumptions — about who decides, who leads next, and what the business is actually for. By the time those assumptions become conflicts, the cost is rarely just financial.
             </p>
             <div className="problem-body">
-              <p>EOS, Scaling Up, and other operating frameworks were built for management teams. They don't touch governance. They don't address succession. They don't ask what the enterprise means to the people whose name is on it.</p>
+              <p>Most operating frameworks were built for management teams. They don't touch governance. They don't address succession. They don't ask what the enterprise means to the people whose name is on it.</p>
               <p>LEP was built for all of that. It is the only operating system designed for the full complexity of family enterprise — ownership, family, management, and legacy.</p>
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
               </ul>
             </div>
             <div className="who-col">
-              <div className="subheading">Where EOS Ends, LEP Begins</div>
+              <div className="subheading">Where Other Frameworks End, LEP Begins</div>
               <div className="contrast">
                 <div className="not-this">NOT THIS</div>
                 <div className="not-this-text">An operations framework that stops at the management layer</div>
