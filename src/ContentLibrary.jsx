@@ -41,11 +41,11 @@ const ContentLibrary = () => {
   // Seed content — shown when the library is empty
   const SEED_CONTENT = [
     {
-      id: 'seed-market-basket',
+      id: 'seed-market-basket-v2',
       title: 'Food Fight: The Battle For Market Basket',
       description: 'The remarkable true story of how a family business feud at Market Basket triggered the largest non-union employee walkout in U.S. history. When CEO Arthur T. Demoulas was fired by a board controlled by his cousin, thousands of employees and customers mobilized for six weeks — shutting down 71 stores and proving that a family enterprise built on values can inspire extraordinary loyalty. Essential viewing for any family in business.',
       type: 'Video',
-      url: 'https://www.youtube.com/watch?v=fFexn45saow',
+      url: 'https://www.youtube.com/watch?v=8-K7G9aA_70',
       topics: ['family-dynamics', 'governance', 'leadership', 'succession'],
       estimatedTime: '90 min documentary',
       createdAt: '2026-05-14T00:00:00.000Z',
