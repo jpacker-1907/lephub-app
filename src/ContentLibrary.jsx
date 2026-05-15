@@ -66,12 +66,15 @@ const ContentLibrary = () => {
     const content = localStorage.getItem('lep_content_library');
     if (content) {
       const parsed = JSON.parse(content);
-      // Merge seed content — add any seed items not already present
+      // Merge seed content — add missing seed items, and update existing ones to ensure featured flag etc.
+      const seedById = {};
+      SEED_CONTENT.forEach(s => { seedById[s.id] = s; });
       const existingIds = new Set(parsed.map(i => i.id));
-      const merged = [...parsed, ...SEED_CONTENT.filter(s => !existingIds.has(s.id))];
-      if (merged.length !== parsed.length) {
-        localStorage.setItem('lep_content_library', JSON.stringify(merged));
-      }
+      // Update existing seed items (ensure featured flag is set)
+      const updated = parsed.map(i => seedById[i.id] ? { ...i, ...seedById[i.id] } : i);
+      // Add any new seed items not already present
+      const merged = [...updated, ...SEED_CONTENT.filter(s => !existingIds.has(s.id))];
+      localStorage.setItem('lep_content_library', JSON.stringify(merged));
       setContentItems(merged);
     } else {
       localStorage.setItem('lep_content_library', JSON.stringify(SEED_CONTENT));
@@ -365,7 +368,7 @@ const ContentLibrary = () => {
                 <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>{item.title}</h3>
                 <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>{item.description}</p>
                 {ytId && (
-                  <div style={{ position: 'relative', width: '100%', maxWidth: '720px', paddingBottom: 'min(405px, 56.25%)', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+                  <div style={{ position: 'relative', width: '100%', maxWidth: '720px', height: '405px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
                     <iframe
                       src={`https://www.youtube.com/embed/${ytId}`}
                       title={item.title}
