@@ -121,7 +121,7 @@ function AuthScreen({ onLogin }) {
   };
 
   return (
-    <div style={{minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #1A2A3F 0%, #34597A 50%, #E05B6F 100%)'}}>
+    <div className="auth-screen" style={{minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #1A2A3F 0%, #34597A 50%, #E05B6F 100%)'}}>
       {/* Left panel — brand */}
       <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', color: 'white', maxWidth: '560px'}}>
         <div style={{marginBottom: '48px'}}>
@@ -2600,25 +2600,16 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
       </button>
       <style>{`
         @media (max-width: 768px) {
-          .mobile-nav-toggle { display: block !important; }
-          .app-nav { transform: translateX(${mobileOpen ? '0' : '-100%'}); transition: transform 0.3s ease; position: fixed !important; z-index: 1000; height: 100vh; }
-          .app-main { margin-left: 0 !important; padding: 16px !important; padding-top: 60px !important; }
-          .pathway-grid, .action-grid, .pillar-grid { grid-template-columns: 1fr !important; }
-          .page-header { flex-direction: column; align-items: flex-start !important; gap: 12px; }
-          .score-hero { flex-direction: column; text-align: center; }
-          .score-summary { text-align: center; }
-          .dashboard-actions { justify-content: center; }
-          .assessment-card { padding: 16px !important; }
-          .rating-scale { gap: 4px !important; }
-          .transition-banner { padding: 20px !important; }
-          h1 { font-size: 1.4rem !important; }
-        }
-        @media (max-width: 480px) {
-          .app-main { padding: 12px !important; padding-top: 56px !important; }
-          .pathway-card { padding: 16px !important; }
-          .score-circle svg { width: 100px; height: 100px; }
+          .app-nav { transform: translateX(${mobileOpen ? '0' : '-100%'}) !important; }
         }
       `}</style>
+      {mobileOpen && (
+        <div
+          className="mobile-nav-overlay"
+          onClick={() => setMobileOpen(false)}
+          style={{display: 'none', position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999}}
+        />
+      )}
     <nav className="app-nav">
       <div className="nav-brand">
         <StrideLogo size={32} />
@@ -2883,7 +2874,7 @@ function EngagementStatsBar({ sessions }) {
   const credentialProgress = credentialData.completedLessons ? credentialData.completedLessons.length : 0;
 
   return (
-    <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px'}}>
+    <div className="stats-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px'}}>
       <div style={{background: 'white', borderRadius: '10px', border: '1px solid #DDE3EB', padding: '14px 16px', textAlign: 'center'}}>
         <div style={{marginBottom: '4px'}}><Icon name="trending-up" size={24} color="#E05B6F" /></div>
         <div style={{fontSize: '0.95rem', fontWeight: '700', color: '#2B4C6F'}}>{streak}</div>
@@ -8994,7 +8985,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           <header style={{marginBottom: '32px', textAlign: 'center'}}>
             <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>Application Submitted</h1>
           </header>
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
+          <div className="membership-card" style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
             <div style={{width: '56px', height: '56px', borderRadius: '50%', background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '1.5rem'}}>&#9202;</div>
             <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Under Review</h2>
             <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
@@ -9015,7 +9006,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           <header style={{marginBottom: '32px', textAlign: 'center'}}>
             <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>You're Approved!</h1>
           </header>
-          <div style={{background: 'white', borderRadius: '16px', border: '2px solid #2D5A3D', padding: '36px', textAlign: 'center'}}>
+          <div className="membership-card" style={{background: 'white', borderRadius: '16px', border: '2px solid #2D5A3D', padding: '36px', textAlign: 'center'}}>
             <div style={{width: '56px', height: '56px', borderRadius: '50%', background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '1.5rem', color: '#2D5A3D'}}>&#10003;</div>
             <h2 style={{fontSize: '1.3rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '12px'}}>Welcome to Stride FBA</h2>
             <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
@@ -9062,7 +9053,7 @@ function MembershipView({ currentUser, isMember, membershipStatus: externalStatu
           <header style={{marginBottom: '32px', textAlign: 'center'}}>
             <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: '700', color: '#1A2A3F', marginBottom: '12px'}}>Application Update</h1>
           </header>
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
+          <div className="membership-card" style={{background: 'white', borderRadius: '16px', border: '1px solid #DDE3EB', padding: '36px', textAlign: 'center'}}>
             <p style={{color: '#7A8BA0', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 24px'}}>
               Thank you for your interest in Stride FBA. After reviewing your application, we're unable to offer membership at this time. If you have questions or would like to discuss further, please reach out directly.
             </p>
@@ -11146,7 +11137,7 @@ function AdminView({ currentUser }) {
       </header>
 
       {/* Tab navigation */}
-      <div style={{display: 'flex', gap: '4px', marginBottom: '28px', background: '#F0F4F8', borderRadius: '10px', padding: '4px'}}>
+      <div className="admin-tabs" style={{display: 'flex', gap: '4px', marginBottom: '28px', background: '#F0F4F8', borderRadius: '10px', padding: '4px'}}>
         {ADMIN_TABS.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 16px',

@@ -1,0 +1,326 @@
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE OVERRIDES
+   Comprehensive mobile optimization for LEP Hub / Stride app.
+   Uses !important to override inline styles throughout the SPA.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── TABLET (≤ 900px) ─────────────────────────────────────── */
+@media (max-width: 900px) {
+
+  /* Auth / Login screen — hide left brand panel, center form */
+  .auth-screen > div:first-child {
+    display: none !important;
+  }
+  .auth-screen > div:last-child {
+    flex: 1 !important;
+    padding: 24px !important;
+  }
+  .auth-screen > div:last-child > div {
+    padding: 28px !important;
+  }
+}
+
+/* ─── PHONE (≤ 768px) ──────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* ── Navigation ── */
+  .mobile-nav-toggle {
+    display: block !important;
+  }
+  .app-nav {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    position: fixed !important;
+    z-index: 1000;
+    height: 100vh;
+    width: 240px !important;
+  }
+  .app-main {
+    margin-left: 0 !important;
+    padding: 16px !important;
+    padding-top: 60px !important;
+  }
+  .mobile-nav-overlay {
+    display: block !important;
+  }
+
+  /* ── General layout helpers ── */
+  h1 { font-size: 1.4rem !important; }
+  h2 { font-size: 1.2rem !important; }
+
+  /* Force single-column on all grids */
+  .pathway-grid,
+  .action-grid,
+  .pillar-grid,
+  .meetings-grid,
+  .vault-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Page headers stack */
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* Score hero stack */
+  .score-hero {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+
+  /* Assessment cards */
+  .assessment-card {
+    padding: 16px !important;
+  }
+  .assessment-nav {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .rating-scale {
+    gap: 4px !important;
+  }
+
+  /* Pillar tabs scroll */
+  .pillar-tabs {
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pillar-tab {
+    flex-shrink: 0 !important;
+  }
+
+  /* Workbook */
+  .workbook-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+  .workbook-nav {
+    flex-wrap: wrap !important;
+  }
+  .module-workbook {
+    padding: 0 !important;
+  }
+
+  /* Stats grid (3-col → 1-col) */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Transition banner */
+  .transition-banner {
+    padding: 20px !important;
+  }
+}
+
+/* ─── SMALL PHONE (≤ 480px) ────────────────────────────────── */
+@media (max-width: 480px) {
+
+  .app-main {
+    padding: 12px !important;
+    padding-top: 56px !important;
+  }
+
+  /* Score circles smaller */
+  .score-circle svg {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  /* Pathway cards tighter */
+  .pathway-card {
+    padding: 16px !important;
+  }
+
+  /* ── LEP Framework View overrides ── */
+
+  /* Stats grid on small phones */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LANDING PAGE — Additional mobile polish
+   (supplements LEPLandingPage.css @media rules)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  /* Landing hero */
+  .lep-landing .hero {
+    padding: 40px 0 !important;
+    min-height: auto !important;
+  }
+  .lep-landing .hero h1 {
+    font-size: 28px !important;
+  }
+  .lep-landing .hero .subheadline {
+    font-size: 15px !important;
+  }
+  .lep-landing .hero-ctas {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .lep-landing .hero-ctas .btn {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Pillar stack items */
+  .lep-landing .pillar-stack-item {
+    padding: 14px 18px !important;
+    font-size: 15px !important;
+  }
+
+  /* Section padding */
+  .lep-landing .section {
+    padding: 36px 0 !important;
+  }
+  .lep-landing h2 {
+    font-size: 22px !important;
+  }
+
+  /* Pillar cards — fully stacked, no wasted space */
+  .lep-landing .pillar-card {
+    grid-template-columns: 1fr !important;
+  }
+  .lep-landing .pillar-left {
+    padding: 16px !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+  .lep-landing .pillar-left .num {
+    font-size: 32px !important;
+    margin-bottom: 0 !important;
+  }
+  .lep-landing .pillar-middle,
+  .lep-landing .pillar-right {
+    padding: 16px !important;
+  }
+  .lep-landing .pillar-middle .pillar-question {
+    font-size: 17px !important;
+  }
+
+  /* Download gate */
+  .lep-landing .download-form {
+    flex-direction: column !important;
+  }
+  .lep-landing .download-form input {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .lep-landing .download-form .btn {
+    width: 100% !important;
+  }
+
+  /* How It Works cards */
+  .lep-landing .how-card {
+    padding: 24px 20px !important;
+  }
+  .lep-landing .how-card .step {
+    font-size: 32px !important;
+  }
+  .lep-landing .how-card h4 {
+    font-size: 18px !important;
+  }
+
+  /* Who section */
+  .lep-landing .who-col .subheading {
+    font-size: 20px !important;
+  }
+  .lep-landing .who-col ul li {
+    padding: 10px 0 10px 28px !important;
+    font-size: 14px !important;
+  }
+
+  /* CTA panels */
+  .lep-landing .cta-panel h3 {
+    font-size: 18px !important;
+  }
+
+  /* Contact form */
+  .lep-landing .contact-inner h2 {
+    font-size: 22px !important;
+  }
+  .lep-landing .contact-inner .lead {
+    font-size: 14px !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Pull quote */
+  .lep-landing .pull-quote {
+    font-size: 20px !important;
+    padding-left: 16px !important;
+  }
+
+  /* Top header */
+  .lep-landing .top-header-brand .wordmark {
+    font-size: 16px !important;
+  }
+  .lep-landing .top-header-brand .tagline {
+    display: none !important;
+  }
+  .lep-landing .member-login-btn {
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP VIEWS — Class-based mobile overrides
+   (Classes added to key components in JSX)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Video embeds — responsive height */
+  iframe {
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    max-height: 280px !important;
+  }
+
+  /* All auto-fit/auto-fill grids — force responsive */
+  .mobile-grid-stack {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Membership card padding */
+  .membership-card {
+    padding: 20px !important;
+  }
+
+  /* Admin tabs — horizontal scroll */
+  .admin-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+  }
+  .admin-tabs > button {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, a, .nav-item, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Smoother scrolling everywhere */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+  #root {
+    overflow-x: hidden;
+  }
+}
