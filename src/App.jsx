@@ -2578,7 +2578,8 @@ function Nav({ currentView, setCurrentView, user, scores, onLogout, currentUser,
     // SAVED FOR LATER — Workshop (accessible via LEP → Pillar Work flow)
     // { id: 'workshop', icon: 'edit', name: 'Workshop', memberOnly: true },
     { id: 'content', icon: 'play-circle', name: 'Learn', memberOnly: true },
-    { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
+    // SAVED FOR LATER — Vault
+    // { id: 'vault', icon: 'lock', name: 'Vault', memberOnly: true },
     // SAVED FOR LATER — Community & Communications
     // { id: 'community', icon: 'message-circle', name: 'Community', memberOnly: true },
     // { id: 'communications', icon: 'mail', name: 'Communications', adminOnly: true },
@@ -10507,10 +10508,11 @@ function AdminView({ currentUser }) {
   // ─── ADMIN TABS ───────────────────────────────────────────
   const ADMIN_TABS = [
     { id: 'overview', name: 'Overview', icon: '📊' },
-    { id: 'members', name: 'Members', icon: '👥' },
-    { id: 'connect', name: 'Connect', icon: '✉️' },
-    { id: 'events', name: 'Events', icon: '📅' },
-    { id: 'community', name: 'Community', icon: '💬' },
+    // SAVED FOR LATER — Members CRM, Connect (email), Events, Community
+    // { id: 'members', name: 'Members', icon: '👥' },
+    // { id: 'connect', name: 'Connect', icon: '✉️' },
+    // { id: 'events', name: 'Events', icon: '📅' },
+    // { id: 'community', name: 'Community', icon: '💬' },
     { id: 'sessions', name: 'Session Notes', icon: '📝' },
     { id: 'settings', name: 'Settings', icon: '⚙' },
   ];
@@ -11256,80 +11258,30 @@ function AdminView({ currentUser }) {
         <>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px'}}>
             {[
-              { label: 'Active Members', value: members.filter(m => m.status === 'active').length, color: '#10b981' },
-              { label: 'Pending Apps', value: pendingApps.length, color: '#f59e0b' },
-              { label: 'Upcoming Events', value: upcomingEvents.length, color: '#5AAFB5' },
-              { label: 'Est. Annual Revenue', value: '$' + totalRevenue.toLocaleString(), color: '#E05B6F' },
-              { label: 'Community Messages', value: totalMessages, color: '#2B4C6F' },
-              { label: 'Channels', value: Object.keys(channels).length, color: '#7C6BBF' },
+              { label: 'Session Notes', value: Object.keys(sessionSummaries).length, color: '#5AAFB5', tab: 'sessions' },
+              { label: 'Active Members', value: members.filter(m => m.status === 'active').length, color: '#10b981', tab: 'overview' },
             ].map((stat, i) => (
               <div key={i} style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '20px', cursor: 'pointer', transition: 'border-color 0.15s'}}
-                onClick={() => setActiveTab(i < 2 ? 'members' : i < 3 ? 'events' : 'community')}>
+                onClick={() => setActiveTab(stat.tab)}>
                 <div style={{color: '#7A8BA0', fontSize: '0.73rem', letterSpacing: '0.05em', marginBottom: '6px', textTransform: 'uppercase'}}>{stat.label}</div>
                 <div style={{fontSize: '1.6rem', fontWeight: '700', color: stat.color}}>{stat.value}</div>
               </div>
             ))}
           </div>
 
-          {/* Recent activity */}
+          {/* Quick Actions */}
           <div style={cardStyle}>
             <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', marginBottom: '16px'}}>Quick Actions</h2>
             <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
-              <button onClick={() => { setActiveTab('members'); setShowAddMember(true); }} style={btnPrimary}>+ Add Member</button>
-              <button onClick={() => { setActiveTab('members'); setShowImportCSV(true); }} style={btnSecondary}>Import CSV</button>
-              <button onClick={() => { setActiveTab('events'); setShowAddEvent(true); }} style={btnPrimary}>+ Create Event</button>
-              <button onClick={() => { setActiveTab('community'); setShowAddChannel(true); }} style={btnSecondary}>+ Add Channel</button>
+              <button onClick={() => setActiveTab('sessions')} style={btnPrimary}>+ New Session Notes</button>
+              <button onClick={() => setActiveTab('settings')} style={btnSecondary}>Export Data</button>
             </div>
           </div>
-
-          {/* Pending applications preview */}
-          {pendingApps.length > 0 && (
-            <div style={cardStyle}>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-                <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Pending Applications <span style={{background: '#FEF3C7', color: '#92400e', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', marginLeft: '6px'}}>{pendingApps.length}</span></h2>
-                <button onClick={() => setActiveTab('members')} style={{background: 'none', border: 'none', color: '#5AAFB5', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>View all →</button>
-              </div>
-              {pendingApps.slice(0, 3).map((app, i) => {
-                const appIdx = applications.indexOf(app);
-                return (
-                  <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
-                    <div>
-                      <div style={{fontWeight: '600', color: '#2B4C6F'}}>{app.name}</div>
-                      <div style={{fontSize: '0.82rem', color: '#7A8BA0'}}>{app.email} · {app.enterpriseName} · {app.tier?.toUpperCase()}</div>
-                    </div>
-                    <div style={{display: 'flex', gap: '8px'}}>
-                      <button onClick={() => handleApprove(appIdx)} style={{background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>Approve</button>
-                      <button onClick={() => handleReject(appIdx)} style={{background: '#FEE2E2', color: '#991B1B', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'}}>Decline</button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Next events preview */}
-          {upcomingEvents.length > 0 && (
-            <div style={cardStyle}>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-                <h2 style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', margin: 0}}>Upcoming Events</h2>
-                <button onClick={() => setActiveTab('events')} style={{background: 'none', border: 'none', color: '#5AAFB5', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'}}>Manage →</button>
-              </div>
-              {upcomingEvents.slice(0, 3).map((s, i) => (
-                <div key={i} style={{border: '1px solid #DDE3EB', borderRadius: '10px', padding: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '14px'}}>
-                  <div style={{width: 48, height: 48, borderRadius: '10px', background: '#F0F4F8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-                    <span style={{fontSize: '0.65rem', color: '#7A8BA0', textTransform: 'uppercase'}}>{new Date(s.date).toLocaleDateString('en-US', {month: 'short'})}</span>
-                    <span style={{fontSize: '1.1rem', fontWeight: '700', color: '#2B4C6F', lineHeight: 1}}>{new Date(s.date).getDate()}</span>
-                  </div>
-                  <div style={{flex: 1}}>
-                    <div style={{fontWeight: '600', color: '#2B4C6F', fontSize: '0.9rem'}}>{s.title}</div>
-                    <div style={{fontSize: '0.8rem', color: '#7A8BA0'}}>{s.time} · {s.type}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </>
       )}
+
+      {/* SAVED FOR LATER — Members Tab */}
+      {/* activeTab === 'members' content preserved in code — re-enable when Members tab is restored */}
 
       {/* ═══ MEMBERS TAB ═══ */}
       {activeTab === 'members' && (
