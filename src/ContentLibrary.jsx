@@ -36,6 +36,18 @@ const ContentLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
 
+  // Video reflection state
+  const [showReflection, setShowReflection] = useState(false);
+  const [reflections, setReflections] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lep_video_reflections') || '{}'); } catch { return {}; }
+  });
+  const saveReflection = (videoId, field, value) => {
+    const updated = { ...reflections, [videoId]: { ...(reflections[videoId] || {}), [field]: value, updatedAt: new Date().toISOString() } };
+    setReflections(updated);
+    localStorage.setItem('lep_video_reflections', JSON.stringify(updated));
+  };
+  const getReflection = (videoId, field) => (reflections[videoId] && reflections[videoId][field]) || '';
+
   const topics = ['governance', 'succession', 'communication', 'family-dynamics', 'leadership', 'finance', 'next-gen'];
 
   // Load data from localStorage
@@ -751,15 +763,116 @@ const ContentLibrary = () => {
               style={{ display: 'block', width: '100%', height: '405px' }}
             ></iframe>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Family Dynamics</span>
-            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Governance</span>
-            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Leadership</span>
-            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Succession</span>
-            <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>90 min documentary</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Family Dynamics</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Governance</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Leadership</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Succession</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>90 min documentary</span>
+            </div>
+            <button
+              onClick={() => setShowReflection(!showReflection)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: showReflection ? 'rgba(255,255,255,0.15)' : '#E05B6F', color: 'white', border: showReflection ? '1px solid rgba(255,255,255,0.3)' : 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease', marginLeft: 'auto' }}
+            >{showReflection ? 'Hide Reflection' : 'Start Reflection'} ✍️</button>
           </div>
         </div>
       </div>
+
+      {/* Post-Viewing Reflection Module */}
+      {showReflection && (() => {
+        const vid = 'market-basket';
+        const r = reflections[vid] || {};
+        const filledCount = ['parallels', 'governance', 'pillarScore', 'stakeholders', 'oneAction'].filter(f => r[f] && r[f].trim()).length;
+        const pillarNames = ['ROOTS', 'ORDER', 'MOMENTUM', 'CONTINUITY', 'LEGACY'];
+        const pillarColors = ['#4A7C59', '#2B4C6F', '#C23B4C', '#3A8A8C', '#B8860B'];
+
+        const reflectionQuestions = [
+          { id: 'parallels', label: 'Family Dynamics Parallel', question: 'What parallels do you see between the Demoulas family dynamics and your own family enterprise? Where does your family fall on the spectrum of alignment vs. division?', placeholder: 'The dynamic between Arthur T. and Arthur S. reminds me of...' },
+          { id: 'governance', label: 'Governance Breakdown', question: 'The Market Basket crisis was fundamentally a governance failure. What governance structures — board composition, decision rights, conflict resolution — could have prevented it? How does your family\'s governance compare?', placeholder: 'The board structure failed because... In our family, we...' },
+          { id: 'stakeholders', label: 'Stakeholder Loyalty', question: 'Employees and customers walked out for Arthur T. — an almost unprecedented display of loyalty. What did he do to earn that? What would your employees or customers do if your family enterprise faced a similar crisis?', placeholder: 'Arthur T. earned that loyalty by... In our business...' },
+          { id: 'pillarScore', label: 'LEP Pillar Analysis', question: 'Score Market Basket across the five LEP pillars at the time of the crisis. Where were they strong? Where did they fail?', placeholder: 'ROOTS — strong values but never codified...\nORDER — governance was the critical failure...\nMOMENTUM — the business itself was performing...\nCONTINUITY — no succession plan...\nLEGACY — at risk of being destroyed...', type: 'pillar-analysis' },
+          { id: 'oneAction', label: 'Your One Action', question: 'Based on what you watched, what is one concrete thing you will do this month to strengthen your family enterprise against a similar crisis?', placeholder: 'This month, I will...' },
+        ];
+
+        return (
+          <div style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '16px', padding: '32px', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #E05B6F, #C23B4C)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>✍️</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A2A3F', margin: 0 }}>Post-Viewing Reflection</h3>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#7A8BA0', margin: 0 }}>Connect what you watched to your own family enterprise through the LEP lens.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '0.78rem', color: '#7A8BA0' }}>{filledCount}/5 complete</div>
+                <div style={{ width: '60px', height: '6px', background: '#F0F4F8', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${(filledCount / 5) * 100}%`, height: '100%', background: filledCount === 5 ? '#4A7C59' : '#E05B6F', borderRadius: '3px', transition: 'width 0.3s ease' }} />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {reflectionQuestions.map((q, idx) => (
+                <div key={q.id} style={{ background: '#FAFBFC', border: '1px solid #EEF1F6', borderRadius: '12px', padding: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: r[q.id] && r[q.id].trim() ? '#4A7C59' : '#DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: r[q.id] && r[q.id].trim() ? 'white' : '#7A8BA0', transition: 'all 0.2s ease' }}>{r[q.id] && r[q.id].trim() ? '✓' : idx + 1}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#E05B6F', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{q.label}</div>
+                  </div>
+                  <p style={{ fontSize: '0.92rem', color: '#2B3A52', lineHeight: 1.6, marginBottom: '14px' }}>{q.question}</p>
+
+                  {q.type === 'pillar-analysis' ? (
+                    <div>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                        {pillarNames.map((name, i) => (
+                          <div key={name} style={{ flex: 1, textAlign: 'center', background: `${pillarColors[i]}10`, border: `1px solid ${pillarColors[i]}25`, borderRadius: '6px', padding: '6px 4px' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: pillarColors[i], letterSpacing: '0.05em' }}>{name}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <textarea
+                        value={getReflection(vid, q.id)}
+                        onChange={e => saveReflection(vid, q.id, e.target.value)}
+                        placeholder={q.placeholder}
+                        rows={6}
+                        style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
+                        onFocus={e => e.target.style.borderColor = '#E05B6F'}
+                        onBlur={e => e.target.style.borderColor = '#DDE3EB'}
+                      />
+                    </div>
+                  ) : (
+                    <textarea
+                      value={getReflection(vid, q.id)}
+                      onChange={e => saveReflection(vid, q.id, e.target.value)}
+                      placeholder={q.placeholder}
+                      rows={4}
+                      style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
+                      onFocus={e => e.target.style.borderColor = '#E05B6F'}
+                      onBlur={e => e.target.style.borderColor = '#DDE3EB'}
+                    />
+                  )}
+                  {r[q.id] && r[q.id].trim() && (
+                    <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0' }}>Auto-saved</div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {filledCount === 5 && (
+              <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #4A7C5910, #4A7C5905)', border: '1px solid #4A7C5925', borderRadius: '12px', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#4A7C59', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1rem' }}>✓</div>
+                <div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4A7C59', marginBottom: '2px' }}>Reflection Complete</div>
+                  <div style={{ fontSize: '0.82rem', color: '#5A6B80' }}>Your responses are saved and available to your facilitator for peer group discussion.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div style={tabsStyle}>
         {isAdmin ? (
