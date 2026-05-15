@@ -5270,7 +5270,7 @@ function FamilyDynamicsView({ familyProfile }) {
           </div>
         </div>
 
-        <div style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '28px', overflowX: 'auto'}}>
+        <div className="scroll-table-wrapper" style={{background: 'white', borderRadius: '12px', border: '1px solid #DDE3EB', padding: '28px', marginBottom: '28px', overflowX: 'auto'}}>
           <h3 style={{fontSize: '0.95rem', fontWeight: '700', color: '#1f2937', marginBottom: '20px'}}>Relationship Heat Map</h3>
           <div style={{minWidth: '600px', display: 'inline-block', width: '100%'}}>
             <div style={{display: 'grid', gridTemplateColumns: `80px repeat(${members.length}, 80px)`, gap: '0px'}}>
@@ -6130,7 +6130,7 @@ function MeetingsView({ familyProfile }) {
       </header>
 
       {/* Tab bar */}
-      <div style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
+      <div className="meetings-tabs" style={{display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '2px solid #DDE3EB', paddingBottom: '0'}}>
         {[
           { id: 'meetings', label: 'Meetings', count: meetings.length },
           { id: 'issues', label: 'Resolution Queue', count: issuesList.filter(i => !i.resolved).length },
@@ -7308,7 +7308,7 @@ function SettingsView({ currentUser, onLogout, onTierChange }) {
       {/* Account Info */}
       <div style={{background: 'white', borderRadius: '12px', padding: '28px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'}}>
         <h3 style={{fontSize: '1rem', fontWeight: 600, color: '#34597A', marginBottom: '20px'}}>Account</h3>
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+        <div className="settings-grid" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
           <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Name</span><span style={{fontWeight: 500}}>{currentUser?.name}</span></div>
           <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Email</span><span style={{fontWeight: 500}}>{currentUser?.email}</span></div>
           <div><span style={{fontSize: '0.78rem', color: '#7A8BA0', display: 'block', marginBottom: '4px'}}>Enterprise</span><span style={{fontWeight: 500}}>{currentUser?.orgName || 'Not set'}</span></div>
