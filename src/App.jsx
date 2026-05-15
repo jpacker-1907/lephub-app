@@ -4865,7 +4865,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
   }
 
   return (
-    <div style={{ padding: '28px', maxWidth: '900px', margin: '0 auto' }}>
+    <div className="lep-view" style={{ padding: '28px', maxWidth: '900px', margin: '0 auto' }}>
 
       {/* ── CONTINUE WHERE YOU LEFT OFF ── */}
       {lastModule && (() => {
@@ -4923,16 +4923,16 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
 
       {/* ── HERO — full for new members, slim for returning ── */}
       {isReturning ? (
-        <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 100%)', borderRadius: '12px', padding: '16px 24px', color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="lep-slim-hero" style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 100%)', borderRadius: '12px', padding: '16px 24px', color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '5px' }}>
             {pillars.map(p => (<div key={p.num} style={{ width: '20px', height: '3px', borderRadius: '2px', background: p.color, opacity: 0.85 }} />))}
           </div>
           <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>LEP Framework</div>
-          <div style={{ marginLeft: 'auto', fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>Five Pillars · Five Tools · One System</div>
+          <div className="lep-slim-subtitle" style={{ marginLeft: 'auto', fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>Five Pillars · Five Tools · One System</div>
         </div>
       ) : (
         <>
-          <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '40px 40px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
+          <div className="lep-full-hero" style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '40px 40px', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
             <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(90,175,181,0.08)' }} />
             <div style={{ position: 'absolute', bottom: '-80px', right: '120px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(224,91,111,0.06)' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
@@ -4944,7 +4944,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
             </div>
           </div>
           {/* How It Works — only for new members */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
+          <div className="lep-journey-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
             {journeySteps.map((step, i) => (
               <div key={step.num} style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px 16px', position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
@@ -4971,7 +4971,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
           return (
             <div key={p.num} style={{ background: 'white', border: `1px solid ${isExpanded ? p.color : '#E8ECF1'}`, borderRadius: '14px', overflow: 'hidden', transition: 'all 0.3s ease', boxShadow: isExpanded ? `0 12px 36px ${p.color}18` : '0 2px 8px rgba(0,0,0,0.04)' }}>
               {/* Collapsed pillar header */}
-              <div onClick={() => setExpandedPillar(isExpanded ? null : p.num)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', cursor: 'pointer', background: isExpanded ? `linear-gradient(135deg, ${p.color}08, ${p.color}03)` : 'transparent', transition: 'background 0.3s ease' }}>
+              <div className="lep-pillar-header" onClick={() => setExpandedPillar(isExpanded ? null : p.num)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', cursor: 'pointer', background: isExpanded ? `linear-gradient(135deg, ${p.color}08, ${p.color}03)` : 'transparent', transition: 'background 0.3s ease' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: `linear-gradient(135deg, ${p.color}, ${p.color}CC)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 3px 10px ${p.color}33` }}>
                   <Icon name={p.icon} size={18} color="#fff" />
                 </div>
@@ -5013,7 +5013,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
               {isExpanded && (
                 <div style={{ padding: '0 18px 20px', borderTop: `1px solid ${p.color}15`, animation: 'fadeIn 0.3s ease' }}>
                   {/* What It Is + Outcome */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #F0F4F8' }}>
+                  <div className="lep-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #F0F4F8' }}>
                     <div>
                       <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', color: p.color, textTransform: 'uppercase', marginBottom: '5px' }}>What It Is</div>
                       <p style={{ fontSize: '0.85rem', color: '#2B3A52', lineHeight: 1.55, margin: 0 }}>{p.whatItIs}</p>
@@ -5033,7 +5033,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
                   )}
                   {p.circles && (
                     <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                      <div className="lep-circles-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                         {p.circles.map((c, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}><div style={{ fontSize: '0.72rem', fontWeight: 700, color: p.color, marginBottom: '2px' }}>{c.name}</div><div style={{ fontSize: '0.75rem', color: '#5A6B80' }}>{c.desc}</div></div>))}
                       </div>
                     </div>
@@ -5047,7 +5047,7 @@ function LEPFrameworkView({ setCurrentView, setActivePillar, moduleProgress = {}
                   )}
                   {p.tracks && (
                     <div style={{ padding: '12px 0', borderBottom: '1px solid #F0F4F8' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <div className="lep-tracks-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                         {p.tracks.map((t, i) => (<div key={i} style={{ background: `${p.color}08`, border: `1px solid ${p.color}18`, borderRadius: '8px', padding: '12px' }}><div style={{ fontSize: '0.75rem', fontWeight: 700, color: p.color, marginBottom: '3px' }}>{t.name}</div><div style={{ fontSize: '0.78rem', color: '#5A6B80', lineHeight: 1.4 }}>{t.desc}</div></div>))}
                       </div>
                     </div>

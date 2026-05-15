@@ -157,6 +157,51 @@
   .transition-banner {
     padding: 20px !important;
   }
+
+  /* ── LEP Framework View ── */
+  .lep-view {
+    padding: 12px !important;
+  }
+  .lep-slim-hero {
+    padding: 12px 16px !important;
+    gap: 8px !important;
+  }
+  .lep-slim-subtitle {
+    display: none !important;
+  }
+  .lep-full-hero {
+    padding: 24px 20px !important;
+    border-radius: 12px !important;
+  }
+  .lep-full-hero h1 {
+    font-size: 1.4rem !important;
+  }
+  .lep-journey-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .lep-pillar-header {
+    padding: 12px 14px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+  .lep-pillar-header > div:nth-child(2) {
+    min-width: 0 !important;
+    flex: 1 1 150px !important;
+  }
+  /* Hide the "Continue/Start" button text on collapsed cards — keep just the arrow */
+  .lep-pillar-header button {
+    padding: 6px 8px !important;
+    font-size: 0.68rem !important;
+  }
+  .lep-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .lep-circles-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .lep-tracks-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* ─── SMALL PHONE (≤ 480px) ────────────────────────────────── */
