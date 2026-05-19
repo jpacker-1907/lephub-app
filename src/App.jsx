@@ -10453,6 +10453,249 @@ const STRIDE_LIFECYCLE_STAGES = [
   { id: 'complete', name: 'Stewardship', color: '#10B981', desc: 'Full LEP framework in place — annual review cadence' },
 ];
 
+
+// ════════════════════════════════════════════════════════════════════
+// PRIVACY & DATA ACCESS — what Stride can / cannot see
+// ════════════════════════════════════════════════════════════════════
+function PrivacyView({ currentUser }) {
+  const [grantStrideAccess, setGrantStrideAccess] = useState(() => {
+    try { return localStorage.getItem('lep_grant_stride_access') === 'true'; } catch { return false; }
+  });
+  const [accessScope, setAccessScope] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lep_stride_access_scope') || '{"pillars":false,"meetings":false,"vault":false,"family":false}'); } catch { return {pillars: false, meetings: false, vault: false, family: false}; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('lep_grant_stride_access', String(grantStrideAccess)); } catch {}
+  }, [grantStrideAccess]);
+  useEffect(() => {
+    try { localStorage.setItem('lep_stride_access_scope', JSON.stringify(accessScope)); } catch {}
+  }, [accessScope]);
+
+  const toggleScope = (key) => setAccessScope(prev => ({ ...prev, [key]: !prev[key] }));
+
+  return (
+    <div style={{maxWidth: 880, margin: '0 auto'}}>
+      <header className="page-header" style={{marginBottom: 32}}>
+        <div>
+          <h1>Privacy & Data Access</h1>
+          <p className="subtitle">What Stride can see, what stays private to you, and how to share intentionally.</p>
+        </div>
+      </header>
+
+      {/* CURRENT STATE — honest framing */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Your Data, By Default — Private</h3>
+        <p style={{fontSize: '0.95rem', color: '#4A5E73', lineHeight: 1.7, marginBottom: 12}}>
+          The work you do in LEP Hub — your LEP Assessment answers, your Family Enterprise Charter draft, your meeting recordings, your family profile, your Vault documents — is stored in your browser&apos;s local storage on this device.
+        </p>
+        <p style={{fontSize: '0.95rem', color: '#4A5E73', lineHeight: 1.7, marginBottom: 12}}>
+          <strong>This means Stride staff cannot see your work.</strong> Not Jason Packer. Not your peer group facilitator. Not anyone at Stride or its partners. Your data does not leave your device unless you explicitly choose to share it (e.g., by emailing a generated document, or by enabling Stride access below).
+        </p>
+        <p style={{fontSize: '0.92rem', color: '#7A8BA0', lineHeight: 1.7, fontStyle: 'italic'}}>
+          This is the current state of the platform. We are migrating to encrypted, server-side storage with audit logging (Q3 2026), which will provide enterprise-grade isolation enforced at the database level — but the current local-storage model also keeps your data private to you. The architecture changes; the privacy commitment does not.
+        </p>
+      </div>
+
+      {/* GRANT STRIDE ACCESS */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, gap: 18}}>
+          <div>
+            <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 6}}>Grant Stride Access (Optional)</h3>
+            <p style={{fontSize: '0.88rem', color: '#7A8BA0', margin: 0}}>You can choose to give Stride visibility into specific parts of your work — for example, so your peer group facilitator can review your pillar progress, or so Jason can help you through a challenging chapter.</p>
+          </div>
+          <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0}}>
+            <input type="checkbox" checked={grantStrideAccess} onChange={e => setGrantStrideAccess(e.target.checked)} style={{transform: 'scale(1.3)', marginRight: 8}} />
+            <span style={{fontSize: '0.92rem', fontWeight: 700, color: grantStrideAccess ? '#5AAFB5' : '#7A8BA0'}}>{grantStrideAccess ? 'Granted' : 'Off'}</span>
+          </label>
+        </div>
+
+        {grantStrideAccess && (
+          <div style={{marginTop: 18, padding: 18, background: '#EBF7F8', borderRadius: 10, border: '1px solid #5AAFB5'}}>
+            <p style={{fontSize: '0.85rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 12}}>Choose what to share:</p>
+            {[
+              { key: 'pillars', label: 'LEP Pillar work', desc: 'Your Charter, Council Map, Enterprise Rhythm, etc.' },
+              { key: 'meetings', label: 'Meeting recordings & transcripts', desc: 'Otter-imported sessions and action items.' },
+              { key: 'family', label: 'Family profile', desc: 'Family members, generations, entities.' },
+              { key: 'vault', label: 'Vault documents', desc: 'Documents you have uploaded.' },
+            ].map(opt => (
+              <label key={opt.key} style={{display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', cursor: 'pointer', borderBottom: '1px solid #C9E4E5'}}>
+                <input type="checkbox" checked={!!accessScope[opt.key]} onChange={() => toggleScope(opt.key)} style={{marginTop: 4}} />
+                <div>
+                  <div style={{fontSize: '0.9rem', fontWeight: 600, color: '#2B4C6F'}}>{opt.label}</div>
+                  <div style={{fontSize: '0.78rem', color: '#4A5E73'}}>{opt.desc}</div>
+                </div>
+              </label>
+            ))}
+            <p style={{fontSize: '0.78rem', color: '#7A8BA0', marginTop: 14, lineHeight: 1.5, fontStyle: 'italic'}}>You can revoke access at any time by unchecking these boxes or turning the toggle off. Once we migrate to server-side storage in Q3, granting access here will trigger an explicit per-session sync with audit logging.</p>
+          </div>
+        )}
+      </div>
+
+      {/* SECURITY POSTURE */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 16}}>Security Posture</h3>
+        <p style={{fontSize: '0.88rem', color: '#7A8BA0', marginBottom: 16}}>What is in place today and what is on the roadmap.</p>
+
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18}}>
+          <div style={{background: '#F0FDF4', padding: 16, borderRadius: 10, border: '1px solid #10B981'}}>
+            <h4 style={{fontSize: '0.92rem', fontWeight: 700, color: '#065F46', marginBottom: 10}}>✓ In Place Today</h4>
+            <ul style={{fontSize: '0.82rem', color: '#065F46', lineHeight: 1.7, paddingLeft: 18, margin: 0}}>
+              <li>HTTPS / TLS encryption in transit</li>
+              <li>Strict Content Security Policy (CSP) headers</li>
+              <li>HSTS / Strict-Transport-Security enabled</li>
+              <li>X-Frame-Options: SAMEORIGIN (clickjacking protection)</li>
+              <li>Local-storage isolation per device</li>
+              <li>Authenticated email sending (SPF/DKIM)</li>
+            </ul>
+          </div>
+          <div style={{background: '#FFFBEB', padding: 16, borderRadius: 10, border: '1px solid #F59E0B'}}>
+            <h4 style={{fontSize: '0.92rem', fontWeight: 700, color: '#92400E', marginBottom: 10}}>→ Roadmap Q3 2026</h4>
+            <ul style={{fontSize: '0.82rem', color: '#92400E', lineHeight: 1.7, paddingLeft: 18, margin: 0}}>
+              <li>Supabase server-side storage with encryption at rest</li>
+              <li>Row-Level Security (RLS) for per-family isolation</li>
+              <li>Audit logging (who viewed what, when)</li>
+              <li>Data Processing Agreements with every family</li>
+              <li>Signed consent forms for session recordings</li>
+              <li>Third-party security audit (SOC 2 Type I)</li>
+            </ul>
+          </div>
+        </div>
+
+        <p style={{fontSize: '0.82rem', color: '#7A8BA0', lineHeight: 1.5, fontStyle: 'italic'}}>
+          Questions about security? Email <a href="mailto:jpacker@stridefba.com" style={{color: '#5AAFB5'}}>jpacker@stridefba.com</a>.
+        </p>
+      </div>
+
+      <p style={{fontSize: '0.82rem', color: '#7A8BA0', textAlign: 'center', marginTop: 24, lineHeight: 1.6}}>
+        Stride Family Business Alliance · Privacy policy and terms of service available on request.
+      </p>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+// RESEARCH & EVIDENCE — Dennis Jaffe + family enterprise research
+// ════════════════════════════════════════════════════════════════════
+function ResearchView() {
+  return (
+    <div style={{maxWidth: 920, margin: '0 auto'}}>
+      <header className="page-header" style={{marginBottom: 28}}>
+        <div>
+          <h1>Research & Evidence</h1>
+          <p className="subtitle">The LEP framework is grounded in 40+ years of academic research on what makes family enterprises last 100+ years.</p>
+        </div>
+      </header>
+
+      {/* DENNIS JAFFE — THE CORE EVIDENCE */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <div style={{display: 'flex', alignItems: 'flex-start', gap: 18, marginBottom: 18}}>
+          <div style={{width: 64, height: 64, borderRadius: 12, background: 'linear-gradient(135deg, #2B4C6F, #5AAFB5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'white', fontWeight: 700, fontSize: '0.92rem'}}>DJ</div>
+          <div>
+            <h3 style={{fontSize: '1.15rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 4}}>Dr. Dennis Jaffe — Generative Family Enterprises Research</h3>
+            <p style={{fontSize: '0.85rem', color: '#7A8BA0', margin: 0, lineHeight: 1.55}}>Over four decades, Dr. Dennis Jaffe has interviewed and studied family enterprises that have crossed the 100-year mark. His research, published with the Family Office Exchange, FFI Practitioner journal, and in the book <em>Borrowed from Your Grandchildren</em>, identified the practices that distinguish long-lasting family enterprises from those that fail within three generations.</p>
+          </div>
+        </div>
+
+        <p style={{fontSize: '0.95rem', color: '#4A5E73', lineHeight: 1.7, marginBottom: 16}}>
+          Jaffe&apos;s research consistently identifies five practice areas where 100-year family enterprises invest more deliberately than their shorter-lived peers. <strong>These five areas map almost exactly to the five pillars of LEP.</strong>
+        </p>
+
+        <p style={{fontSize: '0.88rem', color: '#7A8BA0', lineHeight: 1.6, fontStyle: 'italic'}}>
+          This isn&apos;t coincidence — LEP was designed with Jaffe&apos;s findings, John Ward&apos;s work on family enterprise continuity, and Joseph Astrachan&apos;s research on family business systems as its foundational evidence base.
+        </p>
+      </div>
+
+      {/* MAPPING: JAFFE FINDINGS TO LEP PILLARS */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 18}}>How LEP Maps to the Research</h3>
+
+        {[
+          {
+            pillar: 'ROOTS',
+            color: '#2D6A4F',
+            findingTitle: 'Shared identity and values',
+            findingDesc: '100-year families have an articulated, documented sense of who they are and why they remain in business together. They do not assume values; they codify them and revisit them across generations.',
+            lepResponse: 'The Family Enterprise Charter™ produced in the ROOTS pillar codifies mission, vision, values, and the family compact — exactly the artifact Jaffe identifies as common across generative families.',
+          },
+          {
+            pillar: 'ORDER',
+            color: '#0F2440',
+            findingTitle: 'Robust governance and decision rights',
+            findingDesc: '100-year families separate decision-making between family, ownership, and management — and they make those separations explicit. Ambiguous decision rights are the leading cause of multigenerational conflict.',
+            lepResponse: 'The Council Map™ in the ORDER pillar maps every decision-making body in the enterprise to its correct circle (Family, Ownership, Management), eliminating the ambiguity Jaffe identifies as fatal to family enterprise continuity.',
+          },
+          {
+            pillar: 'MOMENTUM',
+            color: '#D94F6B',
+            findingTitle: 'Strategic enterprise development',
+            findingDesc: 'Long-lasting family enterprises continuously professionalize their business operations and revenue engines without losing the relationship-driven nature of the family business.',
+            lepResponse: 'The Enterprise Rhythm™ in MOMENTUM installs a sustainable meeting cadence and the sales/revenue accountability that allows the business to run without the founder in every room — addressing what Jaffe identifies as one of the most common failure modes.',
+          },
+          {
+            pillar: 'CONTINUITY',
+            color: '#5BBCBF',
+            findingTitle: 'Generative development of rising generations',
+            findingDesc: 'Jaffe&apos;s research is unambiguous: families that prepare the next generation through structured development, not assumption, are dramatically more likely to survive to the third generation and beyond. Fewer than 30% make it without this work.',
+            lepResponse: 'The Continuity Roadmap™ in the CONTINUITY pillar maps leadership and ownership transitions side-by-side, with a Next-Gen Readiness Assessment and structured development plan — exactly the practice Jaffe documents in 100-year families.',
+          },
+          {
+            pillar: 'LEGACY',
+            color: '#C4933F',
+            findingTitle: 'Legacy with intentional community impact',
+            findingDesc: 'Generative families consistently extend their identity beyond the business — into philanthropic intention, wealth philosophy, and a stewardship orientation that connects family success to community contribution.',
+            lepResponse: 'The Legacy Blueprint™ in LEGACY integrates wealth philosophy, philanthropic intention, family culture, and generational stewardship into a single design — the capstone practice Jaffe identifies across 100-year families.',
+          },
+        ].map(item => (
+          <div key={item.pillar} style={{marginBottom: 16, borderLeft: `4px solid ${item.color}`, paddingLeft: 16, paddingTop: 6, paddingBottom: 6}}>
+            <div style={{display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 6}}>
+              <span style={{fontSize: '0.78rem', fontWeight: 700, color: item.color, letterSpacing: '0.06em'}}>{item.pillar}</span>
+              <span style={{fontSize: '0.95rem', fontWeight: 600, color: '#2B4C6F'}}>{item.findingTitle}</span>
+            </div>
+            <p style={{fontSize: '0.85rem', color: '#4A5E73', lineHeight: 1.6, marginBottom: 8}}><strong>Jaffe finding:</strong> {item.findingDesc}</p>
+            <p style={{fontSize: '0.85rem', color: '#2B4C6F', lineHeight: 1.6, marginBottom: 0}}><strong>LEP response:</strong> {item.lepResponse}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* THE STATISTIC */}
+      <div style={{background: 'linear-gradient(135deg, #2B4C6F, #34597A)', borderRadius: 12, padding: 32, marginBottom: 24, color: 'white', textAlign: 'center'}}>
+        <div style={{fontSize: '3rem', fontWeight: 700, lineHeight: 1, marginBottom: 12, fontFamily: "'Instrument Serif', Georgia, serif"}}>~30%</div>
+        <p style={{fontSize: '1rem', lineHeight: 1.5, opacity: 0.9, maxWidth: 600, margin: '0 auto'}}>The proportion of family businesses that survive from the founding generation to the third generation. Of those that do, the research repeatedly points to the five practice areas above as the difference between continuity and dissolution.</p>
+        <p style={{fontSize: '0.78rem', opacity: 0.7, marginTop: 16, fontStyle: 'italic'}}>Sources: Jaffe & Lane (2004); Stalk & Foley, HBR (2012); FFI Continuity Study (multiple years).</p>
+      </div>
+
+      {/* OTHER RESEARCH FOUNDATIONS */}
+      <div style={{background: 'white', border: '1px solid #DDE3EB', borderRadius: 12, padding: 28, marginBottom: 24}}>
+        <h3 style={{fontSize: '1.1rem', fontWeight: 700, color: '#2B4C6F', marginBottom: 14}}>Additional Research Foundations</h3>
+        <p style={{fontSize: '0.88rem', color: '#7A8BA0', marginBottom: 16}}>LEP draws on a broader body of academic and practitioner research:</p>
+
+        <div style={{display: 'flex', flexDirection: 'column', gap: 14}}>
+          {[
+            { name: 'John Ward & Amy Schuman', topic: 'Family Education and Communication', desc: 'Family Education Network research on how successful family enterprises develop rising-generation members through structured education, mentorship, and cousin-cohort programs.' },
+            { name: 'Joseph Astrachan', topic: 'Family Business Systems', desc: 'Kennesaw State University research on the three overlapping systems (family, ownership, business) — the foundational lens for the ORDER pillar.' },
+            { name: 'Peter Begalla', topic: 'Next-Generation Credibility', desc: 'UNC Kenan-Flagler research on how next-generation family members build credibility, marketability, and operational readiness — the foundational research for the Next-Gen Readiness Assessment in CONTINUITY.' },
+            { name: 'James Hughes', topic: 'Family Wealth and Generational Stewardship', desc: '<em>Family Wealth: Keeping It in the Family</em> — the foundational text on how families steward financial, human, intellectual, and social capital across generations. Core to the LEGACY pillar.' },
+            { name: 'FFI Practitioner Journal', topic: 'Ongoing Practice Research', desc: 'Family Firm Institute&apos;s peer-reviewed journal publishes ongoing case studies and practice research that informs LEP&apos;s tools and engagement model.' },
+          ].map(r => (
+            <div key={r.name} style={{padding: '14px 16px', background: '#F5F7FA', borderRadius: 10}}>
+              <div style={{display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 4, flexWrap: 'wrap'}}>
+                <span style={{fontSize: '0.92rem', fontWeight: 700, color: '#2B4C6F'}}>{r.name}</span>
+                <span style={{fontSize: '0.78rem', color: '#7A8BA0', textTransform: 'uppercase', letterSpacing: '0.04em'}}>{r.topic}</span>
+              </div>
+              <p style={{fontSize: '0.85rem', color: '#4A5E73', lineHeight: 1.55, margin: 0}} dangerouslySetInnerHTML={{__html: r.desc}} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p style={{fontSize: '0.82rem', color: '#7A8BA0', textAlign: 'center', marginTop: 24, lineHeight: 1.6, fontStyle: 'italic'}}>
+        Want to go deeper? Email <a href="mailto:jpacker@stridefba.com" style={{color: '#5AAFB5'}}>jpacker@stridefba.com</a> for a reading list, or ask your peer group facilitator for the LEP research briefing.
+      </p>
+    </div>
+  );
+}
+
 function AdminView({ currentUser }) {
   // ─── ADMIN TABS ───────────────────────────────────────────
   const ADMIN_TABS = [
@@ -12688,6 +12931,8 @@ function AppShell({ currentUser, onLogout }) {
         {/* Membership — always accessible */}
         {(currentView === 'membership' || !isMember) && <MembershipView currentUser={currentUser} isMember={isMember} membershipStatus={membershipStatus} onMembershipChange={(status) => { setMembershipStatus(status); if (status) setCurrentView('lep-framework'); }} />}
         {currentView === 'admin' && isAdmin && <AdminView currentUser={currentUser} />}
+        {currentView === 'research' && isMember && <ResearchView />}
+        {currentView === 'privacy' && isMember && <PrivacyView currentUser={currentUser} />}
         {currentView === 'vault' && <VaultView vaultDocuments={vaultDocuments} />}
         {currentView === 'settings' && <SettingsView currentUser={currentUser} onLogout={onLogout} onTierChange={(tier) => {
           const updated = { ...currentUser, tier };
