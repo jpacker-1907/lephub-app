@@ -77,9 +77,10 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
           <div className="hero-grid">
             <div>
               <span className="eyebrow">LEP™ · Legacy Enterprise Process</span>
-              <h1>The Operating System Built for Family Enterprise</h1>
+              <h1>The Operating System for Family Enterprise</h1>
               <p className="subheadline">
-                Five pillars. Five tools. One complete system — designed for the complexity only multigenerational family businesses face.
+                Five pillars. Five tools. One complete system — designed for the complexity only family businesses face.<br/><br/>
+                Built on 40+ years of research into what makes family enterprises last 100 years. Used by Stride members in private peer groups to do the work of governance, succession, growth, and legacy — together.
               </p>
               <div className="hero-ctas">
                 <a href="#lep-inquiry" className="btn btn-primary">Start with a Discovery Conversation</a>
@@ -127,26 +128,31 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
               className="p-roots" num="1" name="ROOTS" question="Who are we?"
               tool="Family Enterprise Charter™"
               desc="Your shared mission, values, vision, and the explicit commitments that hold your family together across generations."
+              tooltip="ROOTS is the foundation pillar. Before you can govern, grow, or succeed, your family needs an explicit, written answer to one question: who are we, and why are we in business together? Most family business conflict is values conflict in disguise — the Family Enterprise Charter codifies the answer so every generation works from the same foundation."
             />
             <PillarCard
               className="p-order" num="2" name="ORDER" question="How do we decide?"
               tool="Council Map™"
               desc="Governance architecture, council design, and decision rights across Ownership, Family, and Management."
+              tooltip="ORDER is about decision rights. Family enterprises break apart most often not from bad strategy but from ambiguous decision-making — when it isn't clear whether a question belongs to the family, the owners, or the management team, the loudest voice wins. The Council Map separates Family, Ownership, and Management decisions cleanly so every choice happens in the right room."
             />
             <PillarCard
               className="p-momentum" num="3" name="MOMENTUM" question="How do we grow?"
               tool="Enterprise Rhythm™"
               desc="Meeting cadence, built-in sales engine, and the rhythm that keeps the business running without the founder in every room."
+              tooltip="MOMENTUM is about the business growing without depending on the founder in every room. Family enterprises run on informal systems for the first generation; that becomes chaos in the second. The Enterprise Rhythm installs the meeting cadences, revenue accountability, and sales engine that allow the business to scale across generations without losing what makes it a family business."
             />
             <PillarCard
               className="p-continuity" num="4" name="CONTINUITY" question="Who leads next?"
               tool="Continuity Roadmap™"
               desc="Leadership and ownership succession mapped side by side — with milestones, contingency, and coordination with estate counsel."
+              tooltip="CONTINUITY treats succession as a continuous discipline, not a single event. Fewer than 30% of family businesses make it to the third generation, and unplanned succession is the leading cause. The Continuity Roadmap maps leadership transition and ownership transfer side by side, with milestones, contingency plans, and the Next-Gen Readiness Assessment that takes succession out of crisis mode."
             />
             <PillarCard
               className="p-legacy" num="5" name="LEGACY" question="What endures?"
               tool="Legacy Blueprint™"
               desc="Wealth philosophy, values transmission, philanthropic mission, and the generational intention for what you've built."
+              tooltip="LEGACY is the capstone pillar — the question no other operating system asks. EOS asks where your company is going. LEP asks what your family is building that outlasts the company. The Legacy Blueprint integrates wealth philosophy, values transmission, philanthropic intention, and rising-generation education into a single 10-25 year design that future generations will reference long after you're gone."
             />
           </div>
         </div>
@@ -253,10 +259,16 @@ export default function LEPLandingPage({ onLogin, AuthScreen }) {
   );
 }
 
-// ─── Pillar Card ─────────────────────────────────────────────
-function PillarCard({ className, num, name, question, tool, desc }) {
+// ─── Pillar Card with hover-bubble tooltip ────────────────────
+function PillarCard({ className, num, name, question, tool, desc, tooltip }) {
+  const [showTooltip, setShowTooltip] = useState(false);
   return (
-    <div className={`pillar-card ${className}`}>
+    <div
+      className={`pillar-card ${className}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      style={{position: 'relative'}}
+    >
       <div className="pillar-left">
         <div className="num">{num}</div>
         <div className="name">{name}</div>
@@ -269,6 +281,43 @@ function PillarCard({ className, num, name, question, tool, desc }) {
         <div className="tool-name">{tool}</div>
         <div className="desc">{desc}</div>
       </div>
+      {tooltip && showTooltip && (
+        <div
+          role="tooltip"
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 12px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#0F2440',
+            color: 'white',
+            padding: '14px 18px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            lineHeight: 1.55,
+            maxWidth: '380px',
+            width: 'max-content',
+            zIndex: 50,
+            boxShadow: '0 12px 32px rgba(15, 36, 64, 0.25)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{fontSize: '0.72rem', fontWeight: 700, color: '#5BBCBF', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6}}>
+            What {name} means
+          </div>
+          {tooltip}
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 0, height: 0,
+            borderLeft: '8px solid transparent',
+            borderRight: '8px solid transparent',
+            borderTop: '8px solid #0F2440',
+          }} />
+        </div>
+      )}
     </div>
   );
 }
