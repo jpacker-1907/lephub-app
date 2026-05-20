@@ -876,6 +876,54 @@ const ContentLibrary = () => {
         );
       })()}
 
+      {/* ── Ownership Education Videos ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+
+        {/* Video 1: 5 Kinds of Ownership Roles */}
+        <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #DDE3EB', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+            <iframe
+              src="https://www.youtube.com/embed/Vx6yZkqz51w"
+              title="5 Kinds of Ownership Roles in a Family Business"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            ></iframe>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, background: '#2B4C6F15', color: '#2B4C6F', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ownership</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, background: '#4A7C5915', color: '#4A7C59', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Governance</span>
+            </div>
+            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1A2A3F', margin: '0 0 8px', lineHeight: 1.3 }}>5 Kinds of Ownership Roles in a Family Business</h4>
+            <p style={{ fontSize: '0.85rem', color: '#7A8BA0', lineHeight: 1.6, margin: 0 }}>Understanding the different ownership roles — from active operators to passive investors — is essential for designing governance structures that work. Which roles exist in your family enterprise?</p>
+          </div>
+        </div>
+
+        {/* Video 2: The Five Rights of Family Business Owners */}
+        <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #DDE3EB', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+            <iframe
+              src="https://www.youtube.com/embed/3LPoSAqf7So"
+              title="The Five Rights of Family Business Owners"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            ></iframe>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, background: '#2B4C6F15', color: '#2B4C6F', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ownership</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, background: '#C23B4C15', color: '#C23B4C', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Succession</span>
+            </div>
+            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1A2A3F', margin: '0 0 8px', lineHeight: 1.3 }}>The Five Rights of Family Business Owners</h4>
+            <p style={{ fontSize: '0.85rem', color: '#7A8BA0', lineHeight: 1.6, margin: 0 }}>What rights do family business owners actually have? This framework clarifies the foundational rights that shape decision-making, dividends, information access, and more across generations.</p>
+          </div>
+        </div>
+      </div>
+
       <div style={tabsStyle}>
         {isAdmin ? (
           <>
