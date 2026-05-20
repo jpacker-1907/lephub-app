@@ -5801,6 +5801,12 @@ function MeetingsView({ familyProfile }) {
   const [meetingCategory, setMeetingCategory] = useState('family'); // 'family' | 'peer-group'
   const [showOtterPanel, setShowOtterPanel] = useState(false);
   const [activeAgendaIdx, setActiveAgendaIdx] = useState(0);
+  const [showMemberNotes, setShowMemberNotes] = useState(false);
+
+  // Load Stride members for tagging reflections
+  const strideMembers = (() => {
+    try { return JSON.parse(localStorage.getItem('stride_members') || '[]'); } catch { return []; }
+  })();
 
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -6433,6 +6439,113 @@ function MeetingsView({ familyProfile }) {
                     onChange={(e) => updateMeeting(meeting.id, { agendaNotes: { ...(meeting.agendaNotes || {}), [item.id]: e.target.value } })}
                     style={{width: '100%', padding: '10px 14px', border: '1px solid #DDE3EB', borderRadius: '8px', fontSize: '0.88rem', resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.6', background: '#fafafa', boxSizing: 'border-box'}}
                   />
+
+                  {/* ── Member Reflection Notes ── */}
+                  {(() => {
+                    const memberNotes = (meeting.memberReflections || {})[item.id] || [];
+                    const addMemberNote = (memberName) => {
+                      const existing = [...memberNotes];
+                      if (!existing.find(n => n.member === memberName)) {
+                        existing.push({ member: memberName, note: '', timestamp: new Date().toISOString() });
+                      }
+                      updateMeeting(meeting.id, { memberReflections: { ...(meeting.memberReflections || {}), [item.id]: existing } });
+                    };
+                    const updateMemberNote = (memberName, note) => {
+                      const updated = memberNotes.map(n => n.member === memberName ? { ...n, note, timestamp: new Date().toISOString() } : n);
+                      updateMeeting(meeting.id, { memberReflections: { ...(meeting.memberReflections || {}), [item.id]: updated } });
+                    };
+                    const removeMemberNote = (memberName) => {
+                      const updated = memberNotes.filter(n => n.member !== memberName);
+                      updateMeeting(meeting.id, { memberReflections: { ...(meeting.memberReflections || {}), [item.id]: updated } });
+                    };
+                    const availableMembers = strideMembers.filter(m => !memberNotes.find(n => n.member === m.name));
+
+                    return (
+                      <div style={{marginTop: '14px'}}>
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px'}}>
+                          <button
+                            onClick={() => setShowMemberNotes(showMemberNotes === item.id ? false : item.id)}
+                            style={{display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.82rem', fontWeight: '600', color: template.color}}
+                          >
+                            <span style={{fontSize: '1rem'}}>👤</span>
+                            Member Reflections {memberNotes.length > 0 && <span style={{background: template.color, color: 'white', borderRadius: '10px', padding: '1px 7px', fontSize: '0.7rem'}}>{memberNotes.length}</span>}
+                            <span style={{fontSize: '0.7rem', transition: 'transform 0.2s', transform: showMemberNotes === item.id ? 'rotate(180deg)' : 'rotate(0deg)'}}>▼</span>
+                          </button>
+                        </div>
+
+                        {showMemberNotes === item.id && (
+                          <div style={{background: '#F8FAFB', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px'}}>
+                            {/* Add member dropdown */}
+                            {availableMembers.length > 0 && (
+                              <div style={{display: 'flex', gap: '8px', marginBottom: memberNotes.length > 0 ? '14px' : '0', flexWrap: 'wrap'}}>
+                                <select
+                                  defaultValue=""
+                                  onChange={(e) => { if (e.target.value) { addMemberNote(e.target.value); e.target.value = ''; } }}
+                                  style={{flex: 1, minWidth: '180px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem', background: 'white', color: '#34597A'}}
+                                >
+                                  <option value="">+ Add member reflection...</option>
+                                  {availableMembers.map(m => <option key={m.id || m.name} value={m.name}>{m.name} — {m.enterpriseName || 'Member'}</option>)}
+                                </select>
+                              </div>
+                            )}
+
+                            {/* Quick-add for when no members in system */}
+                            {strideMembers.length === 0 && (
+                              <div style={{marginBottom: memberNotes.length > 0 ? '14px' : '0'}}>
+                                <div style={{display: 'flex', gap: '8px'}}>
+                                  <input
+                                    type="text"
+                                    placeholder="Type member name and press Enter..."
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && e.target.value.trim()) {
+                                        addMemberNote(e.target.value.trim());
+                                        e.target.value = '';
+                                      }
+                                    }}
+                                    style={{flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid #DDE3EB', fontSize: '0.85rem', background: 'white'}}
+                                  />
+                                </div>
+                                <p style={{fontSize: '0.72rem', color: '#7A8BA0', margin: '6px 0 0'}}>No members in system yet. Type names manually, or add members in the Admin tab.</p>
+                              </div>
+                            )}
+
+                            {/* Member note cards */}
+                            {memberNotes.map((mn) => (
+                              <div key={mn.member} style={{background: 'white', border: '1px solid #E8ECF1', borderRadius: '10px', padding: '14px', marginBottom: '10px'}}>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                    <div style={{width: '28px', height: '28px', borderRadius: '50%', background: template.color + '20', color: template.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700}}>
+                                      {mn.member.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <div style={{fontSize: '0.88rem', fontWeight: 700, color: '#1A2A3F'}}>{mn.member}</div>
+                                      {strideMembers.find(m => m.name === mn.member)?.enterpriseName && (
+                                        <div style={{fontSize: '0.72rem', color: '#7A8BA0'}}>{strideMembers.find(m => m.name === mn.member).enterpriseName}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <button onClick={() => removeMemberNote(mn.member)} style={{background: 'none', border: 'none', cursor: 'pointer', color: '#B8C4D0', fontSize: '1rem', padding: '2px 6px'}} title="Remove">×</button>
+                                </div>
+                                <textarea
+                                  rows={3}
+                                  placeholder={`What did ${mn.member.split(' ')[0]} share? Key insights, breakthroughs, tensions...`}
+                                  value={mn.note}
+                                  onChange={(e) => updateMemberNote(mn.member, e.target.value)}
+                                  style={{width: '100%', padding: '10px 12px', border: '1px solid #E8ECF1', borderRadius: '8px', fontSize: '0.85rem', resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.6', background: '#FAFBFC', boxSizing: 'border-box'}}
+                                />
+                              </div>
+                            ))}
+
+                            {memberNotes.length > 0 && (
+                              <div style={{fontSize: '0.72rem', color: '#7A8BA0', textAlign: 'center', paddingTop: '4px'}}>
+                                Member reflections auto-save and are visible in the facilitator dashboard.
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Previous / Next navigation */}
