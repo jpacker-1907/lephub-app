@@ -38,6 +38,8 @@ const ContentLibrary = () => {
 
   // Video reflection state
   const [showReflection, setShowReflection] = useState(false);
+  const [showReflection2, setShowReflection2] = useState(false);
+  const [showReflection3, setShowReflection3] = useState(false);
   const [reflections, setReflections] = useState(() => {
     try { return JSON.parse(localStorage.getItem('lep_video_reflections') || '{}'); } catch { return {}; }
   });
@@ -876,53 +878,201 @@ const ContentLibrary = () => {
         );
       })()}
 
-      {/* ── Ownership Education Videos ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '28px' }}>
-
-        {/* Video 1: 5 Kinds of Ownership Roles */}
-        <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #DDE3EB', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+      {/* ══ VIDEO 2: 5 Kinds of Ownership Roles ══ */}
+      <div style={{ background: 'linear-gradient(135deg, #2B4C6F 0%, #34597A 60%, #3A8A8C 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(90,175,181,0.1)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'inline-block', background: 'rgba(90,175,181,0.2)', border: '1px solid rgba(90,175,181,0.4)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#B8E8EC', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Ownership · Governance</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>5 Kinds of Ownership Roles in a Family Business</h3>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>Understanding the different ownership roles — from active operators to passive investors — is essential for designing governance structures that work. Which roles exist in your family enterprise?</p>
+          <div style={{ width: '100%', maxWidth: '720px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
             <iframe
+              width="720" height="405"
               src="https://www.youtube.com/embed/Vx6yZkqz51w"
               title="5 Kinds of Ownership Roles in a Family Business"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              style={{ display: 'block', width: '100%', height: '405px' }}
             ></iframe>
           </div>
-          <div style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '10px', fontWeight: 700, background: '#2B4C6F15', color: '#2B4C6F', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ownership</span>
-              <span style={{ fontSize: '10px', fontWeight: 700, background: '#4A7C5915', color: '#4A7C59', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Governance</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Ownership</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Governance</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>LEP Pillar: ORDER</span>
             </div>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1A2A3F', margin: '0 0 8px', lineHeight: 1.3 }}>5 Kinds of Ownership Roles in a Family Business</h4>
-            <p style={{ fontSize: '0.85rem', color: '#7A8BA0', lineHeight: 1.6, margin: 0 }}>Understanding the different ownership roles — from active operators to passive investors — is essential for designing governance structures that work. Which roles exist in your family enterprise?</p>
+            <button
+              onClick={() => setShowReflection2(!showReflection2)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: showReflection2 ? 'rgba(255,255,255,0.15)' : '#E05B6F', color: 'white', border: showReflection2 ? '1px solid rgba(255,255,255,0.3)' : 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease', marginLeft: 'auto' }}
+            >{showReflection2 ? 'Hide Reflection' : 'Start Reflection'} ✍️</button>
           </div>
         </div>
+      </div>
 
-        {/* Video 2: The Five Rights of Family Business Owners */}
-        <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #DDE3EB', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+      {/* Reflection: Ownership Roles */}
+      {showReflection2 && (() => {
+        const vid = 'ownership-roles';
+        const r = reflections[vid] || {};
+        const questions = [
+          { id: 'role-mapping', label: 'Ownership Role Mapping', question: 'Which of the five ownership roles exist in your family enterprise today? Who fills each role? Are there any roles that are missing or need to be created?', placeholder: 'In our family, the ownership roles look like...' },
+          { id: 'tensions', label: 'Role Tensions', question: 'Where do you see tension between different ownership roles in your family? For example, do active operators and passive investors have different expectations about dividends vs. reinvestment?', placeholder: 'The biggest tension we see is between...' },
+          { id: 'governance-fit', label: 'Governance & Decision Rights', question: 'How does your current governance structure accommodate (or fail to accommodate) the different needs of each ownership role? What decisions should each role have a voice in?', placeholder: 'Our current governance works well for... but falls short on...' },
+          { id: 'next-gen-roles', label: 'Next Generation Roles', question: 'As ownership transitions to the next generation, which roles will they step into? Are you intentionally preparing them for specific ownership roles, or is it being left to chance?', placeholder: 'The next generation is being prepared for... We need to...' },
+          { id: 'one-action', label: 'Your One Action', question: 'Based on what you watched, what is one concrete step you will take this month to clarify or strengthen ownership roles in your family enterprise?', placeholder: 'This month, I will...' },
+        ];
+        const filledCount = questions.filter(q => r[q.id] && r[q.id].trim()).length;
+
+        return (
+          <div style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '16px', padding: '32px', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #2B4C6F, #34597A)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>✍️</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A2A3F', margin: 0 }}>Post-Viewing Reflection</h3>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#7A8BA0', margin: 0 }}>Map the ownership roles in your family enterprise through the LEP lens.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '0.78rem', color: '#7A8BA0' }}>{filledCount}/{questions.length} complete</div>
+                <div style={{ width: '60px', height: '6px', background: '#F0F4F8', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${(filledCount / questions.length) * 100}%`, height: '100%', background: filledCount === questions.length ? '#4A7C59' : '#2B4C6F', borderRadius: '3px', transition: 'width 0.3s ease' }} />
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {questions.map((q, idx) => (
+                <div key={q.id} style={{ background: '#FAFBFC', border: '1px solid #EEF1F6', borderRadius: '12px', padding: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: r[q.id] && r[q.id].trim() ? '#4A7C59' : '#DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: r[q.id] && r[q.id].trim() ? 'white' : '#7A8BA0', transition: 'all 0.2s ease' }}>{r[q.id] && r[q.id].trim() ? '✓' : idx + 1}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2B4C6F', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{q.label}</div>
+                  </div>
+                  <p style={{ fontSize: '0.92rem', color: '#2B3A52', lineHeight: 1.6, marginBottom: '14px' }}>{q.question}</p>
+                  <textarea
+                    value={getReflection(vid, q.id)}
+                    onChange={e => saveReflection(vid, q.id, e.target.value)}
+                    placeholder={q.placeholder}
+                    rows={4}
+                    style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
+                    onFocus={e => e.target.style.borderColor = '#2B4C6F'}
+                    onBlur={e => e.target.style.borderColor = '#DDE3EB'}
+                  />
+                  {r[q.id] && r[q.id].trim() && <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0' }}>Auto-saved</div>}
+                </div>
+              ))}
+            </div>
+            {filledCount === questions.length && (
+              <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #4A7C5910, #4A7C5905)', border: '1px solid #4A7C5925', borderRadius: '12px', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#4A7C59', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1rem' }}>✓</div>
+                <div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4A7C59', marginBottom: '2px' }}>Reflection Complete</div>
+                  <div style={{ fontSize: '0.82rem', color: '#5A6B80' }}>Your responses are saved and available to your facilitator for peer group discussion.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* ══ VIDEO 3: The Five Rights of Family Business Owners ══ */}
+      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #C23B4C 80%, #E05B6F 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(224,91,111,0.08)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'inline-block', background: 'rgba(224,91,111,0.2)', border: '1px solid rgba(224,91,111,0.4)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#F8C8CF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Ownership · Succession</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>The Five Rights of Family Business Owners</h3>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>What rights do family business owners actually have? This framework clarifies the foundational rights that shape decision-making, dividends, information access, and more across generations.</p>
+          <div style={{ width: '100%', maxWidth: '720px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
             <iframe
+              width="720" height="405"
               src="https://www.youtube.com/embed/3LPoSAqf7So"
               title="The Five Rights of Family Business Owners"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              style={{ display: 'block', width: '100%', height: '405px' }}
             ></iframe>
           </div>
-          <div style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '10px', fontWeight: 700, background: '#2B4C6F15', color: '#2B4C6F', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ownership</span>
-              <span style={{ fontSize: '10px', fontWeight: 700, background: '#C23B4C15', color: '#C23B4C', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Succession</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Ownership</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Succession</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>LEP Pillar: CONTINUITY</span>
             </div>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1A2A3F', margin: '0 0 8px', lineHeight: 1.3 }}>The Five Rights of Family Business Owners</h4>
-            <p style={{ fontSize: '0.85rem', color: '#7A8BA0', lineHeight: 1.6, margin: 0 }}>What rights do family business owners actually have? This framework clarifies the foundational rights that shape decision-making, dividends, information access, and more across generations.</p>
+            <button
+              onClick={() => setShowReflection3(!showReflection3)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: showReflection3 ? 'rgba(255,255,255,0.15)' : '#E05B6F', color: 'white', border: showReflection3 ? '1px solid rgba(255,255,255,0.3)' : 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease', marginLeft: 'auto' }}
+            >{showReflection3 ? 'Hide Reflection' : 'Start Reflection'} ✍️</button>
           </div>
         </div>
       </div>
+
+      {/* Reflection: Five Rights */}
+      {showReflection3 && (() => {
+        const vid = 'five-rights';
+        const r = reflections[vid] || {};
+        const questions = [
+          { id: 'rights-audit', label: 'Rights Audit', question: 'Which of the five rights of ownership are clearly defined and exercised in your family enterprise today? Which are ambiguous or contested?', placeholder: 'In our enterprise, the right to... is clear, but the right to... is not well defined.' },
+          { id: 'information-access', label: 'Information & Transparency', question: 'Do all owners in your family have equal access to financial information, strategic plans, and performance data? Where are the gaps in transparency, and what is the impact?', placeholder: 'Currently, information flows like... The impact on trust is...' },
+          { id: 'dividend-policy', label: 'Distribution & Dividends', question: 'How are distribution decisions made in your family enterprise? Is there a formal dividend policy, or is it ad hoc? How do different ownership roles view the balance of reinvestment vs. distributions?', placeholder: 'Our distribution approach is... Different family members feel...' },
+          { id: 'voice-vote', label: 'Voice, Vote & Exit', question: 'Do all owners have a meaningful voice in major decisions? Is there a clear mechanism for voting on strategic issues? What happens if an owner wants to exit — is there a buy-sell agreement or redemption process?', placeholder: 'Owners currently participate in decisions through... Our exit mechanism is...' },
+          { id: 'one-action', label: 'Your One Action', question: 'Based on what you watched, what is one concrete step you will take this month to strengthen or clarify ownership rights in your family enterprise?', placeholder: 'This month, I will...' },
+        ];
+        const filledCount = questions.filter(q => r[q.id] && r[q.id].trim()).length;
+
+        return (
+          <div style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '16px', padding: '32px', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #C23B4C, #E05B6F)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>✍️</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A2A3F', margin: 0 }}>Post-Viewing Reflection</h3>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#7A8BA0', margin: 0 }}>Audit the ownership rights in your family enterprise through the LEP lens.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '0.78rem', color: '#7A8BA0' }}>{filledCount}/{questions.length} complete</div>
+                <div style={{ width: '60px', height: '6px', background: '#F0F4F8', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${(filledCount / questions.length) * 100}%`, height: '100%', background: filledCount === questions.length ? '#4A7C59' : '#C23B4C', borderRadius: '3px', transition: 'width 0.3s ease' }} />
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {questions.map((q, idx) => (
+                <div key={q.id} style={{ background: '#FAFBFC', border: '1px solid #EEF1F6', borderRadius: '12px', padding: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: r[q.id] && r[q.id].trim() ? '#4A7C59' : '#DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: r[q.id] && r[q.id].trim() ? 'white' : '#7A8BA0', transition: 'all 0.2s ease' }}>{r[q.id] && r[q.id].trim() ? '✓' : idx + 1}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#C23B4C', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{q.label}</div>
+                  </div>
+                  <p style={{ fontSize: '0.92rem', color: '#2B3A52', lineHeight: 1.6, marginBottom: '14px' }}>{q.question}</p>
+                  <textarea
+                    value={getReflection(vid, q.id)}
+                    onChange={e => saveReflection(vid, q.id, e.target.value)}
+                    placeholder={q.placeholder}
+                    rows={4}
+                    style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
+                    onFocus={e => e.target.style.borderColor = '#C23B4C'}
+                    onBlur={e => e.target.style.borderColor = '#DDE3EB'}
+                  />
+                  {r[q.id] && r[q.id].trim() && <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0' }}>Auto-saved</div>}
+                </div>
+              ))}
+            </div>
+            {filledCount === questions.length && (
+              <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #4A7C5910, #4A7C5905)', border: '1px solid #4A7C5925', borderRadius: '12px', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#4A7C59', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1rem' }}>✓</div>
+                <div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4A7C59', marginBottom: '2px' }}>Reflection Complete</div>
+                  <div style={{ fontSize: '0.82rem', color: '#5A6B80' }}>Your responses are saved and available to your facilitator for peer group discussion.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div style={tabsStyle}>
         {isAdmin ? (
