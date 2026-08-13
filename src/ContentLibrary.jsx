@@ -40,6 +40,7 @@ const ContentLibrary = () => {
   const [showReflection, setShowReflection] = useState(false);
   const [showReflection2, setShowReflection2] = useState(false);
   const [showReflection3, setShowReflection3] = useState(false);
+  const [showReflection4, setShowReflection4] = useState(false);
   const [reflections, setReflections] = useState(() => {
     try { return JSON.parse(localStorage.getItem('lep_video_reflections') || '{}'); } catch { return {}; }
   });
@@ -1055,6 +1056,106 @@ const ContentLibrary = () => {
                     rows={4}
                     style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
                     onFocus={e => e.target.style.borderColor = '#C23B4C'}
+                    onBlur={e => e.target.style.borderColor = '#DDE3EB'}
+                  />
+                  {r[q.id] && r[q.id].trim() && <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0' }}>Auto-saved</div>}
+                </div>
+              ))}
+            </div>
+            {filledCount === questions.length && (
+              <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #4A7C5910, #4A7C5905)', border: '1px solid #4A7C5925', borderRadius: '12px', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#4A7C59', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1rem' }}>✓</div>
+                <div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4A7C59', marginBottom: '2px' }}>Reflection Complete</div>
+                  <div style={{ fontSize: '0.82rem', color: '#5A6B80' }}>Your responses are saved and available to your facilitator for peer group discussion.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+
+      {/* ââ VIDEO 4: The Four-Room Model of Family Business ââ */}
+      <div style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #4A7C59 75%, #5E9670 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-40px', right: '-20px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(94,150,112,0.12)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'inline-block', background: 'rgba(94,150,112,0.25)', border: '1px solid rgba(94,150,112,0.5)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: '#CDE8D5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Governance Â· Structure</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>The Four-Room Model of Family Business</h3>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>Josh Baron, co-founder of BanyanGlobal Family Business Advisors, explains the Four-Room Model â Owner Room, Board Room, Management Room, and Family Room. When families know which room a conversation belongs in, and who has a seat in each, decision-making gets clearer and conflict gets smaller.</p>
+          <div style={{ width: '100%', maxWidth: '720px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <iframe
+              width="720" height="405"
+              src="https://www.youtube.com/embed/Q23PeUu_x48"
+              title="The Four-Room Model of Family Business â Josh Baron, BanyanGlobal"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ display: 'block', width: '100%', height: '405px' }}
+            ></iframe>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Governance</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Family Dynamics</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>Decision-Making</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>LEP Pillar: ORDER</span>
+            </div>
+            <button
+              onClick={() => setShowReflection4(!showReflection4)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: showReflection4 ? 'rgba(255,255,255,0.15)' : '#E05B6F', color: 'white', border: showReflection4 ? '1px solid rgba(255,255,255,0.3)' : 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.2s ease', marginLeft: 'auto' }}
+            >{showReflection4 ? 'Hide Reflection' : 'Start Reflection'} ✍️</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reflection: Four-Room Model */}
+      {showReflection4 && (() => {
+        const vid = 'four-room-model';
+        const r = reflections[vid] || {};
+        const questions = [
+          { id: 'room-mapping', label: 'Room Mapping', question: 'Map your family enterprise across the four rooms â Owner Room, Board Room, Management Room, Family Room. Which rooms actually exist in your enterprise today? Which are missing, empty, or merged together?', placeholder: 'Our Owner Room is... Our Board Room is... The room we are missing is...' },
+          { id: 'blurred-boundaries', label: 'Blurred Boundaries', question: 'Where do conversations happen in the wrong room? For example, do ownership decisions get made at the dinner table, or family issues get debated in management meetings? What is the cost of that blurring?', placeholder: 'The conversation that keeps landing in the wrong room is...' },
+          { id: 'seats-and-roles', label: 'Seats in Each Room', question: 'Who currently has a seat in each room, and is that by design or by default? Is anyone sitting in a room they should not be in â or excluded from a room where they belong?', placeholder: 'By design, the seats look like... By default, what actually happens is...' },
+          { id: 'family-room', label: 'The Family Room', question: 'The Family Room is often the most neglected room. How intentionally does your family invest in connection, communication, and belonging separate from business and ownership matters?', placeholder: 'Our Family Room today is... What it needs is...' },
+          { id: 'one-action', label: 'Your One Action', question: 'Based on what you watched, what is one concrete step you will take this month to build, clarify, or strengthen one of the four rooms in your family enterprise?', placeholder: 'This month, I will...' },
+        ];
+        const filledCount = questions.filter(q => r[q.id] && r[q.id].trim()).length;
+
+        return (
+          <div style={{ background: 'white', border: '1px solid #E8ECF1', borderRadius: '16px', padding: '32px', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #4A7C59, #5E9670)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>✍️</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A2A3F', margin: 0 }}>Post-Viewing Reflection</h3>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#7A8BA0', margin: 0 }}>Map the four rooms of your family enterprise through the LEP lens.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '0.78rem', color: '#7A8BA0' }}>{filledCount}/{questions.length} complete</div>
+                <div style={{ width: '60px', height: '6px', background: '#F0F4F8', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${(filledCount / questions.length) * 100}%`, height: '100%', background: filledCount === questions.length ? '#4A7C59' : '#5E9670', borderRadius: '3px', transition: 'width 0.3s ease' }} />
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {questions.map((q, idx) => (
+                <div key={q.id} style={{ background: '#FAFBFC', border: '1px solid #EEF1F6', borderRadius: '12px', padding: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: r[q.id] && r[q.id].trim() ? '#4A7C59' : '#DDE3EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: r[q.id] && r[q.id].trim() ? 'white' : '#7A8BA0', transition: 'all 0.2s ease' }}>{r[q.id] && r[q.id].trim() ? '✓' : idx + 1}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4A7C59', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{q.label}</div>
+                  </div>
+                  <p style={{ fontSize: '0.92rem', color: '#2B3A52', lineHeight: 1.6, marginBottom: '14px' }}>{q.question}</p>
+                  <textarea
+                    value={getReflection(vid, q.id)}
+                    onChange={e => saveReflection(vid, q.id, e.target.value)}
+                    placeholder={q.placeholder}
+                    rows={4}
+                    style={{ width: '100%', padding: '14px', border: '1px solid #DDE3EB', borderRadius: '10px', fontSize: '0.9rem', color: '#2B3A52', lineHeight: 1.6, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', outline: 'none' }}
+                    onFocus={e => e.target.style.borderColor = '#4A7C59'}
                     onBlur={e => e.target.style.borderColor = '#DDE3EB'}
                   />
                   {r[q.id] && r[q.id].trim() && <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#7A8BA0' }}>Auto-saved</div>}
