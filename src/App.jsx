@@ -5787,7 +5787,10 @@ function FamilyDynamicsView({ familyProfile }) {
   );
 }
 
-function MeetingsView({ familyProfile }) {
+function MeetingsView({ familyProfile, user }) {
+  const userId = user?.id;
+  const [cloudReady, setCloudReady] = useState(false);
+  const [cloudStatus, setCloudStatus] = useState(hasSupabase && userId ? 'syncing' : 'local'); // 'syncing' | 'synced' | 'local' | 'error'
   const [meetings, setMeetings] = useState(() => {
     try { const s = localStorage.getItem('lep_meetings'); return s ? JSON.parse(s) : []; } catch { return []; }
   });
@@ -5819,9 +5822,56 @@ function MeetingsView({ familyProfile }) {
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Auto-save
-  useEffect(() => { localStorage.setItem('lep_meetings', JSON.stringify(meetings)); }, [meetings]);
-  useEffect(() => { localStorage.setItem('lep_issues', JSON.stringify(issuesList)); }, [issuesList]);
+  // ─── CLOUD SYNC (Supabase via db layer) ─────────────────────
+  // On mount: load meetings + issues from Supabase, merge with any local
+  // data (one-time migration of pre-cloud notes), then push merged back up.
+  useEffect(() => {
+    if (!hasSupabase || !userId) { setCloudReady(true); setCloudStatus('local'); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const [cloudMeetings, cloudIssues] = await Promise.all([
+          db.load('lep_meetings', userId, []),
+          db.load('lep_issues', userId, []),
+        ]);
+        if (cancelled) return;
+        // Merge by id — union of cloud + local; cloud wins on conflicts
+        const mergeById = (cloud, local) => {
+          const map = new Map();
+          (Array.isArray(local) ? local : []).forEach(item => item && item.id != null && map.set(item.id, item));
+          (Array.isArray(cloud) ? cloud : []).forEach(item => item && item.id != null && map.set(item.id, item));
+          return Array.from(map.values());
+        };
+        setMeetings(prev => mergeById(cloudMeetings, prev));
+        setIssuesList(prev => mergeById(cloudIssues, prev));
+        setCloudStatus('synced');
+      } catch (e) {
+        console.error('Meetings cloud load error:', e);
+        setCloudStatus('error');
+      }
+      if (!cancelled) setCloudReady(true);
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
+
+  // Auto-save: localStorage always (offline backup) + Supabase when available.
+  // Cloud writes wait until the initial load/merge completes so we never
+  // overwrite cloud data with a stale local copy.
+  useEffect(() => {
+    localStorage.setItem('lep_meetings', JSON.stringify(meetings));
+    if (hasSupabase && userId && cloudReady) {
+      db.save('lep_meetings', meetings, userId)
+        .then(() => setCloudStatus('synced'))
+        .catch(e => { console.error('Meetings cloud save error:', e); setCloudStatus('error'); });
+    }
+  }, [meetings, userId, cloudReady]);
+  useEffect(() => {
+    localStorage.setItem('lep_issues', JSON.stringify(issuesList));
+    if (hasSupabase && userId && cloudReady) {
+      db.save('lep_issues', issuesList, userId)
+        .catch(e => console.error('Issues cloud save error:', e));
+    }
+  }, [issuesList, userId, cloudReady]);
 
 
   // Cleanup on unmount
@@ -6135,6 +6185,14 @@ function MeetingsView({ familyProfile }) {
         <div>
           <h1>Meetings</h1>
           <p className="subtitle">Peer group sessions, family meetings, and action tracking — all in one place.</p>
+        </div>
+        <div style={{display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, alignSelf: 'flex-start',
+          background: cloudStatus === 'synced' ? '#E8F5EC' : cloudStatus === 'syncing' ? '#FEF3C7' : cloudStatus === 'error' ? '#FDE8EA' : '#F0F3F8',
+          color: cloudStatus === 'synced' ? '#2d5a3d' : cloudStatus === 'syncing' ? '#92600A' : cloudStatus === 'error' ? '#C23B4C' : '#5A6B80',
+          border: `1px solid ${cloudStatus === 'synced' ? '#BFE3CB' : cloudStatus === 'syncing' ? '#FCE8B0' : cloudStatus === 'error' ? '#F5C2C9' : '#DDE3EB'}`}}
+          title={cloudStatus === 'synced' ? 'Notes are saved to your secure cloud account and available on any device.' : cloudStatus === 'syncing' ? 'Loading your notes from the cloud...' : cloudStatus === 'error' ? 'Cloud sync failed — notes are saved on this device only. Check your connection.' : 'Notes are saved on this device only.'}>
+          <span>{cloudStatus === 'synced' ? '☁️' : cloudStatus === 'syncing' ? '⏳' : cloudStatus === 'error' ? '⚠️' : '💾'}</span>
+          <span>{cloudStatus === 'synced' ? 'Cloud saved' : cloudStatus === 'syncing' ? 'Syncing...' : cloudStatus === 'error' ? 'Sync error — saved locally' : 'Saved on this device'}</span>
         </div>
       </header>
 
@@ -10425,7 +10483,7 @@ function SessionsView({ scores, setCurrentView, familyProfile }) {
 }
 
 // ─── MY FAMILY VIEW (Profile + Dynamics + Meetings) ────────────
-function MyFamilyView({ familyProfile, setFamilyProfile }) {
+function MyFamilyView({ familyProfile, setFamilyProfile, user }) {
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabStyle = (isActive) => ({
@@ -10459,7 +10517,7 @@ function MyFamilyView({ familyProfile, setFamilyProfile }) {
       <div style={{ background: '#F5F7FA', borderRadius: '0 0 12px 12px', padding: '24px' }}>
         {activeTab === 'profile' && <FamilyProfileView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {activeTab === 'dynamics' && <FamilyDynamicsView familyProfile={familyProfile} />}
-        {activeTab === 'meetings' && <MeetingsView familyProfile={familyProfile} />}
+        {activeTab === 'meetings' && <MeetingsView familyProfile={familyProfile} user={user} />}
       </div>
     </div>
   );
@@ -13044,12 +13102,12 @@ function AppShell({ currentUser, onLogout }) {
         {currentView === 'lep-framework' && isMember && <LEPFrameworkView setCurrentView={setCurrentView} setActivePillar={setActivePillar} moduleProgress={moduleProgress} scores={scores} />}
         {currentView === 'lep-journey' && isMember && <LEPJourneyView onAssessmentComplete={handleAssessmentComplete} scores={scores} setCurrentView={setCurrentView} familyProfile={familyProfile} />}
         {currentView === 'pillars' && isMember && <PillarsView activePillar={activePillar} setActivePillar={setActivePillar} moduleProgress={moduleProgress} setModuleProgress={setModuleProgress} moduleData={moduleData} setModuleData={setModuleData} />}
-        {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} />}
+        {currentView === 'meetings' && isMember && <MeetingsView familyProfile={familyProfile} user={currentUser} />}
         {currentView === 'priorities' && isMember && <PriorityTracker user={currentUser} />}
         {currentView === 'transitions' && isMember && <TransitionsView setCurrentView={setCurrentView} />}
         {currentView === 'decision-engine' && isMember && <DecisionEngineView setCurrentView={setCurrentView} scores={scores} />}
         {currentView === 'sessions' && isMember && <EventOperations />}
-        {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
+        {currentView === 'my-family' && isMember && <MyFamilyView familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} user={currentUser} />}
         {currentView === 'role-map' && isMember && <EnterpriseRoleMap familyProfile={familyProfile} setFamilyProfile={setFamilyProfile} />}
         {currentView === 'workbook' && isMember && <WorkbookView />}
         {currentView === 'community' && isMember && <CommunityView />}
