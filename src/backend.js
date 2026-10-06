@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // LEP HUB — Backend Integration Layer
-// Supabase (Auth + Database) + Stripe (Payments)
-// Falls back to localStorage when not configured
+// Netlify Identity (Auth) + Supabase (Database) + Stripe (Payments)
+// Database falls back to localStorage when not configured
 // ═══════════════════════════════════════════════════════════════
 
 import { createClient } from '@supabase/supabase-js';
@@ -23,7 +23,9 @@ export const hasStripe = !!STRIPE_PUBLISHABLE_KEY;
 
 // ─── SUPABASE CLIENT ──────────────────────────────────────────
 export const supabase = hasSupabase
-  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    })
   : null;
 
 // ─── STRIPE CLIENT ────────────────────────────────────────────
@@ -34,145 +36,7 @@ export const getStripe = () => {
   return stripePromise;
 };
 
-// ═══════════════════════════════════════════════════════════════
-// AUTH MODULE — Supabase Auth with localStorage fallback
-// ═══════════════════════════════════════════════════════════════
-
-export const auth = {
-  // Sign up new user
-  async signUp({ email, password, name, orgName, role }) {
-    if (hasSupabase) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name, orgName, role }
-        }
-      });
-      if (error) throw error;
-      // Create profile row
-      if (data.user) {
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          email,
-          name,
-          org_name: orgName,
-          role,
-          tier: 'free',
-          created_at: new Date().toISOString(),
-        });
-      }
-      // Return normalized user object (Supabase puts custom fields in user_metadata)
-      const u = data.user;
-      const initials = name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
-      return { user: { id: u.id, email: u.email, name, orgName, role, tier: 'free', initials }, session: data.session };
-    }
-
-    // localStorage fallback
-    const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
-    if (users.find(u => u.email === email.toLowerCase().trim())) {
-      throw new Error('An account with that email already exists.');
-    }
-    const newUser = {
-      id: 'user_' + Date.now(),
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password,
-      orgName: orgName?.trim() || '',
-      role,
-      tier: 'free',
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    };
-    users.push(newUser);
-    localStorage.setItem('lep_users', JSON.stringify(users));
-    const userObj = { ...newUser };
-    delete userObj.password;
-    userObj.initials = newUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-    localStorage.setItem('lep_current_user', JSON.stringify(userObj));
-    return { user: userObj };
-  },
-
-  // Sign in existing user
-  async signIn({ email, password }) {
-    if (hasSupabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      // Fetch profile for normalized user object
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      if (profile) {
-        const initials = profile.name ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
-        return { user: { id: profile.id, email: profile.email, name: profile.name, orgName: profile.org_name, role: profile.role, tier: profile.tier || 'free', initials }, session: data.session };
-      }
-      // Fallback to user_metadata if profile not found
-      const meta = data.user.user_metadata || {};
-      const initials = meta.name ? meta.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
-      return { user: { id: data.user.id, email: data.user.email, name: meta.name || '', orgName: meta.orgName || '', role: meta.role || 'owner', tier: 'free', initials }, session: data.session };
-    }
-
-    // localStorage fallback
-    const users = JSON.parse(localStorage.getItem('lep_users') || '[]');
-    const user = users.find(u => u.email === email.toLowerCase().trim());
-    if (!user) throw new Error('No account found with that email.');
-    if (user.password !== password) throw new Error('Incorrect password.');
-    user.lastLogin = new Date().toISOString();
-    localStorage.setItem('lep_users', JSON.stringify(users));
-    const userObj = { ...user };
-    delete userObj.password;
-    userObj.initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-    localStorage.setItem('lep_current_user', JSON.stringify(userObj));
-    return { user: userObj };
-  },
-
-  // Sign out
-  async signOut() {
-    if (hasSupabase) {
-      await supabase.auth.signOut();
-    }
-    localStorage.removeItem('lep_current_user');
-  },
-
-  // Get current user
-  async getCurrentUser() {
-    if (hasSupabase) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      return profile ? { ...profile, initials: profile.name?.split(' ').map(n => n[0]).join('').toUpperCase() } : null;
-    }
-
-    // localStorage fallback
-    try {
-      const saved = localStorage.getItem('lep_current_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
-  },
-
-  // Password reset
-  async resetPassword(email) {
-    if (hasSupabase) {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) throw error;
-    }
-    // localStorage: no-op (simulated)
-  },
-
-  // Listen for auth changes (Supabase only)
-  onAuthStateChange(callback) {
-    if (hasSupabase) {
-      return supabase.auth.onAuthStateChange(callback);
-    }
-    return { data: { subscription: { unsubscribe: () => {} } } };
-  }
-};
+export { auth } from './identityAuth.js';
 
 
 // ═══════════════════════════════════════════════════════════════

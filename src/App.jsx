@@ -56,9 +56,6 @@ function Icon({ name, size = 20, color = '#2B4C6F', strokeWidth = 1.8 }) {
 }
 
 // ─── AUTH SYSTEM ──────────────────────────────────────────────
-// Phase 1: Client-side auth with localStorage (production will use Supabase)
-// This provides the full UX flow while we wire up the backend
-
 function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
   const [email, setEmail] = useState('');
@@ -70,6 +67,7 @@ function AuthScreen({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [notice, setNotice] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -98,8 +96,14 @@ function AuthScreen({ onLogin }) {
     }
     setLoading(true);
     try {
-      const { user } = await auth.signUp({ email, password, name: name.trim(), orgName: orgName.trim(), role });
-      onLogin(user);
+      const { user, confirmationRequired } = await auth.signUp({ email, password, name: name.trim(), orgName: orgName.trim(), role });
+      if (confirmationRequired) {
+        setNotice('Check your email to confirm your Netlify Identity account, then sign in.');
+        setMode('login');
+        setPassword('');
+      } else {
+        onLogin(user);
+      }
     } catch (err) {
       setError(err.message || 'Signup failed. Please try again.');
     } finally {
@@ -109,6 +113,7 @@ function AuthScreen({ onLogin }) {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
     try {
       await auth.resetPassword(email);
@@ -156,6 +161,7 @@ function AuthScreen({ onLogin }) {
           {mode === 'forgot' ? (
             <>
               <h2 style={{fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.6rem', color: '#1A2A3F', marginBottom: '8px'}}>Reset password</h2>
+              {error && <p role="alert" style={{color: '#dc2626'}}>{error}</p>}
               {resetSent ? (
                 <div style={{textAlign: 'center', padding: '24px 0'}}>
                   <div style={{fontSize: '2.5rem', marginBottom: '12px'}}>✉️</div>
@@ -182,6 +188,8 @@ function AuthScreen({ onLogin }) {
               <p style={{color: '#7A8BA0', fontSize: '0.88rem', marginBottom: '28px'}}>
                 {mode === 'login' ? 'Sign in to continue building your family enterprise legacy.' : 'Create your account to begin your family enterprise assessment.'}
               </p>
+              <p style={{color: '#7A8BA0', fontSize: '0.8rem'}}>Sign in with your Netlify Identity app account, not your Netlify dashboard account.</p>
+              {notice && <p role="status" style={{color: '#34597A'}}>{notice}</p>}
 
               {error && <div style={{background: '#fef2f2', color: '#dc2626', padding: '10px 14px', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '16px', border: '1px solid #fee2e2'}}>{error}</div>}
 
@@ -10247,16 +10255,80 @@ function ProfessionalDirectoryView() {
 // Community View — moved to CommunityView.jsx
 
 
+function IdentityPasswordScreen({ action, onLogin }) {
+  const [password, setPassword] = useState('');
+  const [confirmation, setConfirmation] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirmation) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { user } = await auth.setPassword(password, action.token);
+      onLogin(user);
+    } catch (failure) {
+      setError(failure.message || 'Unable to set your password. Please request a new link.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main style={{minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#1A2A3F', padding: '24px'}}>
+      <form onSubmit={handleSubmit} style={{width: '100%', maxWidth: '420px', background: 'white', borderRadius: '16px', padding: '32px'}}>
+        <h1 style={{fontFamily: "'Instrument Serif', Georgia, serif", color: '#1A2A3F'}}>{action.type === 'invite' ? 'Accept your invitation' : 'Set a new password'}</h1>
+        <p style={{color: '#4A5E73'}}>Choose a password for your Netlify Identity app account.</p>
+        {error && <p role="alert" style={{color: '#dc2626'}}>{error}</p>}
+        <label htmlFor="identity-password">New password</label>
+        <input id="identity-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={event => setPassword(event.target.value)} style={{width: '100%', padding: '12px', margin: '8px 0 16px', boxSizing: 'border-box'}} />
+        <label htmlFor="identity-password-confirmation">Confirm password</label>
+        <input id="identity-password-confirmation" type="password" autoComplete="new-password" required minLength={8} value={confirmation} onChange={event => setConfirmation(event.target.value)} style={{width: '100%', padding: '12px', margin: '8px 0 16px', boxSizing: 'border-box'}} />
+        <button type="submit" disabled={loading} style={{width: '100%', padding: '12px', background: '#E05B6F', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>{loading ? 'Saving...' : 'Save password and sign in'}</button>
+      </form>
+    </main>
+  );
+}
+
 export default function App() {
   // ─── AUTH STATE ─────────────────────────────────────────────
   const [currentUser, setCurrentUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [authAction, setAuthAction] = useState(null);
+  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
-    auth.getCurrentUser().then(user => {
-      if (user) setCurrentUser(user);
-      setAuthChecked(true);
-    }).catch(() => setAuthChecked(true));
+    let active = true;
+    const unsubscribe = auth.onAuthStateChange((event, user) => {
+      if (active) setCurrentUser(event === 'recovery' ? null : user);
+    });
+    const initializeAuth = async () => {
+      try {
+        const callback = await auth.handleCallback();
+        if (!active) return;
+        if (callback?.type === 'recovery' || callback?.type === 'invite') {
+          setAuthAction(callback);
+          setCurrentUser(null);
+        } else {
+          const user = await auth.getCurrentUser();
+          if (active) setCurrentUser(user);
+        }
+      } catch {
+        if (active) setAuthError('The sign-in link could not be verified. Please sign in or request a new link.');
+      } finally {
+        if (active) setAuthChecked(true);
+      }
+    };
+    initializeAuth();
 
     // Check for Stripe checkout return
     const checkoutResult = payments.checkReturnFromCheckout();
@@ -10270,9 +10342,15 @@ export default function App() {
         if (user) setCurrentUser({ ...user, tier: 'member' });
       });
     }
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   const handleLogin = (user) => {
+    setAuthAction(null);
+    setAuthError('');
     setCurrentUser({
       id: user.id, email: user.email, name: user.name,
       orgName: user.orgName || user.org_name, role: user.role,
@@ -10290,8 +10368,12 @@ export default function App() {
     return <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1A2A3F'}}><div style={{display: 'flex', alignItems: 'center', gap: '12px'}}><StrideLogo size={48} /><div><div style={{color: 'white', fontSize: '2rem', fontFamily: "'Instrument Serif', Georgia, serif", lineHeight: 1}}>Stride</div><div style={{fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginTop: '2px'}}>The STRIDE Way</div></div></div></div>;
   }
 
+  if (authAction) {
+    return <IdentityPasswordScreen action={authAction} onLogin={handleLogin} />;
+  }
+
   if (!currentUser) {
-    return <LEPLandingPage onLogin={handleLogin} AuthScreen={AuthScreen} />;
+    return <>{authError && <div role="alert" style={{padding: '16px', background: '#fef2f2', color: '#dc2626'}}>{authError}</div>}<LEPLandingPage onLogin={handleLogin} AuthScreen={AuthScreen} /></>;
   }
 
   return <AppShell currentUser={currentUser} onLogout={handleLogout} />;
