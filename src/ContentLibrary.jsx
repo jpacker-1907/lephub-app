@@ -749,14 +749,15 @@ const ContentLibrary = () => {
         <div style={subtitleStyle}>{isAdmin ? 'Facilitator View' : 'Learning Resources'}</div>
       </div>
 
-      <section aria-labelledby="true-family-wealth-title" style={{ background: 'white', border: '1px solid #DDE3EB', borderRadius: '16px', padding: 'clamp(20px, 4vw, 32px)', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+      <section aria-labelledby="family-wealth-well-being-title" style={{ background: 'white', border: '1px solid #DDE3EB', borderRadius: '16px', padding: 'clamp(20px, 4vw, 32px)', marginBottom: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
         <div style={{ fontSize: '11px', fontWeight: 700, color: '#4A7C59', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>Family Wealth</div>
-        <h3 id="true-family-wealth-title" style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '10px', lineHeight: 1.3 }}>The Meaning of True Family Wealth</h3>
-        <p style={{ fontSize: '0.9rem', color: '#5A6B80', lineHeight: 1.6, marginBottom: '20px' }}>By The Family Business Partnership</p>
+        <h3 id="family-wealth-well-being-title" style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1A2A3F', marginBottom: '10px', lineHeight: 1.3 }}>Redefining family wealth as well-being</h3>
+        <p style={{ fontSize: '0.9rem', color: '#5A6B80', lineHeight: 1.6, marginBottom: '10px' }}>J.P. Morgan · Featuring Jay Hughes</p>
+        <p style={{ fontSize: '0.9rem', color: '#5A6B80', lineHeight: 1.6, marginBottom: '20px' }}>Jay Hughes explores family wealth as well-being and the five capitals: human, intellectual, social, legacy, and financial.</p>
         <div style={{ width: '100%', maxWidth: '720px', aspectRatio: '16 / 9', marginBottom: '16px', borderRadius: '12px', overflow: 'hidden', background: '#1A2A3F' }}>
           <iframe
-            src="https://www.youtube.com/embed/w8qWQsyL2vM"
-            title="The Meaning of True Family Wealth — The Family Business Partnership"
+            src="https://players.brightcove.net/1715776732001/lDy3KDN1u_default/index.html?videoId=6384243773112"
+            title="Redefining family wealth as well-being — J.P. Morgan"
             loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -764,7 +765,7 @@ const ContentLibrary = () => {
             style={{ display: 'block', width: '100%', height: '100%', border: 0 }}
           />
         </div>
-        <a href="https://www.youtube.com/watch?v=w8qWQsyL2vM" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#2B4C6F' }}>Watch on YouTube (opens in a new tab)</a>
+        <a href="https://www.jpmorgan.com/insights/family-legacy/family-engagement-and-governance/redefining-family-wealth-as-well-being" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.88rem', fontWeight: 600, color: '#2B4C6F' }}>Watch on J.P. Morgan (opens in a new tab)</a>
       </section>
 
       {/* Featured Video — hardcoded at top, always visible */}
