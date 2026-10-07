@@ -1175,6 +1175,35 @@ const ContentLibrary = () => {
         );
       })()}
 
+      <section aria-labelledby="family-wealth-video-title" style={{ background: 'linear-gradient(135deg, #1A2A3F 0%, #2B4C6F 60%, #34597A 100%)', borderRadius: '16px', padding: '32px', color: 'white', marginBottom: '28px' }}>
+        <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.12)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.8)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>Family Wealth · Well-Being</div>
+        <h3 id="family-wealth-video-title" style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '10px', lineHeight: 1.3 }}>Redefining family wealth as well-being</h3>
+        <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: '20px', maxWidth: '600px' }}>James E. “Jay” Hughes explores how human, intellectual, social, legacy, and financial capital help families flourish across generations in this J.P. Morgan video.</p>
+        <div style={{ width: '100%', maxWidth: '720px', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+          <iframe
+            src="https://players.brightcove.net/1715776732001/lDy3KDN1u_default/index.html?videoId=6384243773112"
+            title="Redefining family wealth as well-being — Jay Hughes, J.P. Morgan"
+            loading="lazy"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            allowFullScreen
+            style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', border: 0 }}
+          ></iframe>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {['Family Dynamics', 'Finance', 'Legacy', 'Well-Being'].map(topic => (
+              <span key={topic} style={{ fontSize: '11px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '4px 10px', borderRadius: '4px' }}>{topic}</span>
+            ))}
+          </div>
+          <a
+            href="https://www.jpmorgan.com/insights/family-legacy/family-engagement-and-governance/redefining-family-wealth-as-well-being"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', padding: '10px 20px', background: '#E05B6F', color: 'white', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, marginLeft: 'auto', textDecoration: 'none' }}
+          >Watch on J.P. Morgan (opens in new tab)</a>
+        </div>
+      </section>
+
       <div style={tabsStyle}>
         {isAdmin ? (
           <>

@@ -6,7 +6,7 @@
 
 const RESEND_API = 'https://api.resend.com/emails';
 
-exports.handler = async function (event) {
+export const handler = async function (event) {
   const cors = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
